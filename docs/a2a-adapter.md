@@ -37,7 +37,7 @@ Authentication and protocol checks each issue a read-only `tasks/get` request wi
 
 Credentials use `auth.bearer_env`. Public agents and declared HTTP bearer security alternatives are supported. A required scheme needing credentials or an unsupported scheme produces `MISCONFIGURED`. OAuth tokens may be supplied as bearer environment references; the adapter does not acquire them. Missing credentials fail before network access. Agent cards and RPC errors are never printed.
 
-Capability checks validate required skill IDs and optional boolean capabilities: `streaming`, `pushNotifications`, and `stateTransitionHistory`. Missing requirements yield `DEGRADED`. Unknown required protocol extensions are unsupported.
+Capability checks validate required skill IDs and optional boolean capabilities: `streaming`, `pushNotifications`, and `stateTransitionHistory`. Missing requirements yield `UNHEALTHY`. Unknown required protocol extensions are unsupported.
 
 <!-- spec-example: configuration -->
 ```yaml
@@ -81,4 +81,4 @@ A structurally valid agent text message or completed task yields `HEALTHY`. Fail
 
 Card and RPC bodies are capped at 1 MiB. Interaction text is capped at 64 KiB. Context cancellation and configured per-check deadlines apply to network and body reads. Passive retries apply only before any response bytes arrive; active checks never retry. Latency thresholds use the engine's normal `DEGRADED` policy.
 
-HTTP 401/403 yields `MISCONFIGURED`; other unexpected HTTP statuses, malformed metadata/envelopes, and unexpected RPC errors yield `UNHEALTHY`. Unsupported versions/transports and origin violations yield `MISCONFIGURED`. Oversized or interrupted bodies yield `UNKNOWN`; connection and TLS failures before a response yield `UNREACHABLE`. Diagnostics are engine-owned and exclude raw response data and errors.
+HTTP 401/403 yields `MISCONFIGURED`; other unexpected HTTP statuses, malformed metadata/envelopes, and unexpected RPC errors yield `UNHEALTHY`. Unsupported server versions/transports and required protocol extensions yield `UNHEALTHY`; origin violations yield `MISCONFIGURED`. Oversized or interrupted bodies yield `UNKNOWN`; connection and TLS failures before a response yield `UNREACHABLE`. Diagnostics are engine-owned and exclude raw response data and errors.

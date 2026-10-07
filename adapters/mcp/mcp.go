@@ -160,7 +160,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			for kind, required := range map[string][]string{"tools": options.RequiredTools, "resources": options.RequiredResources, "prompts": options.RequiredPrompts} {
 				for _, name := range required {
 					if _, ok := inventories[kind][name]; !ok {
-						return observation(fail(core.Degraded, "mcp_required"))
+						return observation(fail(core.Unhealthy, "mcp_required"))
 					}
 				}
 			}
@@ -172,7 +172,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			f := r.Target.MCP.Functional
 			tool, ok := inventories["tools"][f.Tool]
 			if !ok {
-				return observation(fail(core.Degraded, "mcp_required"))
+				return observation(fail(core.Unhealthy, "mcp_required"))
 			}
 			var definition struct {
 				Annotations struct {
@@ -341,7 +341,7 @@ func (s *session) initializeLegacy(ctx context.Context) error {
 		return protocolError()
 	}
 	if init.Version == modernVersion || !core.SupportedMCPVersion(init.Version) || (s.r.Target.MCP != nil && s.r.Target.MCP.ProtocolVersion != "" && init.Version != s.version) {
-		return fail(core.Misconfigured, "mcp_version")
+		return fail(core.Unhealthy, "mcp_version")
 	}
 	for _, value := range init.Capabilities {
 		var obj map[string]json.RawMessage

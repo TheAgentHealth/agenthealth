@@ -271,14 +271,16 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 		if !obs.Check.Status.Valid() {
 			obs.Check = CheckResult{Status: Unknown, Message: "invalid adapter result"}
 		}
+		obs.Check.Code = ""
 		// Use canonical diagnostics only: adapter text may contain unknown secrets.
 		if obs.Check.Status != Healthy {
 			obs.Check.Message = string(obs.Check.Status) + " in " + dimension
 		} else {
 			obs.Check.Message = ""
 		}
-		if response.err == nil {
+		if response.err == nil && response.observation.Check.Status.Valid() {
 			if message, ok := diagnosticMessages[obs.Code]; ok {
+				obs.Check.Code = obs.Code
 				obs.Check.Message = message
 			}
 		}

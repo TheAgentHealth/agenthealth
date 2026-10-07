@@ -180,7 +180,7 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		return observed(core.Unhealthy, "a2a_card"), nil
 	}
 	if c.ProtocolVersion != "0.3.0" || c.PreferredTransport != "" && c.PreferredTransport != "JSONRPC" {
-		return observed(core.Misconfigured, "a2a_version"), nil
+		return observed(core.Unhealthy, "a2a_version"), nil
 	}
 	rpc, valid := validURL(c.URL)
 	base, _ := validURL(r.Target.Endpoint)
@@ -229,7 +229,7 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 				return observed(core.Unhealthy, "a2a_card"), nil
 			}
 			if extension.Required {
-				return observed(core.Misconfigured, "a2a_version"), nil
+				return observed(core.Unhealthy, "a2a_version"), nil
 			}
 		}
 	}
@@ -252,13 +252,13 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		if o := r.Target.A2A; o != nil {
 			for _, name := range o.RequiredSkills {
 				if !seen[name] {
-					return observed(core.Degraded, "a2a_required"), nil
+					return observed(core.Unhealthy, "a2a_required"), nil
 				}
 			}
 			for _, name := range o.RequiredCapabilities {
 				var enabled bool
 				if json.Unmarshal(c.Capabilities[name], &enabled) != nil || !enabled {
-					return observed(core.Degraded, "a2a_required"), nil
+					return observed(core.Unhealthy, "a2a_required"), nil
 				}
 			}
 		}

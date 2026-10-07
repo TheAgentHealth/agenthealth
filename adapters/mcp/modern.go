@@ -21,7 +21,7 @@ type rpcFailure struct {
 func (e *rpcFailure) Error() string { return "MCP RPC rejected" }
 func (e *rpcFailure) Unwrap() error {
 	if e.code == -32022 {
-		return fail("MISCONFIGURED", "mcp_version")
+		return fail("UNHEALTHY", "mcp_version")
 	}
 	return fail("UNHEALTHY", "mcp_rpc")
 }
@@ -95,7 +95,7 @@ func (s *session) discover(ctx context.Context) error {
 		}
 	}
 	if !found {
-		return fail("MISCONFIGURED", "mcp_version")
+		return fail("UNHEALTHY", "mcp_version")
 	}
 	for _, raw := range d.Capabilities {
 		var obj map[string]json.RawMessage

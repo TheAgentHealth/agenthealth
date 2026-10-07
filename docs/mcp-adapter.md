@@ -33,7 +33,7 @@ unanswered 500 ms discovery probe triggers legacy initialization. Recognized
 modern version/header errors never silently downgrade. Legacy negotiation
 offers `2025-11-25` and accepts any supported legacy revision. Set
 `mcp.protocol_version` to pin a revision and disable cross-era fallback.
-A version mismatch is `MISCONFIGURED`.
+A server version mismatch is `UNHEALTHY`; invalid local version pins are `MISCONFIGURED` before probing.
 
 Modern checks do not send `initialize`, `notifications/initialized`, session
 IDs, or DELETE. Legacy checks initialize independent sessions, validate server
@@ -66,7 +66,7 @@ prompts, or invoke tools. Each check owns its session/process; targets and
 dependencies do not share credentials or capabilities.
 
 Required tool and prompt names match exactly; resources match by URI. Missing
-requirements, including an unadvertised inventory, yield `DEGRADED`.
+requirements, including an unadvertised inventory, yield `UNHEALTHY`.
 Requirements need `capability` when `checks` is explicitly specified.
 Doctor displays dimension-level evidence and canonical messages, without
 printing inventories or raw server responses.
@@ -249,7 +249,7 @@ targets:
 
 `arguments_json` is an optional JSON object encoded as a YAML string, defaulting
 to `{}`. The Go loader parses it and enforces a 64 KiB byte limit in addition to
-schema validation. Missing tools are `DEGRADED`, unsafe annotations are
+schema validation. Missing tools are `UNHEALTHY`, unsafe annotations are
 `MISCONFIGURED`, and `isError: true` is `UNHEALTHY`. A complete valid success is
 `HEALTHY`; the adapter does not assess content quality. Discovery and the one
 functional invocation share the same check-owned transport.

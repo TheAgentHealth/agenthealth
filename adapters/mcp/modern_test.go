@@ -102,9 +102,7 @@ func TestModernErrorsDoNotFallBack(t *testing.T) {
 			defer server.Close()
 			result := runTarget(t, core.Target{Name: "modern", Type: "mcp", Endpoint: server.URL, Checks: []string{"protocol"}})
 			expected := core.Unhealthy
-			if code == -32022 {
-				expected = core.Misconfigured
-			}
+
 			if result.Status != expected {
 				t.Fatalf("%+v", result)
 			}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -35,6 +36,8 @@ func WriteYAML(w io.Writer, results []Result) error {
 	return encoder.Encode(document)
 }
 
+var diagnosticCodePattern = regexp.MustCompile(`^[a-z][a-z0-9_]{0,63}$`)
+
 const maxResultDepth = 64
 
 func validateResult(r Result, depth int) error {
@@ -56,6 +59,9 @@ func validateResult(r Result, depth int) error {
 	for dimension, check := range r.Checks {
 		if !contains(dimensions, dimension) || !check.Status.Valid() {
 			return errors.New("invalid check dimension or status")
+		}
+		if check.Code != "" && !diagnosticCodePattern.MatchString(check.Code) {
+			return errors.New("invalid diagnostic code")
 		}
 		for step, status := range check.Steps {
 			if !contains([]string{"dns", "tcp", "tls", "http"}, step) || !status.Valid() {

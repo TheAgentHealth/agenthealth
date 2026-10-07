@@ -189,11 +189,11 @@ func TestClassification(t *testing.T) {
 		active  bool
 		status  core.Status
 	}{
-		{name: "missing-tool", options: &core.MCPOptions{RequiredTools: []string{"missing"}}, status: core.Degraded},
-		{name: "missing-resource", options: &core.MCPOptions{RequiredResources: []string{"missing"}}, status: core.Degraded},
-		{name: "missing-prompt", options: &core.MCPOptions{RequiredPrompts: []string{"missing"}}, status: core.Degraded},
-		{name: "unsupported-version", fixture: &fixture{version: "2099-01-01"}, status: core.Misconfigured},
-		{name: "pinned-version", fixture: &fixture{version: "2025-06-18"}, options: &core.MCPOptions{ProtocolVersion: "2025-11-25"}, status: core.Misconfigured},
+		{name: "missing-tool", options: &core.MCPOptions{RequiredTools: []string{"missing"}}, status: core.Unhealthy},
+		{name: "missing-resource", options: &core.MCPOptions{RequiredResources: []string{"missing"}}, status: core.Unhealthy},
+		{name: "missing-prompt", options: &core.MCPOptions{RequiredPrompts: []string{"missing"}}, status: core.Unhealthy},
+		{name: "unsupported-version", fixture: &fixture{version: "2099-01-01"}, status: core.Unhealthy},
+		{name: "pinned-version", fixture: &fixture{version: "2025-06-18"}, options: &core.MCPOptions{ProtocolVersion: "2025-11-25"}, status: core.Unhealthy},
 		{name: "bad-init", fixture: &fixture{override: func(m string) any {
 			if m == "initialize" {
 				return map[string]any{}
@@ -230,6 +230,16 @@ func TestClassification(t *testing.T) {
 			result := runTarget(t, target)
 			if result.Status != tc.status {
 				t.Fatalf("got %+v expected %s", result, tc.status)
+			}
+			if strings.HasPrefix(tc.name, "missing-") {
+				if result.Checks["capability"].Code != "mcp_required" {
+					t.Fatalf("missing required diagnostic: %+v", result)
+				}
+			}
+			if tc.name == "unsupported-version" || tc.name == "pinned-version" {
+				if result.Checks["protocol"].Code != "mcp_version" {
+					t.Fatalf("missing version diagnostic: %+v", result)
+				}
 			}
 			if tc.name == "unsafe-probe" {
 				tc.fixture.mu.Lock()

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -326,5 +327,49 @@ func TestLatencyExcludesAdapterQueue(t *testing.T) {
 	}
 	for i := 0; i < cap(engine.slots)-1; i++ {
 		<-engine.slots
+	}
+}
+
+func TestDiagnosticCodesAreCanonical(t *testing.T) {
+	for _, code := range []string{"mcp_required", "unknown_secret", ""} {
+		t.Run(code, func(t *testing.T) {
+			a := &testAdapter{fn: func(_ context.Context, _ Request, d string) (Observation, error) {
+				if d == "reachability" {
+					return Observation{Check: CheckResult{Status: Unhealthy, Code: "embedded_secret", Message: "private message"}, Code: code}, nil
+				}
+				return Observation{Check: CheckResult{Status: Healthy}}, nil
+			}}
+			r := runTest(t, a, targetForTest("reachability"))
+			want := ""
+			if code == "mcp_required" {
+				want = code
+			}
+			if r.Checks["reachability"].Code != want {
+				t.Fatalf("unexpected code: %+v", r)
+			}
+			for _, write := range []func(io.Writer, []Result) error{WriteJSON, WriteYAML} {
+				var b bytes.Buffer
+				if err := write(&b, []Result{r}); err != nil {
+					t.Fatal(err)
+				}
+				if strings.Contains(b.String(), "secret") || strings.Contains(b.String(), "private message") {
+					t.Fatal("adapter data leaked", b.String())
+				}
+				if want != "" && !strings.Contains(b.String(), want) {
+					t.Fatal("code missing", b.String())
+				}
+			}
+		})
+	}
+}
+
+func TestDiagnosticCodeValidation(t *testing.T) {
+	for _, code := range []string{"", "future_adapter_code", "bad code", "UPPER", strings.Repeat("a", 65)} {
+		r := Result{Target: TargetIdentity{Name: "peer", Type: "mcp"}, Status: Unhealthy, Checks: map[string]CheckResult{"capability": {Status: Unhealthy, Code: code}}, Dependencies: []Result{}}
+		err := ValidateResult(r)
+		valid := code == "" || code == "future_adapter_code"
+		if (err == nil) != valid {
+			t.Fatalf("code %q: %v", code, err)
+		}
 	}
 }

@@ -8,6 +8,17 @@ The roadmap is intentionally capability-driven rather than tied to fixed calenda
 
 See the [documentation guide](docs/README.md) for phase 0–6 references and examples.
 
+## Foundation stabilization before Phase 7
+
+The full capability roadmap remains the objective. First align required-capability
+and server-version classifications with AHS and expose stable diagnostic codes.
+See the [contract RFC](docs/rfcs/foundation-health-contract.md) and
+[RFC issue](https://github.com/TheAgentHealth/agenthealth/issues/8) for impact and
+migration details. Current A2A compatibility and external SDK interoperability
+follow separately, then measured probe reuse and Phase 7. Basic Docker and
+Kubernetes usage may proceed alongside agent health. AHP, SDK and conformance
+deliverables must consume status/code rather than parse diagnostic messages.
+
 ---
 
 # Guiding Strategy

@@ -109,13 +109,13 @@ func TestCardAndRPCFailures(t *testing.T) {
 	}{
 		{"required extension", func(c map[string]any) {
 			c["capabilities"] = map[string]any{"extensions": []any{map[string]any{"uri": "https://example.com/required", "required": true}}}
-		}, 0, "", core.Misconfigured},
+		}, 0, "", core.Unhealthy},
 		{"malformed extension", func(c map[string]any) {
 			c["capabilities"] = map[string]any{"extensions": []any{map[string]any{"uri": "", "required": false}}}
 		}, 0, "", core.Unhealthy},
 		{"missing name", func(c map[string]any) { delete(c, "name") }, 0, "", core.Unhealthy},
-		{"unsupported version", func(c map[string]any) { c["protocolVersion"] = "1.0" }, 0, "", core.Misconfigured},
-		{"transport", func(c map[string]any) { c["preferredTransport"] = "GRPC" }, 0, "", core.Misconfigured},
+		{"unsupported version", func(c map[string]any) { c["protocolVersion"] = "1.0" }, 0, "", core.Unhealthy},
+		{"transport", func(c map[string]any) { c["preferredTransport"] = "GRPC" }, 0, "", core.Unhealthy},
 		{"foreign origin", func(c map[string]any) { c["url"] = "https://foreign.example/rpc" }, 0, "", core.Misconfigured},
 		{"user info", func(c map[string]any) { c["url"] = "http://secret@example.com" }, 0, "", core.Unhealthy},
 		{"bad capability", func(c map[string]any) { c["capabilities"] = map[string]any{"streaming": "true"} }, 0, "", core.Unhealthy},
@@ -124,7 +124,7 @@ func TestCardAndRPCFailures(t *testing.T) {
 			c["security"] = []any{map[string]any{"token": []string{}}}
 			c["securitySchemes"] = map[string]any{"token": map[string]any{"type": "http", "scheme": "bearer"}}
 		}, 0, "", core.Misconfigured},
-		{"missing skill", func(c map[string]any) { c["skills"] = []any{} }, 0, "", core.Degraded},
+		{"missing skill", func(c map[string]any) { c["skills"] = []any{} }, 0, "", core.Unhealthy},
 		{"card auth", nil, 401, "", core.Misconfigured},
 		{"card status", nil, 500, "", core.Unhealthy},
 		{"redirect", nil, 302, "", core.Unhealthy},

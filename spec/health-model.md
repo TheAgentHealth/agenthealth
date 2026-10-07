@@ -215,3 +215,12 @@ A dependency may itself have dependencies (see the recursive shape in [result-sc
 - CLI exit code mapping: [exit-codes.md](exit-codes.md)
 - Security requirements for any conforming implementation: [security.md](security.md)
 - How these semantics could be exposed/exchanged over a network: [protocol.md](protocol.md) (experimental)
+
+## Protocol compatibility clarification
+
+Invalid or unsupported local version pins are configuration errors and yield
+`MISCONFIGURED` before network access. With valid local configuration, a server
+that cannot support the required version, transport or protocol extension yields
+`UNHEALTHY`. Explicitly required skills, tools, resources, prompts or capabilities
+that are absent yield `UNHEALTHY`. Optional dependency failures and latency
+threshold violations retain their existing `DEGRADED` semantics.
