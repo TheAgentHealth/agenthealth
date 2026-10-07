@@ -1,10 +1,10 @@
 # Go core engine
 
-The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). CLI commands are Phase 3; advanced protocol and HTTP diagnostics remain later roadmap work.
+The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; additional protocol adapters remain later roadmap work.
 
 ## Run it
 
-A small HTTP/API adapter provides Configuration, HEAD-based Reachability and Authentication, and an explicit opt-in GET Functional check. It verifies TLS and does not follow redirects. Authentication rejection maps to `MISCONFIGURED`; a non-2xx Functional response maps to `UNHEALTHY`. Reachability reports communication success regardless of HTTP response status. Expected status matching, response/header inspection, and separate DNS/TCP/TLS diagnostics remain Phase 4.
+The [HTTP/API adapter](../docs/http-adapter.md) provides passive HEAD-based connectivity, authentication, status and response-header checks, transport-stage diagnostics, and explicit opt-in GET body matching. Default status expectations are 2xx. TLS is verified and redirects are not followed.
 
 Start a local service with a `/health` endpoint and run:
 
@@ -22,13 +22,13 @@ Configuration and Reachability gate downstream work. Authentication gates Capabi
 
 Each nested dependency runs independently, even after the parent fails. Critical defaults to true; optional failures contribute `DEGRADED`. Dependencies do not inherit checks, thresholds, credentials, or policies. Dependency summary checks are optional diagnostics, separate from aggregation. `Aggregate` also accepts already-evaluated dependency results for external consumers.
 
-`WriteJSON` emits a single result or ordered batch. `WriteHuman` displays the same result tree and latency with deterministic check ordering and terminal control characters removed. Both validate result shapes and mask recognizable URLs and credential assignments. Output rejects dependency trees deeper than 64 levels, including cyclic caller-built result slices, before writing any bytes. Results initialize Checks and Dependencies to empty collections, not nil.
+`WriteJSON` and `WriteYAML` emit a single result or ordered batch with the same wire fields. `WriteHuman` displays the same result tree and latency with deterministic check ordering and terminal control characters removed. Both validate result shapes and mask recognizable URLs and credential assignments. Output rejects dependency trees deeper than 64 levels, including cyclic caller-built result slices, before writing any bytes. Results initialize Checks and Dependencies to empty collections, not nil.
 
 ## Policies and safety
 
 See [execution policies](../spec/configuration.md#execution-policies-phase-2-draft) for the draft fields, defaults, and bounds. Per-attempt deadlines default to five seconds, retries to zero, and the whole-run budget to 60 seconds (a shorter caller deadline takes precedence). Passive no-response connectivity failures may retry at most three additional times. Active checks and partial responses never retry. Retry delays and pool acquisition honor cancellation.
 
-Credentials resolve from environment references once per run. Missing/empty credentials fail Configuration before network requests. Raw adapter errors, messages, and panic values never reach results or engine logs: the engine uses canonical diagnostics and emits no internal logs. Resolved credentials are redacted recursively from identities and results; callers can safely log engine results through the formatters. `Redactor` is available for other structured logging paths. Arbitrary manually constructed results must supply known secret values to a Redactor before output; generic patterns cannot identify every possible secret.
+Credentials resolve from environment references once per run. Missing/empty credentials fail Configuration before network requests. Raw adapter errors, messages, and panic values never reach results or engine logs: the engine uses canonical diagnostics and allowlisted transport stages and emits no internal logs. Resolved credentials are redacted recursively from identities and results; callers can safely log engine results through the formatters. `Redactor` is available for other structured logging paths. Arbitrary manually constructed results must supply known secret values to a Redactor before output; generic patterns cannot identify every possible secret.
 
 Adapters declare active dimensions; none execute by default. Functional must be active and explicitly requested. Trusted adapters must keep probes non-destructive and avoid their own unsafe logging. The supplied HTTP client verifies TLS without an insecure option and stops redirects to prevent credential forwarding. Per-attempt context/client deadlines govern TLS handshakes and response headers without a separate fixed transport cap. Invalid HTTP header control bytes in credentials fail Configuration before networking.
 

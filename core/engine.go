@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -196,6 +197,31 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 		return Observation{Check: NormalizeError(ctx.Err(), false)}, 0
 	}
 	var received atomic.Bool
+	var stepsMu sync.Mutex
+	steps := map[string]Status{}
+	request.RecordStep = func(name string, status Status) {
+		if !contains([]string{"dns", "tcp", "tls", "http"}, name) || !status.Valid() {
+			return
+		}
+		stepsMu.Lock()
+		// A successful dial wins over failed parallel address attempts.
+		if steps[name] != Healthy {
+			steps[name] = status
+		}
+		stepsMu.Unlock()
+	}
+	snapshot := func() map[string]Status {
+		stepsMu.Lock()
+		defer stepsMu.Unlock()
+		if len(steps) == 0 {
+			return nil
+		}
+		copy := make(map[string]Status, len(steps))
+		for key, value := range steps {
+			copy[key] = value
+		}
+		return copy
+	}
 	request.MarkResponse = func() { received.Store(true) }
 	client := *request.Client
 	client.Timeout = request.Target.timeout(dimension)
@@ -241,8 +267,24 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 		} else {
 			obs.Check.Message = ""
 		}
+		if response.err == nil {
+			if message, ok := diagnosticMessages[obs.Code]; ok {
+				obs.Check.Message = message
+			}
+		}
+		obs.Check.Steps = snapshot()
 		return obs, time.Since(start)
 	case <-ctx.Done():
-		return Observation{Check: NormalizeError(ctx.Err(), received.Load()), ResponseReceived: received.Load()}, time.Since(start)
+		check := NormalizeError(ctx.Err(), received.Load())
+		check.Steps = snapshot()
+		return Observation{Check: check, ResponseReceived: received.Load()}, time.Since(start)
 	}
+}
+
+var diagnosticMessages = map[string]string{
+	"http_status":     "HTTP status did not match expected status",
+	"http_headers":    "required HTTP response header did not match",
+	"http_body":       "HTTP response body did not contain required text",
+	"http_body_limit": "HTTP response body exceeded the configured size limit",
+	"http_auth":       "HTTP authentication rejected (401 or 403)",
 }

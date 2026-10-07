@@ -24,7 +24,25 @@
       "type": "object",
       "properties": {
         "status": { "$ref": "#/$defs/HealthState" },
-        "message": { "type": "string" }
+        "message": { "type": "string" },
+        "steps": {
+          "type": "object",
+          "properties": {
+            "dns": {
+              "$ref": "#/$defs/HealthState"
+            },
+            "tcp": {
+              "$ref": "#/$defs/HealthState"
+            },
+            "tls": {
+              "$ref": "#/$defs/HealthState"
+            },
+            "http": {
+              "$ref": "#/$defs/HealthState"
+            }
+          },
+          "additionalProperties": false
+        }
       },
       "required": ["status"]
     },

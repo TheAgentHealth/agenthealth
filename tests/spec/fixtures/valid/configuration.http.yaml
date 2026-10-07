@@ -1,0 +1,12 @@
+version: v1
+targets:
+  - name: ready
+    type: http
+    endpoint: https://example.com/health
+    checks: [reachability, protocol, authentication, functional, latency]
+    http:
+      expected_status: [200, 204]
+      headers:
+        X-Ready: "true"
+      body_contains: ready
+      max_body_bytes: 1024

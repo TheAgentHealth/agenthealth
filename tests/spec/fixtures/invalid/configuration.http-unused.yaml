@@ -1,0 +1,8 @@
+version: v1
+targets:
+  - name: ready
+    type: http
+    endpoint: https://example.com/health
+    checks: [reachability]
+    http:
+      expected_status: [200]

@@ -185,7 +185,7 @@ spec/
 
 # Phase 2 — Core Engine
 
-**Status:** Complete — the [Go core engine](core/README.md) implements execution, policies, normalization, dependency evaluation, output, and safety controls. A small HTTP reference adapter exercises the engine; full CLI commands and advanced HTTP diagnostics remain Phases 3 and 4.
+**Status:** Complete — the [Go core engine](core/README.md) implements execution, policies, normalization, dependency evaluation, output, and safety controls. A small HTTP reference adapter exercises the engine; the CLI and HTTP diagnostics are implemented in Phases 3 and 4.
 
 Goal:
 
@@ -218,6 +218,8 @@ Implement the reference health engine.
 ---
 
 # Phase 3 — Universal CLI
+
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API use the reference adapter; MCP and A2A adapters remain later phases. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -259,9 +261,9 @@ agenthealth version
 
 ## Output Formats
 
-- [ ] terminal
-- [ ] JSON
-- [ ] YAML
+- [x] terminal
+- [x] JSON
+- [x] YAML
 
 Potential later formats:
 
@@ -287,22 +289,24 @@ Standardize exit behavior for automation. Normative mapping defined in [spec/exi
 
 # Phase 4 — Generic HTTP Health Adapter
 
+**Status:** Implemented — transport-stage diagnostics, passive status/header validation, bearer authentication, and bounded opt-in body matching are available. See [HTTP adapter](docs/http-adapter.md).
+
 Goal:
 
 Establish a universal baseline adapter.
 
 ## Checks
 
-- [ ] DNS resolution
-- [ ] TCP connectivity
-- [ ] TLS validation
-- [ ] HTTP connectivity
-- [ ] expected HTTP status
-- [ ] headers
-- [ ] authentication
-- [ ] response matching
-- [ ] latency
-- [ ] timeout
+- [x] DNS resolution
+- [x] TCP connectivity
+- [x] TLS validation
+- [x] HTTP connectivity
+- [x] expected HTTP status
+- [x] headers
+- [x] authentication
+- [x] response matching
+- [x] latency
+- [x] timeout
 
 Example:
 
@@ -582,25 +586,27 @@ docker run --rm agenthealth/agenthealth \
 
 # Phase 11 — Standalone Binaries
 
+**Status:** Initial GitHub binary distribution implemented early for the v0.1.0 preview. Five platform archives, checksums, installation docs, and a tag-triggered release workflow are available. Signing and broader runtime validation remain future work.
+
 Goal:
 
 Make installation trivial.
 
 ## Platforms
 
-- [ ] Linux AMD64
-- [ ] Linux ARM64
-- [ ] macOS ARM64
-- [ ] macOS AMD64
-- [ ] Windows AMD64
+- [x] Linux AMD64
+- [x] Linux ARM64
+- [x] macOS ARM64
+- [x] macOS AMD64
+- [x] Windows AMD64
 
 ## Distribution
 
 Potential channels:
 
-- [ ] GitHub Releases
+- [x] GitHub Releases
 - [ ] Homebrew
-- [ ] Linux packages
+- [x] Linux packages
 - [ ] Windows package manager
 - [ ] container registries
 

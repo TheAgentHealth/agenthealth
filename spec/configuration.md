@@ -75,7 +75,7 @@ If `checks` is omitted for a target or dependency, AgentHealth runs the default 
 
 `functional` is **never** included in the default set, regardless of target type. [Functional Health](health-model.md#functional-health) checks exercise the target (running inference, executing a query, invoking an operation) and are classified **active** under [Passive vs Active Checks](../README.md#passive-vs-active-checks), so they require explicit opt-in. Listing `functional` in a target's or dependency's `checks` *is* that opt-in — no separate flag is needed.
 
-For example, an `http` target with no `checks` listed runs reachability, authentication, latency, and configuration (all passive and applicable to `http`), but never `functional` unless explicitly requested.
+For example, an `http` target with no `checks` listed runs reachability, protocol (HTTP status/header expectations), authentication, latency, and configuration (all passive and applicable to `http`), but never `functional` unless explicitly requested.
 
 ## Dependency Execution
 
@@ -140,6 +140,39 @@ Active checks (including `functional`) never retry, even when `retries` is confi
 The reference engine applies a 60-second whole-run budget, or a shorter caller deadline, encompassing all targets, dependencies, checks, attempts, and delays. Exhaustion stops further adapter work and produces diagnostics for remaining targets. Individual checks have their own deadlines, and at most 16 adapter calls can remain in flight per engine. Dependencies execute sequentially in declaration order and retain independent per-check policies; graph scheduling and configurable concurrency remain Phase 8 work.
 
 `latency_ms` measures the final successful reachability attempt, excluding local adapter-slot queue time, earlier failed attempts, and retry delays. It is null when reachability did not succeed. A latency check uses this measurement and does not issue another request.
+
+## HTTP response expectations (Phase 4 draft)
+
+HTTP/API targets and dependencies accept an optional `http` map. Options are not inherited by dependencies.
+
+| Field | Type | Default | Meaning |
+|---|---|---|---|
+| `http.expected_status` | nonempty list of integers, 200–599 | any 2xx | Accepted final response statuses |
+| `http.headers` | map of header name to string | empty | Required response headers; names are case-insensitive, at least one value must match exactly |
+| `http.body_contains` | string | empty | Literal UTF-8 text required in the GET response body; nonempty values require explicit `functional` in `checks` |
+| `http.max_body_bytes` | integer, 1–1048576 | 65536 | Maximum body size accepted for body matching |
+
+`protocol` is a passive HEAD check for status and response headers. It runs by default for HTTP/API. Status/header expectations require `protocol` or `functional` when an explicit check list is supplied, so configured expectations cannot silently be skipped. `functional` uses GET and applies the same expectations, plus optional body matching. No automatic HEAD-to-GET fallback is performed. A HEAD-incompatible endpoint can accept 405 explicitly or use an opt-in functional check.
+
+A status/header/body mismatch is `UNHEALTHY`. Authentication rejection (401/403) is `MISCONFIGURED` even if listed in accepted statuses. An oversized or incomplete body is `UNKNOWN`, with no retry. Bodies are read only for body matching, up to the configured limit plus one byte. Expected values and response content never appear in diagnostics. Redirects are checked as responses and never followed.
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: ready-api
+    type: http
+    endpoint: http://localhost:8080/health
+    checks: [reachability, protocol, authentication, functional, latency]
+    http:
+      expected_status: [200]
+      headers:
+        Content-Type: application/json
+      body_contains: '"ready":true'
+      max_body_bytes: 65536
+```
+
+Transport observations appear as optional `checks.reachability.steps` entries for `dns`, `tcp`, `tls`, and `http`; see [HTTP diagnostics](../docs/http-adapter.md). These describe the observed network path rather than additional health dimensions.
 
 ## Still to be defined
 

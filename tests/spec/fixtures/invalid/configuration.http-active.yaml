@@ -1,0 +1,7 @@
+version: v1
+targets:
+  - name: ready
+    type: http
+    endpoint: https://example.com/health
+    http:
+      body_contains: ready

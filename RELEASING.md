@@ -34,13 +34,30 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 1. Changes land on `main` via reviewed pull requests.
 2. When a release is cut, tag `main` as `vX.Y.Z`.
 3. Build and publish artifacts for that tag:
-   - standalone binaries (once [Phase 11](ROADMAP.md#phase-11--standalone-binaries) lands),
+   - standalone binaries and checksums (implemented early from [Phase 11](ROADMAP.md#phase-11--standalone-binaries)),
    - Docker image (once [Phase 10](ROADMAP.md#phase-10--docker-distribution) lands),
    - PyPI package (once [Phase 13](ROADMAP.md#phase-13--python-sdk--pypi) lands),
    - npm package (once [Phase 14](ROADMAP.md#phase-14--javascript--typescript-sdk) lands).
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
-This process will be automated (CI-driven releases, signed artifacts, SBOM generation) as part of [Phase 24 — Production Hardening](ROADMAP.md#phase-24--production-hardening) ahead of a stable 1.0.
+The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), verifies the Linux AMD64 version and archive checksums, and publishes a GitHub prerelease only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
+
+To prepare artifacts locally (the output directory must be empty):
+
+```bash
+python3 scripts/build_release.py v0.1.0 --output /tmp/agenthealth-v0.1.0-assets
+```
+
+After the release PR passes CI and is merged, tag that exact main commit:
+
+```bash
+git checkout main
+git pull --ff-only
+git tag -a v0.1.0 -m "AgentHealth v0.1.0"
+git push origin v0.1.0
+```
+
+Watch the Release workflow and verify the downloads before announcing the release. Tags are immutable release identifiers; fixes ship under a new version rather than retagging. The workflow publishes prereleases by default; stable release publication, signed artifacts, and SBOM generation remain [Phase 24 — Production Hardening](ROADMAP.md#phase-24--production-hardening) work.
 
 ## Backward compatibility policy
 
