@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -28,6 +29,7 @@ type oauthFixture struct {
 	mu                           sync.Mutex
 	challenge                    string
 	invalidIssuer, redirectToken bool
+	inventory                    bool
 }
 
 func newOAuthFixture(t *testing.T) *oauthFixture {
@@ -95,11 +97,21 @@ func newOAuthFixture(t *testing.T) *oauthFixture {
 				Params map[string]json.RawMessage `json:"params"`
 			}
 			json.NewDecoder(r.Body).Decode(&q)
+			if f.inventory && q.Method == "tools/list" {
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "result": map[string]any{"resultType": "complete", "tools": []any{map[string]any{"name": "health", "inputSchema": map[string]any{"type": "object"}}}}})
+				return
+			}
 			if q.Method != "server/discover" {
 				t.Errorf("unexpected method %s", q.Method)
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "result": map[string]any{"resultType": "complete", "supportedVersions": []string{modernVersion}, "capabilities": map[string]any{}}})
+			json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "result": map[string]any{"resultType": "complete", "supportedVersions": []string{modernVersion}, "capabilities": func() map[string]any {
+				if f.inventory {
+					return map[string]any{"tools": map[string]any{}}
+				}
+				return map[string]any{}
+			}()}})
 		default:
 			http.NotFound(w, r)
 		}
@@ -149,11 +161,13 @@ func TestOAuthFilesAndRefresh(t *testing.T) {
 	if result.Status != core.Healthy || f.tokens.Load() != 1 {
 		t.Fatalf("cached token was reacquired: %+v", result)
 	}
-	os.Chmod(target.MCP.OAuth.TokenFile, 0644)
-	if _, err := readToken(target.MCP.OAuth.TokenFile); err == nil {
-		t.Fatal("insecure token permissions accepted")
+	if runtime.GOOS != "windows" {
+		os.Chmod(target.MCP.OAuth.TokenFile, 0644)
+		if _, err := readToken(target.MCP.OAuth.TokenFile); err == nil {
+			t.Fatal("insecure token permissions accepted")
+		}
+		os.Chmod(target.MCP.OAuth.TokenFile, 0600)
 	}
-	os.Chmod(target.MCP.OAuth.TokenFile, 0600)
 	link := filepath.Join(t.TempDir(), "symlink.json")
 	if err := os.Symlink(target.MCP.OAuth.TokenFile, link); err != nil {
 		t.Fatal(err)
@@ -269,8 +283,13 @@ func TestOAuthPKCELogin(t *testing.T) {
 			if strings.Contains(writer.buffer.String(), "acquired-sensitive-value") || strings.Contains(writer.buffer.String(), "rotated-sensitive-value") {
 				t.Fatal("login printed tokens")
 			}
-			info, err := os.Stat(target.MCP.OAuth.TokenFile)
-			if err != nil || info.Mode().Perm() != 0600 {
+			file, err := os.Open(target.MCP.OAuth.TokenFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+			private := privateTokenFile(file)
+			file.Close()
+			if !private {
 				t.Fatal("token storage permissions")
 			}
 			result := runTarget(t, target)
@@ -314,5 +333,18 @@ func TestOAuthReachabilityDoesNotLogin(t *testing.T) {
 	result := runTarget(t, target)
 	if result.Status != core.Healthy || f.tokens.Load() != 0 {
 		t.Fatalf("connectivity-only check attempted OAuth: %+v", result)
+	}
+}
+
+func TestSharedSessionRetainsOAuthCredential(t *testing.T) {
+	f := newOAuthFixture(t)
+	f.inventory = true
+	target := f.target("client_credentials")
+	target.MCP.RequiredTools = []string{"health"}
+	target.MCP.OAuth.ClientSecretEnv = "OAUTH_TEST_SECRET"
+	t.Setenv("OAUTH_TEST_SECRET", "client-secret-value")
+	result := runTarget(t, target)
+	if result.Status != core.Healthy || f.tokens.Load() != 1 {
+		t.Fatalf("%+v token requests=%d", result, f.tokens.Load())
 	}
 }

@@ -11,7 +11,7 @@ go build -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. HTTP/API, MCP Streamable HTTP/stdio, and A2A 0.3.0 JSON-RPC are supported. Other specification target types produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
+`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. HTTP/API, MCP Streamable HTTP/stdio, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are supported. Other specification target types produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
 
 `check <configuration.yaml>` loads strict YAML and runs the configured targets and dependencies. `doctor <type> <endpoint>` runs the same passive defaults as ping. `doctor <configuration.yaml>` performs the same checks and adds status-based troubleshooting advice to terminal output. It does not enable additional functional checks. Failed checks and dependency evidence appear in all formats. Doctor advice is general guidance rather than a claim that a particular root cause has been identified.
 
@@ -20,7 +20,7 @@ Use `--format terminal`, `--format json`, or `--format yaml` before or after pos
 `version` and `--version` print the build version (`dev` by default). Release builds can set it with:
 
 ```bash
-go build -ldflags '-X main.version=v0.3.0' -o agenthealth ./cmd/agenthealth
+go build -ldflags '-X main.version=v0.4.0' -o agenthealth ./cmd/agenthealth
 ```
 
 ## Exit behavior
@@ -37,8 +37,8 @@ The [HTTP adapter](http-adapter.md) uses HEAD for passive connectivity, authenti
 
 ## A2A checks
 
-AgentHealth v0.3.0 supports A2A 0.3.0 JSON-RPC. Point `ping` or `doctor` at
-its origin; discovery uses `/.well-known/agent-card.json`. A configured target
+AgentHealth v0.4.0 supports A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility. Point `ping` or `doctor` at
+the v1 peer’s origin; discovery uses `/.well-known/agent-card.json`. A configured target
 can supply an absolute card URL on the same origin, bearer credentials, required
 skill IDs/capabilities, latency thresholds, and an explicitly safe interaction.
 
@@ -67,3 +67,6 @@ loopback callback for up to five minutes, then saves credentials without
 printing tokens. Login uses terminal output and returns 0 on success or 6 on
 failure. Health commands remain noninteractive and use acquired or refreshed
 credentials. See [OAuth setup](mcp-adapter.md#oauth-acquisition-and-login).
+
+For legacy A2A peers, use a configuration containing
+`a2a.protocol_version: '0.3.0'`; unconfigured `ping` and `doctor` select v1.

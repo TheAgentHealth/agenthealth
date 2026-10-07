@@ -87,7 +87,17 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 		}
 	}
 	if direct {
-		request := Request{Target: t, Client: client, Environment: map[string]string{}, RunState: &sync.Map{}, RememberSecret: redactor.Remember}
+		targetCtx, targetCancel := context.WithCancel(ctx)
+		state := &sync.Map{}
+		defer func() {
+			targetCancel()
+			if closer, ok := a.(TargetCloser); ok {
+				cleanupCtx, cancel := context.WithTimeout(context.Background(), time.Second)
+				defer cancel()
+				e.closeTarget(cleanupCtx, closer, state)
+			}
+		}()
+		request := Request{TargetContext: targetCtx, Target: t, Client: client, Environment: map[string]string{}, RunState: state, RememberSecret: redactor.Remember}
 		for _, ref := range t.CredentialReferences() {
 			request.Environment[ref] = credentials[ref]
 		}
@@ -174,6 +184,24 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 	}
 	result.Status = Aggregate(result.Checks, result.Dependencies, critical)
 	return result
+}
+
+// Keep optional cleanup under the same bounded-call policy as adapter checks.
+func (e *Engine) closeTarget(ctx context.Context, closer TargetCloser, state *sync.Map) {
+	select {
+	case e.slots <- struct{}{}:
+	case <-ctx.Done():
+		return
+	}
+	done := make(chan struct{})
+	go func() {
+		defer func() { _ = recover(); <-e.slots; close(done) }()
+		closer.CloseTarget(ctx, state)
+	}()
+	select {
+	case <-done:
+	case <-ctx.Done():
+	}
 }
 
 func (e *Engine) execute(ctx context.Context, a Adapter, m Metadata, request Request, dimension string) (Observation, time.Duration) {
@@ -271,14 +299,16 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 		if !obs.Check.Status.Valid() {
 			obs.Check = CheckResult{Status: Unknown, Message: "invalid adapter result"}
 		}
+		obs.Check.Code = ""
 		// Use canonical diagnostics only: adapter text may contain unknown secrets.
 		if obs.Check.Status != Healthy {
 			obs.Check.Message = string(obs.Check.Status) + " in " + dimension
 		} else {
 			obs.Check.Message = ""
 		}
-		if response.err == nil {
+		if response.err == nil && response.observation.Check.Status.Valid() {
 			if message, ok := diagnosticMessages[obs.Code]; ok {
+				obs.Check.Code = obs.Code
 				obs.Check.Message = message
 			}
 		}
@@ -293,7 +323,7 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 
 var diagnosticMessages = map[string]string{
 	"a2a_card":       "invalid A2A agent card metadata",
-	"a2a_version":    "unsupported A2A protocol version or transport",
+	"a2a_version":    "unsupported A2A protocol version, transport or required extension",
 	"a2a_origin":     "A2A discovered endpoint must use the configured origin",
 	"a2a_auth":       "A2A authentication rejected or declared scheme is unsupported or missing credentials",
 	"a2a_http":       "A2A endpoint returned an unexpected HTTP status",

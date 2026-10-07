@@ -6,7 +6,7 @@
       "type": "a2a",
       "endpoint": "https://example.com",
       "a2a": {
-        "protocol_version": "1.0"
+        "protocol_version": "9.0"
       },
       "checks": [
         "functional"

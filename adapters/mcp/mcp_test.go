@@ -156,8 +156,11 @@ func TestDiscoveryAndFunctional(t *testing.T) {
 				f.mu.Lock()
 				methods := append([]string{}, f.methods...)
 				f.mu.Unlock()
-				calls, deletes := 0, 0
+				calls, deletes, initializes := 0, 0, 0
 				for _, m := range methods {
+					if m == "initialize" {
+						initializes++
+					}
 					if m == "tools/call" {
 						calls++
 					}
@@ -169,7 +172,7 @@ func TestDiscoveryAndFunctional(t *testing.T) {
 				if active {
 					expected = 1
 				}
-				if calls != expected || deletes < 3 {
+				if calls != expected || deletes != 1 || initializes != 1 {
 					t.Fatalf("calls=%d deletes=%d methods=%v", calls, deletes, methods)
 				}
 				var output bytes.Buffer
@@ -189,11 +192,11 @@ func TestClassification(t *testing.T) {
 		active  bool
 		status  core.Status
 	}{
-		{name: "missing-tool", options: &core.MCPOptions{RequiredTools: []string{"missing"}}, status: core.Degraded},
-		{name: "missing-resource", options: &core.MCPOptions{RequiredResources: []string{"missing"}}, status: core.Degraded},
-		{name: "missing-prompt", options: &core.MCPOptions{RequiredPrompts: []string{"missing"}}, status: core.Degraded},
-		{name: "unsupported-version", fixture: &fixture{version: "2099-01-01"}, status: core.Misconfigured},
-		{name: "pinned-version", fixture: &fixture{version: "2025-06-18"}, options: &core.MCPOptions{ProtocolVersion: "2025-11-25"}, status: core.Misconfigured},
+		{name: "missing-tool", options: &core.MCPOptions{RequiredTools: []string{"missing"}}, status: core.Unhealthy},
+		{name: "missing-resource", options: &core.MCPOptions{RequiredResources: []string{"missing"}}, status: core.Unhealthy},
+		{name: "missing-prompt", options: &core.MCPOptions{RequiredPrompts: []string{"missing"}}, status: core.Unhealthy},
+		{name: "unsupported-version", fixture: &fixture{version: "2099-01-01"}, status: core.Unhealthy},
+		{name: "pinned-version", fixture: &fixture{version: "2025-06-18"}, options: &core.MCPOptions{ProtocolVersion: "2025-11-25"}, status: core.Unhealthy},
 		{name: "bad-init", fixture: &fixture{override: func(m string) any {
 			if m == "initialize" {
 				return map[string]any{}
@@ -230,6 +233,16 @@ func TestClassification(t *testing.T) {
 			result := runTarget(t, target)
 			if result.Status != tc.status {
 				t.Fatalf("got %+v expected %s", result, tc.status)
+			}
+			if strings.HasPrefix(tc.name, "missing-") {
+				if result.Checks["capability"].Code != "mcp_required" {
+					t.Fatalf("missing required diagnostic: %+v", result)
+				}
+			}
+			if tc.name == "unsupported-version" || tc.name == "pinned-version" {
+				if result.Checks["protocol"].Code != "mcp_version" {
+					t.Fatalf("missing version diagnostic: %+v", result)
+				}
 			}
 			if tc.name == "unsafe-probe" {
 				tc.fixture.mu.Lock()
@@ -326,5 +339,23 @@ func TestSSECompletesBeforeStreamCloses(t *testing.T) {
 	result := runTarget(t, core.Target{Name: "sse", Type: "mcp", Endpoint: server.URL, Checks: []string{"protocol"}, TimeoutMS: &timeout})
 	if result.Status != core.Healthy || time.Since(started) > 400*time.Millisecond {
 		t.Fatalf("%+v", result)
+	}
+}
+
+func TestMissingFunctionalTool(t *testing.T) {
+	f := &fixture{}
+	server := f.server(t)
+	defer server.Close()
+	result := runTarget(t, core.Target{Name: "peer", Type: "mcp", Endpoint: server.URL, Checks: []string{"functional"}, MCP: &core.MCPOptions{Functional: &core.MCPInvocation{Tool: "missing", Safe: true}}})
+	check := result.Checks["functional"]
+	if result.Status != core.Unhealthy || check.Status != core.Unhealthy || check.Code != "mcp_required" {
+		t.Fatalf("%+v", result)
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	for _, method := range f.methods {
+		if method == "tools/call" {
+			t.Fatal("missing tool invoked")
+		}
 	}
 }

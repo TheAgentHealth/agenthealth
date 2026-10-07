@@ -48,10 +48,44 @@ type session struct {
 	initialized  bool
 	stdio        *stdioTransport
 	toolHeaders  map[string]string
+	responseHook atomic.Value
+	ready        bool
+	initErr      error
+	inventories  map[string]map[string]json.RawMessage
 }
 
 func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
 	s := &session{r: r, version: "2025-11-25"}
+	shared := r.TargetContext != nil && r.RunState != nil && dimension != "configuration"
+	if shared {
+		h := sessionState(r.RunState)
+		if !h.acquire(ctx) {
+			return core.Observation{}, ctx.Err()
+		}
+		defer h.release()
+		if h.session == nil {
+			h.session = s
+		} else {
+			s = h.session
+			token := s.r.Credential
+			s.r = r
+			if r.Target.MCP != nil && r.Target.MCP.OAuth != nil {
+				s.r.Credential = token
+			}
+		}
+		defer func() {
+			if ctx.Err() != nil || r.TargetContext.Err() != nil || (!s.ready && !s.received.Load()) {
+				cleanupSession(s)
+				h.session = nil
+			}
+		}()
+	}
+	hook := r.MarkResponse
+	if hook == nil {
+		hook = func() {}
+	}
+	s.responseHook.Store(hook)
+	s.received.Store(false)
 	observation := func(err error) (core.Observation, error) {
 		o := core.Observation{Check: core.CheckResult{Status: core.Healthy}, ResponseReceived: s.received.Load()}
 		var f *probeFailure
@@ -90,16 +124,22 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		}
 		return observation(nil)
 	}
-	if o := r.Target.MCP; o != nil && o.Transport == "stdio" {
+	if o := r.Target.MCP; o != nil && o.Transport == "stdio" && s.stdio == nil {
 		stdioRequest := r
 		stdioRequest.MarkResponse = s.mark
-		transport, err := startStdio(ctx, stdioRequest)
+		processCtx := ctx
+		if shared {
+			processCtx = r.TargetContext
+		}
+		transport, err := startStdio(processCtx, stdioRequest)
 		if err != nil {
 			return observation(err)
 		}
 		s.stdio = transport
 	}
-	defer s.close(ctx)
+	if !shared {
+		defer s.close(ctx)
+	}
 	if dimension == "reachability" && s.stdio == nil {
 		req, err := s.request(ctx, http.MethodHead, nil)
 		if err != nil {
@@ -137,30 +177,46 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		done("http", nil)
 		return observation(nil)
 	}
-	err := s.initialize(ctx)
-	if err != nil {
-		return observation(err)
+	if s.initErr != nil {
+		s.mark()
+		return observation(s.initErr)
+	}
+	if !s.ready {
+		err := s.initialize(ctx)
+		if err != nil {
+			if s.received.Load() && ctx.Err() == nil {
+				s.initErr = err
+			}
+			return observation(err)
+		}
+		s.ready = true
+	} else {
+		s.mark()
 	}
 	switch dimension {
 	case "reachability", "authentication", "protocol":
 		return observation(nil)
 	case "capability", "functional":
-		inventories := map[string]map[string]json.RawMessage{}
-		for _, kind := range []string{"tools", "resources", "prompts"} {
-			if _, exists := s.capabilities[kind]; !exists {
-				continue
+		inventories := s.inventories
+		if inventories == nil {
+			inventories = map[string]map[string]json.RawMessage{}
+			for _, kind := range []string{"tools", "resources", "prompts"} {
+				if _, exists := s.capabilities[kind]; !exists {
+					continue
+				}
+				items, e := s.list(ctx, kind)
+				if e != nil {
+					return observation(e)
+				}
+				inventories[kind] = items
 			}
-			items, e := s.list(ctx, kind)
-			if e != nil {
-				return observation(e)
-			}
-			inventories[kind] = items
+			s.inventories = inventories
 		}
 		if options := r.Target.MCP; options != nil {
 			for kind, required := range map[string][]string{"tools": options.RequiredTools, "resources": options.RequiredResources, "prompts": options.RequiredPrompts} {
 				for _, name := range required {
 					if _, ok := inventories[kind][name]; !ok {
-						return observation(fail(core.Degraded, "mcp_required"))
+						return observation(fail(core.Unhealthy, "mcp_required"))
 					}
 				}
 			}
@@ -172,7 +228,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			f := r.Target.MCP.Functional
 			tool, ok := inventories["tools"][f.Tool]
 			if !ok {
-				return observation(fail(core.Degraded, "mcp_required"))
+				return observation(fail(core.Unhealthy, "mcp_required"))
 			}
 			var definition struct {
 				Annotations struct {
@@ -245,7 +301,9 @@ func sessionValue(v string) bool {
 }
 func (s *session) mark() {
 	s.received.Store(true)
-	if s.r.MarkResponse != nil {
+	if hook := s.responseHook.Load(); hook != nil {
+		hook.(func())()
+	} else if s.r.MarkResponse != nil {
 		s.r.MarkResponse()
 	}
 }
@@ -303,13 +361,9 @@ func (s *session) initialize(ctx context.Context) error {
 	if pin == "" || pin == modernVersion {
 		s.modern = true
 		s.version = modernVersion
-		probeCtx := ctx
-		cancel := func() {}
-		if s.stdio != nil && pin == "" {
-			probeCtx, cancel = context.WithTimeout(ctx, 500*time.Millisecond)
-		}
-		err := s.discover(probeCtx)
-		cancel()
+		// Startup time is part of the configured attempt budget. A short
+		// speculative timeout can mistake a cold modern process for legacy.
+		err := s.discover(ctx)
 		if err == nil {
 			return nil
 		}
@@ -341,7 +395,7 @@ func (s *session) initializeLegacy(ctx context.Context) error {
 		return protocolError()
 	}
 	if init.Version == modernVersion || !core.SupportedMCPVersion(init.Version) || (s.r.Target.MCP != nil && s.r.Target.MCP.ProtocolVersion != "" && init.Version != s.version) {
-		return fail(core.Misconfigured, "mcp_version")
+		return fail(core.Unhealthy, "mcp_version")
 	}
 	for _, value := range init.Capabilities {
 		var obj map[string]json.RawMessage

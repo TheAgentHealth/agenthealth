@@ -502,7 +502,7 @@ gateway
 custom
 ```
 
-Currently implemented target types are `http`, `api`, `mcp`, and `a2a` (A2A 0.3.0 JSON-RPC). The remaining types are specification vocabulary for future adapters.
+Currently implemented target types are `http`, `api`, `mcp`, and `a2a` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility). The remaining types are specification vocabulary for future adapters.
 
 See [ROADMAP.md](ROADMAP.md).
 
@@ -555,7 +555,7 @@ protocol, transport, and platform limits.
 
 # A2A Health
 
-The [A2A adapter](docs/a2a-adapter.md) validates A2A 0.3.0 JSON-RPC peers:
+The [A2A adapter](docs/a2a-adapter.md) validates A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility peers:
 agent card discovery and metadata, passive protocol/authentication checks,
 expected skills and capabilities, latency, and explicit safe interaction probes.
 

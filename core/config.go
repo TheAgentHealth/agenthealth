@@ -237,7 +237,7 @@ func validateTarget(t Target, path string, depth int) error {
 	}
 	if t.A2A != nil {
 		o := t.A2A
-		if t.Type != "a2a" || (o.ProtocolVersion != "" && o.ProtocolVersion != "0.3.0") {
+		if t.Type != "a2a" || (o.ProtocolVersion != "" && o.ProtocolVersion != "0.3.0" && o.ProtocolVersion != "1.0") {
 			return fmt.Errorf("%s: A2A options require a2a target and supported protocol version", path)
 		}
 		for _, names := range [][]string{o.RequiredSkills, o.RequiredCapabilities} {
@@ -250,7 +250,7 @@ func validateTarget(t Target, path string, depth int) error {
 			}
 		}
 		for _, name := range o.RequiredCapabilities {
-			if !contains([]string{"streaming", "pushNotifications", "stateTransitionHistory"}, name) {
+			if !contains([]string{"streaming", "pushNotifications", "stateTransitionHistory", "extendedAgentCard"}, name) {
 				return fmt.Errorf("%s: unsupported A2A capability expectation", path)
 			}
 		}

@@ -367,7 +367,7 @@ func readToken(path string) (oauthToken, error) {
 	if err != nil {
 		return token, err
 	}
-	if !info.Mode().IsRegular() || runtime.GOOS != "windows" && info.Mode().Perm()&0077 != 0 || info.Size() > 65536 {
+	if !info.Mode().IsRegular() || info.Size() > 65536 {
 		return token, oauthError()
 	}
 	file, err := os.Open(path)
@@ -375,6 +375,9 @@ func readToken(path string) (oauthToken, error) {
 		return token, err
 	}
 	defer file.Close()
+	if !privateTokenFile(file) {
+		return token, oauthError()
+	}
 	data, err := io.ReadAll(io.LimitReader(file, 65537))
 	if err != nil || len(data) > 65536 || json.Unmarshal(data, &token) != nil {
 		return token, oauthError()
@@ -401,7 +404,7 @@ func writeToken(path string, token oauthToken) error {
 	}
 	defer os.Remove(file.Name())
 	defer file.Close()
-	if err := file.Chmod(0600); err != nil {
+	if err := protectTokenFile(file); err != nil {
 		return err
 	}
 	if err := json.NewEncoder(file).Encode(token); err != nil {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -246,7 +247,12 @@ func TestLatencyThresholdAndCancellation(t *testing.T) {
 	threshold := 0.0
 	target := targetForTest("latency")
 	target.Thresholds = &Thresholds{LatencyMS: &threshold}
-	r := runTest(t, &testAdapter{}, target)
+	r := runTest(t, &testAdapter{fn: func(_ context.Context, _ Request, dimension string) (Observation, error) {
+		if dimension == "reachability" {
+			time.Sleep(10 * time.Millisecond)
+		}
+		return Observation{Check: CheckResult{Status: Healthy}}, nil
+	}}, target)
 	if r.Status != Degraded || r.LatencyMS == nil {
 		t.Fatal(r)
 	}
@@ -326,5 +332,93 @@ func TestLatencyExcludesAdapterQueue(t *testing.T) {
 	}
 	for i := 0; i < cap(engine.slots)-1; i++ {
 		<-engine.slots
+	}
+}
+
+func TestDiagnosticCodesAreCanonical(t *testing.T) {
+	for _, code := range []string{"mcp_required", "unknown_secret", ""} {
+		t.Run(code, func(t *testing.T) {
+			a := &testAdapter{fn: func(_ context.Context, _ Request, d string) (Observation, error) {
+				if d == "reachability" {
+					return Observation{Check: CheckResult{Status: Unhealthy, Code: "embedded_secret", Message: "private message"}, Code: code}, nil
+				}
+				return Observation{Check: CheckResult{Status: Healthy}}, nil
+			}}
+			r := runTest(t, a, targetForTest("reachability"))
+			want := ""
+			if code == "mcp_required" {
+				want = code
+			}
+			if r.Checks["reachability"].Code != want {
+				t.Fatalf("unexpected code: %+v", r)
+			}
+			for _, write := range []func(io.Writer, []Result) error{WriteJSON, WriteYAML} {
+				var b bytes.Buffer
+				if err := write(&b, []Result{r}); err != nil {
+					t.Fatal(err)
+				}
+				if strings.Contains(b.String(), "secret") || strings.Contains(b.String(), "private message") {
+					t.Fatal("adapter data leaked", b.String())
+				}
+				if want != "" && !strings.Contains(b.String(), want) {
+					t.Fatal("code missing", b.String())
+				}
+			}
+		})
+	}
+}
+
+func TestDiagnosticCodeValidation(t *testing.T) {
+	for _, code := range []string{"", "future_adapter_code", "bad code", "UPPER", "mcp_required\n", "mcp_required\r", "mcp_required\u2028", "mcp_required\u2029", strings.Repeat("a", 65)} {
+		r := Result{Target: TargetIdentity{Name: "peer", Type: "mcp"}, Status: Unhealthy, Checks: map[string]CheckResult{"capability": {Status: Unhealthy, Code: code}}, Dependencies: []Result{}}
+		err := ValidateResult(r)
+		valid := code == "" || code == "future_adapter_code"
+		if (err == nil) != valid {
+			t.Fatalf("code %q: %v", code, err)
+		}
+	}
+}
+
+type lifecycleAdapter struct {
+	*testAdapter
+	close func(context.Context, *sync.Map)
+}
+
+func (a lifecycleAdapter) CloseTarget(ctx context.Context, state *sync.Map) { a.close(ctx, state) }
+func TestTargetCleanupIsolationAndPanic(t *testing.T) {
+	var states []*sync.Map
+	adapter := lifecycleAdapter{testAdapter: &testAdapter{fn: func(_ context.Context, r Request, _ string) (Observation, error) {
+		if r.TargetContext == nil {
+			t.Error("missing target resource context")
+		}
+		r.RunState.Store("context", r.TargetContext)
+		return Observation{Check: CheckResult{Status: Healthy}}, nil
+	}}, close: func(_ context.Context, state *sync.Map) {
+		states = append(states, state)
+		value, _ := state.Load("context")
+		if value.(context.Context).Err() == nil {
+			t.Error("resource context not canceled before cleanup")
+		}
+		panic("private cleanup details")
+	}}
+	reg := NewRegistry()
+	reg.Register(adapter)
+	config := Config{Version: "v1", Targets: []Target{targetForTest("protocol"), targetForTest("protocol")}}
+	config.Targets[1].Name = "other"
+	results, err := NewEngine(reg).Run(context.Background(), config)
+	if err != nil || len(states) != 2 || states[0] == states[1] || results[0].Status != Healthy || results[1].Status != Healthy {
+		t.Fatalf("%+v %v", results, err)
+	}
+}
+func TestUncooperativeTargetCleanupIsBounded(t *testing.T) {
+	release := make(chan struct{})
+	adapter := lifecycleAdapter{testAdapter: &testAdapter{}, close: func(context.Context, *sync.Map) { <-release }}
+	reg := NewRegistry()
+	reg.Register(adapter)
+	start := time.Now()
+	_, err := NewEngine(reg).Run(context.Background(), Config{Version: "v1", Targets: []Target{targetForTest("protocol")}})
+	close(release)
+	if err != nil || time.Since(start) > 2*time.Second {
+		t.Fatal("cleanup did not respect deadline", err)
 	}
 }

@@ -25,6 +25,7 @@
       "properties": {
         "status": { "$ref": "#/$defs/HealthState" },
         "message": { "type": "string" },
+        "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$", "not": { "pattern": "[^a-z0-9_]" } },
         "steps": {
           "type": "object",
           "properties": {

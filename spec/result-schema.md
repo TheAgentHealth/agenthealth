@@ -85,6 +85,7 @@ A JSON Schema enforcing this recursive shape is available at [spec/schemas/resul
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `status` | string | yes | One of the [health states](health-model.md#health-states) for this specific dimension |
+| `code` | string | no | Stable diagnostic identifier matching `^[a-z][a-z0-9_]{0,63}$`; consumers MUST tolerate unknown codes and absent codes. |
 | `message` | string | no | Human-readable detail (e.g. `"connection refused"`, `"latency 1842ms exceeds threshold 1000ms"`). MUST NOT contain secrets. |
 
 ### Top-level document
@@ -157,3 +158,42 @@ A JSON Schema for the batch envelope is available at [spec/schemas/result.schema
 ## Transport diagnostics
 
 Check entries may include an optional `steps` map with `dns`, `tcp`, `tls`, and `http` keys and health-state values. The HTTP adapter reports observed transport stages under reachability. Missing stages mean they were not observed (for example, IP literals omit DNS and reused connections may omit TCP/TLS). In-progress stages at timeout are `UNKNOWN`; a failed stage is `UNREACHABLE`. These diagnostics do not independently contribute to aggregation.
+
+## Diagnostic codes
+
+Codes are independent of human message wording and do not replace status or exit
+codes. The reference engine emits only allowlisted codes; arbitrary adapter code
+and message text are suppressed. Checks without a canonical diagnostic omit code.
+Other implementations may use additional identifiers conforming to the pattern.
+
+| Code | Meaning |
+|---|---|
+| `a2a_card` | invalid A2A agent card metadata |
+| `a2a_version` | unsupported A2A protocol version, transport or required extension |
+| `a2a_origin` | A2A discovered endpoint must use the configured origin |
+| `a2a_auth` | A2A authentication rejected or declared scheme is unsupported or missing credentials |
+| `a2a_http` | A2A endpoint returned an unexpected HTTP status |
+| `a2a_limit` | A2A response exceeded the safety size limit |
+| `a2a_protocol` | invalid A2A JSON-RPC response |
+| `a2a_rpc` | A2A server rejected the protocol request |
+| `a2a_required` | required A2A skill or capability is missing |
+| `a2a_functional` | A2A interaction failed |
+| `a2a_pending` | A2A interaction requires continuation or has not completed |
+| `mcp_process` | MCP subprocess could not start or exited before responding |
+| `mcp_oauth` | MCP OAuth configuration, discovery or token acquisition failed |
+| `mcp_login` | MCP OAuth login is required; use agenthealth login |
+| `mcp_input` | MCP response requires unsupported input or continuation |
+| `mcp_auth` | MCP authentication rejected (401 or 403) |
+| `mcp_http` | MCP endpoint returned an unexpected HTTP status |
+| `mcp_protocol` | invalid MCP initialization or JSON-RPC response |
+| `mcp_version` | MCP protocol version is unsupported or differs from the pinned version |
+| `mcp_limit` | MCP response or discovery exceeded safety limits |
+| `mcp_rpc` | MCP server rejected the protocol request |
+| `mcp_required` | required MCP tool, resource or prompt is missing |
+| `mcp_unsafe` | functional tool lacks explicit read-only and non-destructive annotations |
+| `mcp_functional` | MCP functional invocation failed |
+| `http_status` | HTTP status did not match expected status |
+| `http_headers` | required HTTP response header did not match |
+| `http_body` | HTTP response body did not contain required text |
+| `http_body_limit` | HTTP response body exceeded the configured size limit |
+| `http_auth` | HTTP authentication rejected (401 or 403) |

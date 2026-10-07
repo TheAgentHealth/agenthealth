@@ -9,7 +9,8 @@
         "functional": {
           "safe": true,
           "text": "Reply with OK without performing any external actions."
-        }
+        },
+        "protocol_version": "0.3.0"
       },
       "checks": [
         "functional"

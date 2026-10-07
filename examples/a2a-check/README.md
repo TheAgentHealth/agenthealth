@@ -63,3 +63,6 @@ are `UNHEALTHY` (exit 2); pending tasks and input requirements are `UNKNOWN`
 and does not expose the reply body. A successful interaction validates completion,
 not answer semantics. See the [adapter guide](../../docs/a2a-adapter.md) for the
 full supported scope, limits, and classifications.
+
+For a current v1 peer, use [the v1 configuration](v1.yaml). Legacy examples
+explicitly select 0.3.0. Unconfigured ping/doctor now select v1.

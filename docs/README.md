@@ -12,7 +12,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 3: CLI | [Commands, formats, doctor, OAuth login, and exit codes](cli.md), [installation](installation.md) | [Run the CLI](../README.md#run-the-cli), [example commands](../examples/README.md) |
 | 4: HTTP/API | [Status, headers, bearer authentication, body checks, transport diagnostics, and safety](http-adapter.md), [HTTP configuration](../spec/configuration.md#http-response-expectations-phase-4-draft) | [HTTP readiness](../examples/core-check/agenthealth.yaml), complete configuration examples in the specification |
 | 5: MCP | [HTTP/stdio, protocol selection, inventories, OAuth, functional probes, and limits](mcp-adapter.md), [login](cli.md#mcp-oauth-login) | [Discovery, stateless, stdio, functional, and all OAuth flows](../examples/README.md) |
-| 6: A2A | [A2A 0.3.0 JSON-RPC discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A peer configuration](../examples/a2a-check/agenthealth.yaml) |
+| 6: A2A | [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A peer configuration](../examples/a2a-check/agenthealth.yaml) |
 
 The next planned phases are:
 
@@ -29,7 +29,11 @@ The documentation validator checks marked configuration/result blocks and
 all standalone example YAML files against the schemas. It does not establish
 connectivity to the placeholder servers or prove every command example works.
 
-HTTP/API, MCP, and A2A 0.3.0 JSON-RPC are the available adapters. Other adapter types,
+HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
 SDKs, container images, and Kubernetes integrations remain planned. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.
+
+Foundation stabilization in v0.4.0 adds current A2A, shared probes and release
+hardening. See [interoperability](interoperability.md) and
+[v0.4.0 migration notes](releases/v0.4.0.md).

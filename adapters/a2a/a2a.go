@@ -1,4 +1,4 @@
-// Package a2a implements bounded A2A 0.3.0 JSON-RPC health validation.
+// Package a2a implements bounded A2A 1.0 and 0.3.0 JSON-RPC health validation.
 package a2a
 
 import (
@@ -35,7 +35,12 @@ type skill struct {
 	Description *string  `json:"description"`
 	Tags        []string `json:"tags"`
 }
+type securityScheme struct {
+	Type   string `json:"type"`
+	Scheme string `json:"scheme"`
+}
 type card struct {
+	Tenant             string                     `json:"-"`
 	ProtocolVersion    string                     `json:"protocolVersion"`
 	Name               string                     `json:"name"`
 	Description        *string                    `json:"description"`
@@ -47,10 +52,7 @@ type card struct {
 	InputModes         []string                   `json:"defaultInputModes"`
 	OutputModes        []string                   `json:"defaultOutputModes"`
 	Security           []map[string][]string      `json:"security"`
-	SecuritySchemes    map[string]struct {
-		Type   string `json:"type"`
-		Scheme string `json:"scheme"`
-	} `json:"securitySchemes"`
+	SecuritySchemes    map[string]securityScheme  `json:"securitySchemes"`
 }
 
 func observed(status core.Status, code string) core.Observation {
@@ -101,6 +103,9 @@ func fetch(ctx context.Context, r core.Request, method, endpoint string, body []
 		return fetched{}, core.Observation{}, &core.Failure{Status: core.Misconfigured}
 	}
 	req.Header.Set("Accept", "application/json")
+	if method == http.MethodPost && protocolVersion(r.Target) == "1.0" {
+		req.Header.Set("A2A-Version", "1.0")
+	}
 	if method == http.MethodPost {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -176,11 +181,20 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		return observed(core.Unhealthy, "a2a_http"), nil
 	}
 	var c card
-	if json.Unmarshal(f.body, &c) != nil || strings.TrimSpace(c.Name) == "" || strings.TrimSpace(c.Version) == "" || c.Description == nil || c.Capabilities == nil || c.Skills == nil || len(c.InputModes) == 0 || len(c.OutputModes) == 0 {
+	if protocolVersion(r.Target) == "1.0" {
+		var obs core.Observation
+		c, obs = v1Card(f.body)
+		if obs.Check.Status != core.Healthy {
+			return obs, nil
+		}
+	} else if json.Unmarshal(f.body, &c) != nil {
 		return observed(core.Unhealthy, "a2a_card"), nil
 	}
-	if c.ProtocolVersion != "0.3.0" || c.PreferredTransport != "" && c.PreferredTransport != "JSONRPC" {
-		return observed(core.Misconfigured, "a2a_version"), nil
+	if strings.TrimSpace(c.Name) == "" || strings.TrimSpace(c.Version) == "" || c.Description == nil || c.Capabilities == nil || c.Skills == nil || len(c.InputModes) == 0 || len(c.OutputModes) == 0 {
+		return observed(core.Unhealthy, "a2a_card"), nil
+	}
+	if c.ProtocolVersion != protocolVersion(r.Target) || c.PreferredTransport != "" && c.PreferredTransport != "JSONRPC" {
+		return observed(core.Unhealthy, "a2a_version"), nil
 	}
 	rpc, valid := validURL(c.URL)
 	base, _ := validURL(r.Target.Endpoint)
@@ -197,7 +211,7 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		}
 		seen[s.ID] = true
 	}
-	for _, name := range []string{"streaming", "pushNotifications", "stateTransitionHistory"} {
+	for _, name := range []string{"streaming", "pushNotifications", "stateTransitionHistory", "extendedAgentCard"} {
 		if raw, exists := c.Capabilities[name]; exists {
 			var b bool
 			if string(raw) == "null" || json.Unmarshal(raw, &b) != nil {
@@ -229,7 +243,7 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 				return observed(core.Unhealthy, "a2a_card"), nil
 			}
 			if extension.Required {
-				return observed(core.Misconfigured, "a2a_version"), nil
+				return observed(core.Unhealthy, "a2a_version"), nil
 			}
 		}
 	}
@@ -252,17 +266,22 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		if o := r.Target.A2A; o != nil {
 			for _, name := range o.RequiredSkills {
 				if !seen[name] {
-					return observed(core.Degraded, "a2a_required"), nil
+					return observed(core.Unhealthy, "a2a_required"), nil
 				}
 			}
 			for _, name := range o.RequiredCapabilities {
 				var enabled bool
 				if json.Unmarshal(c.Capabilities[name], &enabled) != nil || !enabled {
-					return observed(core.Degraded, "a2a_required"), nil
+					return observed(core.Unhealthy, "a2a_required"), nil
 				}
 			}
 		}
 		return observed(core.Healthy, ""), nil
+	}
+	if dimension != "functional" {
+		if cached, ok := r.RunState.Load("a2a-passive"); ok {
+			return cached.(core.Observation), nil
+		}
 	}
 	interactionID, err := a.identifier()
 	if err != nil {
@@ -279,6 +298,17 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		}
 		method = "message/send"
 		params = map[string]any{"message": map[string]any{"kind": "message", "role": "user", "messageId": interactionID, "parts": []any{map[string]string{"kind": "text", "text": r.Target.A2A.Functional.Text}}}, "configuration": map[string]any{"blocking": true, "acceptedOutputModes": []string{"text/plain"}, "historyLength": 0}}
+	}
+	if protocolVersion(r.Target) == "1.0" {
+		if dimension == "functional" {
+			method = "SendMessage"
+			params = map[string]any{"message": map[string]any{"role": "ROLE_USER", "messageId": interactionID, "parts": []any{map[string]string{"text": r.Target.A2A.Functional.Text}}}, "configuration": map[string]any{"returnImmediately": false, "acceptedOutputModes": []string{"text/plain"}, "historyLength": 0}}
+		} else {
+			method = "GetTask"
+		}
+		if c.Tenant != "" {
+			params["tenant"] = c.Tenant
+		}
 	}
 	id, err := a.identifier()
 	if err != nil {
@@ -312,12 +342,17 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		if json.Unmarshal(response.Error, &e) != nil || e.Code == nil || e.Message == nil {
 			return observed(core.Unhealthy, "a2a_protocol"), nil
 		}
-		if method == "tasks/get" && *e.Code == -32001 {
-			return observed(core.Healthy, ""), nil
+		if (method == "tasks/get" || method == "GetTask") && *e.Code == -32001 {
+			obs := observed(core.Healthy, "")
+			r.RunState.Store("a2a-passive", obs)
+			return obs, nil
+		}
+		if *e.Code == -32009 {
+			return observed(core.Unhealthy, "a2a_version"), nil
 		}
 		return observed(core.Unhealthy, "a2a_rpc"), nil
 	}
-	if method == "tasks/get" {
+	if method == "tasks/get" || method == "GetTask" {
 		var task struct {
 			ID string `json:"id"`
 		}
@@ -325,7 +360,14 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 			return observed(core.Unhealthy, "a2a_protocol"), nil
 		}
 	}
-	return validateResult(response.Result, dimension), nil
+	obs = validateResult(response.Result, dimension)
+	if protocolVersion(r.Target) == "1.0" {
+		obs = validateV1Result(response.Result, dimension)
+	}
+	if dimension != "functional" {
+		r.RunState.Store("a2a-passive", obs)
+	}
+	return obs, nil
 }
 func (a Adapter) identifier() (string, error) {
 	source := a.random

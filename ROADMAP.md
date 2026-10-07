@@ -8,6 +8,35 @@ The roadmap is intentionally capability-driven rather than tied to fixed calenda
 
 See the [documentation guide](docs/README.md) for phase 0–6 references and examples.
 
+## Foundation stabilization before Phase 7
+
+**Target release:** v0.4.0. Implemented on the foundation branch; release follows
+review and green CI. The full capability roadmap remains the objective.
+
+- [x] AHS required-capability and server-version classification alignment
+- [x] Optional stable diagnostic codes in machine output and matching schema
+- [x] Default A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility mode
+- [x] Shared per-target MCP sessions/inventories and A2A passive evidence
+- [x] Official current/legacy SDK interoperability suite and nightly matrix
+- [x] Vulnerability scanning, SHA-pinned Actions, deterministic archives,
+      per-platform CycloneDX SBOMs and signed provenance/SBOM attestations
+
+See the [contract RFC](docs/rfcs/foundation-health-contract.md),
+[RFC issue](https://github.com/TheAgentHealth/agenthealth/issues/8),
+[SDK interoperability matrix](docs/interoperability.md) and
+[release notes](docs/releases/v0.4.0.md) for scope, impact and migration.
+
+Earlier phases: AHS, schemas, core lifecycle/output, CLI defaults, MCP/A2A and
+binary packaging receive foundation extensions; their historical baselines stay
+complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
+status/code and shared per-target evidence; no topology or agent-role fields are
+introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
+
+After this milestone, implement Phase 7. Gateway/router, graph and AHP follow;
+full distribution, SDK/ecosystem and observability/conformance remain later
+milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
+No additional adapter is declared implemented by this foundation milestone.
+
 ---
 
 # Guiding Strategy

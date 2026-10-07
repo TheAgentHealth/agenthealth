@@ -21,7 +21,7 @@ type rpcFailure struct {
 func (e *rpcFailure) Error() string { return "MCP RPC rejected" }
 func (e *rpcFailure) Unwrap() error {
 	if e.code == -32022 {
-		return fail("MISCONFIGURED", "mcp_version")
+		return fail("UNHEALTHY", "mcp_version")
 	}
 	return fail("UNHEALTHY", "mcp_rpc")
 }
@@ -35,15 +35,18 @@ func (e *httpFailure) Error() string { return "MCP HTTP rejected" }
 func (e *httpFailure) Unwrap() error { return e.cause }
 func parseRPCError(raw json.RawMessage) error {
 	var e struct {
-		Code int `json:"code"`
-		Data struct {
-			Supported []string `json:"supported"`
-		} `json:"data"`
+		Code *int            `json:"code"`
+		Data json.RawMessage `json:"data"`
 	}
-	if json.Unmarshal(raw, &e) != nil {
+	if json.Unmarshal(raw, &e) != nil || e.Code == nil {
 		return protocolError()
 	}
-	return &rpcFailure{code: e.Code, supported: e.Data.Supported}
+	// JSON-RPC error.data is arbitrary JSON, including strings from legacy SDKs.
+	var data struct {
+		Supported []string `json:"supported"`
+	}
+	_ = json.Unmarshal(e.Data, &data)
+	return &rpcFailure{code: *e.Code, supported: data.Supported}
 }
 func httpRPCError(data []byte, status int) error {
 	cause := fail("UNHEALTHY", "mcp_http")
@@ -61,9 +64,6 @@ func (s *session) legacyFallback(err error) bool {
 		return false
 	}
 	if s.stdio != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			return true
-		}
 		return errors.As(err, &rpc)
 	}
 	var h *httpFailure
@@ -95,7 +95,7 @@ func (s *session) discover(ctx context.Context) error {
 		}
 	}
 	if !found {
-		return fail("MISCONFIGURED", "mcp_version")
+		return fail("UNHEALTHY", "mcp_version")
 	}
 	for _, raw := range d.Capabilities {
 		var obj map[string]json.RawMessage

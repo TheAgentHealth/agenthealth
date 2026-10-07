@@ -28,20 +28,22 @@ complete; input-required results are inconclusive and never cause additional
 functional calls.
 
 A legacy HTTP rejection without a recognized modern error triggers
-initialization-based negotiation. On stdio, an unrecognized RPC error or an
-unanswered 500 ms discovery probe triggers legacy initialization. Recognized
+initialization-based negotiation. On stdio, an unrecognized RPC error triggers
+legacy initialization. Discovery uses the configured attempt deadline, including
+cold process startup; a timeout never triggers downgrade. Pin a legacy revision
+for servers that silently ignore unknown methods. Recognized
 modern version/header errors never silently downgrade. Legacy negotiation
 offers `2025-11-25` and accepts any supported legacy revision. Set
 `mcp.protocol_version` to pin a revision and disable cross-era fallback.
-A version mismatch is `MISCONFIGURED`.
+A server version mismatch is `UNHEALTHY`; invalid local version pins are `MISCONFIGURED` before probing.
 
 Modern checks do not send `initialize`, `notifications/initialized`, session
-IDs, or DELETE. Legacy checks initialize independent sessions, validate server
+IDs, or DELETE. Legacy checks initialize one session per target run, validate server
 identity and capabilities, send the initialized notification, and forward any
 server-assigned session ID and negotiated version. Each HTTP session receives
-best-effort DELETE cleanup within a maximum 250 ms budget and the check
-deadline; cleanup errors do not change observations. Canceled sessions expire
-on the server. Sessions are not recreated within a check.
+best-effort DELETE cleanup within a maximum 250 ms budget under the engine’s
+bounded target cleanup context; cleanup errors do not change observations.
+Canceled attempts discard their session/process before subsequent work.
 
 These behaviors follow the upstream [versioning contract](https://modelcontextprotocol.io/specification/2026-07-28/basic/lifecycle),
 [modern HTTP transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http),
@@ -62,11 +64,11 @@ additionally lists every advertised tools, resources, and prompts inventory.
 Unadvertised inventories are skipped. Lists follow pagination, validate
 identity fields and tools' object input schemas, and reject repeated cursors
 and duplicate identities. Passive checks do not read resources, retrieve
-prompts, or invoke tools. Each check owns its session/process; targets and
-dependencies do not share credentials or capabilities.
+prompts, or invoke tools. Each target run owns one session/process and shares initialization and inventory
+evidence across dimensions; targets and dependencies never share that state.
 
 Required tool and prompt names match exactly; resources match by URI. Missing
-requirements, including an unadvertised inventory, yield `DEGRADED`.
+requirements, including an unadvertised inventory, yield `UNHEALTHY`.
 Requirements need `capability` when `checks` is explicitly specified.
 Doctor displays dimension-level evidence and canonical messages, without
 printing inventories or raw server responses.
@@ -249,7 +251,12 @@ targets:
 
 `arguments_json` is an optional JSON object encoded as a YAML string, defaulting
 to `{}`. The Go loader parses it and enforces a 64 KiB byte limit in addition to
-schema validation. Missing tools are `DEGRADED`, unsafe annotations are
+schema validation. Missing tools are `UNHEALTHY`, unsafe annotations are
 `MISCONFIGURED`, and `isError: true` is `UNHEALTHY`. A complete valid success is
 `HEALTHY`; the adapter does not assess content quality. Discovery and the one
 functional invocation share the same check-owned transport.
+
+Token files use owner-only POSIX permissions or, on Windows, a protected
+owner-only DACL applied before secret data is written. Reads validate the opened
+file’s permissions/owner; public or inherited Windows ACLs are rejected. Re-run
+login to recreate a Windows token file made by an older release.

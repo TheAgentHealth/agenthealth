@@ -231,7 +231,8 @@ nonblank `command`, optional string `args`, optional `directory`, and optional
 arguments, and directories cannot contain NUL bytes. Stdio options require
 stdio transport, and stdio targets cannot use `auth` or `mcp.oauth`.
 The adapter requires a `stdio://<identity>` endpoint and invokes the command
-without a shell. Each check owns and cleans up its process.
+without a shell. Each target run owns one process shared across dimensions and cleans it up
+after checking; canceled attempts discard the process.
 
 HTTP OAuth targets use `mcp.oauth` instead of `auth`. Required fields are
 nonblank `issuer`, `client_id`, and `grant` (`client_credentials`,
@@ -259,10 +260,12 @@ No new health dimensions or result fields are introduced.
 ## A2A expectations (Phase 6 draft)
 
 Targets of type `a2a` may include `a2a` options. `protocol_version` accepts
-`0.3.0` or the empty default. `card_url` overrides well-known card discovery;
+`1.0` (the empty default) or explicit `0.3.0`. v0.4.0 changes the
+reference adapter default; legacy peers must pin `0.3.0`. `card_url` overrides well-known card discovery;
 the adapter validates that it is an absolute HTTP(S) URL on the target origin.
 `required_skills` lists nonempty unique skill IDs. `required_capabilities` lists
-unique names from `streaming`, `pushNotifications`, and `stateTransitionHistory`.
+unique names from `streaming`, `pushNotifications`, `extendedAgentCard` (v1),
+and `stateTransitionHistory` (legacy).
 Expectations require the capability dimension when `checks` is explicit.
 
 `a2a.functional` requires explicit `functional` in `checks`, `safe: true`, and
