@@ -19,6 +19,22 @@ AgentHealth defines a common health vocabulary:
 
 Adapters may expose additional diagnostic detail, but MUST map their overall result onto one of these six states.
 
+## Severity Order
+
+Health states have a canonical severity order, from least to most severe:
+
+```text
+HEALTHY < DEGRADED < UNHEALTHY < UNREACHABLE < MISCONFIGURED < UNKNOWN
+```
+
+This order is used to:
+
+- resolve a target's own overall status across multiple dimension results (take the most severe),
+- resolve dependency contributions during [Status Aggregation](#status-aggregation),
+- select a single CLI exit code across multiple targets in a batch run (see [exit-codes.md](exit-codes.md)).
+
+`UNKNOWN` is deliberately treated as the most severe state: an indeterminate result MUST NOT be treated as better than a confirmed failure, since automation cannot safely assume health it cannot verify.
+
 ## Health Dimensions
 
 Each dimension answers a narrower question about a target.
@@ -59,16 +75,78 @@ Detects configuration problems (missing endpoint/credentials, invalid protocol s
 
 AgentHealth targets are typed (`agent`, `mcp`, `a2a`, `model`, `http`, `database`, `vector-store`, and others). See [target-model.md](target-model.md) for the full list, required fields, and which health dimensions apply to which target type.
 
+## Error Classification
+
+Adapters and the core engine MUST classify failures consistently, so the same underlying problem produces the same status regardless of which adapter encountered it. This table is the single source of truth; [adapter-spec.md](adapter-spec.md) and [docs/architecture.md](../docs/architecture.md#error-model) reference it rather than restating it.
+
+| Failure mode | Resulting status | Rationale |
+|---|---|---|
+| DNS resolution failure | `UNREACHABLE` | Cannot establish communication |
+| TCP connection refused / connection reset | `UNREACHABLE` | Cannot establish communication |
+| TLS handshake failure | `UNREACHABLE` | Cannot establish communication |
+| Request timeout with no response received | `UNREACHABLE` | Treated as a connectivity failure, not an indeterminate one |
+| Partial/ambiguous response received before a timeout (target may still be processing) | `UNKNOWN` | Genuinely indeterminate — distinct from a confirmed connectivity failure |
+| Authentication rejected (missing, invalid, or expired credentials) | `MISCONFIGURED` | Authentication is a [Configuration Health](#configuration-health) concern |
+| Malformed or invalid configuration detected before a check runs | `MISCONFIGURED` | The check could not be meaningfully attempted |
+| Protocol negotiation failure / incompatible protocol version | `UNHEALTHY` | Target is reachable but cannot perform required functionality |
+| Required capability missing | `UNHEALTHY` | Target is reachable but cannot perform required functionality |
+| Optional capability missing | `DEGRADED` | Non-fatal gap in functionality |
+| Functional check fails (minimal operation errors) | `UNHEALTHY` | Target is reachable but cannot perform required functionality |
+| Latency exceeds configured threshold | `DEGRADED` | Non-fatal performance impairment |
+| Dependency failure (critical or optional) | see [Status Aggregation](#status-aggregation) | Propagation rules differ from a target's own direct failures |
+| Adapter/engine error, but the engine still produces a result document | `UNKNOWN` | The target's actual health is genuinely unknown; reflected in the result itself, not just the exit code (see [exit-codes.md](exit-codes.md)) |
+| Adapter/engine error prevents producing any result document at all | *(no result produced)* | Surfaces only as CLI exit code `6` (internal error), never as a target status |
+
 ## Status Aggregation
 
-When a target has dependencies, overall status MUST be derived from:
+When a target has dependencies, its overall status is computed in three steps.
 
-- the target's own check results across all dimensions,
-- its dependencies' statuses,
-- whether each dependency is marked `critical`,
-- configured thresholds (e.g. latency).
+### Step 1 — Own status
 
-A critical dependency in `UNREACHABLE` or `UNHEALTHY` state SHOULD propagate to the parent target's overall status. Non-critical (optional) dependency failures SHOULD be reflected without necessarily failing the parent target outright (e.g. resulting in `DEGRADED` rather than `UNHEALTHY`).
+A target's **own status** is the most severe result (per [Severity Order](#severity-order)) across its own direct dimension checks (reachability, protocol, authentication, capability, functional, latency, configuration). It does not yet factor in dependencies.
+
+### Step 2 — Dependency contribution
+
+Each dependency contributes to the parent's overall status based on its own status and its `critical` flag. **`critical` defaults to `true` when omitted** — a dependency is assumed load-bearing unless explicitly marked optional, so an omitted `critical` field cannot silently hide a real failure.
+
+| Dependency status | `critical: true` (or omitted) | `critical: false` |
+|---|---|---|
+| `HEALTHY` | no contribution | no contribution |
+| `DEGRADED` | `DEGRADED` | `DEGRADED` |
+| `UNHEALTHY` | `UNHEALTHY` | `DEGRADED` |
+| `UNREACHABLE` | `UNHEALTHY` | `DEGRADED` |
+| `MISCONFIGURED` | `UNHEALTHY` | `DEGRADED` |
+| `UNKNOWN` | `UNKNOWN` | `DEGRADED` |
+
+Critical dependency failures contribute `UNHEALTHY` to the parent — **not** the dependency's literal status. A parent with a down critical dependency is still reachable and configured correctly itself; it simply cannot fully perform its function, which is exactly what `UNHEALTHY` means. Literally propagating a dependency's `UNREACHABLE` status to a parent that is itself perfectly reachable would contradict the definition of `UNREACHABLE`.
+
+A critical dependency in `UNKNOWN` state contributes `UNKNOWN`: if a load-bearing dependency's health cannot be determined, the parent's ability to perform its function is equally indeterminate, so it would be inaccurate to call the parent confidently `HEALTHY` or `UNHEALTHY`.
+
+Optional (`critical: false`) dependency failures of any kind contribute `DEGRADED` — the parent is not blocked, only diminished.
+
+### Step 3 — Overall status
+
+```text
+overall_status = max_severity(own_status, contribution_1, contribution_2, ..., contribution_n)
+```
+
+using the [Severity Order](#severity-order).
+
+### Worked example: reachable parent, failed critical dependency
+
+A `research-agent` target itself passes every direct check (`own_status = HEALTHY`), but its critical `vector-store` dependency is `UNREACHABLE`:
+
+```text
+own_status                              = HEALTHY
+vector-store (critical, UNREACHABLE)  → contributes UNHEALTHY
+overall_status = max(HEALTHY, UNHEALTHY) = UNHEALTHY
+```
+
+The parent is reported `UNHEALTHY`, never `UNREACHABLE` — the agent itself was reachable; the failure was in what it depends on. See this same example worked through the full result document in [result-schema.md](result-schema.md#recursive-shape).
+
+### Nested dependencies
+
+A dependency may itself have dependencies (see the recursive shape in [result-schema.md](result-schema.md#recursive-shape)). Each level of the tree applies Steps 1–3 independently and bottom-up: a dependency's own `status`, as already recorded in the result tree, reflects its own dependency aggregation before it is used as an input to its parent's Step 2.
 
 ## Relationship to other spec documents
 

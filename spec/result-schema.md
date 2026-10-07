@@ -1,61 +1,142 @@
 # Result Schema
 
-> Status: Draft. Defines the canonical machine-readable health result produced by `agenthealth check --output json`, and referenced by the proposed [AHP response envelope](protocol.md#proposed-response-envelope-non-normative).
+> Status: Draft. Defines the canonical machine-readable health result produced by `agenthealth check --output json` (not yet implemented — see [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli)), and referenced by the proposed [AHP response envelope](protocol.md#proposed-response-envelope-non-normative).
 
-## Example
+## Recursive Shape
+
+A single target's result (a **Result** object) has the same shape whether it is the top-level target being checked or an entry in another Result's `dependencies` list:
+
+```json
+{
+  "target": { "name": "github-mcp", "type": "mcp" },
+  "status": "HEALTHY",
+  "latency_ms": 84,
+  "checks": {
+    "reachability": { "status": "HEALTHY" }
+  },
+  "dependencies": []
+}
+```
+
+The top-level document wraps one Result with a `spec_version`. This example shows the [Status Aggregation worked example](health-model.md#worked-example-reachable-parent-failed-critical-dependency): a reachable parent (`research-agent`) whose critical `vector-store` dependency is `UNREACHABLE`, so the parent's own status is `UNHEALTHY`, not `UNREACHABLE`:
 
 ```json
 {
   "spec_version": "v1",
-  "target": {
-    "name": "research-agent",
-    "type": "agent"
-  },
-  "status": "DEGRADED",
+  "target": { "name": "research-agent", "type": "agent" },
+  "status": "UNHEALTHY",
   "latency_ms": 182,
   "checks": {
     "reachability": { "status": "HEALTHY" },
     "authentication": { "status": "HEALTHY" },
     "protocol": { "status": "HEALTHY" },
-    "capabilities": { "status": "HEALTHY" },
-    "dependencies": { "status": "DEGRADED" }
+    "capability": { "status": "HEALTHY" },
+    "functional": { "status": "HEALTHY" },
+    "latency": { "status": "HEALTHY" },
+    "dependency": {
+      "status": "UNHEALTHY",
+      "message": "critical dependency vector-store is UNREACHABLE"
+    }
   },
   "dependencies": [
     {
-      "name": "github-mcp",
-      "type": "mcp",
-      "status": "HEALTHY"
+      "target": { "name": "github-mcp", "type": "mcp" },
+      "status": "HEALTHY",
+      "latency_ms": 84,
+      "checks": {
+        "reachability": { "status": "HEALTHY" }
+      },
+      "dependencies": []
     },
     {
-      "name": "vector-store",
-      "type": "vector-store",
-      "status": "UNREACHABLE"
+      "target": { "name": "vector-store", "type": "vector-store" },
+      "status": "UNREACHABLE",
+      "latency_ms": null,
+      "checks": {
+        "reachability": {
+          "status": "UNREACHABLE",
+          "message": "connection refused"
+        }
+      },
+      "dependencies": []
     }
   ]
 }
 ```
 
+A JSON Schema enforcing this recursive shape is available at [spec/schemas/result.schema.json](schemas/result.schema.json).
+
 ## Fields
+
+### Result object (recursive)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `target.name` | string | yes | Identifier of the target being checked |
+| `target.type` | string | yes | One of the [target types](target-model.md) |
+| `status` | string | yes | One of the [health states](health-model.md#health-states) |
+| `latency_ms` | number \| null | no | Measured latency in milliseconds; `null` if no response was received (e.g. `UNREACHABLE`) |
+| `checks` | map | yes | Per-[dimension](health-model.md#health-dimensions) result, keyed by dimension name. MAY be an empty object `{}` if no dimension could be run (e.g. `MISCONFIGURED` before any check could execute) |
+| `dependencies` | list of Result | yes (may be empty `[]`) | One entry per configured dependency, recursively shaped like this same Result object |
+
+### Per-check entry (`checks.<dimension>`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `status` | string | yes | One of the [health states](health-model.md#health-states) for this specific dimension |
+| `message` | string | no | Human-readable detail (e.g. `"connection refused"`, `"latency 1842ms exceeds threshold 1000ms"`). MUST NOT contain secrets. |
+
+### Top-level document
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `spec_version` | string | yes | Version of this result schema (e.g. `v1`) |
+| *(all Result fields)* | — | yes | The top-level document is a Result object plus `spec_version` |
+
+## Batch / Check-Run Envelope
+
+`agenthealth check <config>` runs against a configuration that MAY declare multiple top-level targets (see [configuration.md](configuration.md)). The output for a multi-target run is a **batch envelope**, not a single Result:
+
+```json
+{
+  "spec_version": "v1",
+  "results": [
+    {
+      "target": { "name": "research-agent", "type": "agent" },
+      "status": "HEALTHY",
+      "latency_ms": 90,
+      "checks": {},
+      "dependencies": []
+    },
+    {
+      "target": { "name": "billing-agent", "type": "agent" },
+      "status": "DEGRADED",
+      "latency_ms": 1200,
+      "checks": {},
+      "dependencies": []
+    }
+  ]
+}
+```
 
 | Field | Type | Description |
 |---|---|---|
-| `spec_version` | string | Version of this result schema (e.g. `v1`) |
-| `target.name` | string | Identifier of the target being checked |
-| `target.type` | string | One of the [target types](target-model.md) |
-| `status` | string | One of the [health states](health-model.md#health-states) |
-| `latency_ms` | number | Measured latency in milliseconds |
-| `checks` | map | Per-[dimension](health-model.md#health-dimensions) result, keyed by dimension name |
-| `dependencies` | list | Results for each dependency, recursively shaped like a target result |
+| `spec_version` | string | Version of this result schema |
+| `results` | list of Result | One entry per top-level target declared in the configuration, in declaration order |
+
+`agenthealth ping <type> <target>` (a single ad-hoc target, no configuration file) always produces a single top-level Result document, not a batch envelope, since there is exactly one target.
+
+A JSON Schema for the batch envelope is available at [spec/schemas/result.schema.json](schemas/result.schema.json).
 
 ## Rules
 
 - `status` MUST be one of the six values defined in [health-model.md](health-model.md#health-states).
-- `checks` keys SHOULD correspond to the dimensions actually run for the target (not all dimensions are required for every target type).
-- Secrets and credentials MUST NOT appear anywhere in this structure.
-- `dependencies` entries recursively follow this same shape so dependency trees can be walked by generic tooling.
+- `checks` keys SHOULD correspond to the dimensions actually run for the target; see [configuration.md § Default Checks](configuration.md#default-checks) for what runs when `checks` is omitted.
+- Secrets and credentials MUST NOT appear anywhere in this structure, including in `message` fields.
+- `dependencies` entries recursively follow the exact same Result shape (see [Recursive Shape](#recursive-shape)) so generic tooling can walk the tree without special-casing the root.
+- For a batch run, the CLI's single process exit code reflects the **most severe** status across all `results` entries, per [Severity Order](health-model.md#severity-order) — see [exit-codes.md § Multiple targets](exit-codes.md#multiple-targets).
 
 ## Open items
 
-- Exit code mapping (tracked under [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli))
-- Error representation for internal failures vs target-reported failures
 - Extension fields / vendor-specific metadata namespace
+- Whether `message` should be structured (error code + human-readable string) rather than free text

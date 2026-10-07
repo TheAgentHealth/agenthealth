@@ -158,7 +158,7 @@ and a common response envelope such as:
 }
 ```
 
-The [Machine-Readable Health Format](#machine-readable-health-format) produced by the CLI today is an early, implementation-specific version of this idea. Formalizing it into AHP, with a versioned schema, transport requirements, and conformance rules independent of this repository's CLI, is future work.
+The [Machine-Readable Health Format](#machine-readable-health-format) that AgentHealth's CLI is designed to produce (see [Phase 3 — Universal CLI](ROADMAP.md#phase-3--universal-cli); not yet implemented) is an early, implementation-specific version of this idea. Formalizing it into AHP, with a versioned schema, transport requirements, and conformance rules independent of this repository's CLI, is future work.
 
 ## Reference Implementation
 
@@ -771,7 +771,7 @@ targets:
       - reachability
       - protocol
       - authentication
-      - capabilities
+      - capability
       - functional
       - latency
 
@@ -795,7 +795,7 @@ targets:
         critical: false
 ```
 
-The configuration specification will evolve independently of any particular implementation language.
+The configuration specification will evolve independently of any particular implementation language. See [spec/configuration.md](spec/configuration.md) for the normative field definitions and defaults.
 
 ---
 
@@ -808,43 +808,41 @@ Example JSON:
 ```json
 {
   "spec_version": "v1",
-  "target": {
-    "name": "research-agent",
-    "type": "agent"
-  },
-  "status": "DEGRADED",
+  "target": { "name": "research-agent", "type": "agent" },
+  "status": "UNHEALTHY",
   "latency_ms": 182,
   "checks": {
-    "reachability": {
-      "status": "HEALTHY"
-    },
-    "authentication": {
-      "status": "HEALTHY"
-    },
-    "protocol": {
-      "status": "HEALTHY"
-    },
-    "capabilities": {
-      "status": "HEALTHY"
-    },
-    "dependencies": {
-      "status": "DEGRADED"
+    "reachability": { "status": "HEALTHY" },
+    "authentication": { "status": "HEALTHY" },
+    "protocol": { "status": "HEALTHY" },
+    "capability": { "status": "HEALTHY" },
+    "functional": { "status": "HEALTHY" },
+    "latency": { "status": "HEALTHY" },
+    "dependency": {
+      "status": "UNHEALTHY",
+      "message": "critical dependency vector-store is UNREACHABLE"
     }
   },
   "dependencies": [
     {
-      "name": "github-mcp",
-      "type": "mcp",
-      "status": "HEALTHY"
+      "target": { "name": "github-mcp", "type": "mcp" },
+      "status": "HEALTHY",
+      "latency_ms": 84,
+      "checks": { "reachability": { "status": "HEALTHY" } },
+      "dependencies": []
     },
     {
-      "name": "vector-store",
-      "type": "vector-store",
-      "status": "UNREACHABLE"
+      "target": { "name": "vector-store", "type": "vector-store" },
+      "status": "UNREACHABLE",
+      "latency_ms": null,
+      "checks": { "reachability": { "status": "UNREACHABLE", "message": "connection refused" } },
+      "dependencies": []
     }
   ]
 }
 ```
+
+The parent's own status is `UNHEALTHY`, not a literal copy of its `UNREACHABLE` dependency — see [spec/health-model.md § Status Aggregation](spec/health-model.md#status-aggregation) for why, and [spec/result-schema.md](spec/result-schema.md) for the full normative schema (including multi-target batch output).
 
 ---
 
@@ -1362,7 +1360,7 @@ Useful contribution areas include:
 - security reviews,
 - testing.
 
-Please see `CONTRIBUTING.md` once available.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 

@@ -12,6 +12,7 @@ This directory contains the specification documents for AgentHealth, introduced 
 | Exit Codes | [exit-codes.md](exit-codes.md) | Draft |
 | Adapter Contract | [adapter-spec.md](adapter-spec.md) | Draft |
 | Security Requirements | [security.md](security.md) | Draft |
+| JSON Schemas | [schemas/](schemas/) | Draft — `result.schema.json`, `configuration.schema.json` |
 
 ## Relationship between documents
 
@@ -23,6 +24,7 @@ configuration.md  -> defines how targets/checks/dependencies are declared
 exit-codes.md     -> defines the CLI exit code contract for automation
 adapter-spec.md   -> defines the contract a technology-specific adapter must satisfy
 security.md       -> defines security requirements any conforming implementation must satisfy
+schemas/          -> machine-enforceable JSON Schemas for result-schema.md and configuration.md
 protocol.md       -> (experimental) defines HOW health is exposed/exchanged over the wire
 ```
 

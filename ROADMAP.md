@@ -68,7 +68,7 @@ Define:
 
 # Phase 1 — Agent Health Specification
 
-**Status:** Complete (draft) — see [spec/](spec/README.md)
+**Status:** Partially complete (draft) — vocabulary, target model, result schema, error classification, and status aggregation semantics are drafted in [spec/](spec/README.md). Authentication references, timeout policies, retry policies, and active/passive opt-in syntax remain open and are deferred to Phase 2 (see [spec/configuration.md § Still to be defined](spec/configuration.md#still-to-be-defined)).
 
 Goal:
 
@@ -170,7 +170,10 @@ spec/
 ├── exit-codes.md
 ├── adapter-spec.md
 ├── security.md
-└── protocol.md
+├── protocol.md
+└── schemas/
+    ├── result.schema.json
+    └── configuration.schema.json
 ```
 
 ---
@@ -261,9 +264,7 @@ Potential later formats:
 
 ## Exit Codes
 
-Standardize exit behavior for automation.
-
-Conceptual model:
+Standardize exit behavior for automation. Normative mapping defined in [spec/exit-codes.md](spec/exit-codes.md):
 
 ```text
 0 = healthy
@@ -271,10 +272,9 @@ Conceptual model:
 2 = unhealthy
 3 = unreachable
 4 = misconfigured
-5 = internal error
+5 = unknown / inconclusive result
+6 = internal error (no result produced)
 ```
-
-Exact semantics will be finalized through the specification process.
 
 ---
 

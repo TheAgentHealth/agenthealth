@@ -36,7 +36,7 @@ HTTP is a likely first binding, not necessarily the only one. AHP may eventually
 }
 ```
 
-This reuses the [result schema](result-schema.md) that the CLI already produces; AHP would formalize it as a network-exchanged contract rather than a CLI output format.
+This reuses the [recursive result shape](result-schema.md#recursive-shape) that the CLI is designed to produce (see [Phase 3](../ROADMAP.md#phase-3--universal-cli)); AHP would formalize it as a network-exchanged contract rather than a CLI output format. Each entry in `dependencies` would follow the same recursive shape, not a flattened summary.
 
 ## Open questions to resolve before this becomes normative
 

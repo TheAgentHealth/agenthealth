@@ -37,7 +37,7 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 
 ## Error model
 
-**Decision:** errors are normalized into the existing health states (`UNREACHABLE`, `MISCONFIGURED`, `UNKNOWN`) rather than a separate exception/error taxonomy. Internal/unexpected engine errors map to `UNKNOWN` with diagnostic detail in `checks`; this keeps one vocabulary for "why did this fail" across adapters (see [Health States](../spec/health-model.md#health-states)).
+**Decision:** errors are normalized into the existing health states rather than a separate exception/error taxonomy, per the shared [Error Classification table](../spec/health-model.md#error-classification). An adapter/engine error that still allows a result to be produced maps to `UNKNOWN`; an error that prevents producing any result at all surfaces only as CLI [exit code 6](../spec/exit-codes.md), never as a target status.
 
 ## Exit codes
 
@@ -49,7 +49,8 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 2 = unhealthy
 3 = unreachable
 4 = misconfigured
-5 = internal error
+5 = unknown / inconclusive result
+6 = internal error (no result produced)
 ```
 
 Implemented in [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli).

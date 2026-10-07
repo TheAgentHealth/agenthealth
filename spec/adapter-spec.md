@@ -11,7 +11,7 @@ An adapter translates technology-specific behavior into the common [Agent Health
 3. Implement applicable **health checks**: reachability, protocol, authentication, capability, functional, latency, configuration — an adapter is not required to implement every dimension if a dimension does not apply to its technology.
 4. Report **capabilities**: what the target exposes (tools, resources, skills, operations, features).
 5. Produce a **normalized result**: output conforming to the [result schema](result-schema.md), never a technology-specific shape.
-6. Normalize **errors**: internal/transport errors must be mapped to `UNREACHABLE` or `MISCONFIGURED` rather than leaking raw exceptions.
+6. Normalize **errors**: classify failures per the shared [Error Classification table](health-model.md#error-classification) rather than inventing adapter-specific mappings or leaking raw exceptions.
 7. Declare **security requirements**: what credentials/permissions the adapter's checks require, and which of its checks are active vs passive (see [Passive vs Active Checks](../README.md#passive-vs-active-checks)).
 
 ## Required metadata
@@ -28,7 +28,7 @@ An adapter translates technology-specific behavior into the common [Agent Health
 - Functional checks MUST be non-destructive by default.
 - Any check capable of side effects (invoking a tool, running inference, writing data) MUST be explicit, opt-in (active check) per [Passive vs Active Checks](../README.md#passive-vs-active-checks).
 - Adapters MUST NOT log or emit secrets, tokens, or credentials in results or diagnostics.
-- Adapters SHOULD support configurable timeouts and fail safely (`UNKNOWN`/`UNREACHABLE`) on timeout rather than hanging.
+- Adapters SHOULD support configurable timeouts. A timeout with no response received MUST be classified `UNREACHABLE`; an ambiguous or partial response received before the timeout MUST be classified `UNKNOWN` — per the [Error Classification table](health-model.md#error-classification), never an adapter-specific choice between the two.
 
 ## Compatibility
 

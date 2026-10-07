@@ -16,7 +16,7 @@ targets:
       - reachability
       - protocol
       - authentication
-      - capabilities
+      - capability
       - functional
       - latency
 
@@ -45,26 +45,47 @@ targets:
 | Field | Type | Description |
 |---|---|---|
 | `version` | string | Configuration schema version (e.g. `v1`) |
-| `targets` | list | One or more targets to check |
+| `targets` | list (min. 1 item) | One or more targets to check. A single target produces a single [Result](result-schema.md#result-object-recursive) document; more than one target produces a [batch envelope](result-schema.md#batch--check-run-envelope) |
+
+A JSON Schema for this configuration format is available at [spec/schemas/configuration.schema.json](schemas/configuration.schema.json).
 
 ## Target fields
 
-| Field | Type | Description |
-|---|---|---|
-| `name` | string | Human-readable identifier for the target |
-| `type` | string | One of the [target types](target-model.md) |
-| `endpoint` | string | Address used to reach the target |
-| `checks` | list | Which [health dimensions](health-model.md#health-dimensions) to run |
-| `thresholds` | map | Numeric thresholds, e.g. `latency_ms` |
-| `dependencies` | list | Nested targets this target depends on |
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | yes | Human-readable identifier for the target |
+| `type` | string | yes | One of the [target types](target-model.md) |
+| `endpoint` | string | yes | Address used to reach the target |
+| `checks` | list | no | Which [health dimensions](health-model.md#health-dimensions) to run. If omitted, see [Default Checks](#default-checks) |
+| `thresholds` | map | no | Numeric thresholds, e.g. `latency_ms`. See [Threshold Semantics](#threshold-semantics) |
+| `dependencies` | list | no | Nested targets this target depends on. See [Dependency Inheritance](#dependency-inheritance) |
 
 ## Dependency fields
 
-Each entry under `dependencies` accepts the same `name`/`type`/`endpoint` fields as a target, plus:
+Each entry under `dependencies` accepts the same `name`/`type`/`endpoint`/`checks`/`thresholds`/`dependencies` fields as a target (dependencies may themselves have dependencies, recursively), plus:
 
-| Field | Type | Description |
-|---|---|---|
-| `critical` | boolean | Whether failure of this dependency should propagate to the parent target's overall status (see [Status Aggregation](health-model.md#status-aggregation)) |
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `critical` | boolean | no, defaults to `true` | Whether failure of this dependency should propagate to the parent target's overall status (see [Status Aggregation](health-model.md#status-aggregation)) |
+
+## Default Checks
+
+If `checks` is omitted for a target or dependency, AgentHealth runs the **full default set of dimensions applicable to that entry's `type`**, per the [applicable-dimensions table](target-model.md#applicable-dimensions-per-target-type) in target-model.md. For example, an `http` target with no `checks` listed runs reachability, authentication, functional, latency, and configuration, but not protocol/capability (not applicable to `http`).
+
+## Dependency Inheritance
+
+Dependencies do **not** inherit `checks` or `thresholds` from their parent target. Each dependency entry is evaluated independently:
+
+- if the dependency declares its own `checks`, those are used;
+- otherwise, [Default Checks](#default-checks) applies based on the dependency's own `type` (not the parent's type).
+
+This matters because a dependency's `type` is frequently different from its parent's (e.g. an `agent` target depending on a `vector-store`), so inheriting the parent's dimension list would often be meaningless.
+
+## Threshold Semantics
+
+`thresholds` apply only to the target or dependency entry on which they are declared — they are never inherited by that entry's own dependencies (consistent with [Dependency Inheritance](#dependency-inheritance)).
+
+For `thresholds.latency_ms` specifically: if the `latency` dimension is run and the measured `latency_ms` exceeds the configured threshold, the `latency` check's status is `DEGRADED` (see [Error Classification](health-model.md#error-classification)). If `thresholds.latency_ms` is omitted, the `latency` dimension (if run) only measures and reports `latency_ms` without evaluating it against a threshold, and defaults to `HEALTHY` unless no response was received at all (in which case `UNREACHABLE` applies per the reachability/timeout rules, independent of any latency threshold).
 
 ## Still to be defined
 

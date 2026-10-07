@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TheAgentHealth/agenthealth/spec/schemas/result.schema.json",
+  "title": "AgentHealth Result",
+  "description": "Schema for a single-target top-level result document, a dependency entry within it (same recursive shape), and the multi-target batch envelope. See ../result-schema.md.",
+  "$defs": {
+    "HealthState": {
+      "type": "string",
+      "enum": ["HEALTHY", "DEGRADED", "UNHEALTHY", "UNREACHABLE", "MISCONFIGURED", "UNKNOWN"]
+    },
+    "Target": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" }
+      },
+      "required": ["name", "type"]
+    },
+    "CheckEntry": {
+      "type": "object",
+      "properties": {
+        "status": { "$ref": "#/$defs/HealthState" },
+        "message": { "type": "string" }
+      },
+      "required": ["status"]
+    },
+    "Result": {
+      "type": "object",
+      "properties": {
+        "target": { "$ref": "#/$defs/Target" },
+        "status": { "$ref": "#/$defs/HealthState" },
+        "latency_ms": { "type": ["number", "null"] },
+        "checks": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/CheckEntry" }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Result" }
+        }
+      },
+      "required": ["target", "status", "checks", "dependencies"]
+    },
+    "TopLevelResult": {
+      "allOf": [
+        { "$ref": "#/$defs/Result" },
+        {
+          "type": "object",
+          "properties": {
+            "spec_version": { "type": "string" }
+          },
+          "required": ["spec_version"]
+        }
+      ]
+    },
+    "BatchResult": {
+      "type": "object",
+      "properties": {
+        "spec_version": { "type": "string" },
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Result" }
+        }
+      },
+      "required": ["spec_version", "results"]
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/TopLevelResult" },
+    { "$ref": "#/$defs/BatchResult" }
+  ]
+}
