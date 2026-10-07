@@ -1,0 +1,10 @@
+version: v1
+targets:
+  - name: local-service
+    type: http
+    endpoint: http://localhost:8080/health
+    timeout_ms: 1000
+    retries: 1
+    retry_delay_ms: 100
+    thresholds:
+      latency_ms: 500
