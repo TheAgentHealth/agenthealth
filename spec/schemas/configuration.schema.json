@@ -6,68 +6,279 @@
   "$defs": {
     "Dimension": {
       "type": "string",
-      "enum": ["reachability", "protocol", "authentication", "capability", "functional", "dependency", "latency", "configuration"]
+      "enum": [
+        "reachability",
+        "protocol",
+        "authentication",
+        "capability",
+        "functional",
+        "dependency",
+        "latency",
+        "configuration"
+      ]
     },
     "TargetType": {
       "type": "string",
-      "enum": ["agent", "multi-agent", "a2a", "mcp", "tool", "model", "llm", "http", "api", "vector-store", "database", "runtime", "gateway", "custom"]
+      "enum": [
+        "agent",
+        "multi-agent",
+        "a2a",
+        "mcp",
+        "tool",
+        "model",
+        "llm",
+        "http",
+        "api",
+        "vector-store",
+        "database",
+        "runtime",
+        "gateway",
+        "custom"
+      ]
     },
     "Thresholds": {
       "type": "object",
       "properties": {
-        "latency_ms": { "type": "number", "minimum": 0 }
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0
+        }
       },
       "additionalProperties": false
     },
     "Dependency": {
       "type": "object",
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "type": { "$ref": "#/$defs/TargetType" },
-        "endpoint": { "type": "string", "minLength": 1 },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "$ref": "#/$defs/TargetType"
+        },
+        "endpoint": {
+          "type": "string",
+          "minLength": 1
+        },
         "checks": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Dimension" }
+          "items": {
+            "$ref": "#/$defs/Dimension"
+          }
         },
-        "thresholds": { "$ref": "#/$defs/Thresholds" },
-        "critical": { "type": "boolean", "default": true },
+        "thresholds": {
+          "$ref": "#/$defs/Thresholds"
+        },
+        "critical": {
+          "type": "boolean",
+          "default": true
+        },
         "dependencies": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Dependency" }
+          "items": {
+            "$ref": "#/$defs/Dependency"
+          }
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000,
+          "default": 5000
+        },
+        "retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3,
+          "default": 0
+        },
+        "retry_delay_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60000,
+          "default": 100
+        },
+        "check_timeouts_ms": {
+          "type": "object",
+          "properties": {
+            "reachability": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "protocol": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "authentication": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "capability": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "functional": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "latency": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "configuration": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            }
+          },
+          "additionalProperties": false
+        },
+        "auth": {
+          "$ref": "#/$defs/AuthReference"
         }
       },
-      "required": ["name", "type", "endpoint"],
+      "required": [
+        "name",
+        "type",
+        "endpoint"
+      ],
       "additionalProperties": false
     },
     "Target": {
       "type": "object",
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "type": { "$ref": "#/$defs/TargetType" },
-        "endpoint": { "type": "string", "minLength": 1 },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "$ref": "#/$defs/TargetType"
+        },
+        "endpoint": {
+          "type": "string",
+          "minLength": 1
+        },
         "checks": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Dimension" }
+          "items": {
+            "$ref": "#/$defs/Dimension"
+          }
         },
-        "thresholds": { "$ref": "#/$defs/Thresholds" },
+        "thresholds": {
+          "$ref": "#/$defs/Thresholds"
+        },
         "dependencies": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Dependency" }
+          "items": {
+            "$ref": "#/$defs/Dependency"
+          }
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000,
+          "default": 5000
+        },
+        "retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3,
+          "default": 0
+        },
+        "retry_delay_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60000,
+          "default": 100
+        },
+        "check_timeouts_ms": {
+          "type": "object",
+          "properties": {
+            "reachability": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "protocol": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "authentication": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "capability": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "functional": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "latency": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            },
+            "configuration": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 300000
+            }
+          },
+          "additionalProperties": false
+        },
+        "auth": {
+          "$ref": "#/$defs/AuthReference"
         }
       },
-      "required": ["name", "type", "endpoint"],
+      "required": [
+        "name",
+        "type",
+        "endpoint"
+      ],
+      "additionalProperties": false
+    },
+    "AuthReference": {
+      "type": "object",
+      "properties": {
+        "bearer_env": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^=\\u0000]+$"
+        }
+      },
+      "required": [
+        "bearer_env"
+      ],
       "additionalProperties": false
     }
   },
   "type": "object",
   "properties": {
-    "version": { "type": "string", "minLength": 1 },
+    "version": {
+      "const": "v1"
+    },
     "targets": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/Target" }
+      "items": {
+        "$ref": "#/$defs/Target"
+      }
     }
   },
-  "required": ["version", "targets"],
+  "required": [
+    "version",
+    "targets"
+  ],
   "additionalProperties": false
 }
