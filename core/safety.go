@@ -51,11 +51,9 @@ func (r *Redactor) Result(value Result) Result {
 // followed, preventing probes or credentials from moving to another endpoint.
 func NewHTTPClient() *http.Client {
 	transport := &http.Transport{
-		Proxy:                 http.ProxyFromEnvironment,
-		TLSHandshakeTimeout:   DefaultTimeout,
-		ResponseHeaderTimeout: DefaultTimeout,
-		IdleConnTimeout:       30 * time.Second,
-		MaxIdleConns:          16,
+		Proxy:           http.ProxyFromEnvironment,
+		IdleConnTimeout: 30 * time.Second,
+		MaxIdleConns:    16,
 	}
 	return &http.Client{Transport: transport, Timeout: DefaultTimeout,
 		CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }}
