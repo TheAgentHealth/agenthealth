@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -160,11 +161,13 @@ func TestOAuthFilesAndRefresh(t *testing.T) {
 	if result.Status != core.Healthy || f.tokens.Load() != 1 {
 		t.Fatalf("cached token was reacquired: %+v", result)
 	}
-	os.Chmod(target.MCP.OAuth.TokenFile, 0644)
-	if _, err := readToken(target.MCP.OAuth.TokenFile); err == nil {
-		t.Fatal("insecure token permissions accepted")
+	if runtime.GOOS != "windows" {
+		os.Chmod(target.MCP.OAuth.TokenFile, 0644)
+		if _, err := readToken(target.MCP.OAuth.TokenFile); err == nil {
+			t.Fatal("insecure token permissions accepted")
+		}
+		os.Chmod(target.MCP.OAuth.TokenFile, 0600)
 	}
-	os.Chmod(target.MCP.OAuth.TokenFile, 0600)
 	link := filepath.Join(t.TempDir(), "symlink.json")
 	if err := os.Symlink(target.MCP.OAuth.TokenFile, link); err != nil {
 		t.Fatal(err)
@@ -280,8 +283,13 @@ func TestOAuthPKCELogin(t *testing.T) {
 			if strings.Contains(writer.buffer.String(), "acquired-sensitive-value") || strings.Contains(writer.buffer.String(), "rotated-sensitive-value") {
 				t.Fatal("login printed tokens")
 			}
-			info, err := os.Stat(target.MCP.OAuth.TokenFile)
-			if err != nil || info.Mode().Perm() != 0600 {
+			file, err := os.Open(target.MCP.OAuth.TokenFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+			private := privateTokenFile(file)
+			file.Close()
+			if !private {
 				t.Fatal("token storage permissions")
 			}
 			result := runTarget(t, target)

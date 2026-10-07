@@ -247,7 +247,12 @@ func TestLatencyThresholdAndCancellation(t *testing.T) {
 	threshold := 0.0
 	target := targetForTest("latency")
 	target.Thresholds = &Thresholds{LatencyMS: &threshold}
-	r := runTest(t, &testAdapter{}, target)
+	r := runTest(t, &testAdapter{fn: func(_ context.Context, _ Request, dimension string) (Observation, error) {
+		if dimension == "reachability" {
+			time.Sleep(10 * time.Millisecond)
+		}
+		return Observation{Check: CheckResult{Status: Healthy}}, nil
+	}}, target)
 	if r.Status != Degraded || r.LatencyMS == nil {
 		t.Fatal(r)
 	}

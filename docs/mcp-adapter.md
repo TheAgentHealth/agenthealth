@@ -255,3 +255,8 @@ schema validation. Missing tools are `UNHEALTHY`, unsafe annotations are
 `MISCONFIGURED`, and `isError: true` is `UNHEALTHY`. A complete valid success is
 `HEALTHY`; the adapter does not assess content quality. Discovery and the one
 functional invocation share the same check-owned transport.
+
+Token files use owner-only POSIX permissions or, on Windows, a protected
+owner-only DACL applied before secret data is written. Reads validate the opened
+file’s permissions/owner; public or inherited Windows ACLs are rejected. Re-run
+login to recreate a Windows token file made by an older release.
