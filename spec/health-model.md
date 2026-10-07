@@ -101,6 +101,25 @@ Adapters and the core engine MUST classify failures consistently, so the same un
 | Adapter/engine error, but the engine still produces a result document | `UNKNOWN` | The target's actual health is genuinely unknown; reflected in the result itself, not just the exit code (see [exit-codes.md](exit-codes.md)) |
 | Adapter/engine error prevents producing any result document at all | *(no result produced)* | Surfaces only as CLI exit code `6` (internal error), never as a target status |
 
+## Check Prerequisites
+
+Some dimensions can only be meaningfully evaluated if an earlier dimension already succeeded. AgentHealth defines the following prerequisite chain:
+
+1. **Configuration** is evaluated first, before attempting to reach the target at all. If it fails, no other dimension runs: `status` is `MISCONFIGURED` and `checks` contains only the `configuration` entry.
+2. **Reachability** is attempted next. If it fails, **Protocol**, **Authentication**, **Capability**, **Functional**, and **Latency** are all blocked and skipped.
+3. **Protocol** and **Authentication** each only require Reachability to have succeeded; they do not block each other.
+4. **Capability** and **Functional** each require Reachability to have succeeded, and Authentication to have succeeded if authentication applies to the target type.
+5. **Latency** can be measured whenever Reachability succeeded, regardless of the outcome of any other dimension.
+6. **Dependency** is independent of all of the above: declared dependencies always execute and aggregate on their own, regardless of the parent target's own prerequisite chain (see [configuration.md § Dependency Execution](configuration.md#dependency-execution)).
+
+### Skipped checks are omitted, not `UNKNOWN`
+
+A dimension blocked by a failed prerequisite MUST be **omitted entirely** from `checks` — it MUST NOT be recorded with a status of `UNKNOWN` or any other value. [`own_status`](#step-1--own-status) is computed only over the dimensions that actually ran and produced a `checks` entry.
+
+This matters because `UNKNOWN` is the most severe state in the [Severity Order](#severity-order): if a blocked Protocol/Authentication/Capability check were recorded as `UNKNOWN` merely because Reachability failed first, `own_status` would incorrectly become `UNKNOWN` instead of `UNREACHABLE`, masking the actual, more specific cause.
+
+This is distinct from the empty-set rule in [Status Aggregation § Step 1](#step-1--own-status) (`own_status = UNKNOWN` when *zero* checks ran at all, e.g. `checks: []` was explicitly configured): a target whose Reachability check ran and failed has produced one check result, not zero, so Step 1 correctly yields `UNREACHABLE` in that case.
+
 ## Status Aggregation
 
 When a target has dependencies, its overall status is computed in three steps.
@@ -109,7 +128,7 @@ When a target has dependencies, its overall status is computed in three steps.
 
 A target's **own status** is the most severe result (per [Severity Order](#severity-order)) across its own direct dimension checks (reachability, protocol, authentication, capability, functional, latency, configuration). It does not yet factor in dependencies.
 
-If zero dimension checks actually ran for a target (e.g. `checks: []` was explicitly configured, disabling every dimension), `own_status` is `UNKNOWN`: the absence of any evidence is itself an indeterminate result, not a `HEALTHY` default. `max_severity` is otherwise undefined over an empty set; this is the one specified exception.
+If zero dimension checks actually ran for a target (e.g. `checks: []` was explicitly configured, disabling every dimension), `own_status` is `UNKNOWN`: the absence of any evidence is itself an indeterminate result, not a `HEALTHY` default. `max_severity` is otherwise undefined over an empty set; this is the one specified exception. (This is distinct from checks that ran but were *blocked* by a failed prerequisite — see [Check Prerequisites](#check-prerequisites).)
 
 ### Step 2 — Dependency contribution
 

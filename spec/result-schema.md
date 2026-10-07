@@ -20,6 +20,7 @@ A single target's result (a **Result** object) has the same shape whether it is 
 
 The top-level document wraps one Result with a `spec_version`. This example shows the [Status Aggregation worked example](health-model.md#worked-example-reachable-parent-failed-critical-dependency): a reachable parent (`research-agent`) whose critical `vector-store` dependency is `UNREACHABLE`, so the parent's own status is `UNHEALTHY`, not `UNREACHABLE`:
 
+<!-- spec-example: result -->
 ```json
 {
   "spec_version": "v1",
@@ -76,7 +77,7 @@ A JSON Schema enforcing this recursive shape is available at [spec/schemas/resul
 | `target.type` | string | yes | One of the [target types](target-model.md) |
 | `status` | string | yes | One of the [health states](health-model.md#health-states) |
 | `latency_ms` | number \| null | no | Measured latency in milliseconds; `null` if no response was received (e.g. `UNREACHABLE`) |
-| `checks` | map | yes | Per-[dimension](health-model.md#health-dimensions) result, keyed by dimension name. MAY be an empty object `{}` if no dimension could be run (e.g. `MISCONFIGURED` before any check could execute) |
+| `checks` | map | yes | Per-[dimension](health-model.md#health-dimensions) result, keyed by dimension name. MAY be an empty object `{}` only when `status` is `MISCONFIGURED` (problem detected before any check could run) or `UNKNOWN` (zero checks were configured to run, see [health-model.md § Status Aggregation](health-model.md#status-aggregation)); for every other status at least one entry MUST be present, since that status can only have been derived from evidence a check produced. Dimensions blocked by a failed prerequisite (see [health-model.md § Check Prerequisites](health-model.md#check-prerequisites)) are omitted, not recorded as `UNKNOWN` |
 | `dependencies` | list of Result | yes (may be empty `[]`) | One entry per configured dependency, recursively shaped like this same Result object |
 
 ### Per-check entry (`checks.<dimension>`)
@@ -97,6 +98,7 @@ A JSON Schema enforcing this recursive shape is available at [spec/schemas/resul
 
 `agenthealth check <config>` runs against a configuration that MAY declare multiple top-level targets (see [configuration.md](configuration.md)). The output for a multi-target run is a **batch envelope**, not a single Result:
 
+<!-- spec-example: result -->
 ```json
 {
   "spec_version": "v1",
@@ -105,14 +107,23 @@ A JSON Schema enforcing this recursive shape is available at [spec/schemas/resul
       "target": { "name": "research-agent", "type": "agent" },
       "status": "HEALTHY",
       "latency_ms": 90,
-      "checks": {},
+      "checks": {
+        "reachability": { "status": "HEALTHY" },
+        "authentication": { "status": "HEALTHY" }
+      },
       "dependencies": []
     },
     {
       "target": { "name": "billing-agent", "type": "agent" },
       "status": "DEGRADED",
       "latency_ms": 1200,
-      "checks": {},
+      "checks": {
+        "reachability": { "status": "HEALTHY" },
+        "latency": {
+          "status": "DEGRADED",
+          "message": "latency 1200ms exceeds threshold 1000ms"
+        }
+      },
       "dependencies": []
     }
   ]
@@ -132,6 +143,8 @@ A JSON Schema for the batch envelope is available at [spec/schemas/result.schema
 
 - `status` MUST be one of the six values defined in [health-model.md](health-model.md#health-states).
 - `checks` keys SHOULD correspond to the dimensions actually run for the target; see [configuration.md § Default Checks](configuration.md#default-checks) for what runs when `checks` is omitted.
+- `checks` MUST be empty (`{}`) only when `status` is `MISCONFIGURED` or `UNKNOWN`; every other status requires at least one `checks` entry as evidence (see the `checks` field description above).
+- Dimensions blocked by a failed prerequisite MUST be omitted from `checks` entirely, never recorded as `UNKNOWN` (see [health-model.md § Check Prerequisites](health-model.md#check-prerequisites)).
 - Secrets and credentials MUST NOT appear anywhere in this structure, including in `message` fields.
 - `dependencies` entries recursively follow the exact same Result shape (see [Recursive Shape](#recursive-shape)) so generic tooling can walk the tree without special-casing the root.
 - For a batch run, the CLI's single process exit code reflects the **most severe** status across all `results` entries, per [Severity Order](health-model.md#severity-order) — see [exit-codes.md § Multiple targets](exit-codes.md#multiple-targets).

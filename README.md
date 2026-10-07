@@ -81,7 +81,7 @@ AgentHealth aims to provide:
 
 # Specification → Protocol → Implementation
 
-AgentHealth separates **what health means** from **how health is exposed** from **the tools that implement it today**.
+AgentHealth separates **what health means** from **how health is exposed** from **the tools intended to implement it** (see [Project Status](#project-status) — these tools are specified but not yet built).
 
 ```text
                     TheAgentHealth
@@ -146,6 +146,7 @@ GET /capabilities
 
 and a common response envelope such as:
 
+<!-- spec-example: skip reason="illustrative AHP sketch only; intentionally omits target.name (not yet a defined requirement for AHP) so it does not validate against the normative Result schema" -->
 ```json
 {
   "spec_version": "v1",
@@ -756,6 +757,7 @@ AgentHealth should be able to calculate an overall status based on:
 
 A configuration file could look like:
 
+<!-- spec-example: configuration -->
 ```yaml
 version: v1
 
@@ -802,6 +804,7 @@ AgentHealth is designed for both humans and machines.
 
 Example JSON:
 
+<!-- spec-example: result -->
 ```json
 {
   "spec_version": "v1",
@@ -868,7 +871,7 @@ AgentHealth is designed around a small core and extensible adapters.
                                                   / DB
 ```
 
-The Health Engine implements the Agent Health Specification today. The experimental Agent Health Protocol (AHP) (see [Specification → Protocol → Implementation](#specification--protocol--implementation)), once finalized, would standardize how the Output Engine exposes and exchanges these results over the wire.
+The Health Engine is designed to implement the Agent Health Specification (not yet built — see [Phase 2 — Core Engine](ROADMAP.md#phase-2--core-engine)). The experimental Agent Health Protocol (AHP) (see [Specification → Protocol → Implementation](#specification--protocol--implementation)), once finalized, would standardize how the Output Engine exposes and exchanges these results over the wire.
 
 ---
 

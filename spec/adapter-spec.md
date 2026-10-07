@@ -8,7 +8,7 @@ An adapter translates technology-specific behavior into the common [Agent Health
 
 1. Declare **metadata**: adapter name, version, supported target type(s), compatibility version.
 2. Accept **configuration**: the subset of the [configuration spec](configuration.md) relevant to its target type.
-3. Implement applicable **health checks**: reachability, protocol, authentication, capability, functional, latency, configuration — an adapter is not required to implement every dimension if a dimension does not apply to its technology.
+3. Implement applicable **health checks**: reachability, protocol, authentication, capability, functional, latency, configuration — an adapter is not required to implement every dimension if a dimension does not apply to its technology. Respect [check prerequisites](health-model.md#check-prerequisites): a dimension blocked by a failed prerequisite (e.g. Protocol/Authentication/Capability after a failed Reachability check) MUST be omitted from `checks` entirely, never recorded as `UNKNOWN`.
 4. Report **capabilities**: what the target exposes (tools, resources, skills, operations, features).
 5. Produce a **normalized result**: output conforming to the [result schema](result-schema.md), never a technology-specific shape.
 6. Normalize **errors**: classify failures per the shared [Error Classification table](health-model.md#error-classification) rather than inventing adapter-specific mappings or leaking raw exceptions.

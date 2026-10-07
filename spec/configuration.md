@@ -4,6 +4,7 @@
 
 ## Example
 
+<!-- spec-example: configuration -->
 ```yaml
 version: v1
 
@@ -76,6 +77,16 @@ If `checks` is omitted for a target or dependency, AgentHealth runs the default 
 
 For example, an `http` target with no `checks` listed runs reachability, authentication, latency, and configuration (all passive and applicable to `http`), but never `functional` unless explicitly requested.
 
+## Dependency Execution
+
+The main example above declares `dependencies:` (`github-mcp`, `vector-store`, `analytics-api`) but omits `dependency` from the parent's `checks` list. This is intentional and well-defined, not an oversight:
+
+**Every entry declared under a target's or dependency's `dependencies:` list always executes and always contributes to [Status Aggregation](health-model.md#status-aggregation) — this is driven entirely by the presence of entries in `dependencies:`, never by whether `dependency` appears in `checks`.** There is no way to declare a dependency and have it silently skipped; if you don't want a dependency evaluated, remove it from `dependencies:` rather than omitting `dependency` from `checks`.
+
+Listing `dependency` in `checks` controls only one thing: whether a summary `checks.dependency` diagnostic entry (e.g. `{"status": "UNHEALTHY", "message": "critical dependency vector-store is UNREACHABLE"}`) is included in the result's `checks` map for human/machine-readable explanation. Omitting it omits that summary line — it has **no effect** on whether dependencies run, nor on the `dependencies` array in the result, nor on the parent's `overall_status`.
+
+This is also why [target-model.md](target-model.md#applicable-dimensions-per-target-type)'s applicable-dimensions table marks the Dependency column — for types like `mcp` and `http` — as indicating only whether a `checks.dependency` summary entry is part of that type's *default* checks, not whether that type is allowed to declare `dependencies:`. Any target type may declare `dependencies:`, regardless of that table.
+
 ## Dependency Inheritance
 
 Dependencies do **not** inherit `checks` or `thresholds` from their parent target. Each dependency entry is evaluated independently:
@@ -95,7 +106,6 @@ For `thresholds.latency_ms` specifically: if the `latency` dimension is run and 
 
 - Authentication references (how credentials are referenced without being embedded in plaintext)
 - Retry policies
-- Active vs passive check opt-in per target
 - Per-check timeout overrides
 - Environment variable / secret-manager interpolation syntax
 

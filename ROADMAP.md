@@ -48,7 +48,7 @@ Establish the project identity, architecture, governance foundation, and technic
 - [x] Pull request templates (`.github/PULL_REQUEST_TEMPLATE.md`)
 - [x] Release process ([RELEASING.md](RELEASING.md))
 - [x] Semantic versioning policy ([RELEASING.md](RELEASING.md))
-- [x] CI pipeline ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — spec schema tests ([tests/spec/](tests/spec/)) and a markdown link checker ([scripts/check_markdown_links.py](scripts/check_markdown_links.py)), required to pass before merge. A Go test suite will be added as additional CI jobs once [Phase 2](#phase-2--core-engine) lands.
+- [x] CI pipeline ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — spec schema tests ([tests/spec/](tests/spec/)), a markdown link checker ([scripts/check_markdown_links.py](scripts/check_markdown_links.py)), and doc-example validation ([scripts/validate_doc_examples.py](scripts/validate_doc_examples.py)) that checks marked README/ROADMAP/spec prose examples against the schemas, all required to pass before merge. A Go test suite will be added as additional CI jobs once [Phase 2](#phase-2--core-engine) lands.
 
 ## Architecture Decisions
 
@@ -128,6 +128,7 @@ Defined in [spec/result-schema.md](spec/result-schema.md).
 
 Example:
 
+<!-- spec-example: result -->
 ```json
 {
   "spec_version": "v1",
@@ -137,7 +138,9 @@ Example:
   },
   "status": "HEALTHY",
   "latency_ms": 82,
-  "checks": {},
+  "checks": {
+    "reachability": { "status": "HEALTHY" }
+  },
   "dependencies": []
 }
 ```
@@ -154,7 +157,7 @@ Defined in [spec/configuration.md](spec/configuration.md):
 - [x] critical vs optional dependencies
 - [ ] timeout policies
 - [ ] retry policies
-- [ ] active/passive check behavior
+- [x] active/passive check behavior
 
 Remaining items are explicitly listed as open in [spec/configuration.md § Still to be defined](spec/configuration.md#still-to-be-defined) and will be resolved alongside the Phase 2 core engine implementation.
 

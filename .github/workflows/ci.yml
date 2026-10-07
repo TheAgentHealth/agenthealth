@@ -30,3 +30,16 @@ jobs:
           python-version: "3.12"
       - name: Check markdown links
         run: python3 scripts/check_markdown_links.py
+
+  doc-example-validation:
+    name: Doc example validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: pip install -r tests/requirements.txt
+      - name: Validate marked documentation examples
+        run: python3 scripts/validate_doc_examples.py

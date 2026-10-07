@@ -16,7 +16,8 @@
       "type": "object",
       "properties": {
         "latency_ms": { "type": "number", "minimum": 0 }
-      }
+      },
+      "additionalProperties": false
     },
     "Dependency": {
       "type": "object",
@@ -35,7 +36,8 @@
           "items": { "$ref": "#/$defs/Dependency" }
         }
       },
-      "required": ["name", "type", "endpoint"]
+      "required": ["name", "type", "endpoint"],
+      "additionalProperties": false
     },
     "Target": {
       "type": "object",
@@ -53,7 +55,8 @@
           "items": { "$ref": "#/$defs/Dependency" }
         }
       },
-      "required": ["name", "type", "endpoint"]
+      "required": ["name", "type", "endpoint"],
+      "additionalProperties": false
     }
   },
   "type": "object",
@@ -65,5 +68,6 @@
       "items": { "$ref": "#/$defs/Target" }
     }
   },
-  "required": ["version", "targets"]
+  "required": ["version", "targets"],
+  "additionalProperties": false
 }

@@ -24,6 +24,7 @@ HTTP is a likely first binding, not necessarily the only one. AHP may eventually
 
 ## Proposed response envelope (non-normative)
 
+<!-- spec-example: skip reason="illustrative AHP sketch only; intentionally omits target.name (not yet a defined requirement for AHP) so it does not validate against the normative Result schema" -->
 ```json
 {
   "spec_version": "v1",

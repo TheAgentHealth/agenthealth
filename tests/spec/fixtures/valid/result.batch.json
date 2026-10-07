@@ -5,14 +5,23 @@
       "target": { "name": "research-agent", "type": "agent" },
       "status": "HEALTHY",
       "latency_ms": 90,
-      "checks": {},
+      "checks": {
+        "reachability": { "status": "HEALTHY" },
+        "authentication": { "status": "HEALTHY" }
+      },
       "dependencies": []
     },
     {
       "target": { "name": "billing-agent", "type": "agent" },
       "status": "DEGRADED",
       "latency_ms": 1200,
-      "checks": {},
+      "checks": {
+        "reachability": { "status": "HEALTHY" },
+        "latency": {
+          "status": "DEGRADED",
+          "message": "latency 1200ms exceeds threshold 1000ms"
+        }
+      },
       "dependencies": []
     }
   ]

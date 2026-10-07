@@ -1,0 +1,8 @@
+version: v1
+
+targets:
+  - name: research-agent
+    type: agent
+    endpoint: https://agent.example.com
+    thresholds:
+      latency_mss: 1000

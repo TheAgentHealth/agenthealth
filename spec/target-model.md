@@ -50,3 +50,5 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 This table is indicative, not exhaustive — individual adapters define exactly which dimensions they implement (see [adapter-spec.md](adapter-spec.md)).
 
 A ✓ in the Functional column means the dimension is *applicable* to that target type, not that it runs by default: `functional` is always an active, opt-in-only check regardless of target type (see [configuration.md § Default Checks](configuration.md#default-checks)).
+
+The Dependency column indicates only whether a `checks.dependency` summary entry is part of that type's *default* checks — it does not restrict whether a target of that type may declare nested `dependencies:`. Any target type may declare dependencies, which always execute and aggregate regardless of this column (see [configuration.md § Dependency Execution](configuration.md#dependency-execution)).
