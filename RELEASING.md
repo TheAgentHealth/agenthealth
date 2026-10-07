@@ -93,3 +93,17 @@ Before 1.0, no such guarantee is made; this document exists to make pre-1.0 expe
 Release builds use Go 1.27.1 and govulncheck v1.8.0. Each published release
 contains five archives, five matching SBOMs and checksums. Verify provenance and
 SBOM attestations following [installation instructions](docs/installation.md#verify-provenance-and-sboms).
+
+## Infrastructure-only recovery
+
+If artifacts were built and signed but publication stopped because of release
+infrastructure, the Release workflow supports manual dispatch with
+`release_tag` set to the existing immutable tag. It checks out that tag,
+validates and rebuilds its source, and requires every rebuilt asset to match
+the original signed provenance before adding SBOM attestations and publishing.
+It preserves the original build provenance and tag. This recovery path requires
+existing provenance for every asset; source changes require a new version.
+
+v0.4.0 used this path after [PR #10](https://github.com/TheAgentHealth/agenthealth/pull/10)
+corrected the action's detection of schema-valid CycloneDX documents without
+the optional `serialNumber`. Published SBOMs use explicit CycloneDX predicates.

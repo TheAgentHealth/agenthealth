@@ -27,6 +27,12 @@ AgentHealth is designed to work across:
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
+**Current release: [v0.4.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.4.0).**
+Foundation stabilization adds aligned AHS classifications, machine-readable
+diagnostic codes, default A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility,
+shared per-target probes, official SDK interoperability tests, and signed
+provenance/SBOM attestations. See [release and migration notes](docs/releases/v0.4.0.md).
+
 ---
 
 # Why AgentHealth?
@@ -566,7 +572,8 @@ agenthealth check examples/a2a-check/agenthealth.yaml --format json
 
 | Example | Behavior |
 |---|---|
-| [Passive peer](examples/a2a-check/agenthealth.yaml) | Default discovery and read-only protocol/authentication checks, required skill, latency |
+| [A2A v1 peer](examples/a2a-check/v1.yaml) | Default A2A 1.0 discovery and passive health checks |
+| [0.3.0 compatibility peer](examples/a2a-check/agenthealth.yaml) | Explicit legacy protocol pin, discovery, read-only protocol/authentication checks, required skill, latency |
 | [Bearer credentials](examples/a2a-check/bearer.yaml) | Environment-referenced token for passive checks |
 | [Custom card URL](examples/a2a-check/custom-card.yaml) | Discovery from a different path on the configured origin |
 | [Minimal interaction](examples/a2a-check/functional.yaml) | One explicitly enabled, operator-declared safe text probe |
@@ -1301,17 +1308,12 @@ AgentHealth is under active design and development. The Go engine, CLI, HTTP/API
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 
-The current priority is establishing:
-
-- the health model,
-- specification,
-- CLI,
-- core engine,
-- MCP support,
-- A2A support,
-- generic HTTP checks,
-- dependency-aware health,
-- and universal distribution.
+Foundation stabilization is complete in v0.4.0. The next milestone is
+[Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
+composite agents, liveness/readiness, bounded functional tasks, and separate
+agent, communication-path, and dependency evidence. Gateway/router integrations,
+the dependency graph, AHP, distribution, SDKs, and observability/conformance
+follow the [roadmap](ROADMAP.md).
 
 ---
 

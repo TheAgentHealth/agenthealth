@@ -1,6 +1,7 @@
 # Documentation guide
 
-Phases 0–6 are implemented in v0.3.0. The specification remains
+Phases 0–6 and foundation stabilization are implemented in
+[v0.4.0](releases/v0.4.0.md). The specification remains
 pre-1.0. Use this index to find the current contracts, behavior, and examples;
 see the [roadmap](../ROADMAP.md) for limitations and later phases.
 
@@ -12,7 +13,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 3: CLI | [Commands, formats, doctor, OAuth login, and exit codes](cli.md), [installation](installation.md) | [Run the CLI](../README.md#run-the-cli), [example commands](../examples/README.md) |
 | 4: HTTP/API | [Status, headers, bearer authentication, body checks, transport diagnostics, and safety](http-adapter.md), [HTTP configuration](../spec/configuration.md#http-response-expectations-phase-4-draft) | [HTTP readiness](../examples/core-check/agenthealth.yaml), complete configuration examples in the specification |
 | 5: MCP | [HTTP/stdio, protocol selection, inventories, OAuth, functional probes, and limits](mcp-adapter.md), [login](cli.md#mcp-oauth-login) | [Discovery, stateless, stdio, functional, and all OAuth flows](../examples/README.md) |
-| 6: A2A | [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A peer configuration](../examples/a2a-check/agenthealth.yaml) |
+| 6: A2A | [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A v1 configuration](../examples/a2a-check/v1.yaml), [0.3.0 compatibility](../examples/a2a-check/agenthealth.yaml) |
 
 The next planned phases are:
 

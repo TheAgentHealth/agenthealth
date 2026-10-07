@@ -1,8 +1,8 @@
 # Foundation health contract
 
-Status: Proposed for maintainer review. Implementation authorized by the
-maintainer's instruction to start foundation stabilization; merge remains
-subject to repository review and green CI.
+Status: Implemented in [PR #9](https://github.com/TheAgentHealth/agenthealth/pull/9)
+and released in [v0.4.0](../releases/v0.4.0.md).
+[RFC issue #8](https://github.com/TheAgentHealth/agenthealth/issues/8) is closed.
 
 ## Problem and decision
 
