@@ -60,6 +60,8 @@ FILES_TO_CHECK = [
     ROOT / "spec" / "configuration.md",
     ROOT / "spec" / "protocol.md",
     ROOT / "docs" / "http-adapter.md",
+    ROOT / "docs" / "mcp-adapter.md",
+    ROOT / "examples" / "README.md",
 ]
 
 
@@ -102,6 +104,15 @@ def main() -> int:
             except jsonschema.ValidationError as exc:
                 errors.append(f"{path}: '{kind}' example failed schema validation: {exc.message}")
 
+    # Standalone configuration templates are also user-facing examples.
+    configs = sorted((ROOT / "examples").rglob("*.yaml"))
+    for path in configs:
+        try:
+            data = yaml.safe_load(path.read_text(encoding="utf-8"))
+            jsonschema.validate(data, CONFIGURATION_SCHEMA)
+        except (yaml.YAMLError, jsonschema.ValidationError, OSError) as exc:
+            errors.append(f"{path}: configuration example failed validation: {exc}")
+
     if errors:
         print(f"Found {len(errors)} documentation example issue(s):")
         for err in errors:
@@ -109,6 +120,7 @@ def main() -> int:
         return 1
 
     print(f"All {checked} marked documentation example(s) validated OK ({skipped} explicitly exempt).")
+    print(f"All {len(configs)} standalone configuration example(s) validated OK.")
     return 0
 
 

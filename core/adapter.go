@@ -24,9 +24,15 @@ type Request struct {
 	MarkResponse func()
 	// RecordStep records only allowlisted transport stages and health states.
 	RecordStep func(string, Status)
-	Target     Target
-	Credential string
-	Client     *http.Client
+	// Environment is a per-target snapshot of configured environment references.
+	Environment map[string]string
+	// RunState belongs to one target execution; adapters may cache acquired credentials.
+	RunState *sync.Map
+	// RememberSecret registers dynamically acquired credentials for output redaction.
+	RememberSecret func(string)
+	Target         Target
+	Credential     string
+	Client         *http.Client
 }
 
 // Observation records whether a response was received, distinguishing partial

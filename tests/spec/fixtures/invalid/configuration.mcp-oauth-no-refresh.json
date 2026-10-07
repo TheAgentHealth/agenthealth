@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "oauth",
+      "type": "mcp",
+      "endpoint": "https://example.com/mcp",
+      "mcp": {
+        "oauth": {
+          "issuer": "https://auth.example.com",
+          "client_id": "registered-client",
+          "grant": "refresh_token"
+        }
+      }
+    }
+  ]
+}

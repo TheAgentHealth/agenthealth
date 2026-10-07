@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "mcp",
+      "type": "http",
+      "endpoint": "http://localhost:3000/mcp",
+      "mcp": {
+        "required_tools": [
+          "search"
+        ],
+        "required_resources": [
+          "health://ready"
+        ],
+        "required_prompts": [
+          "summary"
+        ],
+        "functional": {
+          "tool": "search",
+          "safe": true,
+          "arguments_json": "{\"query\":\"health\"}"
+        }
+      },
+      "checks": [
+        "capability",
+        "functional"
+      ]
+    }
+  ]
+}

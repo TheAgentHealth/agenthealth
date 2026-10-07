@@ -1,0 +1,7 @@
+version: v1
+targets:
+  - name: modern-mcp
+    type: mcp
+    endpoint: http://localhost:3000/mcp
+    mcp:
+      protocol_version: '2026-07-28'

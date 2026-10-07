@@ -1,6 +1,6 @@
 # Go core engine
 
-The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; additional protocol adapters remain later roadmap work.
+The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5; other protocol adapters remain later roadmap work.
 
 ## Run it
 
@@ -28,7 +28,7 @@ Each nested dependency runs independently, even after the parent fails. Critical
 
 See [execution policies](../spec/configuration.md#execution-policies-phase-2-draft) for the draft fields, defaults, and bounds. Per-attempt deadlines default to five seconds, retries to zero, and the whole-run budget to 60 seconds (a shorter caller deadline takes precedence). Passive no-response connectivity failures may retry at most three additional times. Active checks and partial responses never retry. Retry delays and pool acquisition honor cancellation.
 
-Credentials resolve from environment references once per run. Missing/empty credentials fail Configuration before network requests. Raw adapter errors, messages, and panic values never reach results or engine logs: the engine uses canonical diagnostics and allowlisted transport stages and emits no internal logs. Resolved credentials are redacted recursively from identities and results; callers can safely log engine results through the formatters. `Redactor` is available for other structured logging paths. Arbitrary manually constructed results must supply known secret values to a Redactor before output; generic patterns cannot identify every possible secret.
+Credentials resolve from environment references once per run. MCP OAuth credentials are acquired noninteractively and cached within the target run; dynamically acquired access/refresh tokens participate in redaction. Configured stdio processes receive only selected runtime variables and explicit environment references. Missing/empty credentials fail Configuration before network requests. Raw adapter errors, messages, and panic values never reach results or engine logs: the engine uses canonical diagnostics and allowlisted transport stages and emits no internal logs. Resolved credentials are redacted recursively from identities and results; callers can safely log engine results through the formatters. `Redactor` is available for other structured logging paths. Arbitrary manually constructed results must supply known secret values to a Redactor before output; generic patterns cannot identify every possible secret.
 
 Adapters declare active dimensions; none execute by default. Functional must be active and explicitly requested. Trusted adapters must keep probes non-destructive and avoid their own unsafe logging. The supplied HTTP client verifies TLS without an insecure option and stops redirects to prevent credential forwarding. Per-attempt context/client deadlines govern TLS handshakes and response headers without a separate fixed transport cap. Invalid HTTP header control bytes in credentials fail Configuration before networking.
 

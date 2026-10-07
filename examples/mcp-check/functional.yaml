@@ -1,0 +1,12 @@
+version: v1
+targets:
+  - name: safe-search-probe
+    type: mcp
+    endpoint: http://localhost:3000/mcp
+    checks: [protocol, capability, functional, latency]
+    mcp:
+      required_tools: [search]
+      functional:
+        tool: search
+        safe: true
+        arguments_json: '{"query":"health"}'

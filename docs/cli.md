@@ -11,9 +11,9 @@ go build -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. HTTP and API are currently supported by the reference HTTP adapter. Other specification target types, including MCP and A2A, produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
+`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. HTTP/API and MCP Streamable HTTP/stdio are supported. Other specification target types, including A2A, produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
 
-`check <configuration.yaml>` loads strict YAML and runs the configured targets and dependencies. `doctor <configuration.yaml>` performs the same checks and adds status-based troubleshooting advice to terminal output. It does not enable additional functional checks. Failed checks and dependency evidence appear in all formats. Doctor advice is general guidance rather than a claim that a particular root cause has been identified.
+`check <configuration.yaml>` loads strict YAML and runs the configured targets and dependencies. `doctor <type> <endpoint>` runs the same passive defaults as ping. `doctor <configuration.yaml>` performs the same checks and adds status-based troubleshooting advice to terminal output. It does not enable additional functional checks. Failed checks and dependency evidence appear in all formats. Doctor advice is general guidance rather than a claim that a particular root cause has been identified.
 
 Use `--format terminal`, `--format json`, or `--format yaml` before or after positional arguments. Terminal is the default. JSON and YAML use identical specification fields, with a single-result document for one target or an ordered `results` batch for multiple targets. Doctor's machine output is the same health document as check. `--` ends option parsing for paths beginning with a dash.
 
@@ -33,4 +33,15 @@ Build a binary when testing exit codes: `go run` reports its own process exit co
 
 The CLI inherits the [engine safety policies](../core/README.md#policies-and-safety): verified TLS, no redirect following, secret redaction, passive defaults, bounded timeouts and retries. Functional checks require explicit configuration opt-in. Interrupt and termination signals cancel the run through the engine context.
 
-The [HTTP adapter](http-adapter.md) uses HEAD for passive connectivity, authentication, and protocol checks. Default protocol checks require a 2xx response; response headers and accepted statuses can be configured. Body matching requires explicit `functional` opt-in. Protocol-specific MCP/A2A adapters remain later phases.
+The [HTTP adapter](http-adapter.md) uses HEAD for passive connectivity, authentication, and protocol checks. Default protocol checks require a 2xx response; response headers and accepted statuses can be configured. Body matching requires explicit `functional` opt-in. The [MCP adapter](mcp-adapter.md) supports legacy initialization, modern stateless discovery, configured stdio, OAuth acquisition, and inventory checks. A2A remains a later phase.
+
+## MCP OAuth login
+
+`login <configuration.yaml> <target-name>` authenticates a configured top-level
+MCP target using authorization code + PKCE. It requires `mcp.oauth.grant:
+authorization_code`, a pre-registered client ID, and a private token file.
+The command prints an authorization URL for the user to open, waits for a
+loopback callback for up to five minutes, then saves credentials without
+printing tokens. Login uses terminal output and returns 0 on success or 6 on
+failure. Health commands remain noninteractive and use acquired or refreshed
+credentials. See [OAuth setup](mcp-adapter.md#oauth-acquisition-and-login).

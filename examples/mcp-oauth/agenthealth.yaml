@@ -1,0 +1,13 @@
+version: v1
+targets:
+  - name: user-mcp
+    type: mcp
+    endpoint: https://example.com/mcp
+    mcp:
+      oauth:
+        issuer: https://auth.example.com
+        client_id: your-registered-client
+        grant: authorization_code
+        token_file: .credentials/user-mcp.json
+        scopes: [read]
+        redirect_port: 8765

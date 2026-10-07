@@ -34,10 +34,12 @@ func (e *Engine) Run(ctx context.Context, config Config) ([]Result, error) {
 	secrets := []string{}
 	var collect func(Target)
 	collect = func(t Target) {
-		if t.Auth != nil {
-			value := os.Getenv(t.Auth.BearerEnv)
-			credentials[t.Auth.BearerEnv] = value
-			secrets = append(secrets, value)
+		for _, ref := range t.CredentialReferences() {
+			if _, exists := credentials[ref]; !exists {
+				value := os.Getenv(ref)
+				credentials[ref] = value
+				secrets = append(secrets, value)
+			}
 		}
 		for _, d := range t.Dependencies {
 			collect(d.Target)
@@ -51,12 +53,12 @@ func (e *Engine) Run(ctx context.Context, config Config) ([]Result, error) {
 	defer client.CloseIdleConnections()
 	results := make([]Result, 0, len(config.Targets))
 	for _, t := range config.Targets {
-		results = append(results, redactor.Result(e.runTarget(ctx, t, client, credentials)))
+		results = append(results, redactor.Result(e.runTarget(ctx, t, client, credentials, redactor)))
 	}
 	return results, nil
 }
 func passed(s Status) bool { return s == Healthy || s == Degraded }
-func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, credentials map[string]string) Result {
+func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, credentials map[string]string, redactor *Redactor) Result {
 	result := Result{Target: TargetIdentity{Name: t.Name, Type: t.Type}, Checks: map[string]CheckResult{}, Dependencies: []Result{}}
 	a := e.registry.lookup(t.Type)
 	requested := t.Checks
@@ -85,7 +87,10 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 		}
 	}
 	if direct {
-		request := Request{Target: t, Client: client}
+		request := Request{Target: t, Client: client, Environment: map[string]string{}, RunState: &sync.Map{}, RememberSecret: redactor.Remember}
+		for _, ref := range t.CredentialReferences() {
+			request.Environment[ref] = credentials[ref]
+		}
 		configCheck := CheckResult{Status: Healthy}
 		if a == nil {
 			configCheck = CheckResult{Status: Misconfigured, Message: "no adapter registered for target type"}
@@ -99,6 +104,11 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 		for _, d := range requested {
 			if d != "latency" && d != "dependency" && !contains(metadata.Dimensions, d) {
 				configCheck = CheckResult{Status: Misconfigured, Message: "requested dimension is not supported by adapter"}
+			}
+		}
+		for _, ref := range t.CredentialReferences() {
+			if credentials[ref] == "" {
+				configCheck = CheckResult{Status: Misconfigured, Message: "credential environment variable is missing or empty"}
 			}
 		}
 		if configCheck.Status == Healthy {
@@ -126,7 +136,7 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 				ms := float64(elapsed) / float64(time.Millisecond)
 				result.LatencyMS = &ms
 				auth := CheckResult{Status: Healthy}
-				needsAuth := contains(requested, "authentication") || contains(requested, "capability") || contains(requested, "functional")
+				needsAuth := (t.MCP != nil && t.MCP.OAuth != nil && contains(requested, "protocol")) || contains(requested, "authentication") || contains(requested, "capability") || contains(requested, "functional")
 				if needsAuth && contains(metadata.Dimensions, "authentication") {
 					obs, _ := e.execute(ctx, a, metadata, request, "authentication")
 					auth = obs.Check
@@ -154,7 +164,7 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 	critical := make([]bool, 0, len(t.Dependencies))
 	contribution := Healthy
 	for _, d := range t.Dependencies {
-		dep := e.runTarget(ctx, d.Target, client, credentials)
+		dep := e.runTarget(ctx, d.Target, client, credentials, redactor)
 		result.Dependencies = append(result.Dependencies, dep)
 		critical = append(critical, d.IsCritical())
 		contribution = Worst(contribution, DependencyContribution(dep.Status, d.IsCritical()))
@@ -282,6 +292,20 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 }
 
 var diagnosticMessages = map[string]string{
+	"mcp_process":    "MCP subprocess could not start or exited before responding",
+	"mcp_oauth":      "MCP OAuth configuration, discovery or token acquisition failed",
+	"mcp_login":      "MCP OAuth login is required; use agenthealth login",
+	"mcp_input":      "MCP response requires unsupported input or continuation",
+	"mcp_auth":       "MCP authentication rejected (401 or 403)",
+	"mcp_http":       "MCP endpoint returned an unexpected HTTP status",
+	"mcp_protocol":   "invalid MCP initialization or JSON-RPC response",
+	"mcp_version":    "MCP protocol version is unsupported or differs from the pinned version",
+	"mcp_limit":      "MCP response or discovery exceeded safety limits",
+	"mcp_rpc":        "MCP server rejected the protocol request",
+	"mcp_required":   "required MCP tool, resource or prompt is missing",
+	"mcp_unsafe":     "functional tool lacks explicit read-only and non-destructive annotations",
+	"mcp_functional": "MCP functional invocation failed",
+
 	"http_status":     "HTTP status did not match expected status",
 	"http_headers":    "required HTTP response header did not match",
 	"http_body":       "HTTP response body did not contain required text",

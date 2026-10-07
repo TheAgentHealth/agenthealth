@@ -1,0 +1,11 @@
+version: v1
+targets:
+  - name: local-mcp
+    type: mcp
+    endpoint: http://localhost:3000/mcp
+    timeout_ms: 5000
+    thresholds:
+      latency_ms: 500
+    mcp:
+      required_tools: [search]
+      required_resources: ["health://ready"]

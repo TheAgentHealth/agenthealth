@@ -181,3 +181,77 @@ Transport observations appear as optional `checks.reachability.steps` entries fo
 - Stable 1.0 policy contract after implementation feedback
 
 The implemented policy contract above resolves the Phase 2 timeout, retry, and environment credential-reference requirements. Further schemes remain future extensions.
+
+## MCP expectations and safe invocation (Phase 5 draft)
+
+MCP targets may specify `mcp` options on top-level targets or dependencies.
+They use the [MCP adapter contract](../docs/mcp-adapter.md) for Streamable HTTP
+or configured stdio:
+
+- `protocol_version`: optional pin to `2025-03-26`, `2025-06-18`, `2025-11-25`, or `2026-07-28`.
+  An omitted or empty value probes the modern protocol and permits legacy
+  fallback as described by the adapter. A pin disables cross-era fallback.
+- `required_tools`, `required_resources`, `required_prompts`: optional arrays
+  of unique, nonblank identities. Tools/prompts match names; resources match
+  URIs. Missing requirements produce `DEGRADED`. Explicit checks must include
+  `capability` when nonempty requirements are specified.
+- `functional`: optional invocation with nonblank `tool`, `safe: true`, and
+  optional `arguments_json` (empty or a JSON object string, at most 64 KiB).
+  The Go loader additionally parses this string; JSON Schema does not parse
+  embedded JSON. Invocation requires explicit `functional` in `checks`, and
+  every MCP functional check requires invocation options. The operator must
+  verify safety; tool annotations must additionally declare read-only and
+  non-destructive behavior. Functional calls never retry.
+
+MCP options on other target types, unsupported version pins, duplicate/blank
+requirements, and missing functional safety declarations are invalid
+configuration. The shared result schema and exit codes are unchanged.
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: local-mcp
+    type: mcp
+    endpoint: http://localhost:3000/mcp
+    checks: [protocol, capability, functional, latency]
+    mcp:
+      required_tools: [search]
+      functional:
+        tool: search
+        safe: true
+        arguments_json: '{"query":"health"}'
+```
+
+### MCP transports and OAuth (Phase 5 draft extension)
+
+`mcp.transport` is `http` (default) or `stdio`. Stdio requires `mcp.stdio` with
+nonblank `command`, optional string `args`, optional `directory`, and optional
+`env` mapping child variable names to host environment references. Commands,
+arguments, and directories cannot contain NUL bytes. Stdio options require
+stdio transport, and stdio targets cannot use `auth` or `mcp.oauth`.
+The adapter requires a `stdio://<identity>` endpoint and invokes the command
+without a shell. Each check owns and cleans up its process.
+
+HTTP OAuth targets use `mcp.oauth` instead of `auth`. Required fields are
+nonblank `issuer`, `client_id`, and `grant` (`client_credentials`,
+`refresh_token`, or `authorization_code`). Optional fields are
+`client_secret_env`, `refresh_token_env`, `token_file`, unique ASCII OAuth
+`scopes`, and `redirect_port` (integer 0–65535).
+
+- Client credentials require `client_secret_env`.
+- Refresh token grants require `refresh_token_env` or `token_file`.
+- Authorization code grants require `token_file`; the separate `login` command
+  obtains credentials through PKCE and a loopback callback.
+
+Environment references must be nonblank and contain neither `=` nor NUL.
+Configured references are snapshotted per run, must resolve to nonempty values,
+and participate in redaction. Acquired credentials are registered dynamically
+for redaction and cached only within the target's run. Token files are bound to
+the issuer, resource, and client ID, with private file permissions.
+OAuth configuration never triggers interactive login during a health check.
+
+The adapter enforces secure issuer/metadata/token URLs, issuer/resource
+validation, modern per-request metadata and mirrored HTTP headers, legacy
+negotiation rules, and bounded subprocess cleanup described in its contract.
+No new health dimensions or result fields are introduced.

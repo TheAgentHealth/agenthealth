@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "modern",
+      "type": "mcp",
+      "endpoint": "https://example.com/mcp",
+      "mcp": {
+        "protocol_version": "2026-07-28"
+      }
+    }
+  ]
+}

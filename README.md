@@ -24,7 +24,7 @@ AgentHealth is designed to work across:
 - Agent gateways
 - Supporting infrastructure
 
-The project provides a common health model, a universal CLI, machine-readable health results, SDKs, container support, Kubernetes integration, and an extensible adapter architecture.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API and MCP adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
 ---
 
@@ -81,7 +81,7 @@ AgentHealth aims to provide:
 
 # Specification → Protocol → Implementation
 
-AgentHealth separates **what health means** from **how health is exposed** from **the tools intended to implement it** (see [Project Status](#project-status) — these tools are specified but not yet built).
+AgentHealth separates **what health means** from **how health is exposed** from **the tools intended to implement it** (see [Project Status](#project-status) for implemented and planned components).
 
 ```text
                     TheAgentHealth
@@ -159,7 +159,7 @@ and a common response envelope such as:
 }
 ```
 
-The [Machine-Readable Health Format](#machine-readable-health-format) that AgentHealth's CLI is designed to produce (see [Phase 3 — Universal CLI](ROADMAP.md#phase-3--universal-cli); not yet implemented) is an early, implementation-specific version of this idea. Formalizing it into AHP, with a versioned schema, transport requirements, and conformance rules independent of this repository's CLI, is future work.
+The [Machine-Readable Health Format](#machine-readable-health-format) that AgentHealth's CLI produces (see [Phase 3 — Universal CLI](ROADMAP.md#phase-3--universal-cli)) is an early, implementation-specific version of this idea. Formalizing it into AHP, with a versioned schema, transport requirements, and conformance rules independent of this repository's CLI, is future work.
 
 ## Reference Implementation
 
@@ -383,53 +383,19 @@ Adapters may expose additional diagnostic details while mapping their overall re
 
 # Universal CLI
 
-The AgentHealth CLI is intended to provide the same operational experience regardless of the underlying technology.
-
-Examples:
-
-```bash
-agenthealth ping mcp http://localhost:3000
-```
-
-```bash
-agenthealth ping a2a https://agent.example.com
-```
-
-```bash
-agenthealth ping agent https://agent.example.com
-```
-
-```bash
-agenthealth ping model <model-endpoint>
-```
+The CLI supports `http`, `api`, and `mcp` targets. See [CLI usage](docs/cli.md) for the complete command reference.
 
 ```bash
 agenthealth ping http https://service.example.com/health
+agenthealth ping mcp http://localhost:3000/mcp
+agenthealth check agenthealth.yaml --format json
+agenthealth doctor agenthealth.yaml
+agenthealth doctor mcp http://localhost:3000/mcp
+agenthealth version
 ```
 
-For deeper diagnostics:
-
-```bash
-agenthealth doctor
-```
-
-For configuration-driven checks:
-
-```bash
-agenthealth check agenthealth.yaml
-```
-
-For dependency traversal:
-
-```bash
-agenthealth check agenthealth.yaml --dependencies
-```
-
-For machine-readable output:
-
-```bash
-agenthealth check agenthealth.yaml --output json
-```
+Configured dependencies are evaluated automatically; no `--dependencies` flag
+is needed. A2A, agent, and model adapters remain planned.
 
 ---
 
@@ -446,6 +412,8 @@ agenthealth ping mcp http://localhost:3000
 ```
 
 Example:
+
+Conceptual display; see [CLI usage](docs/cli.md) for the implemented output and health states.
 
 ```text
 Target: github-mcp
@@ -489,7 +457,7 @@ Perform deeper diagnostics and explain why a system is unhealthy.
 agenthealth doctor agenthealth.yaml
 ```
 
-Example:
+Conceptual future output (current doctor output is documented in [CLI usage](docs/cli.md)):
 
 ```text
 AgentHealth Doctor
@@ -531,7 +499,7 @@ gateway
 custom
 ```
 
-Not every target type is expected to be implemented in the first release.
+Currently implemented target types are `http`, `api`, and `mcp`. The remaining types are specification vocabulary for future adapters.
 
 See [ROADMAP.md](ROADMAP.md).
 
@@ -539,45 +507,46 @@ See [ROADMAP.md](ROADMAP.md).
 
 # MCP Health
 
-MCP is a first-class target for AgentHealth.
+The [MCP adapter](docs/mcp-adapter.md) supports Streamable HTTP JSON/SSE,
+configured stdio subprocesses, legacy initialization, and stateless MCP
+`2026-07-28`. It checks authentication, paginated tools/resources/prompts,
+required inventories, and latency. Functional tool calls require explicit
+safe opt-in and never retry.
 
-Potential checks include:
+| Feature | Configuration example | Documentation |
+|---|---|---|
+| Passive discovery and required inventories | [MCP discovery](examples/mcp-check/agenthealth.yaml) | [Checks and expectations](docs/mcp-adapter.md#passive-checks-and-expectations) |
+| Modern stateless protocol | [Version pin](examples/mcp-check/modern.yaml) | [Protocol selection](docs/mcp-adapter.md#protocol-selection) |
+| Local stdio server | [Subprocess configuration](examples/mcp-stdio/agenthealth.yaml) | [Stdio setup](docs/mcp-adapter.md#stdio-subprocesses) |
+| OAuth client credentials | [Automated authentication](examples/mcp-oauth/client-credentials.yaml) | [OAuth setup](docs/mcp-adapter.md#oauth-acquisition-and-login) |
+| OAuth browser login + PKCE | [Interactive login configuration](examples/mcp-oauth/agenthealth.yaml) | [Login command](docs/cli.md#mcp-oauth-login) |
+| OAuth refresh tokens and rotation | [Refresh configuration](examples/mcp-oauth/refresh-token.yaml) | [Token refresh and storage](docs/mcp-adapter.md#oauth-acquisition-and-login) |
+| Explicit safe functional invocation | [Tool probe](examples/mcp-check/functional.yaml) | [Functional safety](docs/mcp-adapter.md#functional-invocation) |
 
-```text
-Transport connectivity
-Initialization
-Protocol negotiation
-Authentication
-Capability discovery
-tools/list
-resources/list
-prompts/list
-Required tool validation
-Minimal safe invocation
-Latency
-```
-
-Example:
+Point these commands at your server's actual MCP endpoint:
 
 ```bash
-agenthealth ping mcp http://localhost:3000
+agenthealth ping mcp http://localhost:3000/mcp
+agenthealth doctor mcp http://localhost:3000/mcp
 ```
 
-Example output:
+For OAuth browser login, first replace the example's endpoint, issuer, and
+client ID with your registered server/client settings, then run:
 
-```text
-MCP Server: github-mcp
-
-Endpoint            PASS
-Initialization      PASS
-Protocol            PASS
-Authentication      PASS
-Tools Discovery     PASS
-Tools               18
-Latency              92 ms
-
-Status: HEALTHY
+```bash
+agenthealth login examples/mcp-oauth/agenthealth.yaml user-mcp
+agenthealth check examples/mcp-oauth/agenthealth.yaml
 ```
+
+Health checks stay noninteractive; only `login` asks for browser approval.
+Tokens are stored privately and redacted from health output. Client credentials
+and refresh-token examples reference environment variables instead of literal
+secrets. See the [examples guide](examples/README.md) for setup instructions and
+[Phase 5 status](ROADMAP.md#phase-5--mcp-health-adapter) for implemented scope.
+
+Deprecated separate HTTP+SSE, dynamic OAuth client registration, and JWT client
+assertions are not implemented. The adapter documentation lists remaining
+protocol, transport, and platform limits.
 
 ---
 
@@ -901,7 +870,7 @@ The adapter interface should allow third parties to implement checks without mod
 
 # Distribution
 
-AgentHealth is intended to be available through multiple distribution channels.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The Docker, SDK, and Kubernetes examples below describe planned integrations, not published packages or images.
 
 ## Standalone CLI
 
@@ -1057,7 +1026,7 @@ if [ $? -ne 0 ]; then
 fi
 ```
 
-Exit-code semantics will be formally documented by the specification.
+Exit-code semantics are defined in [the specification](spec/exit-codes.md).
 
 ---
 
@@ -1243,9 +1212,9 @@ agenthealth/
 │   ├── agent/
 │   └── model/
 │
-├── sdk/
-│   ├── python/                 # published to PyPI
-│   └── javascript/              # published to npm
+├── sdk/                       # planned
+│   ├── python/                 # planned PyPI SDK
+│   └── javascript/             # planned npm SDK
 │
 ├── integrations/
 │   ├── docker/
@@ -1257,7 +1226,7 @@ agenthealth/
 └── docs/
 ```
 
-The exact repository structure may change as the implementation evolves, but the monorepo strategy itself is a settled decision (see [Phase 0 — Project Foundation](ROADMAP.md#phase-0--project-foundation) in the roadmap).
+This tree includes planned directories for future adapters, SDKs, and integrations. The exact repository structure may change as the implementation evolves, but the monorepo strategy itself is a settled decision (see [Phase 0 — Project Foundation](ROADMAP.md#phase-0--project-foundation) in the roadmap).
 
 ---
 
@@ -1283,7 +1252,9 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-AgentHealth is under active design and development.
+Coverage for phases 0–5 is indexed in [the documentation guide](docs/README.md).
+
+AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, and MCP HTTP/stdio adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

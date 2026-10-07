@@ -6,6 +6,8 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
+See the [documentation guide](docs/README.md) for phase 0–5 references and examples.
+
 ---
 
 # Guiding Strategy
@@ -61,7 +63,7 @@ Define:
 - [x] configuration format: YAML (see [spec/configuration.md](spec/configuration.md))
 - [x] result format: JSON (see [spec/result-schema.md](spec/result-schema.md))
 - [x] error model: normalized onto health states (see [docs/architecture.md](docs/architecture.md#error-model))
-- [x] exit codes: conceptual mapping defined, final value TBD in spec process (see [docs/architecture.md](docs/architecture.md#exit-codes))
+- [x] exit codes: normative mapping implemented in the engine and CLI (see [docs/architecture.md](docs/architecture.md#exit-codes))
 - [x] plugin strategy: in-repo adapters initially (see [docs/architecture.md](docs/architecture.md#plugin-strategy))
 - [x] SDK strategy: thin wrappers over the core engine (see [docs/architecture.md](docs/architecture.md#sdk-strategy))
 
@@ -219,7 +221,7 @@ Implement the reference health engine.
 
 # Phase 3 — Universal CLI
 
-**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API use the reference adapter; MCP and A2A adapters remain later phases. See [CLI usage](docs/cli.md).
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API and MCP adapters are available; A2A remains a later phase. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -238,8 +240,9 @@ Examples:
 ```bash
 agenthealth ping http https://example.com
 agenthealth ping mcp http://localhost:3000
-agenthealth ping a2a https://agent.example.com
 ```
+
+A2A usage is planned under Phase 6.
 
 ### Check
 
@@ -251,6 +254,14 @@ agenthealth check agenthealth.yaml
 
 ```bash
 agenthealth doctor agenthealth.yaml
+```
+
+### OAuth login
+
+Added in Phase 5; see [CLI login usage](docs/cli.md#mcp-oauth-login).
+
+```bash
+agenthealth login examples/mcp-oauth/agenthealth.yaml user-mcp
 ```
 
 ### Version
@@ -320,51 +331,60 @@ This adapter provides a foundation for services that do not implement agent-spec
 
 # Phase 5 — MCP Health Adapter
 
+**Status:** Implemented for Streamable HTTP (JSON/SSE), configured stdio, legacy initialization and modern stateless MCP 2026-07-28. OAuth client credentials, refresh, and PKCE login are available. See [MCP adapter](docs/mcp-adapter.md) for configuration and safety. Deprecated separate HTTP+SSE, dynamic OAuth registration, and JWT assertions remain outside current scope.
+
 Goal:
 
 Make MCP a first-class AgentHealth target.
 
 ## Capabilities
 
-- [ ] MCP transport connectivity
-- [ ] initialization
-- [ ] protocol negotiation
-- [ ] protocol version validation
-- [ ] capability discovery
-- [ ] authentication
-- [ ] tools discovery
-- [ ] resources discovery
-- [ ] prompts discovery
-- [ ] required tool validation
-- [ ] required resource validation
-- [ ] latency measurement
-- [ ] safe functional invocation
+- [x] MCP Streamable HTTP transport connectivity (JSON/SSE)
+- [x] bounded legacy SSE response resumption without repeating tool calls
+- [x] tool content type and required-field validation
+- [x] configured stdio subprocesses
+- [x] modern stateless MCP `2026-07-28` discovery and request metadata
+- [x] initialization
+- [x] protocol negotiation
+- [x] protocol version validation
+- [x] capability discovery
+- [x] bearer authentication
+- [x] OAuth client credentials acquisition
+- [x] OAuth refresh tokens and rotation
+- [x] OAuth authorization code + PKCE login
+- [x] private token storage and credential redaction
+- [x] tools discovery
+- [x] resources discovery
+- [x] prompts discovery
+- [x] required tool validation
+- [x] required resource validation
+- [x] latency measurement
+- [x] safe functional invocation
 
 Example:
 
 ```bash
-agenthealth ping mcp http://localhost:3000
+agenthealth ping mcp http://localhost:3000/mcp
 ```
 
 ## MCP Doctor
 
 ```bash
-agenthealth doctor mcp http://localhost:3000
+agenthealth doctor mcp http://localhost:3000/mcp
 ```
 
-Potential diagnostics:
+Doctor displays dimension-level health evidence and canonical troubleshooting
+messages. Required inventory failures are `DEGRADED`; use a configured target
+to declare the expected tools/resources/prompts:
 
-```text
-✓ Transport
-✓ Initialization
-✓ Protocol
-✓ Authentication
-✓ tools/list
-✓ resources/list
-⚠ Expected tool "search" missing
-
-Status: DEGRADED
+```bash
+agenthealth doctor examples/mcp-check/agenthealth.yaml
 ```
+
+See the [examples guide](examples/README.md) for stdio, modern protocol,
+client credentials, browser login, refresh tokens, and functional probes.
+See [CLI login usage](docs/cli.md#mcp-oauth-login) for the separate OAuth login
+command; health checks remain noninteractive.
 
 ---
 

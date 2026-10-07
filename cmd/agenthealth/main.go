@@ -8,8 +8,10 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
+	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
 	"github.com/TheAgentHealth/agenthealth/core"
 )
 
@@ -19,10 +21,13 @@ var version = "dev"
 const usage = `Usage:
   agenthealth ping <type> <endpoint> [--format terminal|json|yaml]
   agenthealth check <configuration.yaml> [--format terminal|json|yaml]
+  agenthealth doctor <type> <endpoint> [--format terminal|json|yaml]
   agenthealth doctor <configuration.yaml> [--format terminal|json|yaml]
+  agenthealth login <configuration.yaml> <target-name>
   agenthealth version
 
-HTTP and API adapters are available. Other target types require future adapters.
+HTTP, API and MCP Streamable HTTP adapters are available.
+Other target types require future adapters.
 Checks are passive by default; functional checks require opt-in in configuration.
 `
 
@@ -90,15 +95,42 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	}
 	var config core.Config
 	switch command {
-	case "ping":
+	case "ping", "doctor":
+		if command == "doctor" && len(positional) == 2 {
+			var err error
+			config, err = core.LoadConfigFile(positional[1])
+			if err != nil {
+				return fail(err.Error())
+			}
+			break
+		}
 		if len(positional) != 3 {
-			return fail("usage: agenthealth ping <type> <endpoint>")
+			return fail("usage: agenthealth " + command + " <type> <endpoint>")
 		}
-		config = core.Config{Version: "v1", Targets: []core.Target{{Name: "ping", Type: positional[1], Endpoint: positional[2]}}}
+		config = core.Config{Version: "v1", Targets: []core.Target{{Name: command, Type: positional[1], Endpoint: positional[2]}}}
 		if err := config.Validate(); err != nil {
-			return fail("invalid ping target; use a specification target type and a nonempty endpoint")
+			return fail("invalid target; use a specification target type and a nonempty endpoint")
 		}
-	case "check", "doctor":
+	case "login":
+		if len(positional) != 3 || format != "terminal" {
+			return fail("usage: agenthealth login <configuration.yaml> <target-name>")
+		}
+		loaded, err := core.LoadConfigFile(positional[1])
+		if err != nil {
+			return fail(err.Error())
+		}
+		for _, target := range loaded.Targets {
+			if target.Name == positional[2] {
+				loginCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+				defer cancel()
+				if err := mcpadapter.Login(loginCtx, target, out); err != nil {
+					return fail("OAuth login failed; verify issuer, client registration, callback and token file configuration")
+				}
+				return 0
+			}
+		}
+		return fail("login target not found in configuration")
+	case "check":
 		if len(positional) != 2 {
 			return fail("usage: agenthealth " + command + " <configuration.yaml>")
 		}
@@ -113,6 +145,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	registry := core.NewRegistry()
 	if err := registry.Register(httpadapter.Adapter{}); err != nil {
 		return fail("cannot register HTTP adapter")
+	}
+	if err := registry.Register(mcpadapter.Adapter{}); err != nil {
+		return fail("cannot register MCP adapter")
 	}
 	results, err := core.NewEngine(registry).Run(ctx, config)
 	if err != nil {
