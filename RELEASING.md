@@ -1,5 +1,8 @@
 # Release Process & Versioning
 
+See [AGENTS.md](AGENTS.md#prepare-and-publish-a-release) for the agent release
+runbook, including preflight checks and verification of published downloads.
+
 ## Versioning scheme
 
 AgentHealth follows [Semantic Versioning 2.0.0](https://semver.org/) for the CLI, core engine, adapters, and SDKs:
