@@ -94,7 +94,11 @@ unsupported server requests are rejected. Over-limit responses/discovery are
 `UNKNOWN`; malformed protocol and rejected RPCs are `UNHEALTHY`. HTTP 401/403
 is `MISCONFIGURED`; other unexpected HTTP statuses are `UNHEALTHY`.
 Connectivity failures and partial-response timeouts use the engine's normal
-classifications. Functional calls never retry or resume.
+classifications. Functional calls never repeat the POST request. Legacy HTTP
+SSE responses with an event ID can resume through at most three GET requests
+using `Last-Event-ID`, honoring `retry` within the original deadline and a
+shared 1 MiB response budget. Stateless streams do not resume. Tool content
+blocks must have a recognized type and the required fields for that type.
 
 ## Stdio subprocesses
 

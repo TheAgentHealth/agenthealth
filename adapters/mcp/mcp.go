@@ -2,7 +2,6 @@
 package mcp
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"crypto/tls"
@@ -212,8 +211,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 				return observation(protocolError())
 			}
 			for _, item := range reply.Content {
-				var c map[string]json.RawMessage
-				if json.Unmarshal(item, &c) != nil || c == nil || !nonemptyString(c["type"]) {
+				if !validContent(item) {
 					return observation(protocolError())
 				}
 			}
@@ -465,50 +463,7 @@ func (s *session) rpc(ctx context.Context, method string, params any) (json.RawM
 	if media != "text/event-stream" {
 		return nil, protocolError()
 	}
-	// Consume bounded SSE events until the matching response; do not wait for EOF.
-	scanner := bufio.NewScanner(reader)
-	scanner.Buffer(make([]byte, 4096), maxBody+1)
-	var data []byte
-	total := 0
-	for scanner.Scan() {
-		line := scanner.Text()
-		total += len(line) + 1
-		if total > maxBody {
-			return nil, fail(core.Unknown, "mcp_limit")
-		}
-		if line == "" {
-			if len(data) > 0 {
-				var envelope map[string]json.RawMessage
-				if json.Unmarshal(data, &envelope) != nil {
-					return nil, protocolError()
-				}
-				if _, hasID := envelope["id"]; hasID {
-					return decodeResponse(data, expected)
-				}
-				if string(envelope["jsonrpc"]) != `"2.0"` || !nonemptyString(envelope["method"]) {
-					return nil, protocolError()
-				}
-			}
-			data = nil
-			continue
-		}
-		if strings.HasPrefix(line, "data:") {
-			if len(data) > 0 {
-				data = append(data, '\n')
-			}
-			data = append(data, strings.TrimPrefix(strings.TrimPrefix(line, "data:"), " ")...)
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		if errors.Is(err, bufio.ErrTooLong) {
-			return nil, fail(core.Unknown, "mcp_limit")
-		}
-		return nil, err
-	}
-	if reader.N == 0 {
-		return nil, fail(core.Unknown, "mcp_limit")
-	}
-	return nil, protocolError()
+	return s.readSSE(ctx, resp, expected)
 }
 func decodeResponse(data []byte, expected int) (json.RawMessage, error) {
 	var e map[string]json.RawMessage
