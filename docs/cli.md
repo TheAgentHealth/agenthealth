@@ -11,7 +11,7 @@ go build -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. HTTP/API and MCP Streamable HTTP/stdio are supported. Other specification target types, including A2A, produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
+`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. HTTP/API, MCP Streamable HTTP/stdio, and A2A 0.3.0 JSON-RPC are supported. Other specification target types produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
 
 `check <configuration.yaml>` loads strict YAML and runs the configured targets and dependencies. `doctor <type> <endpoint>` runs the same passive defaults as ping. `doctor <configuration.yaml>` performs the same checks and adds status-based troubleshooting advice to terminal output. It does not enable additional functional checks. Failed checks and dependency evidence appear in all formats. Doctor advice is general guidance rather than a claim that a particular root cause has been identified.
 
@@ -33,7 +33,7 @@ Build a binary when testing exit codes: `go run` reports its own process exit co
 
 The CLI inherits the [engine safety policies](../core/README.md#policies-and-safety): verified TLS, no redirect following, secret redaction, passive defaults, bounded timeouts and retries. Functional checks require explicit configuration opt-in. Interrupt and termination signals cancel the run through the engine context.
 
-The [HTTP adapter](http-adapter.md) uses HEAD for passive connectivity, authentication, and protocol checks. Default protocol checks require a 2xx response; response headers and accepted statuses can be configured. Body matching requires explicit `functional` opt-in. The [MCP adapter](mcp-adapter.md) supports legacy initialization, modern stateless discovery, configured stdio, OAuth acquisition, and inventory checks. A2A remains a later phase.
+The [HTTP adapter](http-adapter.md) uses HEAD for passive connectivity, authentication, and protocol checks. Default protocol checks require a 2xx response; response headers and accepted statuses can be configured. Body matching requires explicit `functional` opt-in. The [MCP adapter](mcp-adapter.md) supports legacy initialization, modern stateless discovery, configured stdio, OAuth acquisition, and inventory checks. The [A2A adapter](a2a-adapter.md) discovers agent cards, validates protocol/authentication with read-only task lookups, checks expected skills, and supports opt-in safe text interactions.
 
 ## MCP OAuth login
 

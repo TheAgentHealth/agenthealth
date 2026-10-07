@@ -22,3 +22,5 @@ HTTP/API and MCP are the available adapters. A2A and other adapter types,
 SDKs, container images, and Kubernetes integrations remain planned. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality.
+
+- [A2A adapter](a2a-adapter.md) — A2A 0.3.0 JSON-RPC discovery and health checks.

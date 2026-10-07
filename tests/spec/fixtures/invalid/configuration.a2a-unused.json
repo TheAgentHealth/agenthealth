@@ -1,0 +1,18 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "peer",
+      "type": "a2a",
+      "endpoint": "https://example.com",
+      "a2a": {
+        "required_skills": [
+          "health"
+        ]
+      },
+      "checks": [
+        "reachability"
+      ]
+    }
+  ]
+}

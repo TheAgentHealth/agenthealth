@@ -32,6 +32,20 @@ type Target struct {
 	Auth          *AuthReference `yaml:"auth"`
 	HTTP          *HTTPOptions   `yaml:"http"`
 	MCP           *MCPOptions    `yaml:"mcp"`
+	A2A           *A2AOptions    `yaml:"a2a"`
+}
+
+// A2AOptions describes passive expectations and an explicitly safe interaction.
+type A2AOptions struct {
+	CardURL              string          `yaml:"card_url"`
+	ProtocolVersion      string          `yaml:"protocol_version"`
+	RequiredSkills       []string        `yaml:"required_skills"`
+	RequiredCapabilities []string        `yaml:"required_capabilities"`
+	Functional           *A2AInteraction `yaml:"functional"`
+}
+type A2AInteraction struct {
+	Safe bool   `yaml:"safe"`
+	Text string `yaml:"text"`
 }
 
 // MCPOptions configures Streamable HTTP discovery and an explicitly safe probe.
@@ -220,6 +234,37 @@ func validateTarget(t Target, path string, depth int) error {
 	}
 	if !contains(targetTypes, t.Type) {
 		return fmt.Errorf("%s: unsupported target type", path)
+	}
+	if t.A2A != nil {
+		o := t.A2A
+		if t.Type != "a2a" || (o.ProtocolVersion != "" && o.ProtocolVersion != "0.3.0") {
+			return fmt.Errorf("%s: A2A options require a2a target and supported protocol version", path)
+		}
+		for _, names := range [][]string{o.RequiredSkills, o.RequiredCapabilities} {
+			seen := map[string]bool{}
+			for _, name := range names {
+				if strings.TrimSpace(name) == "" || seen[name] {
+					return fmt.Errorf("%s: A2A requirements must be nonempty and unique", path)
+				}
+				seen[name] = true
+			}
+		}
+		for _, name := range o.RequiredCapabilities {
+			if !contains([]string{"streaming", "pushNotifications", "stateTransitionHistory"}, name) {
+				return fmt.Errorf("%s: unsupported A2A capability expectation", path)
+			}
+		}
+		if t.Checks != nil && !contains(t.Checks, "capability") && len(o.RequiredSkills)+len(o.RequiredCapabilities) > 0 {
+			return fmt.Errorf("%s: A2A expectations require capability check", path)
+		}
+		if f := o.Functional; f != nil {
+			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Text) == "" || len(f.Text) > 65536 {
+				return fmt.Errorf("%s: A2A interaction requires functional opt-in, safe: true and text of at most 64 KiB", path)
+			}
+		}
+	}
+	if t.Type == "a2a" && contains(t.Checks, "functional") && (t.A2A == nil || t.A2A.Functional == nil) {
+		return fmt.Errorf("%s: A2A functional check requires interaction", path)
 	}
 	if t.MCP != nil {
 		if t.Type != "mcp" {
@@ -410,7 +455,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || strings.TrimSpace(value.Value) == "" {
 				return false
 			}
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
 			}
@@ -426,7 +471,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if !validYAMLNode(value, "auth", depth+1) {
 				return false
 			}
-		case "mcp", "functional", "stdio", "oauth":
+		case "a2a", "mcp", "functional", "stdio", "oauth":
 			if !validYAMLNode(value, key.Value, depth+1) {
 				return false
 			}
@@ -471,7 +516,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
 				return false
 			}
-		case "checks", "required_tools", "required_resources", "required_prompts", "args", "scopes":
+		case "checks", "required_tools", "required_resources", "required_prompts", "args", "scopes", "required_skills", "required_capabilities":
 			if value.Kind != yaml.SequenceNode {
 				return false
 			}

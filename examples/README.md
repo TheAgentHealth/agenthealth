@@ -77,3 +77,16 @@ agenthealth check examples/mcp-check/functional.yaml
 ```
 
 See [functional invocation](../docs/mcp-adapter.md#functional-invocation).
+
+## A2A peer checks
+
+[A2A configuration](a2a-check/agenthealth.yaml) checks a local A2A 0.3.0 JSON-RPC
+peer at port 9000 with a required `health` skill. Start your own peer and adjust
+the endpoint and skill expectation to match its card.
+
+```bash
+agenthealth check examples/a2a-check/agenthealth.yaml --format json
+```
+
+See the [A2A adapter guide](../docs/a2a-adapter.md) for bearer credentials,
+capability expectations, custom card URLs, and opt-in interactions.

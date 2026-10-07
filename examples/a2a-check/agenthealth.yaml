@@ -1,0 +1,10 @@
+version: v1
+targets:
+  - name: peer
+    type: a2a
+    endpoint: http://localhost:9000
+    a2a:
+      protocol_version: '0.3.0'
+      required_skills: [health]
+    thresholds:
+      latency_ms: 1000

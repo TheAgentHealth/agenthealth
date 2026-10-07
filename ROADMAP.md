@@ -242,7 +242,7 @@ agenthealth ping http https://example.com
 agenthealth ping mcp http://localhost:3000
 ```
 
-A2A usage is planned under Phase 6.
+A2A usage is implemented under Phase 6 for 0.3.0 JSON-RPC peers.
 
 ### Check
 
@@ -392,19 +392,22 @@ command; health checks remain noninteractive.
 
 Goal:
 
-Support Agent-to-Agent health validation.
+Support Agent-to-Agent health validation. Implemented for A2A 0.3.0 JSON-RPC.
+See the [A2A adapter guide](docs/a2a-adapter.md) for configuration and limits.
+Other protocol versions, REST/gRPC, streaming execution, extended cards, and
+OAuth acquisition remain future work.
 
 ## Capabilities
 
-- [ ] endpoint discovery
-- [ ] agent metadata
-- [ ] protocol validation
-- [ ] authentication
-- [ ] capability discovery
-- [ ] expected skill validation
-- [ ] minimal interaction
-- [ ] latency
-- [ ] error classification
+- [x] endpoint discovery
+- [x] agent metadata
+- [x] protocol validation
+- [x] authentication
+- [x] capability discovery
+- [x] expected skill validation
+- [x] minimal interaction
+- [x] latency
+- [x] error classification
 
 Example:
 

@@ -1,6 +1,6 @@
 # Go core engine
 
-The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5; other protocol adapters remain later roadmap work.
+The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5 and the [A2A adapter](../docs/a2a-adapter.md) implements Phase 6 for A2A 0.3.0 JSON-RPC. Other adapters remain later roadmap work.
 
 ## Run it
 
