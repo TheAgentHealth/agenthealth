@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "peer",
+      "type": "a2a",
+      "endpoint": "https://example.com",
+      "a2a": {
+        "functional": {
+          "safe": true,
+          "text": " "
+        }
+      },
+      "checks": [
+        "functional"
+      ]
+    }
+  ]
+}

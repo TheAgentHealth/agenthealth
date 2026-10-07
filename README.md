@@ -24,7 +24,7 @@ AgentHealth is designed to work across:
 - Agent gateways
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API and MCP adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
 ---
 
@@ -391,11 +391,13 @@ agenthealth ping mcp http://localhost:3000/mcp
 agenthealth check agenthealth.yaml --format json
 agenthealth doctor agenthealth.yaml
 agenthealth doctor mcp http://localhost:3000/mcp
+agenthealth ping a2a http://localhost:9000
+agenthealth doctor examples/a2a-check/agenthealth.yaml
 agenthealth version
 ```
 
 Configured dependencies are evaluated automatically; no `--dependencies` flag
-is needed. A2A, agent, and model adapters remain planned.
+is needed. Agent and model adapters remain planned.
 
 ---
 
@@ -499,7 +501,7 @@ gateway
 custom
 ```
 
-Currently implemented target types are `http`, `api`, and `mcp`. The remaining types are specification vocabulary for future adapters.
+Currently implemented target types are `http`, `api`, `mcp`, and `a2a` (A2A 0.3.0 JSON-RPC). The remaining types are specification vocabulary for future adapters.
 
 See [ROADMAP.md](ROADMAP.md).
 
@@ -552,24 +554,26 @@ protocol, transport, and platform limits.
 
 # A2A Health
 
-AgentHealth is intended to validate Agent-to-Agent endpoints.
-
-Potential checks include:
-
-- endpoint reachability,
-- agent discovery,
-- agent metadata,
-- supported capabilities,
-- authentication,
-- protocol compatibility,
-- minimal interaction,
-- latency.
-
-Example:
+The [A2A adapter](docs/a2a-adapter.md) validates A2A 0.3.0 JSON-RPC peers:
+agent card discovery and metadata, passive protocol/authentication checks,
+expected skills and capabilities, latency, and explicit safe interaction probes.
 
 ```bash
 agenthealth ping a2a https://research-agent.example.com
+agenthealth check examples/a2a-check/agenthealth.yaml --format json
 ```
+
+| Example | Behavior |
+|---|---|
+| [Passive peer](examples/a2a-check/agenthealth.yaml) | Default discovery and read-only protocol/authentication checks, required skill, latency |
+| [Bearer credentials](examples/a2a-check/bearer.yaml) | Environment-referenced token for passive checks |
+| [Custom card URL](examples/a2a-check/custom-card.yaml) | Discovery from a different path on the configured origin |
+| [Minimal interaction](examples/a2a-check/functional.yaml) | One explicitly enabled, operator-declared safe text probe |
+
+Examples require your own running peer and matching skill expectations. See the
+[example setup guide](examples/a2a-check/README.md) and
+[adapter guide](docs/a2a-adapter.md) for configuration, classifications,
+and supported scope. Other A2A versions and transports remain future work.
 
 ---
 
@@ -1252,9 +1256,9 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-Coverage for phases 0–5 is indexed in [the documentation guide](docs/README.md).
+Coverage for phases 0–6 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, and MCP HTTP/stdio adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, MCP HTTP/stdio adapter, and A2A JSON-RPC adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

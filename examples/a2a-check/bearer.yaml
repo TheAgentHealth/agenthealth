@@ -1,0 +1,12 @@
+version: v1
+targets:
+  - name: authenticated-peer
+    type: a2a
+    endpoint: https://agent.example.com
+    auth:
+      bearer_env: AGENT_TOKEN
+    a2a:
+      protocol_version: '0.3.0'
+      required_skills: [health]
+    thresholds:
+      latency_ms: 1000

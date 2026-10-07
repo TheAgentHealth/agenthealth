@@ -255,3 +255,21 @@ The adapter enforces secure issuer/metadata/token URLs, issuer/resource
 validation, modern per-request metadata and mirrored HTTP headers, legacy
 negotiation rules, and bounded subprocess cleanup described in its contract.
 No new health dimensions or result fields are introduced.
+
+## A2A expectations (Phase 6 draft)
+
+Targets of type `a2a` may include `a2a` options. `protocol_version` accepts
+`0.3.0` or the empty default. `card_url` overrides well-known card discovery;
+the adapter validates that it is an absolute HTTP(S) URL on the target origin.
+`required_skills` lists nonempty unique skill IDs. `required_capabilities` lists
+unique names from `streaming`, `pushNotifications`, and `stateTransitionHistory`.
+Expectations require the capability dimension when `checks` is explicit.
+
+`a2a.functional` requires explicit `functional` in `checks`, `safe: true`, and
+nonblank `text` of at most 65536 UTF-8 bytes. A functional check on an A2A target
+requires these interaction options. The safety declaration asserts that the
+operator has selected a non-destructive interaction. Credentials use the existing
+`auth.bearer_env` reference. Options apply independently to nested dependencies.
+Unknown fields, null options, duplicate requirements, and options on other target
+types are rejected. See the [A2A adapter guide](../docs/a2a-adapter.md) for examples
+and runtime behavior.

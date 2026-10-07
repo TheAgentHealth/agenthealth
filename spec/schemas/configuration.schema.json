@@ -146,6 +146,9 @@
         },
         "mcp": {
           "$ref": "#/$defs/MCPOptions"
+        },
+        "a2a": {
+          "$ref": "#/$defs/A2AOptions"
         }
       },
       "required": [
@@ -399,6 +402,119 @@
               "required": [
                 "auth"
               ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "a2a"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "a2a"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "a2a"
+            ],
+            "properties": {
+              "a2a": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type",
+              "checks"
+            ],
+            "properties": {
+              "type": {
+                "const": "a2a"
+              },
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "a2a"
+            ],
+            "properties": {
+              "a2a": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "a2a",
+              "checks"
+            ],
+            "properties": {
+              "a2a": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "required_skills"
+                    ],
+                    "properties": {
+                      "required_skills": {
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  {
+                    "required": [
+                      "required_capabilities"
+                    ],
+                    "properties": {
+                      "required_capabilities": {
+                        "minItems": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "capability"
+                }
+              }
             }
           }
         }
@@ -500,6 +616,9 @@
         },
         "mcp": {
           "$ref": "#/$defs/MCPOptions"
+        },
+        "a2a": {
+          "$ref": "#/$defs/A2AOptions"
         }
       },
       "required": [
@@ -753,6 +872,119 @@
               "required": [
                 "auth"
               ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "a2a"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "a2a"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "a2a"
+            ],
+            "properties": {
+              "a2a": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type",
+              "checks"
+            ],
+            "properties": {
+              "type": {
+                "const": "a2a"
+              },
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "a2a"
+            ],
+            "properties": {
+              "a2a": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "a2a",
+              "checks"
+            ],
+            "properties": {
+              "a2a": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "required_skills"
+                    ],
+                    "properties": {
+                      "required_skills": {
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  {
+                    "required": [
+                      "required_capabilities"
+                    ],
+                    "properties": {
+                      "required_capabilities": {
+                        "minItems": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "capability"
+                }
+              }
             }
           }
         }
@@ -1098,6 +1330,64 @@
           }
         }
       ]
+    },
+    "A2AOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "card_url": {
+          "type": "string"
+        },
+        "protocol_version": {
+          "enum": [
+            "",
+            "0.3.0"
+          ]
+        },
+        "required_skills": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "required_capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "streaming",
+              "pushNotifications",
+              "stateTransitionHistory"
+            ]
+          }
+        },
+        "functional": {
+          "$ref": "#/$defs/A2AInteraction"
+        }
+      }
+    },
+    "A2AInteraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "safe",
+        "text"
+      ],
+      "properties": {
+        "safe": {
+          "const": true
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536,
+          "pattern": "\\S",
+          "description": "Go validation additionally limits UTF-8 text to 65536 bytes."
+        }
+      }
     }
   },
   "type": "object",

@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "peer",
+      "type": "a2a",
+      "endpoint": "https://example.com",
+      "a2a": {
+        "protocol_version": "0.3.0",
+        "required_skills": [
+          "health"
+        ],
+        "required_capabilities": [
+          "streaming"
+        ]
+      }
+    }
+  ]
+}

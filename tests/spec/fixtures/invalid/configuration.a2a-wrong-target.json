@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "peer",
+      "type": "http",
+      "endpoint": "https://example.com",
+      "a2a": {
+        "functional": {
+          "safe": true,
+          "text": "Reply with OK without performing any external actions."
+        }
+      },
+      "checks": [
+        "functional"
+      ]
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	a2aadapter "github.com/TheAgentHealth/agenthealth/adapters/a2a"
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -26,7 +27,7 @@ const usage = `Usage:
   agenthealth login <configuration.yaml> <target-name>
   agenthealth version
 
-HTTP, API and MCP Streamable HTTP adapters are available.
+HTTP, API, MCP and A2A 0.3.0 JSON-RPC adapters are available.
 Other target types require future adapters.
 Checks are passive by default; functional checks require opt-in in configuration.
 `
@@ -148,6 +149,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	}
 	if err := registry.Register(mcpadapter.Adapter{}); err != nil {
 		return fail("cannot register MCP adapter")
+	}
+	if err := registry.Register(a2aadapter.Adapter{}); err != nil {
+		return fail("cannot register A2A adapter")
 	}
 	results, err := core.NewEngine(registry).Run(ctx, config)
 	if err != nil {

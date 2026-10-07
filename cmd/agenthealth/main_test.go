@@ -51,7 +51,7 @@ func TestPingFormats(t *testing.T) {
 
 func TestBatchAndDoctor(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("version: v1\ntargets:\n  - name: unsupported\n    type: a2a\n    endpoint: http://localhost\n  - name: inconclusive\n    type: http\n    endpoint: http://localhost\n    checks: []\n"), 0600); err != nil {
+	if err := os.WriteFile(path, []byte("version: v1\ntargets:\n  - name: unsupported\n    type: custom\n    endpoint: http://localhost\n  - name: inconclusive\n    type: http\n    endpoint: http://localhost\n    checks: []\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for _, command := range []string{"check", "doctor"} {
@@ -151,6 +151,37 @@ func TestLoginInvocation(t *testing.T) {
 		var out, diagnostic bytes.Buffer
 		if code := run(context.Background(), args, &out, &diagnostic); code != 6 {
 			t.Fatalf("%v code=%d", args, code)
+		}
+	}
+}
+
+func TestA2APingAndDoctor(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			json.NewEncoder(w).Encode(map[string]any{"protocolVersion": "0.3.0", "name": "peer", "description": "Health peer", "version": "1", "url": server.URL + "/rpc", "capabilities": map[string]any{}, "skills": []any{}, "defaultInputModes": []string{"text/plain"}, "defaultOutputModes": []string{"text/plain"}})
+			return
+		}
+		var request struct{ ID, Method string }
+		json.NewDecoder(r.Body).Decode(&request)
+		if request.Method != "tasks/get" {
+			t.Errorf("unexpected active request %s", request.Method)
+		}
+		json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": request.ID, "error": map[string]any{"code": -32001, "message": "not found"}})
+	}))
+	defer server.Close()
+	for _, command := range []string{"ping", "doctor"} {
+		for _, format := range []string{"terminal", "json", "yaml"} {
+			t.Run(command+"/"+format, func(t *testing.T) {
+				var out, diagnostics bytes.Buffer
+				code := run(context.Background(), []string{command, "a2a", server.URL, "--format", format}, &out, &diagnostics)
+				if code != 0 || diagnostics.Len() != 0 {
+					t.Fatalf("code %d: %s %s", code, out.String(), diagnostics.String())
+				}
+				if !bytes.Contains(out.Bytes(), []byte("HEALTHY")) {
+					t.Fatalf("missing health: %s", out.String())
+				}
+			})
 		}
 	}
 }

@@ -1,0 +1,14 @@
+version: v1
+targets:
+  - name: peer-interaction
+    type: a2a
+    endpoint: http://localhost:9000
+    checks: [reachability, protocol, authentication, capability, functional, latency]
+    a2a:
+      protocol_version: '0.3.0'
+      required_skills: [health]
+      functional:
+        safe: true
+        text: 'Report your readiness as text without invoking tools or making external changes.'
+    thresholds:
+      latency_ms: 1000
