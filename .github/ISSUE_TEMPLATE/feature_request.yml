@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a new capability, adapter, or integration for AgentHealth
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check the [ROADMAP](../../ROADMAP.md) first — your idea may already
+        be planned for a later phase. For changes to the health model, result
+        schema, configuration format, or the Agent Health Protocol (AHP), please
+        use the "Specification change" template instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

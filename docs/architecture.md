@@ -1,0 +1,63 @@
+# Architecture Decisions
+
+This document records the architecture decisions made in [Phase 0 — Project Foundation](../ROADMAP.md#phase-0--project-foundation). It complements the narrative [Architecture](../README.md#architecture) and [Adapter Architecture](../README.md#adapter-architecture) sections in the README, and the normative [spec/](../spec/README.md) documents.
+
+## Repository strategy
+
+**Decision:** single repository (monorepo). See [Repository Structure](../README.md#repository-structure).
+
+## Core implementation language
+
+**Decision: Go.**
+
+Rationale:
+
+- Compiles to a single static binary per platform, matching the project's "standalone binary + Docker + Kubernetes" distribution model (see [Distribution](../README.md#distribution)) without requiring a language runtime on the target machine.
+- Well-suited to CLIs that talk to many network protocols concurrently (HTTP, MCP, A2A, databases) — mirrors the implementation language of comparable infrastructure CLIs (`kubectl`, `terraform`, `docker`).
+- Straightforward cross-compilation for Linux/macOS/Windows and AMD64/ARM64, needed for [Phase 11 — Standalone Binaries](../ROADMAP.md#phase-11--standalone-binaries).
+- Mature container/Kubernetes ecosystem tooling, relevant to [Phase 12 — Kubernetes Integration](../ROADMAP.md#phase-12--kubernetes-integration).
+
+Python and JavaScript/TypeScript are not used for the core engine; they remain **SDKs that wrap the reference implementation** (see [Phase 13](../ROADMAP.md#phase-13--python-sdk--pypi) and [Phase 14](../ROADMAP.md#phase-14--javascript--typescript-sdk)), consistent with ["AgentHealth itself is not a Python-specific standard."](../README.md#python--pypi)
+
+## CLI architecture
+
+**Decision:** a single `agenthealth` binary with subcommands (`ping`, `check`, `doctor`, `version`, and later `serve`), following the same pattern as `git`, `kubectl`, and `docker`. Subcommands share a common core engine rather than being separate binaries.
+
+## Adapter interface
+
+**Decision:** adapters are compiled into the core engine initially (in-repo, in-process), rather than loaded as external dynamic plugins. This keeps the trust boundary simple and avoids a plugin ABI before the model is proven. A true out-of-process/dynamic plugin mechanism is deferred to [Phase 21 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-21--plugin--adapter-ecosystem). All adapters, in-process or future-external, must satisfy the [Adapter Contract](../spec/adapter-spec.md).
+
+## Configuration format
+
+**Decision:** YAML, as specified in [spec/configuration.md](../spec/configuration.md).
+
+## Result format
+
+**Decision:** JSON, as specified in [spec/result-schema.md](../spec/result-schema.md). Human-readable terminal output is a presentation layer over the same underlying result, not a separate data model.
+
+## Error model
+
+**Decision:** errors are normalized into the existing health states (`UNREACHABLE`, `MISCONFIGURED`, `UNKNOWN`) rather than a separate exception/error taxonomy. Internal/unexpected engine errors map to `UNKNOWN` with diagnostic detail in `checks`; this keeps one vocabulary for "why did this fail" across adapters (see [Health States](../spec/health-model.md#health-states)).
+
+## Exit codes
+
+**Decision (conceptual, to be finalized in the specification process):**
+
+```text
+0 = healthy
+1 = degraded
+2 = unhealthy
+3 = unreachable
+4 = misconfigured
+5 = internal error
+```
+
+Tracked under [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli).
+
+## Plugin strategy
+
+**Decision:** no external plugin loading in the initial implementation (see Adapter interface above). Community adapters initially contribute via pull request into this repository's `adapters/` directory. A formal out-of-tree plugin strategy is evaluated in [Phase 21](../ROADMAP.md#phase-21--plugin--adapter-ecosystem).
+
+## SDK strategy
+
+**Decision:** SDKs (Python, JavaScript/TypeScript) are thin wrappers that invoke the `agenthealth` binary or call the same result/configuration schemas, rather than reimplementing check logic per language. This keeps one source of truth for health semantics (the Go core engine and the [spec/](../spec/README.md) documents) instead of N parallel implementations drifting apart.

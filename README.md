@@ -1456,9 +1456,9 @@ across the agentic AI ecosystem.
 
 # License
 
-AgentHealth is intended to be released under a permissive open-source license.
+AgentHealth is released under the [Apache License 2.0](LICENSE).
 
-License selection will be finalized before the first public release.
+The Apache-2.0 license was chosen for its explicit patent grant, which fits a project whose long-term ambition includes contribution toward broader interoperability standards (see [Interoperability Vision](#interoperability-vision)).
 
 ---
 

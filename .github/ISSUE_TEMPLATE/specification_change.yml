@@ -1,0 +1,35 @@
+name: Specification change (AHS / AHP)
+description: Propose a change to the Agent Health Specification, Agent Health Protocol, configuration format, or result schema
+labels: ["specification"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Specification changes follow an RFC-style process (see [GOVERNANCE.md](../../GOVERNANCE.md))
+        because they affect every downstream adapter and SDK. Please be as
+        specific as possible.
+  - type: dropdown
+    id: document
+    attributes:
+      label: Which spec document does this affect?
+      options:
+        - spec/health-model.md (AHS)
+        - spec/protocol.md (AHP)
+        - spec/configuration.md
+        - spec/result-schema.md
+        - spec/adapter-spec.md
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: What are you proposing, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Backward compatibility impact
+      description: Does this break existing adapters, SDKs, or configuration files?
+    validations:
+      required: true

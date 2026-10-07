@@ -40,7 +40,7 @@ Use clear, descriptive commit messages. Conventional prefixes (`feat:`, `fix:`, 
 
 ## Code of conduct
 
-Participation in this project is expected to be respectful and harassment-free. A formal `CODE_OF_CONDUCT.md` will be added as the project matures; until then, standard open-source community norms apply.
+Participation in this project is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold it.
 
 ## Security issues
 

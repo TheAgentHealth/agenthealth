@@ -1,0 +1,58 @@
+name: Bug report
+description: Report a problem with the AgentHealth CLI, core engine, an adapter, or an SDK
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. AgentHealth is pre-1.0 and
+        interfaces may still change — please check the [ROADMAP](../../ROADMAP.md)
+        and existing issues first.
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: Output of `agenthealth version`, or the commit SHA you're on
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI
+        - Core engine
+        - MCP adapter
+        - A2A adapter
+        - HTTP adapter
+        - Model/LLM adapter
+        - Database adapter
+        - Vector store adapter
+        - Python SDK
+        - JavaScript/TypeScript SDK
+        - Docker
+        - Kubernetes
+        - Specification (spec/)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect to happen, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Commands run, configuration used (redact secrets/endpoints as needed)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output / logs
+      description: Paste CLI output or JSON result (redact secrets)
+      render: shell

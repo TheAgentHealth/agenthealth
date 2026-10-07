@@ -26,7 +26,7 @@ The first milestone is to prove that a common health model works across multiple
 
 # Phase 0 — Project Foundation
 
-**Status:** Initial
+**Status:** In progress
 
 Goal:
 
@@ -34,35 +34,35 @@ Establish the project identity, architecture, governance foundation, and technic
 
 ## Deliverables
 
-- [ ] Project repository
-- [ ] README
-- [ ] Roadmap
-- [ ] Open-source license
-- [ ] CONTRIBUTING.md
-- [ ] CODE_OF_CONDUCT.md
-- [ ] SECURITY.md
-- [ ] Initial governance model
-- [ ] Architecture documentation
-- [ ] Design principles
-- [ ] Issue templates
-- [ ] Pull request templates
-- [ ] Release process
-- [ ] Semantic versioning policy
+- [x] Project repository
+- [x] README
+- [x] Roadmap
+- [x] Open-source license ([LICENSE](LICENSE), Apache-2.0)
+- [x] CONTRIBUTING.md
+- [x] CODE_OF_CONDUCT.md
+- [x] SECURITY.md
+- [x] Initial governance model ([GOVERNANCE.md](GOVERNANCE.md))
+- [x] Architecture documentation ([docs/architecture.md](docs/architecture.md))
+- [x] Design principles (see [README Design Principles](README.md#design-principles))
+- [x] Issue templates (`.github/ISSUE_TEMPLATE/`)
+- [x] Pull request templates (`.github/PULL_REQUEST_TEMPLATE.md`)
+- [x] Release process ([RELEASING.md](RELEASING.md))
+- [x] Semantic versioning policy ([RELEASING.md](RELEASING.md))
 
 ## Architecture Decisions
 
 Define:
 
 - [x] Repository strategy: **single repository (monorepo)**. AHS and AHP specification docs, the core engine, CLI, adapters, SDKs (Python/PyPI, JavaScript/npm), and distribution integrations (Docker, Kubernetes, CI) all live in this one repository rather than being split across separate repos. See [Repository Structure](README.md#repository-structure).
-- [ ] Core implementation language
-- [ ] CLI architecture
-- [ ] Adapter interface
-- [ ] configuration format
-- [ ] result format
-- [ ] error model
-- [ ] exit codes
-- [ ] plugin strategy
-- [ ] SDK strategy
+- [x] Core implementation language: **Go** (see [docs/architecture.md](docs/architecture.md#core-implementation-language))
+- [x] CLI architecture: single binary, subcommands (see [docs/architecture.md](docs/architecture.md#cli-architecture))
+- [x] Adapter interface: in-process/compiled-in initially (see [docs/architecture.md](docs/architecture.md#adapter-interface))
+- [x] configuration format: YAML (see [spec/configuration.md](spec/configuration.md))
+- [x] result format: JSON (see [spec/result-schema.md](spec/result-schema.md))
+- [x] error model: normalized onto health states (see [docs/architecture.md](docs/architecture.md#error-model))
+- [x] exit codes: conceptual mapping defined, final value TBD in spec process (see [docs/architecture.md](docs/architecture.md#exit-codes))
+- [x] plugin strategy: in-repo adapters initially (see [docs/architecture.md](docs/architecture.md#plugin-strategy))
+- [x] SDK strategy: thin wrappers over the core engine (see [docs/architecture.md](docs/architecture.md#sdk-strategy))
 
 ---
 
