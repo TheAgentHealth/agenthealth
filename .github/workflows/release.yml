@@ -3,12 +3,18 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing immutable tag for infrastructure-only release recovery'
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.release_tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -20,6 +26,8 @@ jobs:
       attestations: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.release_tag || github.ref_name }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.27.1"
@@ -39,11 +47,11 @@ jobs:
           python3 scripts/validate_doc_examples.py
       - name: Build archives and checksums
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: python3 scripts/build_release.py "$RELEASE_TAG"
       - name: Verify Linux binary
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           mkdir smoke
           tar -xzf "dist/agenthealth_${RELEASE_TAG}_linux_amd64.tar.gz" -C smoke
@@ -51,35 +59,49 @@ jobs:
           smoke/agenthealth --help
           cd dist
           sha256sum --check checksums.txt
+      - name: Verify existing provenance during recovery
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for asset in dist/*; do
+            gh attestation verify "$asset" --repo "$GITHUB_REPOSITORY" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-digest "$(git rev-parse HEAD)" --deny-self-hosted-runners
+          done
       - name: Attest build provenance
+        if: github.event_name == 'push'
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: 'dist/*'
       - name: Attest linux/amd64 SBOM
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: 'dist/agenthealth_${{ github.ref_name }}_linux_amd64.tar.gz'
-          sbom-path: 'dist/agenthealth_${{ github.ref_name }}_linux_amd64.cdx.json'
+          subject-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_linux_amd64.tar.gz'
+          predicate-type: 'https://cyclonedx.org/bom'
+          predicate-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_linux_amd64.cdx.json'
       - name: Attest linux/arm64 SBOM
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: 'dist/agenthealth_${{ github.ref_name }}_linux_arm64.tar.gz'
-          sbom-path: 'dist/agenthealth_${{ github.ref_name }}_linux_arm64.cdx.json'
+          subject-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_linux_arm64.tar.gz'
+          predicate-type: 'https://cyclonedx.org/bom'
+          predicate-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_linux_arm64.cdx.json'
       - name: Attest darwin/amd64 SBOM
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: 'dist/agenthealth_${{ github.ref_name }}_darwin_amd64.tar.gz'
-          sbom-path: 'dist/agenthealth_${{ github.ref_name }}_darwin_amd64.cdx.json'
+          subject-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_darwin_amd64.tar.gz'
+          predicate-type: 'https://cyclonedx.org/bom'
+          predicate-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_darwin_amd64.cdx.json'
       - name: Attest darwin/arm64 SBOM
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: 'dist/agenthealth_${{ github.ref_name }}_darwin_arm64.tar.gz'
-          sbom-path: 'dist/agenthealth_${{ github.ref_name }}_darwin_arm64.cdx.json'
+          subject-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_darwin_arm64.tar.gz'
+          predicate-type: 'https://cyclonedx.org/bom'
+          predicate-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_darwin_arm64.cdx.json'
       - name: Attest windows/amd64 SBOM
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: 'dist/agenthealth_${{ github.ref_name }}_windows_amd64.zip'
-          sbom-path: 'dist/agenthealth_${{ github.ref_name }}_windows_amd64.cdx.json'
+          subject-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_windows_amd64.zip'
+          predicate-type: 'https://cyclonedx.org/bom'
+          predicate-path: 'dist/agenthealth_${{ inputs.release_tag || github.ref_name }}_windows_amd64.cdx.json'
       - name: Save build artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -88,7 +110,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           release_flags=(--latest)
           if [[ "$RELEASE_TAG" == *-* ]]; then
