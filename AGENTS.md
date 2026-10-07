@@ -129,12 +129,14 @@ publication through [.github/workflows/release.yml](.github/workflows/release.ym
 6. Watch the Release workflow using GitHub CLI or GitHub Actions. It validates
    the tagged source, builds Linux AMD64/ARM64, macOS AMD64/ARM64, and Windows
    AMD64 archives, adds `checksums.txt`, smoke-tests Linux AMD64, uploads assets
-   to a draft, and publishes a **prerelease** after upload succeeds.
+   to a draft, and publishes a regular **Latest** release for plain version tags, or a
+   **prerelease** for suffixed preview tags, after upload succeeds.
 7. Verify that the release is public, targets the intended tag, and contains all
    five archives plus checksums. Download published assets, check hashes, and
    smoke-test the native binary. Report the release URL and validation results.
 
-The current workflow publishes previews, not stable releases. Signing,
+Pre-1.0 versions can be regular releases; use suffixed tags for intentional
+previews as described in RELEASING.md. Signing,
 notarization, and SBOM publication are not implemented. Do not claim otherwise.
 
 If a workflow fails, inspect its logs and any draft release before retrying.
