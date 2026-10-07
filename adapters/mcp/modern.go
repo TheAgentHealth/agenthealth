@@ -64,9 +64,6 @@ func (s *session) legacyFallback(err error) bool {
 		return false
 	}
 	if s.stdio != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			return true
-		}
 		return errors.As(err, &rpc)
 	}
 	var h *httpFailure

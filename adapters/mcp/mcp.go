@@ -361,13 +361,9 @@ func (s *session) initialize(ctx context.Context) error {
 	if pin == "" || pin == modernVersion {
 		s.modern = true
 		s.version = modernVersion
-		probeCtx := ctx
-		cancel := func() {}
-		if s.stdio != nil && pin == "" {
-			probeCtx, cancel = context.WithTimeout(ctx, 500*time.Millisecond)
-		}
-		err := s.discover(probeCtx)
-		cancel()
+		// Startup time is part of the configured attempt budget. A short
+		// speculative timeout can mistake a cold modern process for legacy.
+		err := s.discover(ctx)
 		if err == nil {
 			return nil
 		}

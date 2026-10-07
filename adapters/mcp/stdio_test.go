@@ -36,6 +36,9 @@ func TestMCPStdioProcess(t *testing.T) {
 	reader := bufio.NewScanner(os.Stdin)
 	reader.Buffer(make([]byte, 4096), maxBody+1)
 	for reader.Scan() {
+		if mode == "slow-modern" {
+			time.Sleep(700 * time.Millisecond)
+		}
 		var q struct {
 			ID     int                        `json:"id"`
 			Method string                     `json:"method"`
@@ -64,7 +67,7 @@ func TestMCPStdioProcess(t *testing.T) {
 		if mode == "stderr" {
 			fmt.Fprintln(os.Stderr, "child-secret-value")
 		}
-		if q.Method == "server/discover" && mode != "modern" {
+		if q.Method == "server/discover" && mode != "modern" && mode != "slow-modern" {
 			json.NewEncoder(os.Stdout).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "error": map[string]any{"code": -32602, "message": "not initialized"}})
 			continue
 		}
@@ -100,9 +103,12 @@ func stdioTarget(t *testing.T, mode string) core.Target {
 func TestStdioTransports(t *testing.T) {
 	t.Setenv("STDIO_TEST_TOKEN", "child-secret-value")
 	t.Setenv("UNRELATED_MCP_SECRET", "must-not-be-inherited")
-	for _, mode := range []string{"modern", "legacy", "silent-legacy", "stderr", "env-isolation"} {
+	for _, mode := range []string{"modern", "slow-modern", "legacy", "silent-legacy", "stderr", "env-isolation"} {
 		t.Run(mode, func(t *testing.T) {
 			target := stdioTarget(t, mode)
+			if mode == "silent-legacy" {
+				target.MCP.ProtocolVersion = "2025-11-25"
+			}
 			result := runTarget(t, target)
 			if result.Status != core.Healthy || result.LatencyMS == nil {
 				t.Fatalf("%+v", result)

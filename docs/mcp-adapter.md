@@ -28,8 +28,10 @@ complete; input-required results are inconclusive and never cause additional
 functional calls.
 
 A legacy HTTP rejection without a recognized modern error triggers
-initialization-based negotiation. On stdio, an unrecognized RPC error or an
-unanswered 500 ms discovery probe triggers legacy initialization. Recognized
+initialization-based negotiation. On stdio, an unrecognized RPC error triggers
+legacy initialization. Discovery uses the configured attempt deadline, including
+cold process startup; a timeout never triggers downgrade. Pin a legacy revision
+for servers that silently ignore unknown methods. Recognized
 modern version/header errors never silently downgrade. Legacy negotiation
 offers `2025-11-25` and accepts any supported legacy revision. Set
 `mcp.protocol_version` to pin a revision and disable cross-era fallback.
