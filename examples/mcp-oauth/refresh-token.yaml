@@ -1,0 +1,13 @@
+version: v1
+targets:
+  - name: refreshed-mcp
+    type: mcp
+    endpoint: https://example.com/mcp
+    mcp:
+      oauth:
+        issuer: https://auth.example.com
+        client_id: your-registered-client
+        grant: refresh_token
+        refresh_token_env: MCP_REFRESH_TOKEN
+        token_file: .credentials/refreshed-mcp.json
+        scopes: [read]

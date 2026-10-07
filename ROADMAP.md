@@ -328,12 +328,18 @@ Make MCP a first-class AgentHealth target.
 
 ## Capabilities
 
-- [x] MCP transport connectivity
+- [x] MCP Streamable HTTP transport connectivity (JSON/SSE)
+- [x] configured stdio subprocesses
+- [x] modern stateless MCP `2026-07-28` discovery and request metadata
 - [x] initialization
 - [x] protocol negotiation
 - [x] protocol version validation
 - [x] capability discovery
-- [x] authentication
+- [x] bearer authentication
+- [x] OAuth client credentials acquisition
+- [x] OAuth refresh tokens and rotation
+- [x] OAuth authorization code + PKCE login
+- [x] private token storage and credential redaction
 - [x] tools discovery
 - [x] resources discovery
 - [x] prompts discovery
@@ -345,28 +351,27 @@ Make MCP a first-class AgentHealth target.
 Example:
 
 ```bash
-agenthealth ping mcp http://localhost:3000
+agenthealth ping mcp http://localhost:3000/mcp
 ```
 
 ## MCP Doctor
 
 ```bash
-agenthealth doctor mcp http://localhost:3000
+agenthealth doctor mcp http://localhost:3000/mcp
 ```
 
-Potential diagnostics:
+Doctor displays dimension-level health evidence and canonical troubleshooting
+messages. Required inventory failures are `DEGRADED`; use a configured target
+to declare the expected tools/resources/prompts:
 
-```text
-✓ Transport
-✓ Initialization
-✓ Protocol
-✓ Authentication
-✓ tools/list
-✓ resources/list
-⚠ Expected tool "search" missing
-
-Status: DEGRADED
+```bash
+agenthealth doctor examples/mcp-check/agenthealth.yaml
 ```
+
+See the [examples guide](examples/README.md) for stdio, modern protocol,
+client credentials, browser login, refresh tokens, and functional probes.
+See [CLI login usage](docs/cli.md#mcp-oauth-login) for the separate OAuth login
+command; health checks remain noninteractive.
 
 ---
 

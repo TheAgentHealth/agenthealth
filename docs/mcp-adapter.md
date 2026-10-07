@@ -13,6 +13,9 @@ agenthealth doctor examples/mcp-check/agenthealth.yaml
 HTTP endpoints must be the server's MCP URL; the adapter does not append
 `/mcp`. The deprecated separate HTTP+SSE transport is not implemented.
 
+Ready-to-edit configurations and commands are collected in the
+[examples guide](../examples/README.md).
+
 ## Protocol selection
 
 With no version pin, checks probe `server/discover` using `2026-07-28`.

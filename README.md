@@ -539,45 +539,46 @@ See [ROADMAP.md](ROADMAP.md).
 
 # MCP Health
 
-MCP is supported through the [MCP adapter](docs/mcp-adapter.md), including Streamable HTTP JSON/SSE replies, configured stdio, legacy and modern stateless protocols, bearer/OAuth authentication, paginated discovery, required inventories, and explicitly safe functional probes. See the adapter documentation for supported protocol revisions and transport limitations.
+The [MCP adapter](docs/mcp-adapter.md) supports Streamable HTTP JSON/SSE,
+configured stdio subprocesses, legacy initialization, and stateless MCP
+`2026-07-28`. It checks authentication, paginated tools/resources/prompts,
+required inventories, and latency. Functional tool calls require explicit
+safe opt-in and never retry.
 
-Implemented checks include:
+| Feature | Configuration example | Documentation |
+|---|---|---|
+| Passive discovery and required inventories | [MCP discovery](examples/mcp-check/agenthealth.yaml) | [Checks and expectations](docs/mcp-adapter.md#passive-checks-and-expectations) |
+| Modern stateless protocol | [Version pin](examples/mcp-check/modern.yaml) | [Protocol selection](docs/mcp-adapter.md#protocol-selection) |
+| Local stdio server | [Subprocess configuration](examples/mcp-stdio/agenthealth.yaml) | [Stdio setup](docs/mcp-adapter.md#stdio-subprocesses) |
+| OAuth client credentials | [Automated authentication](examples/mcp-oauth/client-credentials.yaml) | [OAuth setup](docs/mcp-adapter.md#oauth-acquisition-and-login) |
+| OAuth browser login + PKCE | [Interactive login configuration](examples/mcp-oauth/agenthealth.yaml) | [Login command](docs/cli.md#mcp-oauth-login) |
+| OAuth refresh tokens and rotation | [Refresh configuration](examples/mcp-oauth/refresh-token.yaml) | [Token refresh and storage](docs/mcp-adapter.md#oauth-acquisition-and-login) |
+| Explicit safe functional invocation | [Tool probe](examples/mcp-check/functional.yaml) | [Functional safety](docs/mcp-adapter.md#functional-invocation) |
 
-```text
-Transport connectivity
-Initialization
-Protocol negotiation
-Authentication
-Capability discovery
-tools/list
-resources/list
-prompts/list
-Required tool validation
-Minimal safe invocation
-Latency
-```
-
-Example:
+Point these commands at your server's actual MCP endpoint:
 
 ```bash
-agenthealth ping mcp http://localhost:3000
+agenthealth ping mcp http://localhost:3000/mcp
+agenthealth doctor mcp http://localhost:3000/mcp
 ```
 
-Example output:
+For OAuth browser login, first replace the example's endpoint, issuer, and
+client ID with your registered server/client settings, then run:
 
-```text
-MCP Server: github-mcp
-
-Endpoint            PASS
-Initialization      PASS
-Protocol            PASS
-Authentication      PASS
-Tools Discovery     PASS
-Tools               18
-Latency              92 ms
-
-Status: HEALTHY
+```bash
+agenthealth login examples/mcp-oauth/agenthealth.yaml user-mcp
+agenthealth check examples/mcp-oauth/agenthealth.yaml
 ```
+
+Health checks stay noninteractive; only `login` asks for browser approval.
+Tokens are stored privately and redacted from health output. Client credentials
+and refresh-token examples reference environment variables instead of literal
+secrets. See the [examples guide](examples/README.md) for setup instructions and
+[Phase 5 status](ROADMAP.md#phase-5--mcp-health-adapter) for implemented scope.
+
+Deprecated separate HTTP+SSE, dynamic OAuth client registration, and JWT client
+assertions are not implemented. The adapter documentation lists remaining
+protocol, transport, and platform limits.
 
 ---
 
