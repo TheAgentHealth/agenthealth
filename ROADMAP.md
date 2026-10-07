@@ -1240,6 +1240,8 @@ Define:
 - [ ] security requirements
 - [ ] compatibility version
 - [ ] adapter evidence mapping for direct/composite agents, gateways, routers, and communication paths under the updated AHS
+- [ ] adapter extension examples for the direct (first) agent and composite (downstream) agents using direct communication or A2A
+- [ ] Agentgateway and Agent Router integration examples with gateway/router, backend, and communication-path evidence kept distinct
 
 Potential architecture:
 
@@ -1247,12 +1249,17 @@ Potential architecture:
 AgentHealth Core
       │
       └── Adapter API
-             │
-       ┌─────┼─────┐
-       │     │     │
-      MCP   A2A   Community
-                  Adapters
+             ├── Agent checks (direct / composite roles)
+             ├── HTTP / MCP / A2A
+             ├── Agentgateway integrations
+             ├── Agent Router integrations
+             ├── Model / Tool / Data adapters
+             └── Community adapters
 ```
+
+Direct/composite describe agent roles; the diagram does not introduce new
+target types or require a separate adapter for each role. Integration mechanisms
+follow the approved contracts and supported interfaces from Phases 7–10.
 
 ## Impact Review
 
@@ -1284,6 +1291,10 @@ agenthealth conformance test <target>
 - [ ] Security requirements
 - [ ] Adapter behavior
 - [ ] AHS updates from Phases 7–10, including agent roles, gateway/router paths, aggregation, and compatible result representation
+- [ ] direct (first) agent health and composite (downstream) agent health with distinct evidence
+- [ ] first-to-downstream communication via direct integrations or A2A
+- [ ] Agentgateway and Agent Router health separate from backend and route/path health
+- [ ] failure propagation, safe functional opt-in, credential redaction, and topology redaction across these integrations
 
 Potential future levels:
 
@@ -1331,6 +1342,16 @@ The test matrix must also include a first agent communicating with downstream
 agents directly, through A2A, and through Agentgateway or an Agent Router.
 Include healthy backends behind a failing path, failing backends behind a
 healthy gateway/router, shared backends, and multiple configured routes.
+
+## Integration Scenarios
+
+- [ ] direct (first) agent checks with and without composite (downstream) agents
+- [ ] first agent communicating with downstream agents directly or through A2A across supported frameworks
+- [ ] Agentgateway and Agent Router checked independently and in the first-to-downstream communication path
+- [ ] healthy downstream agent behind a failing gateway/router or route
+- [ ] failing downstream agent behind a healthy gateway/router
+- [ ] shared downstream agents and backends reached through multiple configured routes
+- [ ] consistent results across CLI, SDKs, and AHP where supported
 
 ## Impact Review
 
@@ -1484,13 +1505,23 @@ into:
                            │
                         Adapters
                            │
-          ┌────────┬───────┼──────┬────────┐
-          ▼        ▼       ▼      ▼        ▼
-         MCP      A2A    Models  Tools    Data
-                           │
-                           ▼
-                  Agentic Ecosystem
+                           ├── Direct (first) agent
+                           ├── Composite (downstream) agents
+                           │     └── Direct communication / A2A
+                           ├── Agentgateway
+                           ├── Agent Router
+                           └── HTTP / MCP / Models / Tools / Data
+                                      │
+                                      ▼
+                             Agentic Ecosystem
 ```
+
+The common health contract should cover the user's first agent, its downstream
+agents, and communication between them, including paths through Agentgateway
+or an Agent Router. Agent health, gateway/router health, path health, and
+supporting dependency health remain distinguishable. Direct/composite are
+agent roles rather than new target types. This diagram describes the planned
+ecosystem; implementation availability follows the phase statuses above.
 
 The goal is not to own every integration.
 

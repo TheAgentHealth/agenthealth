@@ -866,10 +866,10 @@ AgentHealth is designed around a small core and extensible adapters.
                               │
                        Adapter Interface
                               │
-       ┌────────┬────────┬────┼────┬────────┬─────────┐
-       │        │        │         │        │         │
-      MCP      A2A     Agent     Model     HTTP      Data
-                                                  / DB
+                              ├── Agent (direct / composite roles)
+                              ├── HTTP / MCP / A2A
+                              ├── Agentgateway / Agent Router integrations
+                              └── Model / Tool / Data adapters
 ```
 
 The Health Engine is designed to implement the Agent Health Specification. Its [Go core engine](core/README.md) now provides configuration loading, check execution, timeout/retry policies, result normalization, dependency evaluation, output formatting, and safety controls (see [Phase 2 — Core Engine](ROADMAP.md#phase-2--core-engine)). The experimental Agent Health Protocol (AHP) (see [Specification → Protocol → Implementation](#specification--protocol--implementation)), once finalized, would standardize how the Output Engine exposes and exchanges these results over the wire.
@@ -890,6 +890,9 @@ AgentHealth Core
       ├── MCP Adapter
       ├── A2A Adapter
       ├── HTTP Adapter
+      ├── Agent checks (direct / composite roles)
+      ├── Agentgateway integrations
+      ├── Agent Router integrations
       ├── Model Adapter
       ├── Database Adapter
       ├── Vector Store Adapter
@@ -897,6 +900,14 @@ AgentHealth Core
 ```
 
 The adapter interface should allow third parties to implement checks without modifying the core engine.
+
+The planned [Phase 23 — Plugin / Adapter Ecosystem](ROADMAP.md#phase-23--plugin--adapter-ecosystem)
+includes extension examples for the first (direct) agent, downstream
+(composite) agents, Agentgateway, and Agent Router. Direct/composite describe
+agent roles, not separate target types or a requirement for separate adapters.
+The diagrams show intended coverage; HTTP/API, MCP, and A2A are the currently
+implemented adapters. Gateway/router integrations will use the supported
+interfaces and contracts established in Phases 7–10.
 
 ---
 
@@ -1342,6 +1353,8 @@ Model + Data Adapters
 Observability Integrations
       ↓
 Community Adapter Ecosystem
+      ↓
+Conformance + Ecosystem Interoperability Testing
 ```
 
 ---
@@ -1384,6 +1397,8 @@ Useful contribution areas include:
 - CI/CD integrations,
 - specification design,
 - interoperability testing,
+- direct/composite agent, Agentgateway, and Agent Router health integrations,
+- conformance and communication-path failure testing,
 - documentation,
 - examples,
 - security reviews,
@@ -1398,6 +1413,10 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 Potential future adapters include:
 
 ```text
+Agent checks (direct / composite roles)
+Agentgateway integrations
+Agent Router integrations
+
 MCP
 A2A
 OpenAI-compatible APIs
@@ -1435,12 +1454,27 @@ Listing a technology here does not imply endorsement, partnership, or current su
 
 The long-term goal is bigger than a CLI.
 
+Planned [Phase 24 — AgentHealth Conformance](ROADMAP.md#phase-24--agenthealth-conformance)
+will validate the health of the first (direct) agent, downstream (composite)
+agents, Agentgateway, Agent Router, and their communication paths against the
+approved AHS and AHP contracts. Supporting dependency results remain distinct.
+
+[Phase 25 — Ecosystem Interoperability Testing](ROADMAP.md#phase-25--ecosystem-interoperability-testing)
+will test first-to-downstream communication directly, through A2A, and through
+gateways or routers across supported stacks. Scenarios include a healthy
+downstream agent behind a failing path, a failing agent behind a healthy
+gateway/router, shared backends, and multiple routes. No conformance program
+or certification is currently available.
+
 AgentHealth aims to establish a common operational contract for agentic systems:
 
 ```text
 How do I determine whether an agent is healthy?
 
 How does an agent expose readiness?
+
+Can my first agent communicate with its downstream agents,
+directly or through A2A, Agentgateway, or an Agent Router?
 
 How do I represent dependency health?
 
@@ -1459,6 +1493,14 @@ A common health specification allows different implementations to answer those q
 # Long-Term Vision
 
 AgentHealth aims to become a simple, universal operational primitive for agentic infrastructure.
+
+The planned ecosystem covers the user's first (direct) agent, the downstream
+(composite) agents it communicates with directly or via A2A, Agentgateway,
+Agent Router, and supporting model, tool, MCP, and data dependencies. The
+common health contract should distinguish each agent's health from gateway,
+router, and communication-path health. This follows the
+[roadmap ecosystem vision](ROADMAP.md#long-term-ecosystem-vision); direct/composite
+are agent roles, and implementation availability follows the phase statuses.
 
 Just as developers commonly use:
 
