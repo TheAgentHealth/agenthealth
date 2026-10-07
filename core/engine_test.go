@@ -306,3 +306,25 @@ func TestRegistryAndBoundedCalls(t *testing.T) {
 		t.Fatal("adapter call pool exceeded bound", max.Load())
 	}
 }
+
+func TestLatencyExcludesAdapterQueue(t *testing.T) {
+	engine := NewEngine(NewRegistry())
+	for i := 0; i < cap(engine.slots); i++ {
+		engine.slots <- struct{}{}
+	}
+	done := make(chan time.Duration, 1)
+	go func() {
+		_, elapsed := engine.attempt(context.Background(), &testAdapter{}, Request{Target: targetForTest("reachability"), Client: NewHTTPClient()}, "reachability")
+		done <- elapsed
+	}()
+	// Hold every slot for much longer than the fast adapter's work.
+	time.Sleep(100 * time.Millisecond)
+	<-engine.slots
+	elapsed := <-done
+	if elapsed >= 50*time.Millisecond {
+		t.Fatalf("latency includes local queue: %v", elapsed)
+	}
+	for i := 0; i < cap(engine.slots)-1; i++ {
+		<-engine.slots
+	}
+}

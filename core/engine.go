@@ -191,7 +191,7 @@ func (e *Engine) execute(ctx context.Context, a Adapter, m Metadata, request Req
 func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimension string) (Observation, time.Duration) {
 	ctx, cancel := context.WithTimeout(ctx, request.Target.timeout(dimension))
 	defer cancel()
-	start := time.Now()
+	var start time.Time
 	if ctx.Err() != nil {
 		return Observation{Check: NormalizeError(ctx.Err(), false)}, 0
 	}
@@ -203,8 +203,9 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 	select {
 	case e.slots <- struct{}{}:
 	case <-ctx.Done():
-		return Observation{Check: NormalizeError(ctx.Err(), received.Load()), ResponseReceived: received.Load()}, time.Since(start)
+		return Observation{Check: NormalizeError(ctx.Err(), received.Load()), ResponseReceived: received.Load()}, 0
 	}
+	start = time.Now()
 	type answer struct {
 		observation Observation
 		err         error

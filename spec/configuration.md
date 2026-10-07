@@ -139,7 +139,7 @@ Active checks (including `functional`) never retry, even when `retries` is confi
 
 The reference engine applies a 60-second whole-run budget, or a shorter caller deadline, encompassing all targets, dependencies, checks, attempts, and delays. Exhaustion stops further adapter work and produces diagnostics for remaining targets. Individual checks have their own deadlines, and at most 16 adapter calls can remain in flight per engine. Dependencies execute sequentially in declaration order and retain independent per-check policies; graph scheduling and configurable concurrency remain Phase 8 work.
 
-`latency_ms` measures the final successful reachability attempt, excluding earlier failed attempts and retry delays. It is null when reachability did not succeed. A latency check uses this measurement and does not issue another request.
+`latency_ms` measures the final successful reachability attempt, excluding local adapter-slot queue time, earlier failed attempts, and retry delays. It is null when reachability did not succeed. A latency check uses this measurement and does not issue another request.
 
 ## Still to be defined
 
