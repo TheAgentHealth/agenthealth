@@ -153,3 +153,7 @@ A JSON Schema for the batch envelope is available at [spec/schemas/result.schema
 
 - Extension fields / vendor-specific metadata namespace
 - Whether `message` should be structured (error code + human-readable string) rather than free text
+
+## Transport diagnostics
+
+Check entries may include an optional `steps` map with `dns`, `tcp`, `tls`, and `http` keys and health-state values. The HTTP adapter reports observed transport stages under reachability. Missing stages mean they were not observed (for example, IP literals omit DNS and reused connections may omit TCP/TLS). In-progress stages at timeout are `UNKNOWN`; a failed stage is `UNREACHABLE`. These diagnostics do not independently contribute to aggregation.

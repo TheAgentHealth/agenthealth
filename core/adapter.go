@@ -22,9 +22,11 @@ type Metadata struct {
 type Request struct {
 	// MarkResponse must be called as soon as any response arrives, before reading its body.
 	MarkResponse func()
-	Target       Target
-	Credential   string
-	Client       *http.Client
+	// RecordStep records only allowlisted transport stages and health states.
+	RecordStep func(string, Status)
+	Target     Target
+	Credential string
+	Client     *http.Client
 }
 
 // Observation records whether a response was received, distinguishing partial
@@ -32,6 +34,8 @@ type Request struct {
 type Observation struct {
 	Check            CheckResult
 	ResponseReceived bool
+	// Code selects an engine-owned diagnostic; arbitrary adapter text is suppressed.
+	Code string
 }
 
 // Adapter implementations must honor context cancellation and use the supplied

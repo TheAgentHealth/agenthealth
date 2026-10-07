@@ -140,6 +140,9 @@
         },
         "auth": {
           "$ref": "#/$defs/AuthReference"
+        },
+        "http": {
+          "$ref": "#/$defs/HTTPOptions"
         }
       },
       "required": [
@@ -147,7 +150,98 @@
         "type",
         "endpoint"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "http"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "http",
+                  "api"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "http"
+            ],
+            "properties": {
+              "http": {
+                "required": [
+                  "body_contains"
+                ],
+                "properties": {
+                  "body_contains": {
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "http",
+              "checks"
+            ],
+            "properties": {
+              "http": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "expected_status"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "headers"
+                    ],
+                    "properties": {
+                      "headers": {
+                        "minProperties": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "enum": [
+                    "protocol",
+                    "functional"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "Target": {
       "type": "object",
@@ -239,6 +333,9 @@
         },
         "auth": {
           "$ref": "#/$defs/AuthReference"
+        },
+        "http": {
+          "$ref": "#/$defs/HTTPOptions"
         }
       },
       "required": [
@@ -246,7 +343,98 @@
         "type",
         "endpoint"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "http"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "http",
+                  "api"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "http"
+            ],
+            "properties": {
+              "http": {
+                "required": [
+                  "body_contains"
+                ],
+                "properties": {
+                  "body_contains": {
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "http",
+              "checks"
+            ],
+            "properties": {
+              "http": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "expected_status"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "headers"
+                    ],
+                    "properties": {
+                      "headers": {
+                        "minProperties": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "enum": [
+                    "protocol",
+                    "functional"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "AuthReference": {
       "type": "object",
@@ -265,6 +453,39 @@
       "required": [
         "bearer_env"
       ],
+      "additionalProperties": false
+    },
+    "HTTPOptions": {
+      "type": "object",
+      "properties": {
+        "expected_status": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 200,
+            "maximum": 599
+          }
+        },
+        "headers": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[^\\u0000-\\u0008\\u000a-\\u001f\\u007f]*$"
+          }
+        },
+        "body_contains": {
+          "type": "string"
+        },
+        "max_body_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        }
+      },
       "additionalProperties": false
     }
   },

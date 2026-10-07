@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -28,6 +29,15 @@ type Target struct {
 	RetryDelayMS  *int           `yaml:"retry_delay_ms"`
 	CheckTimeouts map[string]int `yaml:"check_timeouts_ms"`
 	Auth          *AuthReference `yaml:"auth"`
+	HTTP          *HTTPOptions   `yaml:"http"`
+}
+
+// HTTPOptions specifies response expectations, never outgoing credentials.
+type HTTPOptions struct {
+	ExpectedStatus []int             `yaml:"expected_status"`
+	Headers        map[string]string `yaml:"headers"`
+	BodyContains   string            `yaml:"body_contains"`
+	MaxBodyBytes   *int              `yaml:"max_body_bytes"`
 }
 
 // AuthReference resolves a credential from the environment; never a literal secret.
@@ -146,6 +156,36 @@ func validateTarget(t Target, path string, depth int) error {
 	if !contains(targetTypes, t.Type) {
 		return fmt.Errorf("%s: unsupported target type", path)
 	}
+	if t.HTTP != nil {
+		if t.Type != "http" && t.Type != "api" {
+			return fmt.Errorf("%s: http options require http or api target", path)
+		}
+		if t.HTTP.ExpectedStatus != nil && len(t.HTTP.ExpectedStatus) == 0 {
+			return fmt.Errorf("%s: expected_status requires at least one status", path)
+		}
+		for _, status := range t.HTTP.ExpectedStatus {
+			if status < 200 || status > 599 {
+				return fmt.Errorf("%s: expected_status must be between 200 and 599", path)
+			}
+		}
+		if t.HTTP.MaxBodyBytes != nil && (*t.HTTP.MaxBodyBytes < 1 || *t.HTTP.MaxBodyBytes > 1048576) {
+			return fmt.Errorf("%s: max_body_bytes must be between 1 and 1048576", path)
+		}
+		if t.HTTP.BodyContains != "" && !contains(t.Checks, "functional") {
+			return fmt.Errorf("%s: body_contains requires explicit functional check", path)
+		}
+		if t.Checks != nil && !contains(t.Checks, "protocol") && !contains(t.Checks, "functional") && (t.HTTP.ExpectedStatus != nil || len(t.HTTP.Headers) > 0) {
+			return fmt.Errorf("%s: HTTP expectations require protocol or functional check", path)
+		}
+		seenHeaders := map[string]bool{}
+		for name, value := range t.HTTP.Headers {
+			canonical := http.CanonicalHeaderKey(name)
+			if !validHTTPHeaderName(name) || !validHTTPHeaderValue(value) || seenHeaders[canonical] {
+				return fmt.Errorf("%s: invalid or duplicate HTTP header expectation", path)
+			}
+			seenHeaders[canonical] = true
+		}
+	}
 	for _, check := range t.Checks {
 		if !contains(dimensions, check) {
 			return fmt.Errorf("%s: unsupported check dimension", path)
@@ -182,6 +222,26 @@ func validateTarget(t Target, path string, depth int) error {
 	return nil
 }
 
+func validHTTPHeaderName(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, c := range s {
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || strings.ContainsRune("!#$%&'*+-.^_`|~", c)) {
+			return false
+		}
+	}
+	return true
+}
+func validHTTPHeaderValue(s string) bool {
+	for _, c := range s {
+		if (c < 32 && c != '\t') || c == 127 {
+			return false
+		}
+	}
+	return true
+}
+
 // YAML's typed decoder permits scalar coercion and null values. Reject both
 // where the JSON Schema requires a concrete type, before decoding Go structs.
 func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
@@ -196,7 +256,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 		}
 		seen[key.Value] = true
 		switch key.Value {
-		case "version", "name", "type", "endpoint", "bearer_env":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
 			}
@@ -204,13 +264,38 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!bool" {
 				return false
 			}
-		case "timeout_ms", "retries", "retry_delay_ms":
+		case "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
 				return false
 			}
 		case "auth":
 			if !validYAMLNode(value, "auth", depth+1) {
 				return false
+			}
+		case "http":
+			if !validYAMLNode(value, "http", depth+1) {
+				return false
+			}
+		case "expected_status":
+			if value.Kind != yaml.SequenceNode {
+				return false
+			}
+			for _, child := range value.Content {
+				if child.Kind != yaml.ScalarNode || child.Tag != "!!int" {
+					return false
+				}
+			}
+		case "headers":
+			if value.Kind != yaml.MappingNode {
+				return false
+			}
+			seenHeaders := map[string]bool{}
+			for j := 0; j < len(value.Content); j += 2 {
+				k, v := value.Content[j], value.Content[j+1]
+				if k.Tag != "!!str" || v.Kind != yaml.ScalarNode || v.Tag != "!!str" || seenHeaders[strings.ToLower(k.Value)] {
+					return false
+				}
+				seenHeaders[strings.ToLower(k.Value)] = true
 			}
 		case "check_timeouts_ms":
 			if value.Kind != yaml.MappingNode {

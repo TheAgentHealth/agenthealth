@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate tagged source
+        run: |
+          test -z "$(gofmt -l core adapters examples cmd)"
+          go vet ./...
+          go test -race ./...
+          pip install -r tests/requirements.txt
+          python3 -m pytest tests -q
+          python3 scripts/check_markdown_links.py
+          python3 scripts/validate_doc_examples.py
+      - name: Build archives and checksums
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python3 scripts/build_release.py "$RELEASE_TAG"
+      - name: Verify Linux binary
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          mkdir smoke
+          tar -xzf "dist/agenthealth_${RELEASE_TAG}_linux_amd64.tar.gz" -C smoke
+          test "$(smoke/agenthealth version)" = "agenthealth $RELEASE_TAG"
+          smoke/agenthealth --help
+          cd dist
+          sha256sum --check checksums.txt
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: dist/*
+      - name: Publish preview release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" dist/* --verify-tag --draft --prerelease --title "AgentHealth $RELEASE_TAG" --notes-file "docs/releases/${RELEASE_TAG}.md"
+          gh release edit "$RELEASE_TAG" --draft=false

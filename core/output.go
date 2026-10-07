@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,12 +9,30 @@ import (
 	"math"
 	"sort"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 // ValidateResult verifies the wire shape before emitting it. Adapters remain
 // responsible for redacting messages before handing them to the output layer.
 func ValidateResult(r Result) error {
 	return validateResult(r, 0)
+}
+
+// WriteYAML emits the same sanitized wire document as WriteJSON.
+func WriteYAML(w io.Writer, results []Result) error {
+	var buffer bytes.Buffer
+	if err := WriteJSON(&buffer, results); err != nil {
+		return err
+	}
+	var document any
+	if err := json.Unmarshal(buffer.Bytes(), &document); err != nil {
+		return err
+	}
+	encoder := yaml.NewEncoder(w)
+	encoder.SetIndent(2)
+	defer encoder.Close()
+	return encoder.Encode(document)
 }
 
 const maxResultDepth = 64
@@ -37,6 +56,11 @@ func validateResult(r Result, depth int) error {
 	for dimension, check := range r.Checks {
 		if !contains(dimensions, dimension) || !check.Status.Valid() {
 			return errors.New("invalid check dimension or status")
+		}
+		for step, status := range check.Steps {
+			if !contains([]string{"dns", "tcp", "tls", "http"}, step) || !status.Valid() {
+				return errors.New("invalid transport step")
+			}
 		}
 	}
 	for _, dep := range r.Dependencies {
@@ -121,6 +145,13 @@ func writeHumanResult(w io.Writer, r Result, depth int) error {
 		c := r.Checks[key]
 		if _, err := fmt.Fprintf(w, "%s  %s: %s %s\n", indent, key, c.Status, printable(c.Message)); err != nil {
 			return err
+		}
+		for _, step := range []string{"dns", "tcp", "tls", "http"} {
+			if status, ok := c.Steps[step]; ok {
+				if _, err := fmt.Fprintf(w, "%s    %s: %s\n", indent, step, status); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	for _, dep := range r.Dependencies {

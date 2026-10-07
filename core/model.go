@@ -71,8 +71,9 @@ type TargetIdentity struct {
 	Type string `json:"type"`
 }
 type CheckResult struct {
-	Status  Status `json:"status"`
-	Message string `json:"message,omitempty"`
+	Status  Status            `json:"status"`
+	Message string            `json:"message,omitempty"`
+	Steps   map[string]Status `json:"steps,omitempty"`
 }
 type Result struct {
 	Target       TargetIdentity         `json:"target"`

@@ -43,7 +43,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `mcp` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `a2a` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `model` / `llm` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
-| `http` / `api` | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ |
+| `http` / `api` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `database` | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ |
 | `vector-store` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 

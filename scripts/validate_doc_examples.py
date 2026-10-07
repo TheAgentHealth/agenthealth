@@ -59,6 +59,7 @@ FILES_TO_CHECK = [
     ROOT / "spec" / "result-schema.md",
     ROOT / "spec" / "configuration.md",
     ROOT / "spec" / "protocol.md",
+    ROOT / "docs" / "http-adapter.md",
 ]
 
 

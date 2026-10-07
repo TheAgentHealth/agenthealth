@@ -1261,6 +1261,24 @@ The exact repository structure may change as the implementation evolves, but the
 
 ---
 
+# Run the CLI
+
+Download a standalone binary from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases); see [installation instructions](docs/installation.md). Downloaded binaries do not require Go.
+
+Build from source with Go 1.23 or newer:
+
+```bash
+go build -o agenthealth ./cmd/agenthealth
+./agenthealth ping http https://example.com
+./agenthealth check examples/core-check/agenthealth.yaml --format json
+./agenthealth doctor examples/core-check/agenthealth.yaml
+./agenthealth version
+```
+
+See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability, and exit codes.
+
+---
+
 # Project Status
 
 > **Early-stage / Pre-1.0**

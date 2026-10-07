@@ -1,0 +1,6 @@
+version: v1
+targets:
+  - name: ready
+    type: mcp
+    endpoint: https://example.com/health
+    http: {}
