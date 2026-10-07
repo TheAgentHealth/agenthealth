@@ -48,6 +48,7 @@ Establish the project identity, architecture, governance foundation, and technic
 - [x] Pull request templates (`.github/PULL_REQUEST_TEMPLATE.md`)
 - [x] Release process ([RELEASING.md](RELEASING.md))
 - [x] Semantic versioning policy ([RELEASING.md](RELEASING.md))
+- [x] CI pipeline ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — spec schema tests ([tests/spec/](tests/spec/)) and a markdown link checker ([scripts/check_markdown_links.py](scripts/check_markdown_links.py)), required to pass before merge. A Go test suite will be added as additional CI jobs once [Phase 2](#phase-2--core-engine) lands.
 
 ## Architecture Decisions
 

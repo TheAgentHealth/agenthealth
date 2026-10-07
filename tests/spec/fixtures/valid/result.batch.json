@@ -1,0 +1,19 @@
+{
+  "spec_version": "v1",
+  "results": [
+    {
+      "target": { "name": "research-agent", "type": "agent" },
+      "status": "HEALTHY",
+      "latency_ms": 90,
+      "checks": {},
+      "dependencies": []
+    },
+    {
+      "target": { "name": "billing-agent", "type": "agent" },
+      "status": "DEGRADED",
+      "latency_ms": 1200,
+      "checks": {},
+      "dependencies": []
+    }
+  ]
+}

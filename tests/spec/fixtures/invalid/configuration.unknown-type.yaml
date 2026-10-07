@@ -1,0 +1,6 @@
+version: v1
+
+targets:
+  - name: mystery-target
+    type: spaceship
+    endpoint: https://example.com

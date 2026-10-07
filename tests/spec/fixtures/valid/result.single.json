@@ -1,0 +1,40 @@
+{
+  "spec_version": "v1",
+  "target": { "name": "research-agent", "type": "agent" },
+  "status": "UNHEALTHY",
+  "latency_ms": 182,
+  "checks": {
+    "reachability": { "status": "HEALTHY" },
+    "authentication": { "status": "HEALTHY" },
+    "protocol": { "status": "HEALTHY" },
+    "capability": { "status": "HEALTHY" },
+    "latency": { "status": "HEALTHY" },
+    "dependency": {
+      "status": "UNHEALTHY",
+      "message": "critical dependency vector-store is UNREACHABLE"
+    }
+  },
+  "dependencies": [
+    {
+      "target": { "name": "github-mcp", "type": "mcp" },
+      "status": "HEALTHY",
+      "latency_ms": 84,
+      "checks": {
+        "reachability": { "status": "HEALTHY" }
+      },
+      "dependencies": []
+    },
+    {
+      "target": { "name": "vector-store", "type": "vector-store" },
+      "status": "UNREACHABLE",
+      "latency_ms": null,
+      "checks": {
+        "reachability": {
+          "status": "UNREACHABLE",
+          "message": "connection refused"
+        }
+      },
+      "dependencies": []
+    }
+  ]
+}

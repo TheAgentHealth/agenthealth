@@ -32,7 +32,24 @@ These follow different review bars:
 3. Make your change, including tests where applicable.
 4. Ensure existing tests pass and add new tests for new behavior.
 5. Open a pull request against `main` describing what changed and why.
-6. Address review feedback. PRs are merged once approved by a maintainer.
+6. Address review feedback. PRs are merged once approved by a maintainer **and CI is green**.
+
+## CI checks
+
+Every pull request runs the [CI workflow](.github/workflows/ci.yml):
+
+- **Spec schema tests** (`tests/spec/`) — validates `spec/schemas/*.json` against fixture examples (both valid and intentionally-invalid), so a spec/schema change that breaks the contract fails CI instead of being caught in manual review.
+- **Markdown link check** (`scripts/check_markdown_links.py`) — verifies every relative markdown link and `#anchor` in the repository actually resolves.
+
+Run both locally before opening a PR:
+
+```bash
+pip install -r tests/requirements.txt
+python3 -m pytest tests/spec -v
+python3 scripts/check_markdown_links.py
+```
+
+If you change `spec/configuration.md` or `spec/result-schema.md`, update `spec/schemas/*.json` and add/update fixtures under `tests/spec/fixtures/` in the same PR. Once a Go core engine lands ([Phase 2](ROADMAP.md#phase-2--core-engine)), its own test suite will be added as additional required CI jobs alongside these.
 
 ## Commit messages
 

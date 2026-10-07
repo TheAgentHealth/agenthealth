@@ -1,0 +1,33 @@
+version: v1
+
+targets:
+  - name: research-agent
+    type: agent
+    endpoint: https://agent.example.com
+
+    checks:
+      - reachability
+      - protocol
+      - authentication
+      - capability
+      - functional
+      - latency
+
+    thresholds:
+      latency_ms: 1000
+
+    dependencies:
+      - name: github-mcp
+        type: mcp
+        endpoint: http://github-mcp:3000
+        critical: true
+
+      - name: vector-store
+        type: vector-store
+        endpoint: http://vector-db:6333
+        critical: true
+
+      - name: analytics-api
+        type: http
+        endpoint: https://analytics.example.com/health
+        critical: false
