@@ -25,7 +25,36 @@ documentation must agree. Specification changes require the RFC-style
 discussion described in CONTRIBUTING.md. Explicit user decisions can supply
 task authorization; do not invent additional approval steps for routine work.
 
+## Agent terminology and planned integrations
+
+Use the agreed terminology consistently in code proposals, documentation,
+examples, and reviews:
+
+- **Direct agent:** the user's first, user-facing agent.
+- **Composite agents:** downstream agents that the first agent communicates with, directly or through A2A.
+- **Supporting dependencies:** models, tools, MCP servers, databases, vector stores, gateways, and routers. Their combined health is dependency health; do not call these dependencies composite agents.
+
+These agent roles do not introduce target types or schema fields. `agent`
+describes an individual agent, `a2a` a protocol endpoint, and `multi-agent`
+the cooperating system as a whole. Keep evidence for each agent, the
+communication path, and supporting dependencies distinguishable.
+
+[Phase 7](ROADMAP.md#phase-7--agent-health) plans direct and composite agent
+health; [Phase 8](ROADMAP.md#phase-8--agentgateway-integration) plans Agentgateway;
+[Phase 9](ROADMAP.md#phase-9--agent-router-integration) plans Agent Router.
+Dependency Graph and AHP follow in Phases 10 and 11. These capabilities remain
+planned; existing A2A endpoint checks do not establish that a first agent can
+communicate with its downstream agents. See the
+[target model](spec/target-model.md#direct-and-composite-agent-health-planned).
+
 ## Contribute changes
+
+For every new phase or substantive phase revision, follow the
+[Phase Impact Review](ROADMAP.md#phase-impact-review). Assess earlier and later
+phases, record affected layers or an explicit no-impact rationale, add required
+extension tasks to the current phase, and update affected future deliverables.
+Revisit the assessment during implementation; complete the required updates
+and validation before marking the phase complete.
 
 1. Inspect `git status`, the current branch, and relevant code before editing.
    Do not discard existing changes, reset branches, or commit unrelated files.

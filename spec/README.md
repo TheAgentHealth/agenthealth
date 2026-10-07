@@ -37,6 +37,11 @@ See [A2A configuration](configuration.md#a2a-expectations-phase-6-draft) and
 expected skills/capabilities, and opt-in interaction. The target vocabulary
 also includes future adapters; implementation availability follows the roadmap.
 
+Planned [direct and composite agent health](target-model.md#direct-and-composite-agent-health-planned)
+covers the user's first agent and the downstream agents it communicates with,
+directly or through A2A. Models, tools, and data services remain supporting
+dependencies. `multi-agent` describes the cooperating system as a whole.
+
 ## Versioning
 
 Specification documents use a `spec_version` field (e.g. `v1`) independent of the AgentHealth software release version. Breaking changes to any document here require a version bump and a changelog entry in this directory.

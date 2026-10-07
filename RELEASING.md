@@ -55,10 +55,10 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 1. Changes land on `main` via reviewed pull requests.
 2. When a release is cut, tag `main` as `vX.Y.Z`.
 3. Build and publish artifacts for that tag:
-   - standalone binaries and checksums (implemented early from [Phase 11](ROADMAP.md#phase-11--standalone-binaries)),
-   - Docker image (once [Phase 10](ROADMAP.md#phase-10--docker-distribution) lands),
-   - PyPI package (once [Phase 13](ROADMAP.md#phase-13--python-sdk--pypi) lands),
-   - npm package (once [Phase 14](ROADMAP.md#phase-14--javascript--typescript-sdk) lands).
+   - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
+   - Docker image (once [Phase 12](ROADMAP.md#phase-12--docker-distribution) lands),
+   - PyPI package (once [Phase 15](ROADMAP.md#phase-15--python-sdk--pypi) lands),
+   - npm package (once [Phase 16](ROADMAP.md#phase-16--javascript--typescript-sdk) lands).
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
 The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), verifies the Linux AMD64 version and archive checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
@@ -78,7 +78,7 @@ git tag -a v0.1.0 -m "AgentHealth v0.1.0"
 git push origin v0.1.0
 ```
 
-Watch the Release workflow and verify the downloads before announcing the release. Tags are immutable release identifiers; fixes ship under a new version rather than retagging. Plain version tags publish regular releases by default; suffixed tags publish pre-releases. Signed artifacts and SBOM generation remain [Phase 24 — Production Hardening](ROADMAP.md#phase-24--production-hardening) work.
+Watch the Release workflow and verify the downloads before announcing the release. Tags are immutable release identifiers; fixes ship under a new version rather than retagging. Plain version tags publish regular releases by default; suffixed tags publish pre-releases. Signed artifacts and SBOM generation remain [Phase 26 — Production Hardening](ROADMAP.md#phase-26--production-hardening) work.
 
 ## Backward compatibility policy
 

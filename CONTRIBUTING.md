@@ -10,6 +10,8 @@ AgentHealth is pre-1.0 and under active design (see [Project Status](README.md#p
 
 - Core engine implementation
 - Protocol adapters (MCP, A2A, HTTP, model, database, vector store)
+- Planned direct and composite agent health (Phase 7)
+- Planned Agentgateway (Phase 8) and Agent Router (Phase 9) integrations
 - SDKs (Python, JavaScript/TypeScript)
 - Kubernetes and CI/CD integrations
 - Specification design (see [spec/](spec/README.md))
@@ -17,6 +19,27 @@ AgentHealth is pre-1.0 and under active design (see [Project Status](README.md#p
 - Documentation and examples
 - Security reviews
 - Testing
+
+## Agent terminology and roadmap scope
+
+Use **direct agent** for the user's first, user-facing agent, and
+**composite agents** for downstream agents it communicates with directly or
+through A2A. Models, tools, MCP servers, data services, gateways, and routers
+are supporting dependencies; their checks are dependency health.
+
+These terms describe agent roles, not new target types. `multi-agent`
+describes the cooperating system as a whole. Proposals and examples should
+distinguish the first agent's health, downstream agent health, communication
+paths, and supporting dependency failures. Follow the
+[target-model terminology](spec/target-model.md#direct-and-composite-agent-health-planned).
+
+[Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health),
+[Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration),
+and [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
+are planned. Dependency Graph and AHP follow in Phases 10 and 11. Keep planned
+capabilities distinct from the implemented HTTP/API, MCP, and A2A adapters;
+checking an A2A peer alone does not verify the first agent's communication
+path to that peer.
 
 ## Specification changes vs implementation changes
 
@@ -26,6 +49,14 @@ These follow different review bars:
 - **Specification changes** (anything in [spec/](spec/README.md), especially [health-model.md](spec/health-model.md) and [protocol.md](spec/protocol.md)): require an RFC-style discussion first, since downstream adapters and SDKs depend on spec stability. See [GOVERNANCE.md](GOVERNANCE.md).
 
 ## Development workflow
+
+Every new phase or substantive phase revision needs a
+[Phase Impact Review](ROADMAP.md#phase-impact-review) covering both earlier and
+later phases. Record affected contracts and capabilities, required extension
+tasks, future deliverable changes, compatibility, and sequencing. If there is
+no impact in either direction, state that explicitly with a brief reason.
+Keep the assessment current through implementation and handle required updates
+and validation before marking the phase complete.
 
 Coding agents should also follow [AGENTS.md](AGENTS.md) for repository layout,
 safety requirements, validation, and the release runbook.

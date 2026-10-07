@@ -14,10 +14,10 @@ Rationale:
 
 - Compiles to a single static binary per platform, matching the project's "standalone binary + Docker + Kubernetes" distribution model (see [Distribution](../README.md#distribution)) without requiring a language runtime on the target machine.
 - Well-suited to CLIs that talk to many network protocols concurrently (HTTP, MCP, A2A, databases) — mirrors the implementation language of comparable infrastructure CLIs (`kubectl`, `terraform`, `docker`).
-- Straightforward cross-compilation for Linux/macOS/Windows and AMD64/ARM64, needed for [Phase 11 — Standalone Binaries](../ROADMAP.md#phase-11--standalone-binaries).
-- Mature container/Kubernetes ecosystem tooling, relevant to [Phase 12 — Kubernetes Integration](../ROADMAP.md#phase-12--kubernetes-integration).
+- Straightforward cross-compilation for Linux/macOS/Windows and AMD64/ARM64, needed for [Phase 13 — Standalone Binaries](../ROADMAP.md#phase-13--standalone-binaries).
+- Mature container/Kubernetes ecosystem tooling, relevant to [Phase 14 — Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration).
 
-Python and JavaScript/TypeScript are not used for the core engine; they remain **SDKs that wrap the reference implementation** (see [Phase 13](../ROADMAP.md#phase-13--python-sdk--pypi) and [Phase 14](../ROADMAP.md#phase-14--javascript--typescript-sdk)), consistent with ["AgentHealth itself is not a Python-specific standard."](../README.md#python--pypi)
+Python and JavaScript/TypeScript are not used for the core engine; they remain **SDKs that wrap the reference implementation** (see [Phase 15](../ROADMAP.md#phase-15--python-sdk--pypi) and [Phase 16](../ROADMAP.md#phase-16--javascript--typescript-sdk)), consistent with ["AgentHealth itself is not a Python-specific standard."](../README.md#python--pypi)
 
 ## CLI architecture
 
@@ -25,7 +25,7 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 
 ## Adapter interface
 
-**Decision:** adapters are compiled into the core engine initially (in-repo, in-process), rather than loaded as external dynamic plugins. This keeps the trust boundary simple and avoids a plugin ABI before the model is proven. A true out-of-process/dynamic plugin mechanism is deferred to [Phase 21 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-21--plugin--adapter-ecosystem). All adapters, in-process or future-external, must satisfy the [Adapter Contract](../spec/adapter-spec.md).
+**Decision:** adapters are compiled into the core engine initially (in-repo, in-process), rather than loaded as external dynamic plugins. This keeps the trust boundary simple and avoids a plugin ABI before the model is proven. A true out-of-process/dynamic plugin mechanism is deferred to [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem). All adapters, in-process or future-external, must satisfy the [Adapter Contract](../spec/adapter-spec.md).
 
 The CLI currently registers HTTP/API, MCP, and A2A 0.3.0 JSON-RPC adapters.
 A2A uses the shared HTTP client and per-target run state for bounded card
@@ -33,6 +33,18 @@ retrieval, then validates metadata and the advertised same-origin endpoint.
 The engine owns deadlines, retries, aggregation, latency, and output; the
 adapter owns protocol checks and the opt-in interaction. See the
 [A2A guide](a2a-adapter.md) for the Phase 6 behavior.
+
+## Planned agent health scopes
+
+[Phase 7](../ROADMAP.md#phase-7--agent-health) covers the direct agent
+(the user's first agent) and composite agents (the downstream agents it
+communicates with directly or through A2A). Planned checks distinguish each
+agent's own health from the health of the communication path between agents.
+Models, tools, MCP servers, data services, gateways, and routers are supporting
+dependencies, covered separately by dependency health. These agent roles use
+the existing target vocabulary; `multi-agent` describes the cooperating system
+as a whole. Agent-specific checks are not yet implemented.
+See the [target model](../spec/target-model.md#direct-and-composite-agent-health-planned).
 
 ## Configuration format
 
@@ -64,7 +76,7 @@ Implemented in [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli)
 
 ## Plugin strategy
 
-**Decision:** no external plugin loading in the initial implementation (see Adapter interface above). Community adapters initially contribute via pull request into this repository's `adapters/` directory. A formal out-of-tree plugin strategy is evaluated in [Phase 21](../ROADMAP.md#phase-21--plugin--adapter-ecosystem).
+**Decision:** no external plugin loading in the initial implementation (see Adapter interface above). Community adapters initially contribute via pull request into this repository's `adapters/` directory. A formal out-of-tree plugin strategy is evaluated in [Phase 23](../ROADMAP.md#phase-23--plugin--adapter-ecosystem).
 
 ## SDK strategy
 

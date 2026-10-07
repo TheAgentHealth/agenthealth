@@ -79,6 +79,14 @@ Problems that can only be discovered by actually contacting the target — such 
 
 AgentHealth targets are typed (`agent`, `mcp`, `a2a`, `model`, `http`, `database`, `vector-store`, and others). See [target-model.md](target-model.md) for the full list, required fields, and which health dimensions apply to which target type.
 
+For planned agent-specific support, [direct and composite agent health](target-model.md#direct-and-composite-agent-health-planned)
+refer respectively to the user's first agent and the downstream agents it
+communicates with directly or through A2A. Each agent's own check evidence is
+distinct from communication-path and supporting-dependency evidence.
+Supporting dependencies follow the aggregation rules below. These role names
+do not add target types or health states and do not imply current `agent`
+adapter availability.
+
 ## Error Classification
 
 Adapters and the core engine MUST classify failures consistently, so the same underlying problem produces the same status regardless of which adapter encountered it. This table is the single source of truth; [adapter-spec.md](adapter-spec.md) and [docs/architecture.md](../docs/architecture.md#error-model) reference it rather than restating it.

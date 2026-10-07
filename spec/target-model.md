@@ -6,7 +6,7 @@
 
 | Type | Description |
 |---|---|
-| `agent` | A single AI agent endpoint, typically composing a model + tools + MCP/A2A dependencies |
+| `agent` | A single AI agent endpoint, including the user's first, user-facing agent; may answer directly or use dependencies and downstream agents |
 | `multi-agent` | A system composed of multiple cooperating agents |
 | `a2a` | An Agent-to-Agent protocol endpoint |
 | `mcp` | A Model Context Protocol server |
@@ -21,10 +21,32 @@
 | `gateway` | An agent or MCP gateway sitting in front of one or more targets |
 | `custom` | Any target type not covered above, implemented via a community adapter |
 
-Not every target type is required to be implemented by a given release; see [ROADMAP.md](../ROADMAP.md) for adapter phasing (HTTP → MCP → A2A → Agent → Model → Database → Vector Store, in that order).
+Not every target type is required to be implemented by a given release; see
+[ROADMAP.md](../ROADMAP.md) for adapter and integration phasing, including
+Agent Health, Agentgateway, and Agent Router before the Dependency Graph and AHP phases.
 
 The reference CLI currently implements `http`, `api`, `mcp`, and `a2a`.
 A2A support is limited to 0.3.0 JSON-RPC; see the [adapter guide](../docs/a2a-adapter.md).
+
+## Direct and composite agent health (planned)
+
+[Phase 7](../ROADMAP.md#phase-7--agent-health) uses these agent roles:
+
+- **Direct agent:** the user's first, user-facing agent.
+- **Composite agents:** downstream agents that the first agent communicates with, directly or through A2A.
+
+Planned checks cover each agent's own endpoint, authentication, metadata,
+capabilities, liveness, readiness, and an optional safe functional task.
+Composite agent checks also cover the communication path from the first agent.
+Models, tools, MCP servers, data services, gateways, and routers are supporting
+dependencies, covered separately by dependency health.
+
+These role names do not introduce new target types, configuration fields, or
+result fields. An individual agent uses the existing `agent` vocabulary;
+`a2a` describes an A2A protocol endpoint, and `multi-agent` describes the
+cooperating system as a whole. Agent-specific checks remain planned. The
+current dependency aggregation contract is defined in
+[health-model.md](health-model.md#status-aggregation).
 
 ## Required fields per target type
 

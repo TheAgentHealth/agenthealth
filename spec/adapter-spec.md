@@ -1,6 +1,6 @@
 # Adapter Contract
 
-> Status: Draft. Defines what a technology-specific adapter (MCP, A2A, HTTP, model, database, vector store, community adapters) must implement to plug into the AgentHealth core without modifying it. See [Adapter Architecture](../README.md#adapter-architecture) and [Phase 21 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-21--plugin--adapter-ecosystem).
+> Status: Draft. Defines what a technology-specific adapter (MCP, A2A, HTTP, model, database, vector store, community adapters) must implement to plug into the AgentHealth core without modifying it. See [Adapter Architecture](../README.md#adapter-architecture) and [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem).
 
 ## Responsibilities of an adapter
 
@@ -33,11 +33,11 @@ An adapter translates technology-specific behavior into the common [Agent Health
 
 ## Compatibility
 
-Adapters declare a `compatibility_version` against the core engine's adapter interface so the engine can reject or warn about incompatible adapters rather than failing unpredictably. The exact versioning scheme will be finalized alongside [Phase 21 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-21--plugin--adapter-ecosystem).
+Adapters declare a `compatibility_version` against the core engine's adapter interface so the engine can reject or warn about incompatible adapters rather than failing unpredictably. The exact versioning scheme will be finalized alongside [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem).
 
 ## Conformance
 
-Independent conformance testing for adapters is tracked under [Phase 22 — AgentHealth Conformance](../ROADMAP.md#phase-22--agenthealth-conformance).
+Independent conformance testing for adapters is tracked under [Phase 24 — AgentHealth Conformance](../ROADMAP.md#phase-24--agenthealth-conformance).
 
 ## Reference Go interface (Phase 2 draft)
 
