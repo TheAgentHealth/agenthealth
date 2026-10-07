@@ -10,8 +10,9 @@ See the [documentation guide](docs/README.md) for phase 0–6 references and exa
 
 ## Foundation stabilization before Phase 7
 
-**Target release:** v0.4.0. Implemented on the foundation branch; release follows
-review and green CI. The full capability roadmap remains the objective.
+**Status:** Released in [v0.4.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.4.0),
+implemented in [PR #9](https://github.com/TheAgentHealth/agenthealth/pull/9).
+The full capability roadmap remains the objective.
 
 - [x] AHS required-capability and server-version classification alignment
 - [x] Optional stable diagnostic codes in machine output and matching schema
@@ -291,7 +292,7 @@ Implement the reference health engine.
 
 # Phase 3 — Universal CLI
 
-**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API, MCP, and A2A 0.3.0 JSON-RPC adapters are available. See [CLI usage](docs/cli.md).
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API, MCP, and A2A 1.0 JSON-RPC adapters with explicit 0.3.0 compatibility are available. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -312,7 +313,7 @@ agenthealth ping http https://example.com
 agenthealth ping mcp http://localhost:3000
 ```
 
-A2A usage is implemented under Phase 6 for 0.3.0 JSON-RPC peers.
+A2A usage is implemented under Phase 6, extended in v0.4.0 for 1.0 JSON-RPC peers with explicit 0.3.0 compatibility.
 
 ### Check
 
@@ -464,7 +465,8 @@ Goal:
 
 Support Agent-to-Agent health validation.
 
-**Status:** Implemented in v0.3.0 for A2A 0.3.0 JSON-RPC.
+**Status:** Implemented in v0.3.0 for A2A 0.3.0 JSON-RPC and extended in v0.4.0
+with default A2A 1.0 JSON-RPC and explicit 0.3.0 compatibility.
 See the [A2A adapter guide](docs/a2a-adapter.md) for configuration and limits.
 Other protocol versions, REST/gRPC, streaming execution, extended cards, and
 OAuth acquisition remain future work.

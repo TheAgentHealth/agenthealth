@@ -167,8 +167,9 @@ publication through [.github/workflows/release.yml](.github/workflows/release.ym
    smoke-test the native binary. Report the release URL and validation results.
 
 Pre-1.0 versions can be regular releases; use suffixed tags for intentional
-previews as described in RELEASING.md. Signing,
-notarization, and SBOM publication are not implemented. Do not claim otherwise.
+previews as described in RELEASING.md. v0.4.0 publishes CycloneDX SBOMs and
+keyless signed provenance/SBOM attestations. OS-native executable signing and
+macOS notarization remain planned.
 
 If a workflow fails, inspect its logs and any draft release before retrying.
 The create-release step is not idempotent: an existing draft can cause a rerun
