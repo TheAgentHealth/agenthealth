@@ -159,12 +159,12 @@ func TestA2APingAndDoctor(t *testing.T) {
 	var server *httptest.Server
 	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			json.NewEncoder(w).Encode(map[string]any{"protocolVersion": "0.3.0", "name": "peer", "description": "Health peer", "version": "1", "url": server.URL + "/rpc", "capabilities": map[string]any{}, "skills": []any{}, "defaultInputModes": []string{"text/plain"}, "defaultOutputModes": []string{"text/plain"}})
+			json.NewEncoder(w).Encode(map[string]any{"supportedInterfaces": []any{map[string]any{"url": server.URL + "/rpc", "protocolBinding": "JSONRPC", "protocolVersion": "1.0"}}, "name": "peer", "description": "Health peer", "version": "1", "url": server.URL + "/rpc", "capabilities": map[string]any{}, "skills": []any{}, "defaultInputModes": []string{"text/plain"}, "defaultOutputModes": []string{"text/plain"}})
 			return
 		}
 		var request struct{ ID, Method string }
 		json.NewDecoder(r.Body).Decode(&request)
-		if request.Method != "tasks/get" {
+		if request.Method != "GetTask" {
 			t.Errorf("unexpected active request %s", request.Method)
 		}
 		json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": request.ID, "error": map[string]any{"code": -32001, "message": "not found"}})

@@ -20,6 +20,8 @@ type Metadata struct {
 // Request contains per-target state. Credentials must never be logged.
 // Client verifies TLS, restricts redirects, and follows the check context.
 type Request struct {
+	// TargetContext bounds resources shared across dimensions; Check must still honor its attempt context.
+	TargetContext context.Context
 	// MarkResponse must be called as soon as any response arrives, before reading its body.
 	MarkResponse func()
 	// RecordStep records only allowlisted transport stages and health states.
@@ -50,6 +52,12 @@ type Observation struct {
 type Adapter interface {
 	Metadata() Metadata
 	Check(context.Context, Request, string) (Observation, error)
+}
+
+// TargetCloser optionally releases per-target resources after all dimensions.
+// It must honor the bounded cleanup context and is not called concurrently with another CloseTarget.
+type TargetCloser interface {
+	CloseTarget(context.Context, *sync.Map)
 }
 
 // Failure carries a normalized health classification, never a raw diagnostic.

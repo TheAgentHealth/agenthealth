@@ -169,7 +169,7 @@ Other implementations may use additional identifiers conforming to the pattern.
 | Code | Meaning |
 |---|---|
 | `a2a_card` | invalid A2A agent card metadata |
-| `a2a_version` | unsupported A2A protocol version or transport |
+| `a2a_version` | unsupported A2A protocol version, transport or required extension |
 | `a2a_origin` | A2A discovered endpoint must use the configured origin |
 | `a2a_auth` | A2A authentication rejected or declared scheme is unsupported or missing credentials |
 | `a2a_http` | A2A endpoint returned an unexpected HTTP status |

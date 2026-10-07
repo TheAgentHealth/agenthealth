@@ -156,8 +156,11 @@ func TestDiscoveryAndFunctional(t *testing.T) {
 				f.mu.Lock()
 				methods := append([]string{}, f.methods...)
 				f.mu.Unlock()
-				calls, deletes := 0, 0
+				calls, deletes, initializes := 0, 0, 0
 				for _, m := range methods {
+					if m == "initialize" {
+						initializes++
+					}
 					if m == "tools/call" {
 						calls++
 					}
@@ -169,7 +172,7 @@ func TestDiscoveryAndFunctional(t *testing.T) {
 				if active {
 					expected = 1
 				}
-				if calls != expected || deletes < 3 {
+				if calls != expected || deletes != 1 || initializes != 1 {
 					t.Fatalf("calls=%d deletes=%d methods=%v", calls, deletes, methods)
 				}
 				var output bytes.Buffer
@@ -336,5 +339,23 @@ func TestSSECompletesBeforeStreamCloses(t *testing.T) {
 	result := runTarget(t, core.Target{Name: "sse", Type: "mcp", Endpoint: server.URL, Checks: []string{"protocol"}, TimeoutMS: &timeout})
 	if result.Status != core.Healthy || time.Since(started) > 400*time.Millisecond {
 		t.Fatalf("%+v", result)
+	}
+}
+
+func TestMissingFunctionalTool(t *testing.T) {
+	f := &fixture{}
+	server := f.server(t)
+	defer server.Close()
+	result := runTarget(t, core.Target{Name: "peer", Type: "mcp", Endpoint: server.URL, Checks: []string{"functional"}, MCP: &core.MCPOptions{Functional: &core.MCPInvocation{Tool: "missing", Safe: true}}})
+	check := result.Checks["functional"]
+	if result.Status != core.Unhealthy || check.Status != core.Unhealthy || check.Code != "mcp_required" {
+		t.Fatalf("%+v", result)
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	for _, method := range f.methods {
+		if method == "tools/call" {
+			t.Fatal("missing tool invoked")
+		}
 	}
 }

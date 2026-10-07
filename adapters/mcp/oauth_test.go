@@ -28,6 +28,7 @@ type oauthFixture struct {
 	mu                           sync.Mutex
 	challenge                    string
 	invalidIssuer, redirectToken bool
+	inventory                    bool
 }
 
 func newOAuthFixture(t *testing.T) *oauthFixture {
@@ -95,11 +96,21 @@ func newOAuthFixture(t *testing.T) *oauthFixture {
 				Params map[string]json.RawMessage `json:"params"`
 			}
 			json.NewDecoder(r.Body).Decode(&q)
+			if f.inventory && q.Method == "tools/list" {
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "result": map[string]any{"resultType": "complete", "tools": []any{map[string]any{"name": "health", "inputSchema": map[string]any{"type": "object"}}}}})
+				return
+			}
 			if q.Method != "server/discover" {
 				t.Errorf("unexpected method %s", q.Method)
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "result": map[string]any{"resultType": "complete", "supportedVersions": []string{modernVersion}, "capabilities": map[string]any{}}})
+			json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": q.ID, "result": map[string]any{"resultType": "complete", "supportedVersions": []string{modernVersion}, "capabilities": func() map[string]any {
+				if f.inventory {
+					return map[string]any{"tools": map[string]any{}}
+				}
+				return map[string]any{}
+			}()}})
 		default:
 			http.NotFound(w, r)
 		}
@@ -314,5 +325,18 @@ func TestOAuthReachabilityDoesNotLogin(t *testing.T) {
 	result := runTarget(t, target)
 	if result.Status != core.Healthy || f.tokens.Load() != 0 {
 		t.Fatalf("connectivity-only check attempted OAuth: %+v", result)
+	}
+}
+
+func TestSharedSessionRetainsOAuthCredential(t *testing.T) {
+	f := newOAuthFixture(t)
+	f.inventory = true
+	target := f.target("client_credentials")
+	target.MCP.RequiredTools = []string{"health"}
+	target.MCP.OAuth.ClientSecretEnv = "OAUTH_TEST_SECRET"
+	t.Setenv("OAUTH_TEST_SECRET", "client-secret-value")
+	result := runTarget(t, target)
+	if result.Status != core.Healthy || f.tokens.Load() != 1 {
+		t.Fatalf("%+v token requests=%d", result, f.tokens.Load())
 	}
 }

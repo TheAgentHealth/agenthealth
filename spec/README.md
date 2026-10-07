@@ -31,7 +31,7 @@ protocol.md       -> (experimental) defines HOW health is exposed/exchanged over
 ## Implemented adapters
 
 Reference implementations currently support [HTTP/API](../docs/http-adapter.md),
-[MCP](../docs/mcp-adapter.md), and [A2A 0.3.0 JSON-RPC](../docs/a2a-adapter.md).
+[MCP](../docs/mcp-adapter.md), and [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility](../docs/a2a-adapter.md).
 See [A2A configuration](configuration.md#a2a-expectations-phase-6-draft) and
 [Phase 6 examples](../examples/a2a-check/README.md) for discovery, credentials,
 expected skills/capabilities, and opt-in interaction. The target vocabulary

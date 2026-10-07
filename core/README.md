@@ -1,6 +1,6 @@
 # Go core engine
 
-The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5 and the [A2A adapter](../docs/a2a-adapter.md) implements Phase 6 for A2A 0.3.0 JSON-RPC. Other adapters remain later roadmap work.
+The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5 and the [A2A adapter](../docs/a2a-adapter.md) implements Phase 6 for A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility. Other adapters remain later roadmap work.
 
 ## Run it
 
@@ -19,6 +19,11 @@ The example emits JSON; it is an API demonstration, not the Phase 3 CLI or an au
 `LoadConfigFile` loads strict YAML; `Config.Validate` validates configurations built in Go. `NewRegistry().Register(adapter)` checks metadata compatibility and duplicate target types. `NewEngine(registry).Run(ctx, config)` returns results in declaration order. Unknown target adapters yield `MISCONFIGURED` when checks are requested. Explicit `checks: []` produces `UNKNOWN` with no adapter calls; dependencies still run.
 
 Configuration and Reachability gate downstream work. Authentication gates Capability and Functional, while Protocol and Latency remain independent of authentication success. Passing implicit gates are hidden; failed gates appear as evidence and blocked checks are omitted. Latency measures the final successful Reachability attempt, excluding local adapter-slot queue time; threshold violations yield `DEGRADED`.
+
+MCP shares initialization, inventories and a process/session across dimensions
+within one target; A2A shares its card and passive RPC evidence. State is never
+shared across targets or runs. The optional `TargetCloser` receives a bounded
+cleanup context; target resource cancellation and cleanup also run on failure.
 
 Each nested dependency runs independently, even after the parent fails. Critical defaults to true; optional failures contribute `DEGRADED`. Dependencies do not inherit checks, thresholds, credentials, or policies. Dependency summary checks are optional diagnostics, separate from aggregation. `Aggregate` also accepts already-evaluated dependency results for external consumers.
 

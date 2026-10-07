@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -125,5 +126,17 @@ func TestHeaderBindings(t *testing.T) {
 	}
 	if _, err := invocationHeaders(valid, json.RawMessage(`{"nested":{"number":null}}`)); err != nil {
 		t.Fatal("null should omit header")
+	}
+}
+
+func TestLegacyErrorDataDoesNotPreventFallback(t *testing.T) {
+	err := parseRPCError(json.RawMessage(`{"code":-32602,"message":"invalid request","data":""}`))
+	var failure *rpcFailure
+	if !errors.As(err, &failure) || failure.code != -32602 {
+		t.Fatalf("%v", err)
+	}
+	s := session{stdio: &stdioTransport{}}
+	if !s.legacyFallback(err) {
+		t.Fatal("legacy SDK response prevented fallback")
 	}
 }

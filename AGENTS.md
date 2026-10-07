@@ -6,7 +6,7 @@ scope and preserve unrelated work in the working tree.
 
 ## Project and sources of truth
 
-AgentHealth is a vendor-neutral health CLI and Go engine. HTTP/API, MCP, and A2A 0.3.0 JSON-RPC adapters are
+AgentHealth is a vendor-neutral health CLI and Go engine. HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters are
 implemented; other adapters follow the capability roadmap. The software is
 pre-1.0. Do not describe planned adapters or distribution channels as available.
 
@@ -162,7 +162,8 @@ publication through [.github/workflows/release.yml](.github/workflows/release.ym
    to a draft, and publishes a regular **Latest** release for plain version tags, or a
    **prerelease** for suffixed preview tags, after upload succeeds.
 7. Verify that the release is public, targets the intended tag, and contains all
-   five archives plus checksums. Download published assets, check hashes, and
+   five archives, five matching CycloneDX SBOMs, and checksums. Verify signed
+   provenance and SBOM attestations before announcing the release. Download published assets, check hashes, and
    smoke-test the native binary. Report the release URL and validation results.
 
 Pre-1.0 versions can be regular releases; use suffixed tags for intentional

@@ -364,12 +364,56 @@ func TestDiagnosticCodesAreCanonical(t *testing.T) {
 }
 
 func TestDiagnosticCodeValidation(t *testing.T) {
-	for _, code := range []string{"", "future_adapter_code", "bad code", "UPPER", strings.Repeat("a", 65)} {
+	for _, code := range []string{"", "future_adapter_code", "bad code", "UPPER", "mcp_required\n", "mcp_required\r", "mcp_required\u2028", "mcp_required\u2029", strings.Repeat("a", 65)} {
 		r := Result{Target: TargetIdentity{Name: "peer", Type: "mcp"}, Status: Unhealthy, Checks: map[string]CheckResult{"capability": {Status: Unhealthy, Code: code}}, Dependencies: []Result{}}
 		err := ValidateResult(r)
 		valid := code == "" || code == "future_adapter_code"
 		if (err == nil) != valid {
 			t.Fatalf("code %q: %v", code, err)
 		}
+	}
+}
+
+type lifecycleAdapter struct {
+	*testAdapter
+	close func(context.Context, *sync.Map)
+}
+
+func (a lifecycleAdapter) CloseTarget(ctx context.Context, state *sync.Map) { a.close(ctx, state) }
+func TestTargetCleanupIsolationAndPanic(t *testing.T) {
+	var states []*sync.Map
+	adapter := lifecycleAdapter{testAdapter: &testAdapter{fn: func(_ context.Context, r Request, _ string) (Observation, error) {
+		if r.TargetContext == nil {
+			t.Error("missing target resource context")
+		}
+		r.RunState.Store("context", r.TargetContext)
+		return Observation{Check: CheckResult{Status: Healthy}}, nil
+	}}, close: func(_ context.Context, state *sync.Map) {
+		states = append(states, state)
+		value, _ := state.Load("context")
+		if value.(context.Context).Err() == nil {
+			t.Error("resource context not canceled before cleanup")
+		}
+		panic("private cleanup details")
+	}}
+	reg := NewRegistry()
+	reg.Register(adapter)
+	config := Config{Version: "v1", Targets: []Target{targetForTest("protocol"), targetForTest("protocol")}}
+	config.Targets[1].Name = "other"
+	results, err := NewEngine(reg).Run(context.Background(), config)
+	if err != nil || len(states) != 2 || states[0] == states[1] || results[0].Status != Healthy || results[1].Status != Healthy {
+		t.Fatalf("%+v %v", results, err)
+	}
+}
+func TestUncooperativeTargetCleanupIsBounded(t *testing.T) {
+	release := make(chan struct{})
+	adapter := lifecycleAdapter{testAdapter: &testAdapter{}, close: func(context.Context, *sync.Map) { <-release }}
+	reg := NewRegistry()
+	reg.Register(adapter)
+	start := time.Now()
+	_, err := NewEngine(reg).Run(context.Background(), Config{Version: "v1", Targets: []Target{targetForTest("protocol")}})
+	close(release)
+	if err != nil || time.Since(start) > 2*time.Second {
+		t.Fatal("cleanup did not respect deadline", err)
 	}
 }

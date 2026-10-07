@@ -36,12 +36,12 @@ offers `2025-11-25` and accepts any supported legacy revision. Set
 A server version mismatch is `UNHEALTHY`; invalid local version pins are `MISCONFIGURED` before probing.
 
 Modern checks do not send `initialize`, `notifications/initialized`, session
-IDs, or DELETE. Legacy checks initialize independent sessions, validate server
+IDs, or DELETE. Legacy checks initialize one session per target run, validate server
 identity and capabilities, send the initialized notification, and forward any
 server-assigned session ID and negotiated version. Each HTTP session receives
-best-effort DELETE cleanup within a maximum 250 ms budget and the check
-deadline; cleanup errors do not change observations. Canceled sessions expire
-on the server. Sessions are not recreated within a check.
+best-effort DELETE cleanup within a maximum 250 ms budget under the engine’s
+bounded target cleanup context; cleanup errors do not change observations.
+Canceled attempts discard their session/process before subsequent work.
 
 These behaviors follow the upstream [versioning contract](https://modelcontextprotocol.io/specification/2026-07-28/basic/lifecycle),
 [modern HTTP transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http),
@@ -62,8 +62,8 @@ additionally lists every advertised tools, resources, and prompts inventory.
 Unadvertised inventories are skipped. Lists follow pagination, validate
 identity fields and tools' object input schemas, and reject repeated cursors
 and duplicate identities. Passive checks do not read resources, retrieve
-prompts, or invoke tools. Each check owns its session/process; targets and
-dependencies do not share credentials or capabilities.
+prompts, or invoke tools. Each target run owns one session/process and shares initialization and inventory
+evidence across dimensions; targets and dependencies never share that state.
 
 Required tool and prompt names match exactly; resources match by URI. Missing
 requirements, including an unadvertised inventory, yield `UNHEALTHY`.

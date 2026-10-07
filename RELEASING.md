@@ -78,7 +78,7 @@ git tag -a v0.1.0 -m "AgentHealth v0.1.0"
 git push origin v0.1.0
 ```
 
-Watch the Release workflow and verify the downloads before announcing the release. Tags are immutable release identifiers; fixes ship under a new version rather than retagging. Plain version tags publish regular releases by default; suffixed tags publish pre-releases. Signed artifacts and SBOM generation remain [Phase 26 — Production Hardening](ROADMAP.md#phase-26--production-hardening) work.
+Watch the Release workflow and verify the downloads before announcing the release. Tags are immutable release identifiers; fixes ship under a new version rather than retagging. Plain version tags publish regular releases by default; suffixed tags publish pre-releases. v0.4.0 adds per-platform CycloneDX SBOMs, keyless signed provenance and SBOM attestations, SHA-pinned Actions, vulnerability scanning and normalized archive metadata. OS-native signing and notarization remain [Phase 26 — Production Hardening](ROADMAP.md#phase-26--production-hardening) work.
 
 ## Backward compatibility policy
 
@@ -89,3 +89,7 @@ Once 1.0 ships, the project commits to:
 - clear migration notes for any `MAJOR` version bump.
 
 Before 1.0, no such guarantee is made; this document exists to make pre-1.0 expectations explicit rather than leaving them undocumented.
+
+Release builds use Go 1.27.1 and govulncheck v1.8.0. Each published release
+contains five archives, five matching SBOMs and checksums. Verify provenance and
+SBOM attestations following [installation instructions](docs/installation.md#verify-provenance-and-sboms).

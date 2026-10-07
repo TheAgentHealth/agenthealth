@@ -1,0 +1,10 @@
+version: v1
+targets:
+  - name: current-peer
+    type: a2a
+    endpoint: https://agent.example.com
+    a2a:
+      protocol_version: '1.0'
+      required_skills: [health]
+    thresholds:
+      latency_ms: 1000

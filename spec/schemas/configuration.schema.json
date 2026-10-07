@@ -1341,7 +1341,8 @@
         "protocol_version": {
           "enum": [
             "",
-            "0.3.0"
+            "0.3.0",
+            "1.0"
           ]
         },
         "required_skills": {
@@ -1360,7 +1361,8 @@
             "enum": [
               "streaming",
               "pushNotifications",
-              "stateTransitionHistory"
+              "stateTransitionHistory",
+              "extendedAgentCard"
             ]
           }
         },

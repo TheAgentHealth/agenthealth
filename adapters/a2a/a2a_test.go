@@ -26,6 +26,12 @@ func execute(t *testing.T, target core.Target) core.Result {
 }
 func executeAdapter(t *testing.T, target core.Target, adapter Adapter) core.Result {
 	t.Helper()
+	if target.A2A == nil {
+		target.A2A = &core.A2AOptions{}
+	}
+	if target.A2A.ProtocolVersion == "" {
+		target.A2A.ProtocolVersion = "0.3.0"
+	}
 	reg := core.NewRegistry()
 	if err := reg.Register(adapter); err != nil {
 		t.Fatal(err)
@@ -80,7 +86,7 @@ func TestPassiveAndFunctional(t *testing.T) {
 	t.Setenv("A2A_TOKEN", "super-secret")
 	target := core.Target{Name: "peer", Type: "a2a", Endpoint: server.URL + "/ignored", Auth: &core.AuthReference{BearerEnv: "A2A_TOKEN"}, A2A: &core.A2AOptions{RequiredSkills: []string{"health"}, RequiredCapabilities: []string{"streaming"}}}
 	r := execute(t, target)
-	if r.Status != core.Healthy || gets.Load() != 1 || posts.Load() != 2 || sends.Load() != 0 {
+	if r.Status != core.Healthy || gets.Load() != 1 || posts.Load() != 1 || sends.Load() != 0 {
 		t.Fatalf("passive: %+v, gets %d posts %d", r, gets.Load(), posts.Load())
 	}
 	var output strings.Builder
@@ -395,7 +401,7 @@ func TestRandomFailuresBeforeRPC(t *testing.T) {
 	var calls atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
 	defer server.Close()
-	target := core.Target{Name: "peer", Type: "a2a", Endpoint: server.URL, Checks: []string{"functional"}, A2A: &core.A2AOptions{Functional: &core.A2AInteraction{Safe: true, Text: "Read-only health"}}}
+	target := core.Target{Name: "peer", Type: "a2a", Endpoint: server.URL, Checks: []string{"functional"}, A2A: &core.A2AOptions{ProtocolVersion: "0.3.0", Functional: &core.A2AInteraction{Safe: true, Text: "Read-only health"}}}
 	for _, dimension := range []string{"authentication", "protocol", "functional"} {
 		for _, prefix := range []int{0, 16} {
 			t.Run(dimension+"/"+string(rune('0'+prefix/16)), func(t *testing.T) {

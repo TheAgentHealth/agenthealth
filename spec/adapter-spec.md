@@ -59,3 +59,19 @@ registers dynamically obtained access/refresh tokens for engine redaction;
 adapters must call it before exposing any observations involving those tokens.
 Raw credentials and state never become result fields. This extends the request
 context without changing the required Adapter methods or result contract.
+
+### Shared per-target probe lifecycle (v0.4.0)
+
+`Request.TargetContext` owns the lifetime of resources shared through `RunState`.
+Every `Check` must still honor its shorter attempt context, supplied HTTP client,
+response marker and transport callbacks. Resources must be isolated across
+individual targets and runs, including nested dependencies. Shared state must
+serialize operations while a canceled call unwinds. Cache completed evidence;
+do not replay active operations or reuse incomplete responses as success.
+
+Adapters may optionally implement `TargetCloser.CloseTarget(context.Context,
+*sync.Map)`. The engine cancels the target resource context and calls this hook
+with an independent one-second cleanup budget; panics are suppressed and an
+uncooperative cleanup occupies a bounded adapter slot. MCP additionally limits
+HTTP DELETE to 250 ms, closes stdio/process groups, and discards canceled sessions.
+Existing adapters implementing only `Metadata` and `Check` remain compatible.

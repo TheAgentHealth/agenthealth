@@ -41,3 +41,15 @@ Regression tests cover incompatible servers, missing required inventory and
 capabilities, code serialization, schema acceptance/rejection and suppression
 of arbitrary adapter codes. Required-capability failures now return exit 2
 instead of 1, and incompatible server versions return exit 2 instead of 4.
+
+## v0.4.0 completion scope
+
+The maintainer requested the full foundation milestone and v0.4.0 publication.
+This extends the proposal to default A2A 1.0 JSON-RPC with explicit 0.3.0 mode,
+shared per-target resources through an optional cleanup hook, real official SDK
+checks, scanning and release supply-chain evidence. Local pins still fail before
+networking; discovered endpoints must retain the trusted origin. The A2A default
+change ships in the pre-1.0 minor release with explicit migration notes. The wire
+envelope remains v1 and schema options are extended, without removing old pins.
+The initial “no release authorized” note described the earlier request; publication
+is now authorized after validation and review under the repository workflow.
