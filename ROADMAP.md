@@ -6,6 +6,8 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
+See the [documentation guide](docs/README.md) for phase 0–5 references and examples.
+
 ---
 
 # Guiding Strategy
@@ -61,7 +63,7 @@ Define:
 - [x] configuration format: YAML (see [spec/configuration.md](spec/configuration.md))
 - [x] result format: JSON (see [spec/result-schema.md](spec/result-schema.md))
 - [x] error model: normalized onto health states (see [docs/architecture.md](docs/architecture.md#error-model))
-- [x] exit codes: conceptual mapping defined, final value TBD in spec process (see [docs/architecture.md](docs/architecture.md#exit-codes))
+- [x] exit codes: normative mapping implemented in the engine and CLI (see [docs/architecture.md](docs/architecture.md#exit-codes))
 - [x] plugin strategy: in-repo adapters initially (see [docs/architecture.md](docs/architecture.md#plugin-strategy))
 - [x] SDK strategy: thin wrappers over the core engine (see [docs/architecture.md](docs/architecture.md#sdk-strategy))
 
@@ -238,8 +240,9 @@ Examples:
 ```bash
 agenthealth ping http https://example.com
 agenthealth ping mcp http://localhost:3000
-agenthealth ping a2a https://agent.example.com
 ```
+
+A2A usage is planned under Phase 6.
 
 ### Check
 
@@ -251,6 +254,14 @@ agenthealth check agenthealth.yaml
 
 ```bash
 agenthealth doctor agenthealth.yaml
+```
+
+### OAuth login
+
+Added in Phase 5; see [CLI login usage](docs/cli.md#mcp-oauth-login).
+
+```bash
+agenthealth login examples/mcp-oauth/agenthealth.yaml user-mcp
 ```
 
 ### Version
@@ -329,6 +340,8 @@ Make MCP a first-class AgentHealth target.
 ## Capabilities
 
 - [x] MCP Streamable HTTP transport connectivity (JSON/SSE)
+- [x] bounded legacy SSE response resumption without repeating tool calls
+- [x] tool content type and required-field validation
 - [x] configured stdio subprocesses
 - [x] modern stateless MCP `2026-07-28` discovery and request metadata
 - [x] initialization
