@@ -1,0 +1,5 @@
+version: v99
+targets:
+  - name: example
+    type: http
+    endpoint: https://example.com
