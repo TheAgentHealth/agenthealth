@@ -42,16 +42,20 @@ Every pull request runs the [CI workflow](.github/workflows/ci.yml):
 - **Markdown link check** (`scripts/check_markdown_links.py`) — verifies every relative markdown link and `#anchor` in the repository actually resolves.
 - **Doc example validation** (`scripts/validate_doc_examples.py`) — validates fenced JSON/YAML examples in README.md, ROADMAP.md, and spec/*.md that are explicitly marked `<!-- spec-example: result -->` or `<!-- spec-example: configuration -->` against the schemas, so prose examples can't silently drift from the schemas the way they did before this check existed. An example can only be exempted with `<!-- spec-example: skip reason="..." -->` — a documented, intentional reason is required.
 
-Run all three locally before opening a PR:
+The **Go core tests** job also checks formatting, runs `go vet ./...`, and runs `go test -race ./...`.
+
+Run the checks locally before opening a PR:
 
 ```bash
+go test -race ./...
+go vet ./...
 pip install -r tests/requirements.txt
 python3 -m pytest tests/spec -v
 python3 scripts/check_markdown_links.py
 python3 scripts/validate_doc_examples.py
 ```
 
-If you change `spec/configuration.md` or `spec/result-schema.md`, update `spec/schemas/*.json` and add/update fixtures under `tests/spec/fixtures/` in the same PR. If you add or change a canonical example in README.md, ROADMAP.md, or spec/*.md, mark it with `<!-- spec-example: result -->` or `<!-- spec-example: configuration -->` so CI validates it too. Once a Go core engine lands ([Phase 2](ROADMAP.md#phase-2--core-engine)), its own test suite will be added as additional required CI jobs alongside these.
+If you change `spec/configuration.md` or `spec/result-schema.md`, update `spec/schemas/*.json` and add/update fixtures under `tests/spec/fixtures/` in the same PR. If you add or change a canonical example in README.md, ROADMAP.md, or spec/*.md, mark it with `<!-- spec-example: result -->` or `<!-- spec-example: configuration -->` so CI validates it too. The [Phase 2 Go core](core/README.md) test suite runs alongside these checks.
 
 ## Commit messages
 
