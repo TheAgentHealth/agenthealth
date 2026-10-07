@@ -26,6 +26,7 @@ An adapter translates technology-specific behavior into the common [Agent Health
 ## Safety requirements
 
 - Functional checks MUST be non-destructive by default.
+- Functional checks are **active** checks (see [Passive vs Active Checks](../README.md#passive-vs-active-checks)) and MUST NOT execute unless explicitly requested via `checks` (see [configuration.md § Default Checks](configuration.md#default-checks)).
 - Any check capable of side effects (invoking a tool, running inference, writing data) MUST be explicit, opt-in (active check) per [Passive vs Active Checks](../README.md#passive-vs-active-checks).
 - Adapters MUST NOT log or emit secrets, tokens, or credentials in results or diagnostics.
 - Adapters SHOULD support configurable timeouts. A timeout with no response received MUST be classified `UNREACHABLE`; an ambiguous or partial response received before the timeout MUST be classified `UNKNOWN` — per the [Error Classification table](health-model.md#error-classification), never an adapter-specific choice between the two.

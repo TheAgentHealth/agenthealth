@@ -70,7 +70,11 @@ Each entry under `dependencies` accepts the same `name`/`type`/`endpoint`/`check
 
 ## Default Checks
 
-If `checks` is omitted for a target or dependency, AgentHealth runs the **full default set of dimensions applicable to that entry's `type`**, per the [applicable-dimensions table](target-model.md#applicable-dimensions-per-target-type) in target-model.md. For example, an `http` target with no `checks` listed runs reachability, authentication, functional, latency, and configuration, but not protocol/capability (not applicable to `http`).
+If `checks` is omitted for a target or dependency, AgentHealth runs the default set of **passive** dimensions applicable to that entry's `type`, per the [applicable-dimensions table](target-model.md#applicable-dimensions-per-target-type) in target-model.md: `reachability`, `protocol`, `authentication`, `capability`, `dependency`, `latency`, and `configuration`.
+
+`functional` is **never** included in the default set, regardless of target type. [Functional Health](health-model.md#functional-health) checks exercise the target (running inference, executing a query, invoking an operation) and are classified **active** under [Passive vs Active Checks](../README.md#passive-vs-active-checks), so they require explicit opt-in. Listing `functional` in a target's or dependency's `checks` *is* that opt-in — no separate flag is needed.
+
+For example, an `http` target with no `checks` listed runs reachability, authentication, latency, and configuration (all passive and applicable to `http`), but never `functional` unless explicitly requested.
 
 ## Dependency Inheritance
 

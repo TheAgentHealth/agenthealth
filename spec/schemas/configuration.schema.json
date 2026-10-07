@@ -8,6 +8,10 @@
       "type": "string",
       "enum": ["reachability", "protocol", "authentication", "capability", "functional", "dependency", "latency", "configuration"]
     },
+    "TargetType": {
+      "type": "string",
+      "enum": ["agent", "multi-agent", "a2a", "mcp", "tool", "model", "llm", "http", "api", "vector-store", "database", "runtime", "gateway", "custom"]
+    },
     "Thresholds": {
       "type": "object",
       "properties": {
@@ -17,9 +21,9 @@
     "Dependency": {
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "type": { "type": "string" },
-        "endpoint": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "$ref": "#/$defs/TargetType" },
+        "endpoint": { "type": "string", "minLength": 1 },
         "checks": {
           "type": "array",
           "items": { "$ref": "#/$defs/Dimension" }
@@ -36,9 +40,9 @@
     "Target": {
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
-        "type": { "type": "string" },
-        "endpoint": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "$ref": "#/$defs/TargetType" },
+        "endpoint": { "type": "string", "minLength": 1 },
         "checks": {
           "type": "array",
           "items": { "$ref": "#/$defs/Dimension" }
@@ -54,7 +58,7 @@
   },
   "type": "object",
   "properties": {
-    "version": { "type": "string" },
+    "version": { "type": "string", "minLength": 1 },
     "targets": {
       "type": "array",
       "minItems": 1,

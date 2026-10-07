@@ -286,18 +286,16 @@ Examples:
 
 ## Functional Health
 
-Can the target successfully perform a minimal, safe operation?
+Can the target successfully perform a minimal operation that actually exercises it (not merely list what it claims to support)?
 
 Examples:
 
-- MCP `tools/list`
-- minimal model request
-- agent discovery
+- minimal model inference request
 - lightweight API operation
 - database `SELECT 1`
-- vector store metadata/read operation
+- vector store read operation
 
-Functional checks should be safe and non-destructive by default.
+Functional checks are classified **active** (see [Passive vs Active Checks](#passive-vs-active-checks)): they never run by default and require being explicitly listed in a target's `checks` (see [spec/configuration.md § Default Checks](spec/configuration.md#default-checks)). Even when opted in, functional checks should remain minimal and non-destructive.
 
 ---
 
@@ -346,23 +344,22 @@ Status: DEGRADED
 
 ## Configuration Health
 
-AgentHealth can detect common configuration problems such as:
+AgentHealth can detect configuration problems that are identifiable *before* attempting to reach or operate the target, such as:
 
 - missing endpoint,
 - missing credentials,
-- invalid protocol selection,
-- unavailable model,
-- missing required capability,
-- malformed configuration,
-- incompatible protocol version.
+- invalid or unsupported protocol selection,
+- malformed configuration.
 
-These failures can be reported as:
+These are reported as:
 
 ```text
 MISCONFIGURED
 ```
 
 rather than incorrectly labeling the target as unreachable.
+
+Problems that can only be discovered by actually contacting the target — such as an incompatible protocol version returned during negotiation, or a required capability/model the target doesn't expose — are Protocol Health and Capability Health concerns instead, and resolve to `UNHEALTHY` (see [spec/health-model.md § Error Classification](spec/health-model.md#error-classification)).
 
 ---
 

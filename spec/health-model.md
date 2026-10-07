@@ -57,7 +57,9 @@ Does the target expose the capabilities required by the workload? (MCP tools/res
 
 ### Functional Health
 
-Can the target successfully perform a minimal, safe operation? (MCP `tools/list`, minimal model request, agent discovery, lightweight API operation, database `SELECT 1`, vector store metadata/read.) Functional checks SHOULD be safe and non-destructive by default.
+Can the target successfully perform a minimal operation that actually exercises it (not merely list what it claims to support — that's Capability Health)? Examples: a minimal model inference request, a lightweight API operation, database `SELECT 1`, a vector store read operation.
+
+Functional checks are classified **active** per [Passive vs Active Checks](../README.md#passive-vs-active-checks): they MUST NOT run by default for any target type and require explicit opt-in by being listed in `checks` (see [configuration.md § Default Checks](configuration.md#default-checks)). Even when opted in, functional checks SHOULD remain minimal, safe, and non-destructive.
 
 ### Dependency Health
 
@@ -69,7 +71,9 @@ Response latency compared against configurable thresholds (e.g. `latency_ms` vs 
 
 ### Configuration Health
 
-Detects configuration problems (missing endpoint/credentials, invalid protocol selection, unavailable model, missing required capability, malformed configuration, incompatible protocol version) and reports them as `MISCONFIGURED` rather than misclassifying the target as unreachable.
+Detects configuration problems that can be identified *before* attempting to reach or operate the target — missing endpoint, missing credentials, invalid or unsupported protocol selection, malformed configuration values — and reports them as `MISCONFIGURED` rather than misclassifying the target as unreachable.
+
+Problems that can only be discovered by actually contacting the target — such as an incompatible protocol version returned during negotiation, or a required capability/model the target does not expose — are Protocol Health and Capability Health concerns respectively, not Configuration Health, and resolve to `UNHEALTHY` per [Error Classification](#error-classification).
 
 ## Target Model
 
@@ -104,6 +108,8 @@ When a target has dependencies, its overall status is computed in three steps.
 ### Step 1 — Own status
 
 A target's **own status** is the most severe result (per [Severity Order](#severity-order)) across its own direct dimension checks (reachability, protocol, authentication, capability, functional, latency, configuration). It does not yet factor in dependencies.
+
+If zero dimension checks actually ran for a target (e.g. `checks: []` was explicitly configured, disabling every dimension), `own_status` is `UNKNOWN`: the absence of any evidence is itself an indeterminate result, not a `HEALTHY` default. `max_severity` is otherwise undefined over an empty set; this is the one specified exception.
 
 ### Step 2 — Dependency contribution
 

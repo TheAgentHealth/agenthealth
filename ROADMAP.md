@@ -136,7 +136,8 @@ Example:
   },
   "status": "HEALTHY",
   "latency_ms": 82,
-  "checks": {}
+  "checks": {},
+  "dependencies": []
 }
 ```
 
