@@ -1,0 +1,18 @@
+{
+  "spec_version": "v1",
+  "target": { "name": "research-agent", "type": "agent" },
+  "status": "DEGRADED",
+  "latency_ms": 90,
+  "checks": {
+    "reachability": { "status": "HEALTHY" }
+  },
+  "dependencies": [
+    {
+      "target": { "name": "github-mcp", "type": "mcp" },
+      "status": "DEGRADED",
+      "latency_ms": 1800,
+      "checks": {},
+      "dependencies": []
+    }
+  ]
+}

@@ -43,7 +43,18 @@
           "items": { "$ref": "#/$defs/Result" }
         }
       },
-      "required": ["target", "status", "checks", "dependencies"]
+      "required": ["target", "status", "checks", "dependencies"],
+      "if": {
+        "properties": {
+          "status": { "enum": ["MISCONFIGURED", "UNKNOWN"] }
+        },
+        "required": ["status"]
+      },
+      "else": {
+        "properties": {
+          "checks": { "minProperties": 1 }
+        }
+      }
     },
     "TopLevelResult": {
       "allOf": [

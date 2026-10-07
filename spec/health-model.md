@@ -120,6 +120,17 @@ This matters because `UNKNOWN` is the most severe state in the [Severity Order](
 
 This is distinct from the empty-set rule in [Status Aggregation § Step 1](#step-1--own-status) (`own_status = UNKNOWN` when *zero* checks ran at all, e.g. `checks: []` was explicitly configured): a target whose Reachability check ran and failed has produced one check result, not zero, so Step 1 correctly yields `UNREACHABLE` in that case.
 
+### Prerequisites and selective check lists
+
+A target's `checks` list (see [configuration.md](configuration.md#target-fields)) says which dimensions the *operator* wants represented in the result — it does not override the prerequisite chain above. If `checks` requests a dimension with prerequisites (e.g. `checks: [functional]`, or `checks: [capability]`), the engine MUST still implicitly evaluate Configuration and Reachability first as internal gates, even though they were not listed:
+
+- You cannot safely attempt a `functional` or `capability` check against a target that hasn't been confirmed reachable; silently skipping the gate and attempting it anyway risks misreporting a connectivity failure as a functional one.
+- Whether that implicit prerequisite gets its **own entry in `checks`** depends on the outcome:
+  - If the prerequisite **fails** (blocking the requested dimension), its entry MUST appear in `checks` regardless of whether it was explicitly requested — it is now the actual reason for the result, and omitting it would leave the status unexplained. The requested dimension (e.g. `functional`) is then blocked and omitted per [Skipped checks are omitted, not `UNKNOWN`](#skipped-checks-are-omitted-not-unknown) above.
+  - If the prerequisite **passes**, its entry appears in `checks` only if it was *also* explicitly listed (or is part of the passive default set when `checks` was omitted entirely, see [configuration.md § Default Checks](configuration.md#default-checks)). A passing prerequisite that only acted as an internal gate does not need its own entry if the operator never asked about it — only the requested dimension's result appears.
+
+In short: `checks: [functional]` means "I only want to see the functional result" to a passing engine, but never means "skip the safety gate that makes a functional check meaningful."
+
 ## Status Aggregation
 
 When a target has dependencies, its overall status is computed in three steps.
@@ -168,6 +179,20 @@ overall_status = max(HEALTHY, UNHEALTHY) = UNHEALTHY
 ```
 
 The parent is reported `UNHEALTHY`, never `UNREACHABLE` — the agent itself was reachable; the failure was in what it depends on. See this same example worked through the full result document in [result-schema.md](result-schema.md#recursive-shape).
+
+### `own_status` vs. `overall_status`
+
+`own_status` (Step 1) and the final `overall_status` (Step 3, exposed as the result's top-level `status`) answer different questions, and they can legitimately diverge in either direction: dependency contributions can make `overall_status` *more* severe than `own_status` (the example above), but they can never make it *less* severe — `max_severity` only raises the floor.
+
+This also means a target's own `MISCONFIGURED` result is not necessarily the final word. Consider a `billing-agent` whose own Configuration check fails (`own_status = MISCONFIGURED`, per [Check Prerequisites](#check-prerequisites) no other own dimension ran), while its critical `analytics-db` dependency is itself `UNKNOWN`:
+
+```text
+own_status                               = MISCONFIGURED
+analytics-db (critical, UNKNOWN)       → contributes UNKNOWN
+overall_status = max(MISCONFIGURED, UNKNOWN) = UNKNOWN
+```
+
+The top-level `status` is `UNKNOWN`, not `MISCONFIGURED` — but no information is lost: `checks.configuration` still reports the target's own `MISCONFIGURED` result, and the `analytics-db` entry under `dependencies` still reports its own `UNKNOWN` status. `overall_status` is a single severity-ranked summary of the whole subtree, not a replacement for reading `checks` and `dependencies`; a consumer that only reads the top-level `status` and discards the rest will miss exactly this kind of nuance by design — `checks` and `dependencies` exist precisely so that detail is not discarded.
 
 ### Nested dependencies
 
