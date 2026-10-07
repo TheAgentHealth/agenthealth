@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"io"
+	"mime"
 	"net/http"
 	"net/http/httptrace"
 	"net/url"
@@ -18,7 +19,11 @@ import (
 
 const bodyLimit = 1048576
 
-type Adapter struct{}
+type Adapter struct {
+	// random is normally nil, selecting the OS-backed source. Tests can inject
+	// a failing reader without mutating the process-wide cryptographic source.
+	random io.Reader
+}
 
 func (Adapter) Metadata() core.Metadata {
 	return core.Metadata{Name: "a2a", Version: "0.1.0", CompatibilityVersion: "v1", TargetTypes: []string{"a2a"}, Dimensions: []string{"configuration", "reachability", "authentication", "protocol", "capability", "functional"}, ActiveChecks: []string{"functional"}}
@@ -132,7 +137,7 @@ func fetch(ctx context.Context, r core.Request, method, endpoint string, body []
 	}
 	return f, observed(core.Healthy, ""), nil
 }
-func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
+func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
 	endpoint, ok := discovery(r.Target)
 	if dimension == "configuration" {
 		if !ok || strings.ContainsAny(r.Credential, "\r\n") {
@@ -201,10 +206,14 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		}
 	}
 	for _, modes := range [][]string{c.InputModes, c.OutputModes} {
-		for _, mode := range modes {
-			if strings.TrimSpace(mode) == "" {
+		for i, mode := range modes {
+			mediaType, _, err := mime.ParseMediaType(mode)
+			// ParseMediaType also accepts disposition tokens such as "inline";
+			// agent modes must contain both a MIME type and subtype.
+			if err != nil || !strings.Contains(mediaType, "/") {
 				return observed(core.Unhealthy, "a2a_card"), nil
 			}
+			modes[i] = mediaType
 		}
 	}
 	if raw, exists := c.Capabilities["extensions"]; exists {
@@ -255,8 +264,12 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		}
 		return observed(core.Healthy, ""), nil
 	}
+	interactionID, err := a.identifier()
+	if err != nil {
+		return core.Observation{ResponseReceived: true}, err
+	}
 	method := "tasks/get"
-	params := map[string]any{"id": identifier()}
+	params := map[string]any{"id": interactionID}
 	if dimension == "functional" {
 		if r.Target.A2A == nil || r.Target.A2A.Functional == nil || !r.Target.A2A.Functional.Safe {
 			return observed(core.Misconfigured, "a2a_functional"), nil
@@ -265,9 +278,12 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			return observed(core.Misconfigured, "a2a_functional"), nil
 		}
 		method = "message/send"
-		params = map[string]any{"message": map[string]any{"kind": "message", "role": "user", "messageId": identifier(), "parts": []any{map[string]string{"kind": "text", "text": r.Target.A2A.Functional.Text}}}, "configuration": map[string]any{"blocking": true, "acceptedOutputModes": []string{"text/plain"}, "historyLength": 0}}
+		params = map[string]any{"message": map[string]any{"kind": "message", "role": "user", "messageId": interactionID, "parts": []any{map[string]string{"kind": "text", "text": r.Target.A2A.Functional.Text}}}, "configuration": map[string]any{"blocking": true, "acceptedOutputModes": []string{"text/plain"}, "historyLength": 0}}
 	}
-	id := identifier()
+	id, err := a.identifier()
+	if err != nil {
+		return core.Observation{ResponseReceived: true}, err
+	}
 	body, _ := json.Marshal(map[string]any{"jsonrpc": "2.0", "id": id, "method": method, "params": params})
 	f, obs, err := fetch(ctx, r, http.MethodPost, c.URL, body)
 	if err != nil || obs.Check.Status != core.Healthy {
@@ -311,12 +327,16 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 	}
 	return validateResult(response.Result, dimension), nil
 }
-func identifier() string {
-	var b [16]byte
-	if _, err := rand.Read(b[:]); err != nil {
-		panic("random source unavailable")
+func (a Adapter) identifier() (string, error) {
+	source := a.random
+	if source == nil {
+		source = rand.Reader
 	}
-	return hex.EncodeToString(b[:])
+	var b [16]byte
+	if _, err := io.ReadFull(source, b[:]); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(b[:]), nil
 }
 func has(values []string, s string) bool {
 	for _, v := range values {

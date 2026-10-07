@@ -1,11 +1,15 @@
 package a2a
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -18,8 +22,12 @@ func agentCard(endpoint string) map[string]any {
 }
 func execute(t *testing.T, target core.Target) core.Result {
 	t.Helper()
+	return executeAdapter(t, target, Adapter{})
+}
+func executeAdapter(t *testing.T, target core.Target, adapter Adapter) core.Result {
+	t.Helper()
 	reg := core.NewRegistry()
-	if err := reg.Register(Adapter{}); err != nil {
+	if err := reg.Register(adapter); err != nil {
 		t.Fatal(err)
 	}
 	results, err := core.NewEngine(reg).Run(context.Background(), core.Config{Version: "v1", Targets: []core.Target{target}})
@@ -316,5 +324,113 @@ func TestCustomCardAndOptionalSecurity(t *testing.T) {
 	r := execute(t, core.Target{Name: "peer", Type: "a2a", Endpoint: server.URL, A2A: &core.A2AOptions{CardURL: server.URL + "/custom/card"}})
 	if r.Status != core.Healthy {
 		t.Fatalf("%+v", r)
+	}
+}
+
+func TestMIMEModes(t *testing.T) {
+	for _, tc := range []struct {
+		name, input, output string
+		functional          bool
+		want                core.Status
+	}{
+		{"invalid input", "not-a-media-type", "text/plain", false, core.Unhealthy},
+		{"invalid output", "text/plain", "text/plain; charset", false, core.Unhealthy},
+		{"missing subtype", "text/", "text/plain", false, core.Unhealthy},
+		{"missing type", "/plain", "text/plain", false, core.Unhealthy},
+		{"invalid syntax", "text/pl ain", "text/plain", false, core.Unhealthy},
+		{"case and parameters", "Text/Plain; Charset=UTF-8", "TEXT/PLAIN; charset=utf-8", true, core.Healthy},
+		{"valid nontext", "application/json", "application/json", false, core.Healthy},
+		{"unsupported interaction modes", "application/json", "application/json", true, core.Misconfigured},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var sends atomic.Int32
+			var server *httptest.Server
+			server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == "GET" {
+					c := agentCard(server.URL)
+					c["defaultInputModes"] = []string{tc.input}
+					c["defaultOutputModes"] = []string{tc.output}
+					json.NewEncoder(w).Encode(c)
+					return
+				}
+				var req struct{ ID, Method string }
+				json.NewDecoder(r.Body).Decode(&req)
+				reply := map[string]any{"jsonrpc": "2.0", "id": req.ID}
+				if req.Method == "tasks/get" {
+					reply["error"] = map[string]any{"code": -32001, "message": "not found"}
+				} else {
+					sends.Add(1)
+					reply["result"] = map[string]any{"kind": "message", "role": "agent", "messageId": "reply", "parts": []any{map[string]any{"kind": "text", "text": "OK"}}}
+				}
+				json.NewEncoder(w).Encode(reply)
+			}))
+			defer server.Close()
+			target := core.Target{Name: "peer", Type: "a2a", Endpoint: server.URL}
+			if tc.functional {
+				target.Checks = []string{"functional"}
+				target.A2A = &core.A2AOptions{Functional: &core.A2AInteraction{Safe: true, Text: "Read-only health"}}
+			}
+			r := execute(t, target)
+			if r.Status != tc.want {
+				t.Fatalf("%+v", r)
+			}
+			wantSends := int32(0)
+			if tc.functional && tc.want == core.Healthy {
+				wantSends = 1
+			}
+			if sends.Load() != wantSends {
+				t.Fatalf("sends %d want %d", sends.Load(), wantSends)
+			}
+		})
+	}
+}
+
+type failingRandom struct{}
+
+func (failingRandom) Read([]byte) (int, error) {
+	return 0, errors.New("random failure with secret details")
+}
+
+func TestRandomFailuresBeforeRPC(t *testing.T) {
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls.Add(1) }))
+	defer server.Close()
+	target := core.Target{Name: "peer", Type: "a2a", Endpoint: server.URL, Checks: []string{"functional"}, A2A: &core.A2AOptions{Functional: &core.A2AInteraction{Safe: true, Text: "Read-only health"}}}
+	for _, dimension := range []string{"authentication", "protocol", "functional"} {
+		for _, prefix := range []int{0, 16} {
+			t.Run(dimension+"/"+string(rune('0'+prefix/16)), func(t *testing.T) {
+				source := io.MultiReader(bytes.NewReader(make([]byte, prefix)), failingRandom{})
+				state := &sync.Map{}
+				raw, _ := json.Marshal(agentCard(server.URL))
+				state.Store("a2a-card", fetched{status: 200, body: raw})
+				adapter := Adapter{random: source}
+				_, err := adapter.Check(context.Background(), core.Request{Target: target, RunState: state, Client: server.Client()}, dimension)
+				if err == nil {
+					t.Fatal("missing random-source error")
+				}
+			})
+		}
+	}
+	if calls.Load() != 0 {
+		t.Fatal("RPC sent after random-source failure")
+	}
+	// The engine must classify the returned error without exposing reader details.
+	var cardServer *httptest.Server
+	cardServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { json.NewEncoder(w).Encode(agentCard(cardServer.URL)) }))
+	defer cardServer.Close()
+	target.Endpoint = cardServer.URL
+	r := executeAdapter(t, target, Adapter{random: failingRandom{}})
+	if r.Status != core.Unknown {
+		t.Fatalf("random failure: %+v", r)
+	}
+	var output strings.Builder
+	if err := core.WriteJSON(&output, []core.Result{r}); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(output.String(), "secret details") {
+		t.Fatal("raw random-source error exposed")
+	}
+	if calls.Load() != 0 {
+		t.Fatal("RPC sent despite engine random-source failure")
 	}
 }
