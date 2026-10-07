@@ -118,6 +118,10 @@ func TestMCPPingAndDoctor(t *testing.T) {
 			w.WriteHeader(400)
 			return
 		}
+		if request.Method == "server/discover" {
+			w.WriteHeader(400)
+			return
+		}
 		if request.Method == "notifications/initialized" {
 			w.WriteHeader(202)
 			return
@@ -138,6 +142,15 @@ func TestMCPPingAndDoctor(t *testing.T) {
 			if command == "doctor" && format == "terminal" && !bytes.Contains(out.Bytes(), []byte("Doctor:")) {
 				t.Fatal("missing advice")
 			}
+		}
+	}
+}
+
+func TestLoginInvocation(t *testing.T) {
+	for _, args := range [][]string{{"login"}, {"login", "missing.yaml", "target"}, {"login", "config.yaml", "target", "--format", "json"}} {
+		var out, diagnostic bytes.Buffer
+		if code := run(context.Background(), args, &out, &diagnostic); code != 6 {
+			t.Fatalf("%v code=%d", args, code)
 		}
 	}
 }

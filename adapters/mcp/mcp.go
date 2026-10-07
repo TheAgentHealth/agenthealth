@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/http/httptrace"
 	"net/url"
+	"os"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -44,6 +45,10 @@ type session struct {
 	sequence     int
 	capabilities map[string]json.RawMessage
 	received     atomic.Bool
+	modern       bool
+	initialized  bool
+	stdio        *stdioTransport
+	toolHeaders  map[string]string
 }
 
 func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
@@ -59,13 +64,44 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		return o, err
 	}
 	if dimension == "configuration" {
+		if o := r.Target.MCP; o != nil && o.Transport == "stdio" {
+			u, err := url.Parse(r.Target.Endpoint)
+			if err != nil || u.Scheme != "stdio" || u.Host == "" || u.User != nil || u.Fragment != "" || u.RawQuery != "" || o.Stdio == nil {
+				return observation(fail(core.Misconfigured, ""))
+			}
+			if _, err := stdioCommand(o.Stdio); err != nil {
+				return observation(fail(core.Misconfigured, "mcp_process"))
+			}
+			if o.Stdio.Directory != "" {
+				info, err := os.Stat(o.Stdio.Directory)
+				if err != nil || !info.IsDir() {
+					return observation(fail(core.Misconfigured, "mcp_process"))
+				}
+			}
+			return observation(nil)
+		}
+		if o := r.Target.MCP; o != nil && o.OAuth != nil {
+			if !secureURL(o.OAuth.Issuer) {
+				return observation(fail(core.Misconfigured, "mcp_oauth"))
+			}
+		}
 		u, err := url.Parse(r.Target.Endpoint)
 		if err != nil || u.Hostname() == "" || (u.Scheme != "http" && u.Scheme != "https") || u.User != nil || u.Fragment != "" || !headerValue(r.Credential) {
 			return observation(fail(core.Misconfigured, ""))
 		}
 		return observation(nil)
 	}
-	if dimension == "reachability" {
+	if o := r.Target.MCP; o != nil && o.Transport == "stdio" {
+		stdioRequest := r
+		stdioRequest.MarkResponse = s.mark
+		transport, err := startStdio(ctx, stdioRequest)
+		if err != nil {
+			return observation(err)
+		}
+		s.stdio = transport
+	}
+	defer s.close(ctx)
+	if dimension == "reachability" && s.stdio == nil {
 		req, err := s.request(ctx, http.MethodHead, nil)
 		if err != nil {
 			return observation(err)
@@ -102,13 +138,12 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		done("http", nil)
 		return observation(nil)
 	}
-	defer s.close(ctx)
 	err := s.initialize(ctx)
 	if err != nil {
 		return observation(err)
 	}
 	switch dimension {
-	case "authentication", "protocol":
+	case "reachability", "authentication", "protocol":
 		return observation(nil)
 	case "capability", "functional":
 		inventories := map[string]map[string]json.RawMessage{}
@@ -153,6 +188,13 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			if f.ArgumentsJSON != "" {
 				arguments = json.RawMessage(f.ArgumentsJSON)
 			}
+			if s.modern && s.stdio == nil {
+				headers, e := invocationHeaders(tool, arguments)
+				if e != nil {
+					return observation(e)
+				}
+				s.toolHeaders = headers
+			}
 			result, e := s.rpc(ctx, "tools/call", map[string]any{"name": f.Tool, "arguments": arguments})
 			if e != nil {
 				return observation(e)
@@ -160,6 +202,11 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			var reply struct {
 				Content []json.RawMessage `json:"content"`
 				IsError bool              `json:"isError"`
+			}
+			if s.modern {
+				if err := completeResult(result); err != nil {
+					return observation(err)
+				}
 			}
 			if json.Unmarshal(result, &reply) != nil || reply.Content == nil {
 				return observation(protocolError())
@@ -219,12 +266,16 @@ func (s *session) request(ctx context.Context, method string, body []byte) (*htt
 	if s.id != "" {
 		req.Header.Set("Mcp-Session-Id", s.id)
 	}
-	if s.sequence > 0 {
+	if s.modern || s.initialized {
 		req.Header.Set("MCP-Protocol-Version", s.version)
 	}
 	return req.WithContext(httptrace.WithClientTrace(req.Context(), &httptrace.ClientTrace{GotFirstResponseByte: s.mark})), nil
 }
 func (s *session) close(ctx context.Context) {
+	if s.stdio != nil {
+		s.stdio.close()
+		return
+	}
 	if s.id == "" || ctx.Err() != nil {
 		return
 	}
@@ -240,6 +291,39 @@ func (s *session) close(ctx context.Context) {
 	}
 }
 func (s *session) initialize(ctx context.Context) error {
+	if s.r.Target.MCP != nil && s.r.Target.MCP.OAuth != nil {
+		token, err := acquireToken(ctx, s.r)
+		if err != nil {
+			return err
+		}
+		s.r.Credential = token
+	}
+	pin := ""
+	if s.r.Target.MCP != nil {
+		pin = s.r.Target.MCP.ProtocolVersion
+	}
+	if pin == "" || pin == modernVersion {
+		s.modern = true
+		s.version = modernVersion
+		probeCtx := ctx
+		cancel := func() {}
+		if s.stdio != nil && pin == "" {
+			probeCtx, cancel = context.WithTimeout(ctx, 500*time.Millisecond)
+		}
+		err := s.discover(probeCtx)
+		cancel()
+		if err == nil {
+			return nil
+		}
+		if pin != "" || !s.legacyFallback(err) {
+			return err
+		}
+		s.modern = false
+		s.version = "2025-11-25"
+	}
+	return s.initializeLegacy(ctx)
+}
+func (s *session) initializeLegacy(ctx context.Context) error {
 	if o := s.r.Target.MCP; o != nil && o.ProtocolVersion != "" {
 		s.version = o.ProtocolVersion
 	}
@@ -258,7 +342,7 @@ func (s *session) initialize(ctx context.Context) error {
 	if json.Unmarshal(result, &init) != nil || init.Capabilities == nil || init.ServerInfo.Name == "" || init.ServerInfo.Version == "" {
 		return protocolError()
 	}
-	if !core.SupportedMCPVersion(init.Version) || (s.r.Target.MCP != nil && s.r.Target.MCP.ProtocolVersion != "" && init.Version != s.version) {
+	if init.Version == modernVersion || !core.SupportedMCPVersion(init.Version) || (s.r.Target.MCP != nil && s.r.Target.MCP.ProtocolVersion != "" && init.Version != s.version) {
 		return fail(core.Misconfigured, "mcp_version")
 	}
 	for _, value := range init.Capabilities {
@@ -268,6 +352,7 @@ func (s *session) initialize(ctx context.Context) error {
 		}
 	}
 	s.version = init.Version
+	s.initialized = true
 	s.capabilities = init.Capabilities
 	_, err = s.rpc(ctx, "notifications/initialized", nil)
 	return err
@@ -282,13 +367,51 @@ func (s *session) rpc(ctx context.Context, method string, params any) (json.RawM
 	if params != nil {
 		payload["params"] = params
 	}
+	if s.modern {
+		raw, err := json.Marshal(params)
+		if err != nil {
+			return nil, protocolError()
+		}
+		var p map[string]any
+		if params != nil && json.Unmarshal(raw, &p) != nil {
+			return nil, protocolError()
+		}
+		if p == nil {
+			p = map[string]any{}
+		}
+		caps := map[string]any{}
+		if o := s.r.Target.MCP; o != nil && o.OAuth != nil && o.OAuth.Grant == "client_credentials" {
+			caps["extensions"] = map[string]any{"io.modelcontextprotocol/oauth-client-credentials": map[string]any{}}
+		}
+		p["_meta"] = map[string]any{"io.modelcontextprotocol/protocolVersion": s.version, "io.modelcontextprotocol/clientInfo": map[string]string{"name": "agenthealth", "version": "0.1.0"}, "io.modelcontextprotocol/clientCapabilities": caps}
+		payload["params"] = p
+	}
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return nil, protocolError()
 	}
+	if s.stdio != nil {
+		s.sequence++
+		return s.stdio.rpc(ctx, body, expected, notification, s.mark)
+	}
 	req, err := s.request(ctx, http.MethodPost, body)
 	if err != nil {
 		return nil, err
+	}
+	if s.modern {
+		req.Header.Set("MCP-Protocol-Version", s.version)
+		req.Header.Set("Mcp-Method", method)
+		if method == "tools/call" {
+			var p struct {
+				Name string `json:"name"`
+			}
+			raw, _ := json.Marshal(params)
+			json.Unmarshal(raw, &p)
+			req.Header.Set("Mcp-Name", encodeHeader(p.Name))
+			for name, value := range s.toolHeaders {
+				req.Header.Set(name, value)
+			}
+		}
 	}
 	s.sequence++
 	resp, err := s.r.Client.Do(req)
@@ -307,7 +430,14 @@ func (s *session) rpc(ctx context.Context, method string, params any) (json.RawM
 		return nil, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fail(core.Unhealthy, "mcp_http")
+		data, e := io.ReadAll(io.LimitReader(resp.Body, maxBody+1))
+		if e != nil {
+			return nil, e
+		}
+		if len(data) > maxBody {
+			return nil, fail(core.Unknown, "mcp_limit")
+		}
+		return nil, httpRPCError(data, resp.StatusCode)
 	}
 	if method == "initialize" {
 		if ids := resp.Header.Values("Mcp-Session-Id"); len(ids) > 0 {
@@ -405,7 +535,7 @@ func decodeResponse(data []byte, expected int) (json.RawMessage, error) {
 		if json.Unmarshal(rpcError, &failure) != nil || failure.Code == nil || failure.Message == nil {
 			return nil, protocolError()
 		}
-		return nil, fail(core.Unhealthy, "mcp_rpc")
+		return nil, parseRPCError(rpcError)
 	}
 	var obj map[string]json.RawMessage
 	if json.Unmarshal(result, &obj) != nil || obj == nil {
@@ -434,6 +564,11 @@ func (s *session) list(ctx context.Context, kind string) (map[string]json.RawMes
 		if json.Unmarshal(result, &obj) != nil {
 			return nil, protocolError()
 		}
+		if s.modern {
+			if err := completeResult(result); err != nil {
+				return nil, err
+			}
+		}
 		var entries []json.RawMessage
 		if json.Unmarshal(obj[kind], &entries) != nil || entries == nil {
 			return nil, protocolError()
@@ -454,10 +589,16 @@ func (s *session) list(ctx context.Context, kind string) (map[string]json.RawMes
 			if !nonemptyString(definition["name"]) {
 				return nil, protocolError()
 			}
+
 			if kind == "tools" {
 				var schema map[string]json.RawMessage
 				if json.Unmarshal(definition["inputSchema"], &schema) != nil || schema == nil || string(schema["type"]) != `"object"` {
 					return nil, protocolError()
+				}
+			}
+			if s.modern && s.stdio == nil && kind == "tools" {
+				if _, err := headerBindings(entry); err != nil {
+					continue
 				}
 			}
 			if _, duplicate := items[name]; duplicate {

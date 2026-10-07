@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
@@ -22,6 +23,7 @@ const usage = `Usage:
   agenthealth check <configuration.yaml> [--format terminal|json|yaml]
   agenthealth doctor <type> <endpoint> [--format terminal|json|yaml]
   agenthealth doctor <configuration.yaml> [--format terminal|json|yaml]
+  agenthealth login <configuration.yaml> <target-name>
   agenthealth version
 
 HTTP, API and MCP Streamable HTTP adapters are available.
@@ -109,6 +111,25 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		if err := config.Validate(); err != nil {
 			return fail("invalid target; use a specification target type and a nonempty endpoint")
 		}
+	case "login":
+		if len(positional) != 3 || format != "terminal" {
+			return fail("usage: agenthealth login <configuration.yaml> <target-name>")
+		}
+		loaded, err := core.LoadConfigFile(positional[1])
+		if err != nil {
+			return fail(err.Error())
+		}
+		for _, target := range loaded.Targets {
+			if target.Name == positional[2] {
+				loginCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+				defer cancel()
+				if err := mcpadapter.Login(loginCtx, target, out); err != nil {
+					return fail("OAuth login failed; verify issuer, client registration, callback and token file configuration")
+				}
+				return 0
+			}
+		}
+		return fail("login target not found in configuration")
 	case "check":
 		if len(positional) != 2 {
 			return fail("usage: agenthealth " + command + " <configuration.yaml>")

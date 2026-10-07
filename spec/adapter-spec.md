@@ -48,3 +48,14 @@ The compiled-in interface is implemented in [core/adapter.go](../core/adapter.go
 Adapters must honor cancellation, treat request data and metadata as immutable, use the supplied client for HTTP requests, and keep active probes non-destructive. The engine bounds calls and returns at deadlines even if an adapter ignores cancellation, but Go cannot forcibly terminate arbitrary in-process code; an uncooperative call occupies a pool slot until it returns. Adapter panics and invalid check statuses normalize to `UNKNOWN`.
 
 The engine emits canonical diagnostics instead of forwarding adapter messages or panic/error strings. Resolved credentials are redacted throughout the result tree. Adapters must also avoid logging raw requests, credentials, responses, and errors themselves. Adapter implementation remains a trusted-code boundary.
+
+### Run-scoped credentials and state (Phase 5 draft)
+
+The Go request exposes `Environment`, a per-target snapshot of configured
+credential references, and `RunState`, a concurrent map owned by one target
+execution. Adapters can reuse acquired credentials between that target's
+checks without sharing state with another target or run. `RememberSecret`
+registers dynamically obtained access/refresh tokens for engine redaction;
+adapters must call it before exposing any observations involving those tokens.
+Raw credentials and state never become result fields. This extends the request
+context without changing the required Adapter methods or result contract.

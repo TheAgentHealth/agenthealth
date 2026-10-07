@@ -1,0 +1,21 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "local",
+      "type": "mcp",
+      "endpoint": "stdio://local",
+      "mcp": {
+        "transport": "stdio",
+        "stdio": {
+          "args": [
+            "server.py"
+          ],
+          "env": {
+            "MCP_TOKEN": "LOCAL_MCP_TOKEN"
+          }
+        }
+      }
+    }
+  ]
+}

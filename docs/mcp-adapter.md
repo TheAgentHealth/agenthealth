@@ -1,10 +1,8 @@
 # MCP health adapter
 
-The MCP adapter supports the initialization-based Streamable HTTP transport at
-an explicit HTTP/HTTPS MCP endpoint. It supports protocol revisions 2025-03-26,
-2025-06-18, and 2025-11-25. It offers 2025-11-25 by default and accepts any of
-these revisions negotiated by the server. Set `mcp.protocol_version` to pin one
-revision; a different negotiated revision is `MISCONFIGURED`.
+MCP targets support Streamable HTTP (JSON and SSE responses) and explicitly
+configured stdio subprocesses. Supported revisions are `2025-03-26`,
+`2025-06-18`, `2025-11-25`, and the stateless `2026-07-28` protocol.
 
 ```bash
 agenthealth ping mcp http://localhost:3000/mcp
@@ -12,52 +10,63 @@ agenthealth doctor mcp http://localhost:3000/mcp
 agenthealth doctor examples/mcp-check/agenthealth.yaml
 ```
 
-The endpoint must be the server's MCP URL; the adapter does not append `/mcp`.
-Stdio, the older separate HTTP+SSE transport, and the newer stateless protocol
-are not implemented. See the upstream [2025-11-25 transport contract](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
-and [initialization lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle).
+HTTP endpoints must be the server's MCP URL; the adapter does not append
+`/mcp`. The deprecated separate HTTP+SSE transport is not implemented.
 
-## Passive checks
+## Protocol selection
+
+With no version pin, checks probe `server/discover` using `2026-07-28`.
+Modern requests carry per-request version, client identity, and capabilities,
+plus matching `MCP-Protocol-Version` and `Mcp-Method` HTTP headers. Modern
+functional calls also mirror `Mcp-Name` and valid `x-mcp-header` parameters,
+encoding unsafe values with the protocol's Base64 sentinel. Invalid header
+annotations exclude a tool from the discovered inventory. Results must be
+complete; input-required results are inconclusive and never cause additional
+functional calls.
+
+A legacy HTTP rejection without a recognized modern error triggers
+initialization-based negotiation. On stdio, an unrecognized RPC error or an
+unanswered 500 ms discovery probe triggers legacy initialization. Recognized
+modern version/header errors never silently downgrade. Legacy negotiation
+offers `2025-11-25` and accepts any supported legacy revision. Set
+`mcp.protocol_version` to pin a revision and disable cross-era fallback.
+A version mismatch is `MISCONFIGURED`.
+
+Modern checks do not send `initialize`, `notifications/initialized`, session
+IDs, or DELETE. Legacy checks initialize independent sessions, validate server
+identity and capabilities, send the initialized notification, and forward any
+server-assigned session ID and negotiated version. Each HTTP session receives
+best-effort DELETE cleanup within a maximum 250 ms budget and the check
+deadline; cleanup errors do not change observations. Canceled sessions expire
+on the server. Sessions are not recreated within a check.
+
+These behaviors follow the upstream [versioning contract](https://modelcontextprotocol.io/specification/2026-07-28/basic/lifecycle),
+[modern HTTP transport](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http),
+and [legacy lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle).
+Only the listed revisions are supported; future revisions require explicit implementation.
+
+## Passive checks and expectations
 
 Defaults include configuration, reachability, authentication, protocol,
-capability, and latency. Reachability sends HEAD and accepts any HTTP status,
-including 405, as connectivity evidence. Latency measures that HEAD request;
-it does not measure discovery or tool execution. DNS, TCP, TLS, and HTTP stages
-appear when observed, using the same engine diagnostics as the HTTP adapter.
+capability, and latency. HTTP reachability sends HEAD and accepts any HTTP
+status, including 405, as connectivity evidence. HTTP latency measures HEAD,
+excluding discovery and tool execution. DNS, TCP, TLS, and HTTP stages appear
+when observed. Stdio reachability measures subprocess startup and protocol
+establishment; it has no HTTP transport stages.
 
-Authentication and protocol each initialize a fresh session, validate the
-JSON-RPC envelope, server identity, capabilities and negotiated version, then
-send `notifications/initialized`. Capability additionally lists every
-advertised tools, resources, and prompts inventory. Unadvertised inventories
-are skipped. Lists follow pagination, validate identity fields, reject
-repeated cursors and duplicate identities, and inspect tools' object input
-schemas. These checks do not read resources, retrieve prompts, or invoke tools.
-
-Checks use independent sessions, including for duplicate endpoints and nested
-dependencies, so one check cannot reuse another target's credentials or stale
-capabilities. A server-assigned session ID is forwarded with the negotiated
-version on subsequent requests. Session termination uses best-effort DELETE
-with a maximum 250 ms budget within the check deadline; unsupported termination
-or cleanup failure does not change the health observation. Canceled sessions
-are left to server expiry. No expired session is recreated within a check.
-
-JSON and SSE replies are supported. SSE parsing stops at the response instead
-of waiting for a persistent stream to close. Server notifications are ignored;
-server requests are rejected because the client advertises no optional client
-capabilities. Each response stream is capped at 1 MiB, each inventory at 100
-pages and 10,000 entries, all within the engine's per-check deadline. Over-limit
-responses or discovery are `UNKNOWN`; malformed protocol and rejected JSON-RPC
-requests are `UNHEALTHY`. HTTP 401/403 is `MISCONFIGURED`. Other unexpected HTTP
-statuses are `UNHEALTHY`. Connectivity failures and partial response timeouts
-follow the engine's normal classifications and retry policy.
-
-## Expectations and credentials
+Authentication and protocol establish server compatibility. Capability
+additionally lists every advertised tools, resources, and prompts inventory.
+Unadvertised inventories are skipped. Lists follow pagination, validate
+identity fields and tools' object input schemas, and reject repeated cursors
+and duplicate identities. Passive checks do not read resources, retrieve
+prompts, or invoke tools. Each check owns its session/process; targets and
+dependencies do not share credentials or capabilities.
 
 Required tool and prompt names match exactly; resources match by URI. Missing
-requirements, including an unadvertised required inventory, yield `DEGRADED`.
-Requirements need a capability check when `checks` is explicitly specified.
-The doctor output shows dimension-level evidence and canonical troubleshooting
-messages; it does not print the server's inventory or raw responses.
+requirements, including an unadvertised inventory, yield `DEGRADED`.
+Requirements need `capability` when `checks` is explicitly specified.
+Doctor displays dimension-level evidence and canonical messages, without
+printing inventories or raw server responses.
 
 <!-- spec-example: configuration -->
 ```yaml
@@ -69,25 +78,151 @@ targets:
     auth:
       bearer_env: MCP_TOKEN
     mcp:
-      protocol_version: '2025-11-25'
+      protocol_version: '2026-07-28'
       required_tools: [search]
       required_resources: ['health://ready']
       required_prompts: [summary]
 ```
 
-Bearer tokens are resolved from environment references. OAuth discovery,
-interactive login, refresh, and token acquisition are not implemented. TLS is
-verified, redirects are not followed, and only the configured endpoint receives
-credentials. Server messages, content, session IDs and invocation arguments
-never appear in results or diagnostics.
+Each response is capped at 1 MiB, each inventory at 100 pages and 10,000
+entries, within the engine's deadline. SSE parsing stops at the response
+instead of waiting for the stream to close. Notifications are ignored and
+unsupported server requests are rejected. Over-limit responses/discovery are
+`UNKNOWN`; malformed protocol and rejected RPCs are `UNHEALTHY`. HTTP 401/403
+is `MISCONFIGURED`; other unexpected HTTP statuses are `UNHEALTHY`.
+Connectivity failures and partial-response timeouts use the engine's normal
+classifications. Functional calls never retry or resume.
+
+## Stdio subprocesses
+
+Set `mcp.transport: stdio` and supply a command and argument array. The
+`stdio://` endpoint identifies the local target; it is not interpreted as a
+shell command. Only explicitly configured executables run, without a shell.
+Use trusted server commands, whose startup behavior the operator has reviewed.
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: local-server
+    type: mcp
+    endpoint: stdio://local-server
+    mcp:
+      transport: stdio
+      stdio:
+        command: python3
+        args: [server.py]
+        directory: /path/to/server
+        env:
+          API_TOKEN: LOCAL_API_TOKEN
+```
+
+`env` maps child environment names to host environment references. Missing
+values fail configuration. The child otherwise inherits only basic runtime
+variables (`PATH`, `HOME`, `USER`, temporary-directory variables, and Windows
+system-directory variables). Other parent environment variables are excluded.
+Stdio cannot combine with HTTP bearer or OAuth options. Stderr is discarded;
+stdout must contain bounded newline-delimited JSON-RPC messages.
+
+Input closes at cleanup, with a short grace period before forced termination.
+Cancellation closes streams and terminates the child. On POSIX platforms,
+children in the server's process group are terminated too; servers must not
+escape that group. Other platforms terminate the direct child. Linux subprocess
+behavior is tested; other release platforms are cross-compiled, not runtime-tested.
+
+## OAuth acquisition and login
+
+For HTTP targets, choose either `auth.bearer_env` for an existing token or
+`mcp.oauth` for token acquisition. OAuth requires a pre-registered `client_id`
+and an explicitly trusted `issuer`. The adapter discovers protected resource
+metadata and authorization-server/OIDC metadata, validates the issuer and
+resource binding, and requests tokens for that MCP resource. HTTPS is required
+except for explicit loopback URLs. Redirects are never followed. Challenge
+metadata must share the MCP endpoint's origin; authorization-server endpoints
+come from the pinned issuer's validated metadata.
+
+For automated checks, use the [client credentials extension](https://modelcontextprotocol.io/extensions/auth/oauth-client-credentials)
+with a secret reference:
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: automated-mcp
+    type: mcp
+    endpoint: https://example.com/mcp
+    mcp:
+      oauth:
+        issuer: https://auth.example.com
+        client_id: agenthealth-service
+        grant: client_credentials
+        client_secret_env: MCP_CLIENT_SECRET
+        scopes: [read]
+```
+
+Client authentication uses `client_secret_basic` or `client_secret_post`,
+selected from server metadata. Access tokens are reused only within the target's
+run, with reacquisition before expiry. Optional `token_file` persists tokens.
+The client credentials extension is declared in modern request capabilities.
+
+For servers requiring user approval, configure authorization code login:
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: user-mcp
+    type: mcp
+    endpoint: https://example.com/mcp
+    mcp:
+      oauth:
+        issuer: https://auth.example.com
+        client_id: registered-public-client
+        grant: authorization_code
+        token_file: .credentials/user-mcp.json
+        scopes: [read]
+        redirect_port: 8765
+```
+
+```bash
+agenthealth login agenthealth.yaml user-mcp
+agenthealth check agenthealth.yaml
+```
+
+Login prints a browser URL and waits up to five minutes for approval via a
+127.0.0.1 callback. The client registration must allow that loopback callback
+(`http://127.0.0.1:8765/callback` in this example); omitting `redirect_port` selects
+an ephemeral port. Login uses PKCE S256, unpredictable state, and validates the
+callback issuer when present or advertised as required. A confidential client
+can additionally reference `client_secret_env`.
+
+Health checks never launch interactive login. They use saved access tokens and
+refresh expired tokens, persisting rotated refresh tokens. Missing login
+credentials yield `MISCONFIGURED` with login guidance. An externally supplied
+refresh token can instead use `grant: refresh_token` and `refresh_token_env`.
+Configured scopes override challenge/metadata scopes; otherwise challenged
+scopes take priority over metadata scopes. Tokens without `expires_in` receive
+a conservative five-minute lifetime. No token is refreshed by retrying a
+functional call after a server rejection.
+
+Token files bind credentials to issuer, resource, and client ID. Files use
+0600 permissions; new parent directories use 0700. Symlink token files and
+files accessible to other users are rejected on POSIX. Saving requires a
+parent directory that is not writable by other users. Keep token directories
+outside version control. Tokens, refresh tokens, environment credentials, and
+server content never appear in health output; login prints no tokens.
+
+OAuth dynamic client registration, JWT client assertions, and automatic scope
+escalation are not implemented. Existing client registration is required.
+See the upstream [authorization contract](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization).
 
 ## Functional invocation
 
 Functional checks require explicit `checks: [functional]` opt-in, a named tool,
 and `safe: true`. The operator must verify that the tool and arguments are
-non-destructive. The adapter additionally requires the discovered tool to have
-`readOnlyHint: true` and `destructiveHint: false`; annotations alone cannot prove
-safety. It never chooses a tool automatically and never retries a tool call.
+non-destructive. The discovered tool must additionally declare
+`readOnlyHint: true` and `destructiveHint: false`; annotations alone cannot
+prove safety. The adapter never chooses a tool automatically.
 
 <!-- spec-example: configuration -->
 ```yaml
@@ -107,7 +242,7 @@ targets:
 
 `arguments_json` is an optional JSON object encoded as a YAML string, defaulting
 to `{}`. The Go loader parses it and enforces a 64 KiB byte limit in addition to
-schema validation. An absent tool is `DEGRADED`, unsafe annotations are
-`MISCONFIGURED`, and a tool result with `isError: true` is `UNHEALTHY`. A valid
-success result is `HEALTHY`; the adapter does not verify the semantic quality of
-returned content. Functional discovery and invocation share one isolated session.
+schema validation. Missing tools are `DEGRADED`, unsafe annotations are
+`MISCONFIGURED`, and `isError: true` is `UNHEALTHY`. A complete valid success is
+`HEALTHY`; the adapter does not assess content quality. Discovery and the one
+functional invocation share the same check-owned transport.

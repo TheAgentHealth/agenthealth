@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -13,15 +14,31 @@ var credentialPattern = regexp.MustCompile(`(?i)(authorization|bearer|api[_-]?ke
 
 // Redactor masks resolved credentials, URL addresses (including userinfo and
 // query strings), and recognizable authentication assignments.
-type Redactor struct{ secrets []string }
+type Redactor struct {
+	mu      sync.RWMutex
+	secrets []string
+}
 
 func NewRedactor(secrets ...string) *Redactor {
 	values := append([]string(nil), secrets...)
 	sort.Slice(values, func(i, j int) bool { return len(values[i]) > len(values[j]) })
 	return &Redactor{secrets: values}
 }
+
+// Remember safely registers credentials obtained while a run is in progress.
+func (r *Redactor) Remember(secret string) {
+	if r == nil || secret == "" {
+		return
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.secrets = append(r.secrets, secret)
+	sort.Slice(r.secrets, func(i, j int) bool { return len(r.secrets[i]) > len(r.secrets[j]) })
+}
 func (r *Redactor) Redact(s string) string {
 	if r != nil {
+		r.mu.RLock()
+		defer r.mu.RUnlock()
 		for _, secret := range r.secrets {
 			if secret != "" {
 				s = strings.ReplaceAll(s, secret, "[REDACTED]")

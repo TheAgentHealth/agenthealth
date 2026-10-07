@@ -539,7 +539,7 @@ See [ROADMAP.md](ROADMAP.md).
 
 # MCP Health
 
-MCP is supported through the [Streamable HTTP adapter](docs/mcp-adapter.md), including JSON/SSE replies, version negotiation, bearer authentication, paginated discovery, required inventories, and explicitly safe functional probes. See the adapter documentation for supported protocol revisions and transport limitations.
+MCP is supported through the [MCP adapter](docs/mcp-adapter.md), including Streamable HTTP JSON/SSE replies, configured stdio, legacy and modern stateless protocols, bearer/OAuth authentication, paginated discovery, required inventories, and explicitly safe functional probes. See the adapter documentation for supported protocol revisions and transport limitations.
 
 Implemented checks include:
 
@@ -1283,7 +1283,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, and MCP Streamable HTTP adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, and MCP HTTP/stdio adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

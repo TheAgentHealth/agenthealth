@@ -21,3 +21,36 @@ func TestMCPConfiguration(t *testing.T) {
 		t.Fatal("MCP options accepted on HTTP")
 	}
 }
+
+func TestMCPTransportAndOAuthConfiguration(t *testing.T) {
+	prefix := "version: v1\ntargets:\n  - name: mcp\n    type: mcp\n    endpoint: https://example.com/mcp\n"
+	valid := []string{
+		"    mcp:\n      protocol_version: '2026-07-28'\n",
+		"    mcp:\n      transport: stdio\n      stdio:\n        command: python3\n        args: [server.py]\n        env:\n          MCP_TOKEN: TOKEN_REFERENCE\n",
+		"    mcp:\n      oauth:\n        issuer: https://auth.example.com\n        client_id: registered\n        grant: client_credentials\n        client_secret_env: CLIENT_SECRET\n",
+		"    mcp:\n      oauth:\n        issuer: https://auth.example.com\n        client_id: registered\n        grant: authorization_code\n        token_file: .credentials/token.json\n",
+	}
+	for _, suffix := range valid {
+		if _, err := LoadConfig(strings.NewReader(prefix + suffix)); err != nil {
+			t.Fatalf("valid rejected %v", err)
+		}
+	}
+	invalid := []string{
+		"    mcp:\n      transport: stdio\n",
+		"    mcp:\n      stdio:\n        command: python3\n",
+		"    mcp:\n      transport: stdio\n      stdio:\n        command: python3\n        args: [1]\n",
+		"    mcp:\n      transport: stdio\n      stdio:\n        command: python3\n        env:\n          TOKEN: 1\n",
+		"    mcp:\n      oauth:\n        issuer: https://auth.example.com\n        client_id: registered\n        grant: client_credentials\n",
+		"    mcp:\n      oauth:\n        issuer: https://auth.example.com\n        client_id: registered\n        grant: authorization_code\n",
+		"    mcp:\n      oauth:\n        issuer: https://auth.example.com\n        client_id: registered\n        grant: authorization_code\n        token_file: .credentials/token.json\n        redirect_port: 65536\n",
+		"    mcp:\n      oauth: null\n",
+	}
+	for _, suffix := range invalid {
+		if _, err := LoadConfig(strings.NewReader(prefix + suffix)); err == nil {
+			t.Fatalf("invalid accepted %s", suffix)
+		}
+	}
+	if _, err := LoadConfig(strings.NewReader(prefix + "    auth:\n      bearer_env: TOKEN\n" + valid[2])); err == nil {
+		t.Fatal("two auth modes accepted")
+	}
+}

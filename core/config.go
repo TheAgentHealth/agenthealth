@@ -36,12 +36,57 @@ type Target struct {
 
 // MCPOptions configures Streamable HTTP discovery and an explicitly safe probe.
 type MCPOptions struct {
+	Transport         string         `yaml:"transport"`
+	Stdio             *MCPStdio      `yaml:"stdio"`
+	OAuth             *MCPOAuth      `yaml:"oauth"`
 	ProtocolVersion   string         `yaml:"protocol_version"`
 	RequiredTools     []string       `yaml:"required_tools"`
 	RequiredResources []string       `yaml:"required_resources"`
 	RequiredPrompts   []string       `yaml:"required_prompts"`
 	Functional        *MCPInvocation `yaml:"functional"`
 }
+type MCPStdio struct {
+	Command   string            `yaml:"command"`
+	Args      []string          `yaml:"args"`
+	Directory string            `yaml:"directory"`
+	Env       map[string]string `yaml:"env"`
+}
+
+// MCPOAuth uses a pinned issuer and environment/file references, never secrets.
+type MCPOAuth struct {
+	Issuer          string   `yaml:"issuer"`
+	ClientID        string   `yaml:"client_id"`
+	Grant           string   `yaml:"grant"`
+	ClientSecretEnv string   `yaml:"client_secret_env"`
+	RefreshTokenEnv string   `yaml:"refresh_token_env"`
+	TokenFile       string   `yaml:"token_file"`
+	Scopes          []string `yaml:"scopes"`
+	RedirectPort    *int     `yaml:"redirect_port"`
+}
+
+// CredentialReferences lists only references used by this target.
+func (t Target) CredentialReferences() []string {
+	refs := []string{}
+	if t.Auth != nil {
+		refs = append(refs, t.Auth.BearerEnv)
+	}
+	if t.MCP != nil {
+		if t.MCP.Stdio != nil {
+			for _, ref := range t.MCP.Stdio.Env {
+				refs = append(refs, ref)
+			}
+		}
+		if o := t.MCP.OAuth; o != nil {
+			for _, ref := range []string{o.ClientSecretEnv, o.RefreshTokenEnv} {
+				if ref != "" {
+					refs = append(refs, ref)
+				}
+			}
+		}
+	}
+	return refs
+}
+
 type MCPInvocation struct {
 	Tool          string `yaml:"tool"`
 	Safe          bool   `yaml:"safe"`
@@ -49,7 +94,7 @@ type MCPInvocation struct {
 }
 
 func SupportedMCPVersion(v string) bool {
-	return v == "2025-03-26" || v == "2025-06-18" || v == "2025-11-25"
+	return v == "2026-07-28" || v == "2025-03-26" || v == "2025-06-18" || v == "2025-11-25"
 }
 
 // HTTPOptions specifies response expectations, never outgoing credentials.
@@ -179,6 +224,57 @@ func validateTarget(t Target, path string, depth int) error {
 	if t.MCP != nil {
 		if t.Type != "mcp" {
 			return fmt.Errorf("%s: mcp options require mcp target", path)
+		}
+		if t.MCP.Transport != "" && t.MCP.Transport != "http" && t.MCP.Transport != "stdio" {
+			return fmt.Errorf("%s: invalid MCP transport", path)
+		}
+		if t.MCP.Transport == "stdio" {
+			if t.MCP.Stdio == nil || strings.TrimSpace(t.MCP.Stdio.Command) == "" || strings.ContainsRune(t.MCP.Stdio.Command, 0) || t.Auth != nil || t.MCP.OAuth != nil {
+				return fmt.Errorf("%s: stdio requires a command and environment credentials", path)
+			}
+		} else if t.MCP.Stdio != nil {
+			return fmt.Errorf("%s: stdio options require stdio transport", path)
+		}
+		if s := t.MCP.Stdio; s != nil {
+			if strings.ContainsRune(s.Directory, 0) {
+				return fmt.Errorf("%s: invalid stdio directory", path)
+			}
+			for _, arg := range s.Args {
+				if strings.ContainsRune(arg, 0) {
+					return fmt.Errorf("%s: invalid stdio argument", path)
+				}
+			}
+			for key, ref := range s.Env {
+				if !validEnvReference(key) || !validEnvReference(ref) {
+					return fmt.Errorf("%s: invalid stdio environment reference", path)
+				}
+			}
+		}
+		if o := t.MCP.OAuth; o != nil {
+			if t.Auth != nil || strings.TrimSpace(o.Issuer) == "" || strings.TrimSpace(o.ClientID) == "" || !contains([]string{"client_credentials", "refresh_token", "authorization_code"}, o.Grant) {
+				return fmt.Errorf("%s: OAuth requires issuer, client ID and supported grant; cannot combine with bearer auth", path)
+			}
+			if o.Grant == "client_credentials" && o.ClientSecretEnv == "" || o.Grant == "refresh_token" && o.RefreshTokenEnv == "" && o.TokenFile == "" || o.Grant == "authorization_code" && o.TokenFile == "" {
+				return fmt.Errorf("%s: OAuth grant requires credential or token file reference", path)
+			}
+			if o.TokenFile != "" && (strings.TrimSpace(o.TokenFile) == "" || strings.ContainsRune(o.TokenFile, 0)) {
+				return fmt.Errorf("%s: invalid OAuth token file", path)
+			}
+			if o.RedirectPort != nil && (*o.RedirectPort < 0 || *o.RedirectPort > 65535) {
+				return fmt.Errorf("%s: invalid OAuth redirect port", path)
+			}
+			for _, ref := range []string{o.ClientSecretEnv, o.RefreshTokenEnv} {
+				if ref != "" && !validEnvReference(ref) {
+					return fmt.Errorf("%s: invalid OAuth credential reference", path)
+				}
+			}
+			seen := map[string]bool{}
+			for _, scope := range o.Scopes {
+				if !validOAuthScope(scope) || seen[scope] {
+					return fmt.Errorf("%s: invalid OAuth scopes", path)
+				}
+				seen[scope] = true
+			}
 		}
 		if t.MCP.ProtocolVersion != "" && !SupportedMCPVersion(t.MCP.ProtocolVersion) {
 			return fmt.Errorf("%s: unsupported MCP protocol version", path)
@@ -310,7 +406,11 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 		}
 		seen[key.Value] = true
 		switch key.Value {
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json":
+		case "client_secret_env", "refresh_token_env", "token_file":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || strings.TrimSpace(value.Value) == "" {
+				return false
+			}
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
 			}
@@ -318,7 +418,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!bool" {
 				return false
 			}
-		case "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes":
+		case "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes", "redirect_port":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
 				return false
 			}
@@ -326,7 +426,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if !validYAMLNode(value, "auth", depth+1) {
 				return false
 			}
-		case "mcp", "functional":
+		case "mcp", "functional", "stdio", "oauth":
 			if !validYAMLNode(value, key.Value, depth+1) {
 				return false
 			}
@@ -343,17 +443,17 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 					return false
 				}
 			}
-		case "headers":
+		case "headers", "env":
 			if value.Kind != yaml.MappingNode {
 				return false
 			}
 			seenHeaders := map[string]bool{}
 			for j := 0; j < len(value.Content); j += 2 {
 				k, v := value.Content[j], value.Content[j+1]
-				if k.Tag != "!!str" || v.Kind != yaml.ScalarNode || v.Tag != "!!str" || seenHeaders[strings.ToLower(k.Value)] {
+				if k.Tag != "!!str" || v.Kind != yaml.ScalarNode || v.Tag != "!!str" || seenHeaders[mapKey(k.Value, key.Value)] {
 					return false
 				}
-				seenHeaders[strings.ToLower(k.Value)] = true
+				seenHeaders[mapKey(k.Value, key.Value)] = true
 			}
 		case "check_timeouts_ms":
 			if value.Kind != yaml.MappingNode {
@@ -371,7 +471,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
 				return false
 			}
-		case "checks", "required_tools", "required_resources", "required_prompts":
+		case "checks", "required_tools", "required_resources", "required_prompts", "args", "scopes":
 			if value.Kind != yaml.SequenceNode {
 				return false
 			}
@@ -408,4 +508,27 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 		return seen["name"] && seen["type"] && seen["endpoint"]
 	}
 	return true
+}
+
+func validEnvReference(ref string) bool {
+	return strings.TrimSpace(ref) != "" && !strings.ContainsAny(ref, "=\x00")
+}
+
+func validOAuthScope(scope string) bool {
+	if scope == "" {
+		return false
+	}
+	for i := 0; i < len(scope); i++ {
+		if scope[i] < 33 || scope[i] > 126 || scope[i] == '"' || scope[i] == '\\' {
+			return false
+		}
+	}
+	return true
+}
+
+func mapKey(value, field string) string {
+	if field == "headers" {
+		return strings.ToLower(value)
+	}
+	return value
 }

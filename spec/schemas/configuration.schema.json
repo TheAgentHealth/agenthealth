@@ -366,6 +366,41 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "mcp"
+            ],
+            "properties": {
+              "mcp": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "oauth"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "transport"
+                    ],
+                    "properties": {
+                      "transport": {
+                        "const": "stdio"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "auth"
+              ]
+            }
+          }
         }
       ]
     },
@@ -685,6 +720,41 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "mcp"
+            ],
+            "properties": {
+              "mcp": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "oauth"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "transport"
+                    ],
+                    "properties": {
+                      "transport": {
+                        "const": "stdio"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "auth"
+              ]
+            }
+          }
         }
       ]
     },
@@ -749,7 +819,8 @@
             "",
             "2025-03-26",
             "2025-06-18",
-            "2025-11-25"
+            "2025-11-25",
+            "2026-07-28"
           ]
         },
         "required_tools": {
@@ -781,8 +852,52 @@
         },
         "functional": {
           "$ref": "#/$defs/MCPInvocation"
+        },
+        "transport": {
+          "enum": [
+            "",
+            "http",
+            "stdio"
+          ]
+        },
+        "stdio": {
+          "$ref": "#/$defs/MCPStdio"
+        },
+        "oauth": {
+          "$ref": "#/$defs/MCPOAuth"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "transport"
+            ],
+            "properties": {
+              "transport": {
+                "const": "stdio"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "stdio"
+            ],
+            "not": {
+              "required": [
+                "oauth"
+              ]
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "stdio"
+              ]
+            }
+          }
+        }
+      ]
     },
     "MCPInvocation": {
       "type": "object",
@@ -806,6 +921,183 @@
           "description": "Empty or a JSON object; the Go loader additionally parses and validates this string."
         }
       }
+    },
+    "MCPStdio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command"
+      ],
+      "properties": {
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "allOf": [
+            {
+              "pattern": "^[^\\u0000]*$"
+            }
+          ]
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[^\\u0000]*$"
+          }
+        },
+        "directory": {
+          "type": "string",
+          "pattern": "^[^\\u0000]*$"
+        },
+        "env": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^=\\u0000]+$",
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^=\\u0000]+$",
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "MCPOAuth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer",
+        "client_id",
+        "grant"
+      ],
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "client_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "grant": {
+          "enum": [
+            "client_credentials",
+            "refresh_token",
+            "authorization_code"
+          ]
+        },
+        "client_secret_env": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^=\\u0000]+$",
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "refresh_token_env": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^=\\u0000]+$",
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "token_file": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
+          "allOf": [
+            {
+              "pattern": "^[^\\u0000]*$"
+            }
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[\\u0021\\u0023-\\u005b\\u005d-\\u007e]+$"
+          }
+        },
+        "redirect_port": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "grant": {
+                "const": "client_credentials"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "client_secret_env"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "grant": {
+                "const": "refresh_token"
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "refresh_token_env"
+                ]
+              },
+              {
+                "required": [
+                  "token_file"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "grant": {
+                "const": "authorization_code"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token_file"
+            ]
+          }
+        }
+      ]
     }
   },
   "type": "object",

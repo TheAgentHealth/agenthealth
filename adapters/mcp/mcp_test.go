@@ -57,6 +57,10 @@ func (f *fixture) server(t *testing.T) *httptest.Server {
 		f.mu.Lock()
 		f.methods = append(f.methods, msg.Method)
 		f.mu.Unlock()
+		if msg.Method == "server/discover" {
+			w.WriteHeader(400)
+			return
+		}
 		if msg.Method != "initialize" {
 			version := f.version
 			if version == "" {
@@ -65,6 +69,10 @@ func (f *fixture) server(t *testing.T) *httptest.Server {
 			if r.Header.Get("Mcp-Session-Id") != "test-session" || r.Header.Get("MCP-Protocol-Version") != version {
 				t.Error("missing negotiated headers")
 			}
+		}
+		if msg.Method == "server/discover" {
+			w.WriteHeader(400)
+			return
 		}
 		if msg.Method == "notifications/initialized" {
 			w.WriteHeader(202)
@@ -299,6 +307,10 @@ func TestSSECompletesBeforeStreamCloses(t *testing.T) {
 			Method string `json:"method"`
 		}
 		json.NewDecoder(r.Body).Decode(&msg)
+		if msg.Method == "server/discover" {
+			w.WriteHeader(400)
+			return
+		}
 		if msg.Method == "notifications/initialized" {
 			w.WriteHeader(202)
 			return

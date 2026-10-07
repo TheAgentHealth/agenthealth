@@ -320,7 +320,7 @@ This adapter provides a foundation for services that do not implement agent-spec
 
 # Phase 5 — MCP Health Adapter
 
-**Status:** Implemented for initialization-based Streamable HTTP with JSON/SSE responses. See [MCP adapter](docs/mcp-adapter.md) for supported versions, expectations, safe functional opt-in, and transport limitations. Stdio, legacy HTTP+SSE, OAuth acquisition, and the newer stateless protocol remain future work.
+**Status:** Implemented for Streamable HTTP (JSON/SSE), configured stdio, legacy initialization and modern stateless MCP 2026-07-28. OAuth client credentials, refresh, and PKCE login are available. See [MCP adapter](docs/mcp-adapter.md) for configuration and safety. Deprecated separate HTTP+SSE, dynamic OAuth registration, and JWT assertions remain outside current scope.
 
 Goal:
 
