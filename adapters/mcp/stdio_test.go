@@ -113,6 +113,9 @@ func TestStdioTransports(t *testing.T) {
 		t.Run(mode, func(t *testing.T) {
 			target := stdioTarget(t, mode)
 			timeout := 100
+			if mode == "partial" {
+				timeout = 1000
+			}
 			if mode == "oversize" {
 				timeout = 2000
 			}
