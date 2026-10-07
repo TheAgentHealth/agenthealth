@@ -102,11 +102,49 @@ This matters because a dependency's `type` is frequently different from its pare
 
 For `thresholds.latency_ms` specifically: if the `latency` dimension is run and the measured `latency_ms` exceeds the configured threshold, the `latency` check's status is `DEGRADED` (see [Error Classification](health-model.md#error-classification)). If `thresholds.latency_ms` is omitted, the `latency` dimension (if run) only measures and reports `latency_ms` without evaluating it against a threshold, and defaults to `HEALTHY` unless no response was received at all (in which case `UNREACHABLE` applies per the reachability/timeout rules, independent of any latency threshold).
 
+## Execution policies (Phase 2 draft)
+
+Each target and dependency accepts these fields; policies and credentials are never inherited by dependencies.
+
+| Field | Type | Default | Meaning |
+|---|---|---|---|
+| `timeout_ms` | integer, 1–300000 | 5000 | Deadline for each check attempt |
+| `check_timeouts_ms` | map of dimension to integer, 1–300000 | empty | Overrides `timeout_ms` for named dimensions, including implicit prerequisite gates; `dependency` is not allowed |
+| `retries` | integer, 0–3 | 0 | Additional attempts after a passive check fails `UNREACHABLE` without receiving a response |
+| `retry_delay_ms` | integer, 0–60000 | 100 | Cancellation-aware delay between attempts |
+| `auth.bearer_env` | non-empty environment-variable name | absent | Environment variable containing a bearer credential; literal secrets are not accepted |
+
+These additions are implemented as the reference engine's draft policy contract, not a stable 1.0 standard. Unknown fields, null fields, multiple YAML documents, and scalar type coercions are rejected. Only `version: v1` is currently supported. The engine also limits dependency depth to 64.
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: private-api
+    type: http
+    endpoint: https://api.example.com/health
+    auth:
+      bearer_env: AGENTHEALTH_API_TOKEN
+    timeout_ms: 5000
+    check_timeouts_ms:
+      reachability: 1000
+    retries: 2
+    retry_delay_ms: 100
+    checks: [reachability, authentication, latency]
+```
+
+Missing or empty referenced credentials yield a `MISCONFIGURED` configuration check before network access. The environment is read once per run; resolved credentials never enter the result. Endpoint userinfo is rejected by the reference HTTP adapter; use `auth.bearer_env` instead.
+
+Active checks (including `functional`) never retry, even when `retries` is configured. A partial response before timeout yields `UNKNOWN` and never retries. Authentication rejection, functional failures, configuration failures, and generic adapter errors do not retry. Retry budgets apply separately to each check. Cancellation interrupts attempts and retry delays.
+
+The reference engine applies a 60-second whole-run budget, or a shorter caller deadline, encompassing all targets, dependencies, checks, attempts, and delays. Exhaustion stops further adapter work and produces diagnostics for remaining targets. Individual checks have their own deadlines, and at most 16 adapter calls can remain in flight per engine. Dependencies execute sequentially in declaration order and retain independent per-check policies; graph scheduling and configurable concurrency remain Phase 8 work.
+
+`latency_ms` measures the final successful reachability attempt, excluding earlier failed attempts and retry delays. It is null when reachability did not succeed. A latency check uses this measurement and does not issue another request.
+
 ## Still to be defined
 
-- Authentication references (how credentials are referenced without being embedded in plaintext)
-- Retry policies
-- Per-check timeout overrides
-- Environment variable / secret-manager interpolation syntax
+- Additional authentication schemes and secret-manager references
+- General environment-variable interpolation beyond `auth.bearer_env`
+- Stable 1.0 policy contract after implementation feedback
 
-These are tracked under [Phase 1 — Agent Health Specification](../ROADMAP.md#phase-1--agent-health-specification) in the roadmap.
+The implemented policy contract above resolves the Phase 2 timeout, retry, and environment credential-reference requirements. Further schemes remain future extensions.
