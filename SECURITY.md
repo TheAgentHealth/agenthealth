@@ -15,7 +15,7 @@ We will acknowledge reports and work with you on disclosure timing. Since the pr
 
 ## Supported versions
 
-AgentHealth is currently pre-1.0 (see [Project Status](README.md#project-status)). Security fixes are applied to the `main` branch; there is no long-term support branch yet. This will be revisited once a stable 1.0 is released — see [Phase 24 — Production Hardening](ROADMAP.md#phase-24--production-hardening) in the roadmap, which includes a security audit before 1.0.
+AgentHealth is currently pre-1.0 (see [Project Status](README.md#project-status)). Security fixes are applied to the `main` branch; there is no long-term support branch yet. This will be revisited once a stable 1.0 is released — see [Phase 26 — Production Hardening](ROADMAP.md#phase-26--production-hardening) in the roadmap, which includes a security audit before 1.0.
 
 ## Security principles
 

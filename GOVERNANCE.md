@@ -47,7 +47,7 @@ As adoption grows, the project intends to move toward:
 - a technical steering body for AHS/AHP specification changes,
 - transparent public meeting notes or written RFC archives.
 
-Any certification or trademark program (see [Phase 22 — AgentHealth Conformance](ROADMAP.md#phase-22--agenthealth-conformance) in the roadmap) would require separate governance and community approval before being introduced.
+Any certification or trademark program (see [Phase 24 — AgentHealth Conformance](ROADMAP.md#phase-24--agenthealth-conformance) in the roadmap) would require separate governance and community approval before being introduced.
 
 ## Changes to this document
 

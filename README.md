@@ -22,6 +22,7 @@ AgentHealth is designed to work across:
 - Databases
 - Agent runtimes
 - Agent gateways
+- Agent routers
 - Supporting infrastructure
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
@@ -579,9 +580,27 @@ and supported scope. Other A2A versions and transports remain future work.
 
 # Agent Health
 
-Agent checks can combine protocol, infrastructure, and dependency checks.
+**Planned in [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health).**
+This includes the user's first, user-facing agent, whether it answers directly
+or calls other agents. Checks will cover its own endpoint, authentication,
+liveness, readiness, and capabilities, with an explicitly opted-in, bounded,
+non-destructive minimal task for functional validation.
 
-Example:
+**Direct agent health** checks the user's first, user-facing agent.
+
+**Composite agent health** checks the downstream agents that the first agent
+communicates with, either through a direct integration or through A2A.
+Each downstream agent's own health and the communication path from the first
+agent should be checked separately.
+
+Models, tools, MCP servers, data services, gateways, and routers are supporting
+dependencies; their checks are described as dependency health. Here, direct
+and composite describe agent roles in the interaction, not new target types.
+A `multi-agent` target describes the cooperating system as a whole. Results
+should distinguish first-agent, downstream-agent, communication-path, and
+supporting-dependency failures.
+
+Conceptual command (the `agent` adapter is not yet implemented):
 
 ```bash
 agenthealth ping agent https://research-agent.example.com
@@ -601,6 +620,15 @@ Data dependencies
 Minimal execution
 Latency
 ```
+
+Agentgateway and Agent Router health are planned separately in
+[Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
+and [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration).
+They may be checked independently or as agent dependencies, covering exposed
+health/readiness signals, authentication, configured backend or route
+availability, and optional safe functional probes. Integration results will
+distinguish gateway/router failures from downstream failures; specific
+products, versions, and transports will be documented during design.
 
 ---
 
@@ -1291,7 +1319,15 @@ CLI
       ↓
 HTTP + MCP + A2A
       ↓
+Direct + Composite Agent Health (Phase 7)
+      ↓
+Agentgateway Integration (Phase 8)
+      ↓
+Agent Router Integration (Phase 9)
+      ↓
 Dependency Graph
+      ↓
+Agent Health Protocol (AHP)
       ↓
 Docker
       ↓

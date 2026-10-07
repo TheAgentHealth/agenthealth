@@ -26,6 +26,47 @@ The first milestone is to prove that a common health model works across multiple
 
 ---
 
+# Phase Impact Review
+
+Every new phase or substantive revision to an existing phase must assess its
+impact on both earlier and later phases before implementation. This applies
+to all phases, not only agent, gateway, or router integrations.
+
+Record the assessment in the phase proposal or roadmap section:
+
+- **Earlier phases:** identify affected completed or planned capabilities, including AHS, schemas, core execution, CLI, adapters, and distribution. Add explicit extension tasks within the new phase where changes are required; completed phases retain their baseline status.
+- **Later phases:** identify affected designs, dependencies, interfaces, examples, conformance requirements, and validation work. Update their planned deliverables and cross-references accordingly.
+- **Compatibility and sequencing:** document any migration/versioning needs, prerequisite work, and changes to implementation order. Contract changes follow the specification process.
+- **No impact:** explicitly record when no earlier or later phase changes are required, with a brief reason. Do not assume every phase must change AHS, the core, or the CLI.
+
+Revisit the assessment when implementation reveals new effects. A phase is not
+complete until its required updates to affected layers, documentation, and
+validation are handled and affected future deliverables reflect the outcome.
+
+---
+
+# Impact of Agent Roles and Gateway/Router Integrations
+
+The additions in Phases 7–9 expand planned coverage. Phase 1 remains complete
+as an implemented AHS draft; Phases 7–9 explicitly include incremental AHS
+updates alongside their implementation. Completed Phases 0–6 remain the
+baseline, with compatibility assessed before changing their contracts.
+
+- **AHS (Phase 1):** build on the implemented draft through explicit update items in Phases 7–9; retain the common health states and dimensions and review any required aggregation extensions. Direct/composite are agent roles, not new target types. Any new role, route, or relationship fields require specification review, matching schemas, and a compatibility assessment.
+- **Core and CLI (Phases 2–3):** Phases 7–9 explicitly track required execution, validation, and output extensions; Phase 10 adds graph scheduling and diagnostics, and Phase 11 adds AHP serving support.
+- **HTTP, MCP, and A2A (Phases 4–6):** reuse implemented endpoint checks where applicable. Endpoint health alone does not verify communication from the first agent to a downstream agent.
+- **Dependency Graph (Phase 10):** distinguish agents, supporting dependencies, gateways/routers, and communication paths, including shared backends and multiple routes.
+- **AHP (Phase 11):** exchange the evidence and relationships established by AHS and Phase 10. It must not assume a healthy gateway means a healthy backend or a working route.
+- **Kubernetes, SDKs, runtime integrations, CI/CD, and observability:** consume the agreed results and distinguish first-agent, downstream-agent, path, and dependency failures. Final interfaces depend on the graph and AHP designs.
+- **Conformance, interoperability, and hardening:** verify these combinations and failure cases before declaring the corresponding support stable.
+
+The new phases add implementation and validation work before AHP. Phase numbers
+express the capability sequence, not a promise that all unrelated distribution
+work must wait. Any contract extensions remain proposals until approved through
+the specification process; no schema or exit-code change is made by this roadmap.
+
+---
+
 # Phase 0 — Project Foundation
 
 **Status:** Complete
@@ -427,16 +468,47 @@ probes never retry or poll; pending work is inconclusive.
 
 # Phase 7 — Agent Health
 
+**Status:** Planned — direct agent health and composite agent health are not yet implemented.
+
 Goal:
 
-Provide composite health checks for complete agents.
+Check the user's first, user-facing agent itself, as well as the dependencies
+used by the first agent and its downstream agents.
+
+## Direct Agent Health
+
+The `agent` target includes the first agent that receives the user's request.
+It may answer directly, use tools or a model, or delegate to other agents.
+Calling another agent is not a requirement for checking its own health.
+
+Planned checks cover the agent's endpoint, authentication, metadata,
+capabilities, liveness, and readiness to accept work. An explicitly opted-in,
+bounded, non-destructive minimal task will provide functional evidence that
+the agent can respond. Dependency health alone does not establish that the
+agent itself works; checks should distinguish direct agent evidence from
+dependency results and report inconclusive evidence as such.
+
+## Composite Agent Health
+
+Composite agents are the downstream agents that the user's first agent
+communicates with, either directly or through A2A. Planned health checks cover
+each downstream agent's endpoint, authentication, capabilities, readiness,
+and optional safe functional task, plus the communication path from the first
+agent. Results should distinguish a downstream agent failure from a failure
+in that communication path.
+
+Direct and composite describe agent roles in this roadmap, not new target
+types. A `multi-agent` target describes the cooperating system as a whole.
+Models, tools, MCP servers, data services, gateways, and routers remain
+supporting dependencies and are covered by dependency health.
 
 An agent health check may combine:
 
 ```text
-Agent endpoint
+User-facing agent endpoint
       │
-      ├── A2A
+      ├── Composite agents (direct communication or A2A)
+      ├── Agentgateway / Agent Router (when used)
       ├── Model
       ├── MCP
       ├── Tools
@@ -445,35 +517,141 @@ Agent endpoint
 
 ## Capabilities
 
+- [ ] Update AHS for first (direct) and downstream (composite) agent roles, direct/A2A communication evidence, and agent liveness/readiness semantics.
+- [ ] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
+- [ ] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
+- [ ] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
 - [ ] agent endpoint health
+- [ ] direct user-facing agent checks without requiring downstream agents
+- [ ] composite downstream agent health via direct integrations or A2A
+- [ ] first-to-downstream agent communication-path validation
+- [ ] agent authentication, liveness, and readiness
 - [ ] metadata validation
 - [ ] capability validation
 - [ ] dependency discovery
 - [ ] dependency execution
-- [ ] minimal agent task
+- [ ] explicit opt-in, bounded, non-destructive minimal agent task
+- [ ] distinguish direct agent failures from dependency failures
 - [ ] dependency aggregation
 - [ ] critical dependency propagation
 
+## Impact Review
+
+Earlier: extend AHS, core, and CLI baselines and reuse HTTP/A2A checks. Later: establish agent-role and communication evidence for Phases 8–11 and their consumers.
+
 ---
 
-# Phase 8 — Dependency Graph
+# Phase 8 — Agentgateway Integration
+
+**Status:** Planned — not yet implemented.
+
+Goal:
+
+Check Agentgateway independently or as a dependency of the user-facing agent,
+with separate evidence for gateway health and the health of its backends.
+
+## Capabilities
+
+- [ ] Update AHS for gateway health, backend health, and gateway communication-path evidence, including their aggregation and redaction requirements.
+- [ ] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
+- [ ] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
+- [ ] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
+- [ ] endpoint reachability and authentication
+- [ ] exposed health, liveness, and readiness signals
+- [ ] configured backend availability validation where supported
+- [ ] explicitly opted-in, bounded, non-destructive functional probes through the gateway
+- [ ] distinguish gateway failures from downstream agent, model, or tool failures
+- [ ] normalize results into the shared health model
+- [ ] document supported versions, transports, credentials, and diagnostic limits
+- [ ] examples connecting the user-facing agent, Agentgateway, and downstream targets
+
+Start with existing HTTP/API, MCP, or A2A checks where Agentgateway exposes
+those interfaces. Product-specific adapters and any target-model extensions
+will be decided during design; this phase does not introduce a new target type
+or imply current support.
+
+## Impact Review
+
+Earlier: extend AHS/core/CLI as required and build on Phase 7 agent roles. Later: supply gateway/backend evidence to router, graph, AHP, and validation phases.
+
+---
+
+# Phase 9 — Agent Router Integration
+
+**Status:** Planned — not yet implemented.
+
+Goal:
+
+Check an Agent Router independently or as a dependency of the user-facing
+agent, with separate evidence for router health and the health of routed targets.
+
+## Capabilities
+
+- [ ] Update AHS for router health, configured routes, routed backend health, and route-specific failures, including their aggregation and redaction requirements.
+- [ ] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
+- [ ] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
+- [ ] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
+- [ ] endpoint reachability and authentication
+- [ ] exposed health, liveness, and readiness signals
+- [ ] configured route and backend availability validation where supported
+- [ ] explicitly opted-in, bounded, non-destructive functional probes through a configured route
+- [ ] distinguish router failures from downstream agent, model, or tool failures
+- [ ] normalize results into the shared health model
+- [ ] document supported products, versions, transports, credentials, and diagnostic limits
+- [ ] examples connecting the user-facing agent, Agent Router, and downstream targets
+
+Start with existing HTTP/API, MCP, or A2A checks where the router exposes
+those interfaces. The specific router integrations, product-specific adapters,
+and any target-model extensions will be decided during design; this phase
+does not introduce a new target type or imply current support. Phase 10 will
+extend graph diagnostics across agent, gateway, router, and backend relationships.
+
+## Impact Review
+
+Earlier: extend AHS/core/CLI as required and reuse agent/gateway checks. Later: supply route/backend evidence to the graph, AHP, and integration consumers.
+
+---
+
+# Phase 10 — Dependency Graph
+
+**Status:** Planned — graph extensions are not yet implemented; existing core dependency execution and aggregation remain the baseline.
 
 Goal:
 
 Make dependency-aware diagnostics a defining AgentHealth capability.
 
+The graph must cover the first (direct) agent, downstream (composite) agents,
+direct or A2A communication paths, and any intervening gateway/router.
+Agent roles and communication relationships need to be distinguishable from
+supporting model, tool, MCP, and data dependencies. A healthy downstream agent
+does not establish that the first agent can reach it through a configured route.
+
+The current nested dependency contract is a starting point. Shared backends,
+multiple routes, and path-specific health may require a richer graph model;
+its configuration and result representation must be designed through the
+specification process before implementation.
+
 ## Features
 
+- [ ] Consolidate AHS updates from Phases 7–9 into the graph configuration and result contracts
 - [ ] Dependency graph construction
-- [ ] Nested dependencies
-- [ ] Critical dependencies
-- [ ] Optional dependencies
-- [ ] Failure propagation
+- [ ] Extend existing nested dependencies to the graph model
+- [ ] Preserve existing critical dependency policies in graph execution
+- [ ] Preserve existing optional dependency policies in graph execution
+- [ ] Extend existing failure propagation to graph nodes and communication paths
 - [ ] Cycle detection
 - [ ] Parallel health execution
 - [ ] Configurable concurrency
 - [ ] Dependency timeout budgets
 - [ ] Tree output
+- [ ] first-agent and downstream-agent relationships via direct integrations or A2A
+- [ ] gateway/router communication-path evidence separate from backend health
+- [ ] shared backend identity and multiple-route representation
+- [ ] distinguish node failures from communication-path failures in propagation and output
+
+The Phase 2 core already executes nested dependencies and aggregates critical
+and optional failures. The unchecked items above cover graph extensions and
+preservation of that behavior, rather than initial implementation.
 
 Example:
 
@@ -493,9 +671,13 @@ Research Agent
 Overall: DEGRADED
 ```
 
+## Impact Review
+
+Earlier: consolidate Phases 7–9 contracts, extend core graph execution, and add CLI graph diagnostics. Later: establish graph evidence consumed by AHP, SDKs, integrations, and conformance.
+
 ---
 
-# Phase 9 — Agent Health Protocol (AHP)
+# Phase 11 — Agent Health Protocol (AHP)
 
 **Status:** Proposed / experimental
 
@@ -503,9 +685,9 @@ Goal:
 
 Define a vendor-neutral protocol through which agentic systems can expose and exchange standardized health and readiness information.
 
-The Agent Health Protocol implements the semantics defined by the Agent Health Specification (Phase 1).
+The Agent Health Protocol implements the Phase 1 AHS baseline and its approved extensions from Phases 7–10.
 
-This phase intentionally comes **after** the HTTP, MCP, A2A, Agent Health, and Dependency Graph phases rather than immediately following the specification. The health semantics need to be proven across those adapters in reality first; AHP then generalizes the lessons learned into an interoperable wire contract. Standardizing an exchange protocol before understanding the operational requirements would risk locking in the wrong contract.
+This phase intentionally comes **after** the HTTP, MCP, A2A, Agent Health, Agentgateway, Agent Router, and Dependency Graph phases rather than immediately following the specification. The health semantics need to be proven across those adapters in reality first; AHP then generalizes the lessons learned into an interoperable wire contract. Standardizing an exchange protocol before understanding the operational requirements would risk locking in the wrong contract.
 
 ## Core Operations
 
@@ -538,8 +720,13 @@ Define:
 - [ ] caching behavior
 - [ ] timeout semantics
 - [ ] extension mechanism
+- [ ] represent first/downstream agent relationships, supporting dependencies, and communication-path evidence established in Phase 10
+- [ ] distinguish gateway/router health from routed backend health without exposing sensitive topology by default
 
 ## Service Mode
+
+- [ ] implement AHP serving in the core and expose the Phase 3 CLI extension `agenthealth serve`
+- [ ] validate serving against the updated AHS/configuration/result contracts and document compatibility
 
 A reference "server mode" lets AgentHealth expose AHP instead of only consuming other systems' health:
 
@@ -566,7 +753,9 @@ agenthealth serve
          A2A Agent       Vector DB
 ```
 
-This generalizes the `agenthealth serve` concept previously scoped only to Post-1.0 Exploration. Once AHP's wire contract stabilizes, service mode should move into the pre-1.0 roadmap rather than remain purely exploratory — it is what makes AgentHealth infrastructure that other systems can query, not just a CLI that queries others.
+Service mode is a planned pre-1.0 deliverable in this phase, previously scoped
+only to Post-1.0 Exploration. Its implementation follows stabilization of the
+AHP wire contract and lets infrastructure query AgentHealth results.
 
 ## Discovery
 
@@ -587,9 +776,15 @@ Define:
 
 AHP implementations should be testable independently of the AgentHealth reference implementation.
 
+## Impact Review
+
+Earlier: review AHS/graph contracts for wire exchange, add core serving support, and extend the CLI with `serve`. Later: provide a versioned exchange contract for Kubernetes, SDK consumers, and protocol conformance.
+
 ---
 
-# Phase 10 — Docker Distribution
+# Phase 12 — Docker Distribution
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -613,9 +808,13 @@ docker run --rm agenthealth/agenthealth \
   ping mcp http://host.docker.internal:3000
 ```
 
+## Impact Review
+
+Earlier: package the existing CLI; no AHS/core contract change is expected solely for container distribution. Later: provide images for Kubernetes and CI, with container security validated during hardening.
+
 ---
 
-# Phase 11 — Standalone Binaries
+# Phase 13 — Standalone Binaries
 
 **Status:** Initial GitHub binary distribution implemented early for the v0.1.0 preview. Five platform archives, checksums, installation docs, and a tag-triggered release workflow are available. Signing and broader runtime validation remain future work.
 
@@ -637,13 +836,20 @@ Potential channels:
 
 - [x] GitHub Releases
 - [ ] Homebrew
-- [x] Linux packages
+- [x] Linux standalone binary archives
+- [ ] Linux packages (DEB/RPM)
 - [ ] Windows package manager
 - [ ] container registries
 
+## Impact Review
+
+Earlier: extend existing binary release tooling; no AHS/core/CLI health-contract change is expected solely for distribution. Later: supply verified binaries to SDK wrappers, CI, and supported-platform validation.
+
 ---
 
-# Phase 12 — Kubernetes Integration
+# Phase 14 — Kubernetes Integration
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -672,6 +878,7 @@ readinessProbe:
 - [ ] Secret integration
 - [ ] Helm examples
 - [ ] Deployment validation
+- [ ] Readiness examples for first agents, downstream agents, and gateway/router paths using the updated AHS results
 
 ## Future Exploration
 
@@ -700,9 +907,15 @@ spec:
 
 CRDs/operators are intentionally deferred until the basic health model proves useful.
 
+## Impact Review
+
+Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving where used; review any required readiness contract extensions. Later: provide deployment scenarios for CI, interoperability, and hardening.
+
 ---
 
-# Phase 13 — Python SDK / PyPI
+# Phase 15 — Python SDK / PyPI
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -737,13 +950,20 @@ print(result.status)
 - [ ] Configuration loader
 - [ ] Adapter access
 - [ ] Dependency results
+- [ ] Typed access to agent-role, gateway/router, and communication-path evidence defined by the updated AHS/graph contracts
 - [ ] Exceptions/error model
 
 The Python SDK must follow the Agent Health Specification rather than defining it.
 
+## Impact Review
+
+Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide Python APIs for runtime integrations and interoperability tests.
+
 ---
 
-# Phase 14 — JavaScript / TypeScript SDK
+# Phase 16 — JavaScript / TypeScript SDK
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -775,11 +995,18 @@ const result = await check({
 - [ ] configuration support
 - [ ] normalized results
 - [ ] dependency results
+- [ ] typed access to agent-role, gateway/router, and communication-path evidence defined by the updated AHS/graph contracts
 - [ ] browser/server scope definition
+
+## Impact Review
+
+Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide JavaScript/TypeScript APIs for runtime integrations and interoperability tests.
 
 ---
 
-# Phase 15 — Model / LLM Adapters
+# Phase 17 — Model / LLM Adapters
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -810,9 +1037,15 @@ others
 
 Vendor-specific integrations should remain outside the core whenever practical.
 
+## Impact Review
+
+Earlier: add model adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide model dependency coverage for runtime, conformance, and interoperability tests.
+
 ---
 
-# Phase 16 — Database Adapters
+# Phase 18 — Database Adapters
+
+**Status:** Planned — not yet implemented.
 
 Potential targets:
 
@@ -831,9 +1064,15 @@ MongoDB
 - [ ] read readiness
 - [ ] latency
 
+## Impact Review
+
+Earlier: add database adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide database dependency coverage for runtime, conformance, and interoperability tests.
+
 ---
 
-# Phase 17 — Vector Store Adapters
+# Phase 19 — Vector Store Adapters
+
+**Status:** Planned — not yet implemented.
 
 Potential targets:
 
@@ -856,9 +1095,15 @@ Elasticsearch
 - [ ] minimal query
 - [ ] latency
 
+## Impact Review
+
+Earlier: add vector-store adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide retrieval dependency coverage for runtime, conformance, and interoperability tests.
+
 ---
 
-# Phase 18 — Agent Runtime / Framework Integrations
+# Phase 20 — Agent Runtime / Framework Integrations
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -884,11 +1129,19 @@ SDK integration
 adapter
 ```
 
+- [ ] expose first-agent, downstream-agent, gateway/router, and communication-path evidence through supported framework integration patterns
+
 AgentHealth should remain framework-neutral.
+
+## Impact Review
+
+Earlier: integrate the agent roles, gateway/router paths, adapters, SDKs, and AHP where applicable; review any contract extensions. Later: supply framework scenarios for CI, observability, and interoperability.
 
 ---
 
-# Phase 19 — CI/CD Integrations
+# Phase 21 — CI/CD Integrations
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -916,15 +1169,23 @@ AgentHealth
 Promote
 ```
 
+- [ ] deployment checks and failure reporting for first agents, downstream agents, and gateway/router paths
+
 Potential CI output formats:
 
 - [ ] JUnit
 - [ ] annotations
 - [ ] SARIF where appropriate
 
+## Impact Review
+
+Earlier: consume CLI/SDK results and add agreed automation output formats as required. Later: supply deployment validation examples for interoperability and hardening; CI integration alone does not require new health states.
+
 ---
 
-# Phase 20 — Observability Export
+# Phase 22 — Observability Export
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -936,6 +1197,8 @@ Potential integrations:
 - [ ] Prometheus
 - [ ] structured logs
 - [ ] webhooks
+
+- [ ] export distinct agent, gateway/router, path, and dependency evidence with sensitive topology redaction
 
 AgentHealth will not attempt to become a complete observability backend.
 
@@ -950,9 +1213,15 @@ AgentHealth
     └── Webhooks
 ```
 
+## Impact Review
+
+Earlier: map approved result evidence to exports and extend output interfaces as required; no new health semantics are expected solely for export. Later: validate export compatibility and redaction during conformance and hardening.
+
 ---
 
-# Phase 21 — Plugin / Adapter Ecosystem
+# Phase 23 — Plugin / Adapter Ecosystem
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -970,6 +1239,7 @@ Define:
 - [ ] error normalization
 - [ ] security requirements
 - [ ] compatibility version
+- [ ] adapter evidence mapping for direct/composite agents, gateways, routers, and communication paths under the updated AHS
 
 Potential architecture:
 
@@ -984,9 +1254,15 @@ AgentHealth Core
                   Adapters
 ```
 
+## Impact Review
+
+Earlier: formalize the existing adapter baseline, including compatibility and evidence mapping; update core/CLI registration if the extension mechanism requires it. Later: supply the contract tested by conformance and ecosystem validation.
+
 ---
 
-# Phase 22 — AgentHealth Conformance
+# Phase 24 — AgentHealth Conformance
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -1007,6 +1283,7 @@ agenthealth conformance test <target>
 - [ ] Dependency representation
 - [ ] Security requirements
 - [ ] Adapter behavior
+- [ ] AHS updates from Phases 7–10, including agent roles, gateway/router paths, aggregation, and compatible result representation
 
 Potential future levels:
 
@@ -1018,9 +1295,15 @@ AgentHealth Full Compatible
 
 Any certification/trademark program would require separate governance and community approval.
 
+## Impact Review
+
+Earlier: validate the approved AHS, AHP, adapters, outputs, and integrations; feed defects back to their owning layers. Later: provide conformance checks for interoperability and production hardening.
+
 ---
 
-# Phase 23 — Ecosystem Interoperability Testing
+# Phase 25 — Ecosystem Interoperability Testing
+
+**Status:** Planned — not yet implemented.
 
 Goal:
 
@@ -1044,9 +1327,20 @@ Agent Framework B
 
 AgentHealth should produce consistent health semantics regardless of implementation.
 
+The test matrix must also include a first agent communicating with downstream
+agents directly, through A2A, and through Agentgateway or an Agent Router.
+Include healthy backends behind a failing path, failing backends behind a
+healthy gateway/router, shared backends, and multiple configured routes.
+
+## Impact Review
+
+Earlier: test supported cross-phase combinations and feed contract or implementation defects back to their owning layers. Later: supply failure scenarios and evidence for production hardening.
+
 ---
 
-# Phase 24 — Production Hardening
+# Phase 26 — Production Hardening
+
+**Status:** Planned — not yet implemented.
 
 Before a stable 1.0 release:
 
@@ -1056,6 +1350,7 @@ Before a stable 1.0 release:
 - [ ] Large dependency graph testing
 - [ ] Retry behavior testing
 - [ ] Failure injection testing
+- [ ] first-agent, downstream-agent, and gateway/router path failure isolation
 - [ ] Cross-platform testing
 - [ ] Backward compatibility policy
 - [ ] Stable configuration specification
@@ -1063,6 +1358,10 @@ Before a stable 1.0 release:
 - [ ] Stable adapter interface
 - [ ] Stable CLI
 - [ ] Documentation review
+
+## Impact Review
+
+Earlier: audit and fix supported contracts, implementations, distribution, and integrations; track compatibility for resulting changes. Later: gate 1.0 and inform post-1.0 work; this phase adds no new feature contract by itself.
 
 ---
 
@@ -1080,7 +1379,9 @@ Minimum expectations:
 ✓ HTTP support
 ✓ MCP support
 ✓ A2A support
-✓ Agent health
+✓ Direct and composite agent health
+✓ Agentgateway integration
+✓ Agent Router integration
 ✓ Dependency graph
 ✓ Agent Health Protocol (AHP) first iteration
 ✓ Docker
@@ -1146,7 +1447,7 @@ AgentHealth itself should avoid becoming a monitoring database.
 
 ## Remote Health Service
 
-Service mode (`agenthealth serve`) is now tracked under [Phase 9 — Agent Health Protocol (AHP)](#phase-9--agent-health-protocol-ahp) rather than purely as post-1.0 exploration, since it is the natural reference implementation of AHP. Further exploration here is limited to advanced serving behaviors beyond the core AHP contract, such as fleet-wide serving or multi-tenant service mode.
+Service mode (`agenthealth serve`) is now tracked under [Phase 11 — Agent Health Protocol (AHP)](#phase-11--agent-health-protocol-ahp) rather than purely as post-1.0 exploration, since it is the natural reference implementation of AHP. Further exploration here is limited to advanced serving behaviors beyond the core AHP contract, such as fleet-wide serving or multi-tenant service mode.
 
 ## Policy Engines
 

@@ -1,6 +1,6 @@
 # Agent Health Protocol (AHP)
 
-> **Status: Proposed / experimental.** AHP is a direction, not a shipped standard. See [Phase 9 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-9--agent-health-protocol-ahp) in the roadmap. Nothing in this document is normative yet.
+> **Status: Proposed / experimental.** AHP is a direction, not a shipped standard. See [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp) in the roadmap. Nothing in this document is normative yet.
 
 ## Goal
 
@@ -8,7 +8,7 @@ Define a vendor-neutral protocol through which agentic systems can **expose and 
 
 ## Why this is not defined yet
 
-Running health checks with the `agenthealth` CLI does not, by itself, constitute a protocol. A protocol requires a defined, versioned, interoperable wire contract that multiple independent implementations can agree on. Per the roadmap, AHP work begins only after the HTTP, MCP, A2A, Agent, and Dependency Graph phases prove the AHS model works in practice (Phases 4–8).
+Running health checks with the `agenthealth` CLI does not, by itself, constitute a protocol. A protocol requires a defined, versioned, interoperable wire contract that multiple independent implementations can agree on. Per the roadmap, AHP work begins only after the HTTP, MCP, A2A, direct and composite Agent Health, Agentgateway, Agent Router, and Dependency Graph phases prove the AHS model works in practice (Phases 4–10).
 
 ## Proposed core operations (non-normative)
 
