@@ -1,0 +1,6 @@
+version: v1
+targets:
+  - name: example
+    type: http
+    endpoint: https://example.com
+    timeout_ms: 0

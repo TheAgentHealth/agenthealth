@@ -38,3 +38,13 @@ Adapters declare a `compatibility_version` against the core engine's adapter int
 ## Conformance
 
 Independent conformance testing for adapters is tracked under [Phase 22 — AgentHealth Conformance](../ROADMAP.md#phase-22--agenthealth-conformance).
+
+## Reference Go interface (Phase 2 draft)
+
+The compiled-in interface is implemented in [core/adapter.go](../core/adapter.go). `Registry.Register` requires `compatibility_version: v1`, rejects duplicate target types, and requires Configuration and Reachability gates. The core owns Latency and Dependency; adapters declare their other supported dimensions and active dimensions. Functional must be declared active. Active dimensions never run by default.
+
+`Adapter.Check` receives a context and a request containing the target, resolved credential, a TLS-verifying HTTP client, and `MarkResponse`. Call `MarkResponse` immediately when any response arrives so a deadline while reading a partial response can be classified `UNKNOWN`. Return `Observation.ResponseReceived` as well when a call completes. Use `Failure` for semantic errors with a known health status, rather than raw diagnostic text.
+
+Adapters must honor cancellation, treat request data and metadata as immutable, use the supplied client for HTTP requests, and keep active probes non-destructive. The engine bounds calls and returns at deadlines even if an adapter ignores cancellation, but Go cannot forcibly terminate arbitrary in-process code; an uncooperative call occupies a pool slot until it returns. Adapter panics and invalid check statuses normalize to `UNKNOWN`.
+
+The engine emits canonical diagnostics instead of forwarding adapter messages or panic/error strings. Resolved credentials are redacted throughout the result tree. Adapters must also avoid logging raw requests, credentials, responses, and errors themselves. Adapter implementation remains a trusted-code boundary.

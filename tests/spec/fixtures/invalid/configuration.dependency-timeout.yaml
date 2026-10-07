@@ -1,0 +1,6 @@
+version: v1
+targets:
+  - name: example
+    type: http
+    endpoint: https://example.com
+    check_timeouts_ms: {dependency: 100}

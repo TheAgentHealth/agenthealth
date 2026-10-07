@@ -48,7 +48,7 @@ Establish the project identity, architecture, governance foundation, and technic
 - [x] Pull request templates (`.github/PULL_REQUEST_TEMPLATE.md`)
 - [x] Release process ([RELEASING.md](RELEASING.md))
 - [x] Semantic versioning policy ([RELEASING.md](RELEASING.md))
-- [x] CI pipeline ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — spec schema tests ([tests/spec/](tests/spec/)), a markdown link checker ([scripts/check_markdown_links.py](scripts/check_markdown_links.py)), and doc-example validation ([scripts/validate_doc_examples.py](scripts/validate_doc_examples.py)) that checks marked README/ROADMAP/spec prose examples against the schemas, all required to pass before merge. A Go test suite will be added as additional CI jobs once [Phase 2](#phase-2--core-engine) lands.
+- [x] CI pipeline ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — spec schema tests ([tests/spec/](tests/spec/)), a markdown link checker ([scripts/check_markdown_links.py](scripts/check_markdown_links.py)), and doc-example validation ([scripts/validate_doc_examples.py](scripts/validate_doc_examples.py)) that checks marked README/ROADMAP/spec prose examples against the schemas, all required to pass before merge. The Go core test suite runs in an additional CI job alongside these checks.
 
 ## Architecture Decisions
 
@@ -69,7 +69,7 @@ Define:
 
 # Phase 1 — Agent Health Specification
 
-**Status:** Partially complete (draft) — vocabulary, target model, result schema, error classification, and status aggregation semantics are drafted in [spec/](spec/README.md). Authentication references, timeout policies, retry policies, and active/passive opt-in syntax remain open and are deferred to Phase 2 (see [spec/configuration.md § Still to be defined](spec/configuration.md#still-to-be-defined)).
+**Status:** Complete as a draft — vocabulary, target model, result schema, error classification, aggregation, active opt-in syntax, environment credential references, timeouts, and retries are defined in [spec/](spec/README.md) and implemented by Phase 2. The contract remains pre-1.0; additional authentication schemes and secret-manager integration remain future extensions.
 
 Goal:
 
@@ -152,14 +152,14 @@ Defined in [spec/configuration.md](spec/configuration.md):
 - [x] target definitions
 - [x] checks
 - [x] thresholds
-- [ ] authentication references
+- [x] authentication references
 - [x] dependencies
 - [x] critical vs optional dependencies
-- [ ] timeout policies
-- [ ] retry policies
+- [x] timeout policies
+- [x] retry policies
 - [x] active/passive check behavior
 
-Remaining items are explicitly listed as open in [spec/configuration.md § Still to be defined](spec/configuration.md#still-to-be-defined) and will be resolved alongside the Phase 2 core engine implementation.
+Phase 2 resolves the baseline policy contract in [configuration execution policies](spec/configuration.md#execution-policies-phase-2-draft). Further extensions are listed under [Still to be defined](spec/configuration.md#still-to-be-defined).
 
 ## Specification Documents
 
@@ -185,33 +185,35 @@ spec/
 
 # Phase 2 — Core Engine
 
+**Status:** Complete — the [Go core engine](core/README.md) implements execution, policies, normalization, dependency evaluation, output, and safety controls. A small HTTP reference adapter exercises the engine; full CLI commands and advanced HTTP diagnostics remain Phases 3 and 4.
+
 Goal:
 
 Implement the reference health engine.
 
 ## Core Capabilities
 
-- [ ] Target loading
-- [ ] Configuration validation
-- [ ] Check execution
-- [ ] Timeouts
-- [ ] Retries
-- [ ] Latency measurement
-- [ ] Result normalization
-- [ ] Error normalization
-- [ ] Health aggregation
-- [ ] Dependency evaluation
-- [ ] Human-readable output
-- [ ] JSON output
+- [x] Target loading
+- [x] Configuration validation
+- [x] Check execution
+- [x] Timeouts
+- [x] Retries
+- [x] Latency measurement
+- [x] Result normalization
+- [x] Error normalization
+- [x] Health aggregation
+- [x] Dependency evaluation
+- [x] Human-readable output
+- [x] JSON output
 
 ## Safety
 
-- [ ] Secret redaction
-- [ ] Safe logging
-- [ ] TLS verification
-- [ ] Non-destructive defaults
-- [ ] Active-check controls
-- [ ] Timeout protection
+- [x] Secret redaction
+- [x] Safe logging
+- [x] TLS verification
+- [x] Non-destructive defaults
+- [x] Active-check controls
+- [x] Timeout protection
 
 ---
 
