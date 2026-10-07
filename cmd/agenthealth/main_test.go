@@ -51,7 +51,7 @@ func TestPingFormats(t *testing.T) {
 
 func TestBatchAndDoctor(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("version: v1\ntargets:\n  - name: unsupported\n    type: mcp\n    endpoint: http://localhost\n  - name: inconclusive\n    type: http\n    endpoint: http://localhost\n    checks: []\n"), 0600); err != nil {
+	if err := os.WriteFile(path, []byte("version: v1\ntargets:\n  - name: unsupported\n    type: a2a\n    endpoint: http://localhost\n  - name: inconclusive\n    type: http\n    endpoint: http://localhost\n    checks: []\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for _, command := range []string{"check", "doctor"} {
@@ -100,5 +100,44 @@ func TestOutputFailure(t *testing.T) {
 	var diagnostic bytes.Buffer
 	if code := run(context.Background(), []string{"version"}, brokenWriter{}, &diagnostic); code != 6 {
 		t.Fatalf("code %d", code)
+	}
+}
+
+func TestMCPPingAndDoctor(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "HEAD" {
+			w.WriteHeader(405)
+			return
+		}
+		var request struct {
+			ID     int    `json:"id"`
+			Method string `json:"method"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			t.Error(err)
+			w.WriteHeader(400)
+			return
+		}
+		if request.Method == "notifications/initialized" {
+			w.WriteHeader(202)
+			return
+		}
+		if request.Method != "initialize" {
+			t.Errorf("unexpected passive method %s", request.Method)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"jsonrpc": "2.0", "id": request.ID, "result": map[string]any{"protocolVersion": "2025-11-25", "serverInfo": map[string]string{"name": "test", "version": "1"}, "capabilities": map[string]any{}}})
+	}))
+	defer server.Close()
+	for _, command := range []string{"ping", "doctor"} {
+		for _, format := range []string{"terminal", "json", "yaml"} {
+			var out, diagnostic bytes.Buffer
+			if code := run(context.Background(), []string{command, "mcp", server.URL, "--format", format}, &out, &diagnostic); code != 0 || diagnostic.Len() != 0 {
+				t.Fatalf("%s/%s code=%d diagnostics=%s output=%s", command, format, code, &diagnostic, &out)
+			}
+			if command == "doctor" && format == "terminal" && !bytes.Contains(out.Bytes(), []byte("Doctor:")) {
+				t.Fatal("missing advice")
+			}
+		}
 	}
 }

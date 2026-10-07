@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -30,6 +31,25 @@ type Target struct {
 	CheckTimeouts map[string]int `yaml:"check_timeouts_ms"`
 	Auth          *AuthReference `yaml:"auth"`
 	HTTP          *HTTPOptions   `yaml:"http"`
+	MCP           *MCPOptions    `yaml:"mcp"`
+}
+
+// MCPOptions configures Streamable HTTP discovery and an explicitly safe probe.
+type MCPOptions struct {
+	ProtocolVersion   string         `yaml:"protocol_version"`
+	RequiredTools     []string       `yaml:"required_tools"`
+	RequiredResources []string       `yaml:"required_resources"`
+	RequiredPrompts   []string       `yaml:"required_prompts"`
+	Functional        *MCPInvocation `yaml:"functional"`
+}
+type MCPInvocation struct {
+	Tool          string `yaml:"tool"`
+	Safe          bool   `yaml:"safe"`
+	ArgumentsJSON string `yaml:"arguments_json"`
+}
+
+func SupportedMCPVersion(v string) bool {
+	return v == "2025-03-26" || v == "2025-06-18" || v == "2025-11-25"
 }
 
 // HTTPOptions specifies response expectations, never outgoing credentials.
@@ -156,6 +176,40 @@ func validateTarget(t Target, path string, depth int) error {
 	if !contains(targetTypes, t.Type) {
 		return fmt.Errorf("%s: unsupported target type", path)
 	}
+	if t.MCP != nil {
+		if t.Type != "mcp" {
+			return fmt.Errorf("%s: mcp options require mcp target", path)
+		}
+		if t.MCP.ProtocolVersion != "" && !SupportedMCPVersion(t.MCP.ProtocolVersion) {
+			return fmt.Errorf("%s: unsupported MCP protocol version", path)
+		}
+		for _, names := range [][]string{t.MCP.RequiredTools, t.MCP.RequiredResources, t.MCP.RequiredPrompts} {
+			seen := map[string]bool{}
+			for _, name := range names {
+				if strings.TrimSpace(name) == "" || seen[name] {
+					return fmt.Errorf("%s: MCP requirements must be nonempty and unique", path)
+				}
+				seen[name] = true
+			}
+		}
+		if t.Checks != nil && !contains(t.Checks, "capability") && (len(t.MCP.RequiredTools)+len(t.MCP.RequiredResources)+len(t.MCP.RequiredPrompts) > 0) {
+			return fmt.Errorf("%s: MCP requirements require capability check", path)
+		}
+		if f := t.MCP.Functional; f != nil {
+			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Tool) == "" {
+				return fmt.Errorf("%s: MCP invocation requires functional opt-in, tool and safe: true", path)
+			}
+			if f.ArgumentsJSON != "" {
+				var args map[string]json.RawMessage
+				if len(f.ArgumentsJSON) > 65536 || json.Unmarshal([]byte(f.ArgumentsJSON), &args) != nil || args == nil {
+					return fmt.Errorf("%s: arguments_json must be a JSON object of at most 64 KiB", path)
+				}
+			}
+		}
+	}
+	if t.Type == "mcp" && contains(t.Checks, "functional") && (t.MCP == nil || t.MCP.Functional == nil) {
+		return fmt.Errorf("%s: MCP functional check requires invocation", path)
+	}
 	if t.HTTP != nil {
 		if t.Type != "http" && t.Type != "api" {
 			return fmt.Errorf("%s: http options require http or api target", path)
@@ -256,11 +310,11 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 		}
 		seen[key.Value] = true
 		switch key.Value {
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
 			}
-		case "critical":
+		case "critical", "safe":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!bool" {
 				return false
 			}
@@ -270,6 +324,10 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			}
 		case "auth":
 			if !validYAMLNode(value, "auth", depth+1) {
+				return false
+			}
+		case "mcp", "functional":
+			if !validYAMLNode(value, key.Value, depth+1) {
 				return false
 			}
 		case "http":
@@ -313,7 +371,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
 				return false
 			}
-		case "checks":
+		case "checks", "required_tools", "required_resources", "required_prompts":
 			if value.Kind != yaml.SequenceNode {
 				return false
 			}

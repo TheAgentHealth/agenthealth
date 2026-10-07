@@ -282,6 +282,16 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 }
 
 var diagnosticMessages = map[string]string{
+	"mcp_auth":       "MCP authentication rejected (401 or 403)",
+	"mcp_http":       "MCP endpoint returned an unexpected HTTP status",
+	"mcp_protocol":   "invalid MCP initialization or JSON-RPC response",
+	"mcp_version":    "MCP protocol version is unsupported or differs from the pinned version",
+	"mcp_limit":      "MCP response or discovery exceeded safety limits",
+	"mcp_rpc":        "MCP server rejected the protocol request",
+	"mcp_required":   "required MCP tool, resource or prompt is missing",
+	"mcp_unsafe":     "functional tool lacks explicit read-only and non-destructive annotations",
+	"mcp_functional": "MCP functional invocation failed",
+
 	"http_status":     "HTTP status did not match expected status",
 	"http_headers":    "required HTTP response header did not match",
 	"http_body":       "HTTP response body did not contain required text",

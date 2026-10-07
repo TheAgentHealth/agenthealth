@@ -181,3 +181,43 @@ Transport observations appear as optional `checks.reachability.steps` entries fo
 - Stable 1.0 policy contract after implementation feedback
 
 The implemented policy contract above resolves the Phase 2 timeout, retry, and environment credential-reference requirements. Further schemes remain future extensions.
+
+## MCP expectations and safe invocation (Phase 5 draft)
+
+MCP targets may specify `mcp` options on top-level targets or dependencies.
+They use the [MCP adapter contract](../docs/mcp-adapter.md) for Streamable HTTP:
+
+- `protocol_version`: optional pin to `2025-03-26`, `2025-06-18`, or `2025-11-25`.
+  An omitted or empty value offers the newest supported revision and permits
+  negotiation to any supported revision.
+- `required_tools`, `required_resources`, `required_prompts`: optional arrays
+  of unique, nonblank identities. Tools/prompts match names; resources match
+  URIs. Missing requirements produce `DEGRADED`. Explicit checks must include
+  `capability` when nonempty requirements are specified.
+- `functional`: optional invocation with nonblank `tool`, `safe: true`, and
+  optional `arguments_json` (empty or a JSON object string, at most 64 KiB).
+  The Go loader additionally parses this string; JSON Schema does not parse
+  embedded JSON. Invocation requires explicit `functional` in `checks`, and
+  every MCP functional check requires invocation options. The operator must
+  verify safety; tool annotations must additionally declare read-only and
+  non-destructive behavior. Functional calls never retry.
+
+MCP options on other target types, unsupported version pins, duplicate/blank
+requirements, and missing functional safety declarations are invalid
+configuration. The shared result schema and exit codes are unchanged.
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: local-mcp
+    type: mcp
+    endpoint: http://localhost:3000/mcp
+    checks: [protocol, capability, functional, latency]
+    mcp:
+      required_tools: [search]
+      functional:
+        tool: search
+        safe: true
+        arguments_json: '{"query":"health"}'
+```

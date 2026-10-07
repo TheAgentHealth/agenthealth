@@ -1,0 +1,25 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "mcp",
+      "type": "mcp",
+      "endpoint": "http://localhost:3000/mcp",
+      "mcp": {
+        "required_tools": [
+          "search"
+        ],
+        "required_resources": [
+          "health://ready"
+        ],
+        "required_prompts": [
+          "summary"
+        ]
+      },
+      "checks": [
+        "capability",
+        "functional"
+      ]
+    }
+  ]
+}

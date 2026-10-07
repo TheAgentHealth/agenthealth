@@ -539,9 +539,9 @@ See [ROADMAP.md](ROADMAP.md).
 
 # MCP Health
 
-MCP is a first-class target for AgentHealth.
+MCP is supported through the [Streamable HTTP adapter](docs/mcp-adapter.md), including JSON/SSE replies, version negotiation, bearer authentication, paginated discovery, required inventories, and explicitly safe functional probes. See the adapter documentation for supported protocol revisions and transport limitations.
 
-Potential checks include:
+Implemented checks include:
 
 ```text
 Transport connectivity
@@ -1283,7 +1283,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-AgentHealth is under active design and development.
+AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, and MCP Streamable HTTP adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

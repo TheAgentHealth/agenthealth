@@ -219,7 +219,7 @@ Implement the reference health engine.
 
 # Phase 3 — Universal CLI
 
-**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API use the reference adapter; MCP and A2A adapters remain later phases. See [CLI usage](docs/cli.md).
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API and MCP adapters are available; A2A remains a later phase. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -320,25 +320,27 @@ This adapter provides a foundation for services that do not implement agent-spec
 
 # Phase 5 — MCP Health Adapter
 
+**Status:** Implemented for initialization-based Streamable HTTP with JSON/SSE responses. See [MCP adapter](docs/mcp-adapter.md) for supported versions, expectations, safe functional opt-in, and transport limitations. Stdio, legacy HTTP+SSE, OAuth acquisition, and the newer stateless protocol remain future work.
+
 Goal:
 
 Make MCP a first-class AgentHealth target.
 
 ## Capabilities
 
-- [ ] MCP transport connectivity
-- [ ] initialization
-- [ ] protocol negotiation
-- [ ] protocol version validation
-- [ ] capability discovery
-- [ ] authentication
-- [ ] tools discovery
-- [ ] resources discovery
-- [ ] prompts discovery
-- [ ] required tool validation
-- [ ] required resource validation
-- [ ] latency measurement
-- [ ] safe functional invocation
+- [x] MCP transport connectivity
+- [x] initialization
+- [x] protocol negotiation
+- [x] protocol version validation
+- [x] capability discovery
+- [x] authentication
+- [x] tools discovery
+- [x] resources discovery
+- [x] prompts discovery
+- [x] required tool validation
+- [x] required resource validation
+- [x] latency measurement
+- [x] safe functional invocation
 
 Example:
 
