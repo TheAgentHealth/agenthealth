@@ -6,7 +6,6 @@ import (
 	"context"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/TheAgentHealth/agenthealth/core"
 )
@@ -19,7 +18,7 @@ func (Adapter) Metadata() core.Metadata {
 func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
 	if dimension == "configuration" {
 		endpoint, err := url.Parse(r.Target.Endpoint)
-		if err != nil || endpoint.Hostname() == "" || (endpoint.Scheme != "https" && endpoint.Scheme != "http") || endpoint.User != nil || strings.ContainsAny(r.Credential, "\r\n") {
+		if err != nil || endpoint.Hostname() == "" || (endpoint.Scheme != "https" && endpoint.Scheme != "http") || endpoint.User != nil || !validHeaderValue(r.Credential) {
 			return core.Observation{Check: core.CheckResult{Status: core.Misconfigured}}, nil
 		}
 		return core.Observation{Check: core.CheckResult{Status: core.Healthy}}, nil
@@ -51,4 +50,16 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		status = core.Unhealthy
 	}
 	return core.Observation{Check: core.CheckResult{Status: status}, ResponseReceived: true}, nil
+}
+
+// Match net/http header validation: HTAB is permitted, other control bytes
+// and DEL are invalid. Check before networking so failures are MISCONFIGURED.
+func validHeaderValue(value string) bool {
+	for i := 0; i < len(value); i++ {
+		b := value[i]
+		if (b < 0x20 && b != '\t') || b == 0x7f {
+			return false
+		}
+	}
+	return true
 }
