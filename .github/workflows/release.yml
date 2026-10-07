@@ -53,10 +53,14 @@ jobs:
         with:
           name: release-assets
           path: dist/*
-      - name: Publish preview release
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          gh release create "$RELEASE_TAG" dist/* --verify-tag --draft --prerelease --title "AgentHealth $RELEASE_TAG" --notes-file "docs/releases/${RELEASE_TAG}.md"
+          release_flags=(--latest)
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            release_flags=(--prerelease --latest=false)
+          fi
+          gh release create "$RELEASE_TAG" dist/* --verify-tag --draft "${release_flags[@]}" --title "AgentHealth $RELEASE_TAG" --notes-file "docs/releases/${RELEASE_TAG}.md"
           gh release edit "$RELEASE_TAG" --draft=false
