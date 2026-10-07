@@ -27,6 +27,9 @@ These follow different review bars:
 
 ## Development workflow
 
+Coding agents should also follow [AGENTS.md](AGENTS.md) for repository layout,
+safety requirements, validation, and the release runbook.
+
 1. Open an issue describing the problem or proposal (skip for small fixes/typos).
 2. Fork the repository and create a branch from `main`.
 3. Make your change, including tests where applicable.
