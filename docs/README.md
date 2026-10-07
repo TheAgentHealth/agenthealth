@@ -1,6 +1,6 @@
 # Documentation guide
 
-Phases 0–5 are implemented on the Phase 5 branch. The specification remains
+Phases 0–5 are implemented in v0.2.0. The specification remains
 pre-1.0. Use this index to find the current contracts, behavior, and examples;
 see the [roadmap](../ROADMAP.md) for limitations and later phases.
 
@@ -20,5 +20,5 @@ connectivity to the placeholder servers or prove every command example works.
 
 HTTP/API and MCP are the available adapters. A2A and other adapter types,
 SDKs, container images, and Kubernetes integrations remain planned. Historical
-release notes describe the tagged release, which may precede Phase 5; build
-this branch to use changes that have not yet been released.
+release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
+MCP functionality.
