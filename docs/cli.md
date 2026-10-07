@@ -20,7 +20,7 @@ Use `--format terminal`, `--format json`, or `--format yaml` before or after pos
 `version` and `--version` print the build version (`dev` by default). Release builds can set it with:
 
 ```bash
-go build -ldflags '-X main.version=0.1.0' -o agenthealth ./cmd/agenthealth
+go build -ldflags '-X main.version=v0.3.0' -o agenthealth ./cmd/agenthealth
 ```
 
 ## Exit behavior
@@ -34,6 +34,28 @@ Build a binary when testing exit codes: `go run` reports its own process exit co
 The CLI inherits the [engine safety policies](../core/README.md#policies-and-safety): verified TLS, no redirect following, secret redaction, passive defaults, bounded timeouts and retries. Functional checks require explicit configuration opt-in. Interrupt and termination signals cancel the run through the engine context.
 
 The [HTTP adapter](http-adapter.md) uses HEAD for passive connectivity, authentication, and protocol checks. Default protocol checks require a 2xx response; response headers and accepted statuses can be configured. Body matching requires explicit `functional` opt-in. The [MCP adapter](mcp-adapter.md) supports legacy initialization, modern stateless discovery, configured stdio, OAuth acquisition, and inventory checks. The [A2A adapter](a2a-adapter.md) discovers agent cards, validates protocol/authentication with read-only task lookups, checks expected skills, and supports opt-in safe text interactions.
+
+## A2A checks
+
+AgentHealth v0.3.0 supports A2A 0.3.0 JSON-RPC. Point `ping` or `doctor` at
+its origin; discovery uses `/.well-known/agent-card.json`. A configured target
+can supply an absolute card URL on the same origin, bearer credentials, required
+skill IDs/capabilities, latency thresholds, and an explicitly safe interaction.
+
+```bash
+agenthealth ping a2a http://localhost:9000
+agenthealth doctor a2a http://localhost:9000
+agenthealth check examples/a2a-check/agenthealth.yaml --format json
+agenthealth check examples/a2a-check/bearer.yaml --format yaml
+agenthealth check examples/a2a-check/functional.yaml --format json
+```
+
+Examples require your running peer and matching metadata; the bearer example
+requires `AGENT_TOKEN`. Default checks only discover metadata and perform
+read-only task lookups. `functional` requires configuration opt-in and
+`safe: true`; it sends one text interaction without retries or polling.
+`doctor` uses the same check policy and adds terminal advice. See the
+[A2A guide](a2a-adapter.md) and [example setup](../examples/a2a-check/README.md).
 
 ## MCP OAuth login
 

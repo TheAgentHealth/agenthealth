@@ -8,6 +8,25 @@ agenthealth doctor a2a https://agent.example.com
 agenthealth check examples/a2a-check/agenthealth.yaml --format json
 ```
 
+The [Phase 6 example guide](../examples/a2a-check/README.md) includes passive,
+bearer, custom-card, and functional configurations requiring your own peer.
+
+## Configuration options
+
+| Option | Behavior |
+|---|---|
+| `endpoint` | Establishes the trusted origin for discovery and the advertised RPC URL |
+| `auth.bearer_env` | Resolves an existing bearer token from the environment |
+| `a2a.card_url` | Overrides the well-known card path with an absolute same-origin URL |
+| `a2a.protocol_version` | `0.3.0` or the empty default; other versions are unsupported |
+| `a2a.required_skills` | Unique, nonblank skill IDs expected in the card |
+| `a2a.required_capabilities` | Unique names from `streaming`, `pushNotifications`, and `stateTransitionHistory` |
+| `a2a.functional` | Requires `safe: true`, nonblank `text`, and explicit `functional` in `checks` |
+
+Explicit `checks` must include `capability` when skill/capability expectations
+are present. Configuration options do not propagate to dependencies; each peer
+is configured independently. See the [configuration contract](../spec/configuration.md#a2a-expectations-phase-6-draft).
+
 ## Discovery and passive checks
 
 The configured endpoint establishes the trusted origin. Discovery fetches `/.well-known/agent-card.json` at that origin; `a2a.card_url` can supply a different absolute card URL on the same origin. The card's `url` selects the JSON-RPC endpoint. Discovered endpoints must have the same scheme, hostname, and effective port as the configured endpoint. Redirects are never followed, TLS is verified, and URL credentials and fragments are rejected.

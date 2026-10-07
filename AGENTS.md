@@ -6,7 +6,7 @@ scope and preserve unrelated work in the working tree.
 
 ## Project and sources of truth
 
-AgentHealth is a vendor-neutral health CLI and Go engine. HTTP/API adapters are
+AgentHealth is a vendor-neutral health CLI and Go engine. HTTP/API, MCP, and A2A 0.3.0 JSON-RPC adapters are
 implemented; other adapters follow the capability roadmap. The software is
 pre-1.0. Do not describe planned adapters or distribution channels as available.
 
@@ -17,7 +17,8 @@ Read the relevant documents before making changes:
 - [spec/README.md](spec/README.md): health, configuration, result, and adapter contracts.
 - [core/README.md](core/README.md): engine behavior and safety guarantees.
 - [RELEASING.md](RELEASING.md): versioning and release policy.
-- [docs/cli.md](docs/cli.md) and [docs/http-adapter.md](docs/http-adapter.md): current CLI behavior.
+- [docs/cli.md](docs/cli.md), [docs/http-adapter.md](docs/http-adapter.md),
+  [docs/mcp-adapter.md](docs/mcp-adapter.md), and [docs/a2a-adapter.md](docs/a2a-adapter.md): current CLI and adapter behavior.
 
 The specifications define behavior; Go code, JSON schemas, fixtures, and
 documentation must agree. Specification changes require the RFC-style

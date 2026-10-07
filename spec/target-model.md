@@ -23,6 +23,9 @@
 
 Not every target type is required to be implemented by a given release; see [ROADMAP.md](../ROADMAP.md) for adapter phasing (HTTP → MCP → A2A → Agent → Model → Database → Vector Store, in that order).
 
+The reference CLI currently implements `http`, `api`, `mcp`, and `a2a`.
+A2A support is limited to 0.3.0 JSON-RPC; see the [adapter guide](../docs/a2a-adapter.md).
+
 ## Required fields per target type
 
 Every target, regardless of type, MUST supply:

@@ -28,6 +28,15 @@ schemas/          -> machine-enforceable JSON Schemas for result-schema.md and c
 protocol.md       -> (experimental) defines HOW health is exposed/exchanged over the wire
 ```
 
+## Implemented adapters
+
+Reference implementations currently support [HTTP/API](../docs/http-adapter.md),
+[MCP](../docs/mcp-adapter.md), and [A2A 0.3.0 JSON-RPC](../docs/a2a-adapter.md).
+See [A2A configuration](configuration.md#a2a-expectations-phase-6-draft) and
+[Phase 6 examples](../examples/a2a-check/README.md) for discovery, credentials,
+expected skills/capabilities, and opt-in interaction. The target vocabulary
+also includes future adapters; implementation availability follows the roadmap.
+
 ## Versioning
 
 Specification documents use a `spec_version` field (e.g. `v1`) independent of the AgentHealth software release version. Breaking changes to any document here require a version bump and a changelog entry in this directory.

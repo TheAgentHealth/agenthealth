@@ -6,7 +6,7 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
-See the [documentation guide](docs/README.md) for phase 0–5 references and examples.
+See the [documentation guide](docs/README.md) for phase 0–6 references and examples.
 
 ---
 
@@ -221,7 +221,7 @@ Implement the reference health engine.
 
 # Phase 3 — Universal CLI
 
-**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API and MCP adapters are available; A2A remains a later phase. See [CLI usage](docs/cli.md).
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API, MCP, and A2A 0.3.0 JSON-RPC adapters are available. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -392,7 +392,9 @@ command; health checks remain noninteractive.
 
 Goal:
 
-Support Agent-to-Agent health validation. Implemented for A2A 0.3.0 JSON-RPC.
+Support Agent-to-Agent health validation.
+
+**Status:** Implemented in v0.3.0 for A2A 0.3.0 JSON-RPC.
 See the [A2A adapter guide](docs/a2a-adapter.md) for configuration and limits.
 Other protocol versions, REST/gRPC, streaming execution, extended cards, and
 OAuth acquisition remain future work.
@@ -402,7 +404,7 @@ OAuth acquisition remain future work.
 - [x] endpoint discovery
 - [x] agent metadata
 - [x] protocol validation
-- [x] authentication
+- [x] authentication through environment-referenced bearer credentials
 - [x] capability discovery
 - [x] expected skill validation
 - [x] minimal interaction
@@ -413,7 +415,13 @@ Example:
 
 ```bash
 agenthealth ping a2a https://agent.example.com
+agenthealth doctor a2a https://agent.example.com
+agenthealth check examples/a2a-check/agenthealth.yaml --format json
 ```
+
+See [Phase 6 examples](examples/a2a-check/README.md) for passive discovery,
+bearer credentials, a custom card URL, and opt-in safe interaction. Functional
+probes never retry or poll; pending work is inconclusive.
 
 ---
 

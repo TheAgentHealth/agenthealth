@@ -15,6 +15,10 @@ an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
 | [OAuth browser login](mcp-oauth/agenthealth.yaml) | Authorization code + PKCE, private token storage, and subsequent refresh |
 | [OAuth client credentials](mcp-oauth/client-credentials.yaml) | Noninteractive token acquisition using `MCP_CLIENT_SECRET` |
 | [OAuth refresh token](mcp-oauth/refresh-token.yaml) | Acquisition using `MCP_REFRESH_TOKEN`, with persisted token rotation |
+| [A2A passive peer](a2a-check/agenthealth.yaml) | A2A 0.3.0 card discovery, required skill, passive protocol/authentication, and latency |
+| [A2A bearer credentials](a2a-check/bearer.yaml) | Passive checks using `AGENT_TOKEN` |
+| [A2A custom card](a2a-check/custom-card.yaml) | A custom card path on the target origin |
+| [A2A minimal interaction](a2a-check/functional.yaml) | One explicitly safe text interaction |
 
 ## Passive MCP checks
 
@@ -88,5 +92,6 @@ the endpoint and skill expectation to match its card.
 agenthealth check examples/a2a-check/agenthealth.yaml --format json
 ```
 
-See the [A2A adapter guide](../docs/a2a-adapter.md) for bearer credentials,
+See the [A2A example setup guide](a2a-check/README.md) and
+[A2A adapter guide](../docs/a2a-adapter.md) for bearer credentials,
 capability expectations, custom card URLs, and opt-in interactions.

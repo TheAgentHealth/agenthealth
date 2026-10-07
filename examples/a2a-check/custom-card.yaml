@@ -1,0 +1,9 @@
+version: v1
+targets:
+  - name: peer-with-custom-card
+    type: a2a
+    endpoint: http://localhost:9000
+    a2a:
+      card_url: http://localhost:9000/metadata/agent-card.json
+      protocol_version: '0.3.0'
+      required_skills: [health]
