@@ -41,7 +41,7 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 
 ## Exit codes
 
-**Decision (conceptual, to be finalized in the specification process):**
+**Decision:** see the normative mapping in [spec/exit-codes.md](../spec/exit-codes.md).
 
 ```text
 0 = healthy
@@ -52,7 +52,7 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 5 = internal error
 ```
 
-Tracked under [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli).
+Implemented in [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli).
 
 ## Plugin strategy
 

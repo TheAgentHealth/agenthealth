@@ -57,24 +57,7 @@ Detects configuration problems (missing endpoint/credentials, invalid protocol s
 
 ## Target Model
 
-```text
-agent
-multi-agent
-a2a
-mcp
-tool
-model
-llm
-http
-api
-vector-store
-database
-runtime
-gateway
-custom
-```
-
-Not every target type is required to be implemented by a given release; see [ROADMAP.md](../ROADMAP.md).
+AgentHealth targets are typed (`agent`, `mcp`, `a2a`, `model`, `http`, `database`, `vector-store`, and others). See [target-model.md](target-model.md) for the full list, required fields, and which health dimensions apply to which target type.
 
 ## Status Aggregation
 
@@ -89,7 +72,10 @@ A critical dependency in `UNREACHABLE` or `UNHEALTHY` state SHOULD propagate to 
 
 ## Relationship to other spec documents
 
+- Target types and per-type applicable dimensions: [target-model.md](target-model.md)
 - Wire-level result representation: [result-schema.md](result-schema.md)
 - Declarative target/check/dependency configuration: [configuration.md](configuration.md)
 - How adapters must implement these semantics for a given technology: [adapter-spec.md](adapter-spec.md)
+- CLI exit code mapping: [exit-codes.md](exit-codes.md)
+- Security requirements for any conforming implementation: [security.md](security.md)
 - How these semantics could be exposed/exchanged over a network: [protocol.md](protocol.md) (experimental)

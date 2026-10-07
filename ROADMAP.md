@@ -26,7 +26,7 @@ The first milestone is to prove that a common health model works across multiple
 
 # Phase 0 — Project Foundation
 
-**Status:** In progress
+**Status:** Complete
 
 Goal:
 
@@ -68,13 +68,15 @@ Define:
 
 # Phase 1 — Agent Health Specification
 
+**Status:** Complete (draft) — see [spec/](spec/README.md)
+
 Goal:
 
 Define a language-neutral health specification before expanding integrations.
 
 ## Health States
 
-Standardize:
+Standardized in [spec/health-model.md](spec/health-model.md#health-states):
 
 ```text
 HEALTHY
@@ -87,20 +89,20 @@ UNKNOWN
 
 ## Health Dimensions
 
-Define standard semantics for:
+Defined in [spec/health-model.md](spec/health-model.md#health-dimensions):
 
-- [ ] reachability
-- [ ] protocol
-- [ ] authentication
-- [ ] capability
-- [ ] functional
-- [ ] dependency
-- [ ] latency
-- [ ] configuration
+- [x] reachability
+- [x] protocol
+- [x] authentication
+- [x] capability
+- [x] functional
+- [x] dependency
+- [x] latency
+- [x] configuration
 
 ## Target Model
 
-Define target types:
+Defined in [spec/target-model.md](spec/target-model.md):
 
 ```text
 agent
@@ -109,6 +111,7 @@ a2a
 mcp
 tool
 model
+llm
 http
 api
 vector-store
@@ -120,7 +123,7 @@ custom
 
 ## Result Schema
 
-Define the canonical machine-readable health result.
+Defined in [spec/result-schema.md](spec/result-schema.md).
 
 Example:
 
@@ -139,31 +142,35 @@ Example:
 
 ## Configuration Specification
 
-Define:
+Defined in [spec/configuration.md](spec/configuration.md):
 
-- [ ] target definitions
-- [ ] checks
-- [ ] thresholds
+- [x] target definitions
+- [x] checks
+- [x] thresholds
 - [ ] authentication references
-- [ ] dependencies
-- [ ] critical vs optional dependencies
+- [x] dependencies
+- [x] critical vs optional dependencies
 - [ ] timeout policies
 - [ ] retry policies
 - [ ] active/passive check behavior
 
+Remaining items are explicitly listed as open in [spec/configuration.md § Still to be defined](spec/configuration.md#still-to-be-defined) and will be resolved alongside the Phase 2 core engine implementation.
+
 ## Specification Documents
 
-Target structure:
+Structure (matches the current [spec/](spec/README.md) directory; `README.md` and `protocol.md` were added beyond the original target list as an index and the experimental AHP document, respectively):
 
 ```text
 spec/
+├── README.md
 ├── health-model.md
 ├── target-model.md
 ├── configuration.md
 ├── result-schema.md
 ├── exit-codes.md
 ├── adapter-spec.md
-└── security.md
+├── security.md
+└── protocol.md
 ```
 
 ---

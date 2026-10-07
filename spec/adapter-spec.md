@@ -20,7 +20,7 @@ An adapter translates technology-specific behavior into the common [Agent Health
 |---|---|
 | `name` | Adapter identifier (e.g. `mcp`, `a2a`, `http`) |
 | `version` | Adapter version |
-| `target_types` | One or more [target types](health-model.md#target-model) this adapter handles |
+| `target_types` | One or more [target types](target-model.md) this adapter handles |
 | `compatibility_version` | Core engine / adapter interface version this adapter was built against |
 
 ## Safety requirements

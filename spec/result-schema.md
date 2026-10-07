@@ -41,7 +41,7 @@
 |---|---|---|
 | `spec_version` | string | Version of this result schema (e.g. `v1`) |
 | `target.name` | string | Identifier of the target being checked |
-| `target.type` | string | One of the [target types](health-model.md#target-model) |
+| `target.type` | string | One of the [target types](target-model.md) |
 | `status` | string | One of the [health states](health-model.md#health-states) |
 | `latency_ms` | number | Measured latency in milliseconds |
 | `checks` | map | Per-[dimension](health-model.md#health-dimensions) result, keyed by dimension name |

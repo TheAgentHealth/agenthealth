@@ -52,7 +52,7 @@ targets:
 | Field | Type | Description |
 |---|---|---|
 | `name` | string | Human-readable identifier for the target |
-| `type` | string | One of the [target types](health-model.md#target-model) |
+| `type` | string | One of the [target types](target-model.md) |
 | `endpoint` | string | Address used to reach the target |
 | `checks` | list | Which [health dimensions](health-model.md#health-dimensions) to run |
 | `thresholds` | map | Numeric thresholds, e.g. `latency_ms` |
