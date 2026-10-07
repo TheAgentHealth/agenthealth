@@ -13,6 +13,15 @@ import (
 // ValidateResult verifies the wire shape before emitting it. Adapters remain
 // responsible for redacting messages before handing them to the output layer.
 func ValidateResult(r Result) error {
+	return validateResult(r, 0)
+}
+
+const maxResultDepth = 64
+
+func validateResult(r Result, depth int) error {
+	if depth > maxResultDepth {
+		return errors.New("result dependencies exceed maximum depth 64 or contain a cycle")
+	}
 	if r.Target.Name == "" || !contains(targetTypes, r.Target.Type) || !r.Status.Valid() {
 		return errors.New("invalid result identity or status")
 	}
@@ -31,7 +40,7 @@ func ValidateResult(r Result) error {
 		}
 	}
 	for _, dep := range r.Dependencies {
-		if err := ValidateResult(dep); err != nil {
+		if err := validateResult(dep, depth+1); err != nil {
 			return err
 		}
 	}

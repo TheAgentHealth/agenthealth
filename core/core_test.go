@@ -129,3 +129,34 @@ func TestOutputs(t *testing.T) {
 		t.Fatal("accepted null checks")
 	}
 }
+
+func TestResultDepthAndCycleRejectedBeforeOutput(t *testing.T) {
+	leaf := Result{Target: TargetIdentity{Name: "test", Type: "http"}, Status: Unknown, Checks: map[string]CheckResult{}, Dependencies: []Result{}}
+	deep := leaf
+	for i := 0; i < maxResultDepth; i++ {
+		parent := leaf
+		parent.Dependencies = []Result{deep}
+		deep = parent
+	}
+	if err := ValidateResult(deep); err != nil {
+		t.Fatal("allowed boundary rejected", err)
+	}
+	tooDeep := leaf
+	tooDeep.Dependencies = []Result{deep}
+	cycle := []Result{leaf}
+	cycle[0].Dependencies = cycle
+	for _, r := range []Result{tooDeep, cycle[0]} {
+		if ValidateResult(r) == nil {
+			t.Fatal("unsafe recursion accepted")
+		}
+		for _, write := range []func(*bytes.Buffer) error{
+			func(b *bytes.Buffer) error { return WriteJSON(b, []Result{r}) },
+			func(b *bytes.Buffer) error { return WriteHuman(b, []Result{r}) },
+		} {
+			var b bytes.Buffer
+			if write(&b) == nil || b.Len() != 0 {
+				t.Fatal("unsafe result emitted")
+			}
+		}
+	}
+}
