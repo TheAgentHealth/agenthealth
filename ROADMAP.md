@@ -53,6 +53,7 @@ Establish the project identity, architecture, governance foundation, and technic
 
 Define:
 
+- [x] Repository strategy: **single repository (monorepo)**. AHS and AHP specification docs, the core engine, CLI, adapters, SDKs (Python/PyPI, JavaScript/npm), and distribution integrations (Docker, Kubernetes, CI) all live in this one repository rather than being split across separate repos. See [Repository Structure](README.md#repository-structure).
 - [ ] Core implementation language
 - [ ] CLI architecture
 - [ ] Adapter interface

@@ -1212,7 +1212,7 @@ The same health vocabulary should work across heterogeneous agent infrastructure
 
 # Repository Structure
 
-The project may evolve toward:
+AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the proposed protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they version and release together from here:
 
 ```text
 agenthealth/
@@ -1227,15 +1227,16 @@ agenthealth/
 │
 ├── spec/
 │   ├── README.md
-│   ├── health-model.md
+│   ├── health-model.md        # Agent Health Specification (AHS)
+│   ├── protocol.md            # Agent Health Protocol (AHP) — proposed/experimental
 │   ├── configuration.md
 │   ├── result-schema.md
 │   └── adapter-spec.md
 │
 ├── cmd/
-│   └── agenthealth/
+│   └── agenthealth/            # CLI entrypoint
 │
-├── core/
+├── core/                       # reference health engine
 │
 ├── adapters/
 │   ├── http/
@@ -1245,8 +1246,8 @@ agenthealth/
 │   └── model/
 │
 ├── sdk/
-│   ├── python/
-│   └── javascript/
+│   ├── python/                 # published to PyPI
+│   └── javascript/              # published to npm
 │
 ├── integrations/
 │   ├── docker/
@@ -1258,7 +1259,7 @@ agenthealth/
 └── docs/
 ```
 
-The exact repository structure may change as the implementation evolves.
+The exact repository structure may change as the implementation evolves, but the monorepo strategy itself is a settled decision (see [Phase 0 — Project Foundation](ROADMAP.md#phase-0--project-foundation) in the roadmap).
 
 ---
 
