@@ -890,7 +890,7 @@ Allow AgentHealth to run without installing a programming language runtime.
 - [x] Signed images (keyless `actions/attest` attestation pushed to the registry)
 - [x] SBOM (`sbom: true` plus a pushed build-provenance/SBOM attestation)
 - [x] Versioned tags (`vX.Y.Z`, floating `vX` and `latest`, pre-releases excluded from floating tags)
-- [x] Docker Hub mirror (`theagenthealth/agenthealth`), implemented in source and gated on `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` repository secrets
+- [x] Docker Hub mirror (`theagenthealth/agenthealth`), implemented in source and gated on `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN` repository secrets
 
 Example:
 

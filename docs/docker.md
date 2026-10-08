@@ -98,7 +98,7 @@ one-time visibility change after the first publish.
 ## Docker Hub mirror
 
 The same release job also pushes `theagenthealth/agenthealth` to Docker Hub
-with identical tags, once the `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN`
+with identical tags, once the `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN`
 repository secrets are configured (see [RELEASING.md](../RELEASING.md)); the
 mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
