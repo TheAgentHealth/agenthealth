@@ -23,6 +23,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 10: Dependency graph (v0.8.0) | [Shared nodes, edge policies and budgets](dependency-graph.md), [impact review](rfcs/phase-10-dependency-graph.md) | [Graph configuration](../examples/graph-check/README.md), [earlier-phase alignment](phase-10-alignment.md) |
 | 11: AHP (experimental, v0.9.0) | [HTTP serving](ahp.md), [wire contract](../spec/protocol.md), [impact review](rfcs/phase-11-ahp.md) | [Serving example](../examples/ahp-check/README.md), [coverage and alignment](phase-11-alignment.md) |
 | 12: Docker (v0.10.0) | [Docker distribution](docker.md), [container usage](installation.md#container-image) | [Dockerfile](../Dockerfile), [CI container job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml) |
+| 13: Standalone binaries (v0.11.0) | [Package installation](installation.md#package-channels-phase-13-v0110), [coverage and alignment](phase-13-alignment.md) | [Distribution example](../examples/distribution/README.md), [package builder](../scripts/package_release.py), [native smoke checks](../scripts/test_release_binary.py) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).

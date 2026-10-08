@@ -68,6 +68,23 @@ safety requirements, validation, and the release runbook.
 5. Open a pull request against `main` describing what changed and why.
 6. Address review feedback. PRs are merged once approved by a maintainer **and CI is green**.
 
+## Component release scope
+
+Follow the [component version and distribution policy](RELEASING.md#component-versions-and-synchronized-distribution).
+CLI archives, Linux packages, Homebrew/Scoop manifests and Docker images are
+formats of the same component: publish the same CLI version together, including
+Docker when its Dockerfile is unchanged. SDKs and Helm charts have independent
+versions and release only when their code, packaging or pinned/bundled dependency
+changes. Record supported CLI/specification versions for SDKs; charts record
+`appVersion` and pin the container image explicitly.
+
+Identify affected components and compatibility in substantive PRs and phase
+impact reviews. Update their docs/examples and tests as needed. Sharing this
+repository does not require publishing unchanged SDKs or charts. CI validates
+PRs; publication requires an authorized component release. Future SDK/chart
+triggers must be distinct from the CLI `v*` trigger. See the release policy for
+planned trigger names and limitations.
+
 ## CI checks
 
 Every pull request runs the [CI workflow](.github/workflows/ci.yml):

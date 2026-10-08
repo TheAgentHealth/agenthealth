@@ -13,10 +13,10 @@ Download the archive for your operating system and CPU from [GitHub Releases](ht
 ## Linux x86-64 example
 
 ```bash
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.10.0/agenthealth_v0.10.0_linux_amd64.tar.gz
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.10.0/checksums.txt
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.11.0/agenthealth_v0.11.0_linux_amd64.tar.gz
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.11.0/checksums.txt
 sha256sum --check --ignore-missing checksums.txt
-tar -xzf agenthealth_v0.10.0_linux_amd64.tar.gz
+tar -xzf agenthealth_v0.11.0_linux_amd64.tar.gz
 ./agenthealth version
 ./agenthealth ping http https://example.com
 ```
@@ -41,12 +41,12 @@ With Go 1.23 or newer:
 ```bash
 git clone https://github.com/TheAgentHealth/agenthealth.git
 cd agenthealth
-git checkout v0.10.0
-go build -ldflags '-X main.version=v0.10.0' -o agenthealth ./cmd/agenthealth
+git checkout v0.11.0
+go build -ldflags '-X main.version=v0.11.0' -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.10.0 release adds an official container image and includes experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
+See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.11.0 release adds package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
 
 Phase 10 graph fields require v0.8.0 or newer. Existing nested configurations remain valid.
 The [graph example](../examples/graph-check/README.md) requires configured services
@@ -54,15 +54,15 @@ and a safe runtime handler.
 
 ## Verify provenance and SBOMs
 
-Each archive has a matching `agenthealth_v0.10.0_<os>_<arch>.cdx.json` CycloneDX
+Each archive has a matching `agenthealth_v0.11.0_<os>_<arch>.cdx.json` CycloneDX
 1.6 SBOM describing linked Go modules, the standard-library version and the
 executable SHA-256. `checksums.txt` covers both archives and SBOMs.
 
 With a current GitHub CLI supporting `gh attestation`:
 
 ```bash
-gh attestation verify agenthealth_v0.10.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
-gh attestation verify agenthealth_v0.10.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
+gh attestation verify agenthealth_v0.11.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
+gh attestation verify agenthealth_v0.11.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
 ```
 
 Attestations bind artifacts to this repository’s release workflow through a
@@ -82,11 +82,11 @@ Phase 12 [container image](docker.md) publishing is included starting in v0.10.0
 
 ## Container image
 
-Starting with the next release after Phase 12, each release tag publishes a
+Starting in v0.10.0, each CLI release tag publishes a
 multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
-exact `vX.Y.Z-suffix`. Until that release exists, build the image locally:
+exact `vX.Y.Z-suffix`. To build the image locally:
 
 ```bash
 docker build --build-arg VERSION=dev -t agenthealth .
@@ -125,3 +125,30 @@ Verify a published image's signed attestation with the GitHub CLI:
 ```bash
 gh attestation verify oci://ghcr.io/theagenthealth/agenthealth:<version> --repo TheAgentHealth/agenthealth
 ```
+
+## Package channels (Phase 13, v0.11.0)
+
+Starting in v0.11.0, releases built with Phase 13 tooling add `agenthealth.rb` (Homebrew),
+`agenthealth.json` (Scoop), and `agenthealth_<tag>_linux_<arch>.deb` / `.rpm`
+for AMD64 and ARM64. These assets are not present in v0.10.0. No official
+Homebrew tap, Scoop bucket, APT or YUM repository is published yet.
+
+Download the assets and `checksums.txt` from the
+same immutable tag and verify their hashes and GitHub provenance before use.
+Homebrew formula generation follows the [Formula Cookbook](https://docs.brew.sh/Formula-Cookbook.html);
+Scoop uses the [app manifest format](https://github.com/ScoopInstaller/Scoop/wiki/App-Manifests).
+Maintainers can place the generated formula in a tap's `Formula/agenthealth.rb`;
+users can install a downloaded Scoop manifest with `scoop install ./agenthealth.json`.
+Both manifests download the exact tagged archive and verify its SHA-256.
+
+On Debian/Ubuntu use `sudo apt install ./agenthealth_<tag>_linux_<arch>.deb`;
+on RPM distributions use `sudo dnf install ./agenthealth_<tag>_linux_<arch>.rpm`.
+Packages install `/usr/bin/agenthealth` and license/install documentation under
+`/usr/share/doc/agenthealth`, depend on `ca-certificates`, and create no service,
+configuration, credentials or install hooks. Remove with the normal package
+manager. Do not install multiple distribution methods to the same PATH location.
+
+Release CI runs native archive version/help/tool-failure checks on Linux AMD64
+and ARM64, macOS Intel and Apple Silicon, and Windows AMD64. These are smoke
+checks, not a supported-OS certification or native code signing. Package-manager
+installation across distributions and public channel hosting remain follow-up work.

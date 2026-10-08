@@ -56,6 +56,23 @@ The first milestone is to prove that a common health model works across multiple
 
 ---
 
+# Component Release Policy
+
+All implemented CLI distribution formats share one version and release together:
+standalone archives, Linux packages, Homebrew/Scoop manifests and Docker images.
+Publish Docker even for a binary-packaging-only CLI release. Python/JavaScript
+SDKs and Helm charts have independent versions; release them when their code,
+packaging or bundled/pinned dependencies change, not on every CLI tag. Charts
+record CLI `appVersion` and pin the image reference. Shared repository layout
+does not imply synchronized component versions.
+
+Future SDK/chart workflows need distinct component release triggers, documented
+compatibility and immutable artifacts. Kubernetes examples/manifests do not need
+an independent release unless packaged as a component. See the canonical
+[release policy](RELEASING.md#component-versions-and-synchronized-distribution).
+
+---
+
 # Phase Impact Review
 
 Every new phase or substantive revision to an existing phase must assess its
@@ -902,8 +919,8 @@ docker run --rm ghcr.io/theagenthealth/agenthealth \
 
 Earlier: packages the existing CLI unchanged; no AHS, schema, core, CLI or
 adapter contract changes. The release workflow gains a container job that runs
-only after the binary release and verifies image binaries against the attested
-archives (Phase 13). MCP stdio targets need their server executable in a derived
+after source validation, independently of binary publication, and verifies image
+binaries against a freshly built reference using the archive build flags (Phase 13). MCP stdio targets need their server executable in a derived
 image, and interactive `agenthealth login` is not supported in the minimal image.
 GitHub creates a new organization package as private by default, so the first
 publish needs a one-time manual visibility change; the release smoke test logs
@@ -921,7 +938,7 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 
 # Phase 13 — Standalone Binaries
 
-**Status:** Initial GitHub binary distribution implemented early for the v0.1.0 preview. Five platform archives, checksums, installation docs, and a tag-triggered release workflow are available. Per-platform CycloneDX SBOMs and keyless signed provenance/SBOM attestations are implemented in v0.4.0. OS-native executable signing, macOS notarization, additional package channels and broader runtime validation remain future work.
+**Status:** Included in v0.11.0. Existing five-platform archives, checksums, SBOMs and attestations are extended with Homebrew/Scoop manifests and Linux AMD64/ARM64 DEB/RPM assets. No public tap, bucket, APT or YUM repository is created. OS-native signing and notarization remain Phase 26 work.
 
 Goal:
 
@@ -940,21 +957,39 @@ Make installation trivial.
 Potential channels:
 
 - [x] GitHub Releases
-- [ ] Homebrew
+- [x] Homebrew formula generation (release asset; public tap deferred)
 - [x] Linux standalone binary archives
-- [ ] Linux packages (DEB/RPM)
-- [ ] Windows package manager
+- [x] Linux packages (DEB/RPM; direct release downloads)
+- [x] Windows package manager (Scoop manifest; public bucket deferred)
 - [x] container registries (GHCR, optional Docker Hub mirror; Phase 12)
 
 ## Impact Review
 
-Earlier: extend existing binary release tooling; no AHS/core/CLI health-contract change is expected solely for distribution. Later: supply verified binaries to SDK wrappers, CI, and supported-platform validation.
+Earlier: extend Phase 0 release/CI and existing Phase 13 archives without rebuilding package payloads. Phases 1–11 retain their schemas, engine behavior, CLI flags and exit codes. Phase 12 container builds are unchanged.
+
+Later: Phases 15–16 SDK wrappers and Phase 21 CI integrations must select exact version/platform assets and verify hashes; package manifests do not supply an SDK. Phase 14 probes keep the existing CLI exit contract. Phase 26 retains native signing/notarization, package repository signing, real package-manager installation and supported-OS validation.
+
+Compatibility and sequencing: archive names remain stable; additive package assets and manifests enter releases starting in v0.11.0. Recovery of older releases must use their tagged tooling. Publication of taps/buckets or package repositories requires separate maintainer setup.
+
+Coverage, examples and earlier-phase alignment are recorded in the
+[Phase 13 audit](docs/phase-13-alignment.md).
+
+Required extension tasks:
+
+- [x] Verify archive hashes before generating platform-specific manifests/packages.
+- [x] Add CA certificate dependency to Linux packages, without service or install hooks.
+- [x] Include all added assets in checksums and signed build provenance.
+- [x] Gate binary publication on native archive smoke checks for all five platforms.
+- [x] Record channel installation, release sequencing and platform validation limitations.
 
 ---
 
 # Phase 14 — Kubernetes Integration
 
 **Status:** Planned — not yet implemented.
+
+Helm chart versions are independent of CLI versions; record `appVersion`, pin
+image tags/digests and release a new chart when defaults or templates change.
 
 Goal:
 
@@ -1025,6 +1060,12 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 
 **Status:** Planned — not yet implemented.
 
+Phase 13 integration requirement: binary downloads must select exact version/platform
+assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
+
+The Python SDK has an independent version and component release trigger.
+Publish on SDK or bundled/pinned CLI changes; document supported CLI/spec versions.
+
 Goal:
 
 Allow Python applications and agent frameworks to consume AgentHealth programmatically.
@@ -1079,6 +1120,12 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 # Phase 16 — JavaScript / TypeScript SDK
 
 **Status:** Planned — not yet implemented.
+
+Phase 13 integration requirement: binary downloads must select exact version/platform
+assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
+
+The JavaScript SDK has an independent version and component release trigger.
+Publish on SDK or bundled/pinned CLI changes; document supported CLI/spec versions.
 
 Goal:
 
@@ -1269,6 +1316,12 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 # Phase 21 — CI/CD Integrations
 
 **Status:** Planned — not yet implemented.
+
+Phase 13 integration requirement: binary downloads must select exact version/platform
+assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
+
+Publication workflows must distinguish CLI, SDK and chart release intent.
+Every CLI release publishes all implemented CLI formats, including Docker.
 
 Goal:
 
@@ -1506,6 +1559,9 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 # Phase 26 — Production Hardening
 
 **Status:** Planned — not yet implemented.
+
+Phase 13 follow-up: test DEB/RPM, Homebrew and Scoop installation, upgrade
+and removal; establish repository signatures and native signing/notarization.
 
 Before a stable 1.0 release:
 
