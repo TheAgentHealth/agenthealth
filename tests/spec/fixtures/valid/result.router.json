@@ -1,0 +1,67 @@
+{
+  "spec_version": "v1",
+  "target": {
+    "name": "router-readiness",
+    "type": "router"
+  },
+  "status": "UNHEALTHY",
+  "latency_ms": 12,
+  "checks": {
+    "reachability": {
+      "status": "HEALTHY"
+    },
+    "protocol": {
+      "status": "HEALTHY"
+    }
+  },
+  "dependencies": [
+    {
+      "target": {
+        "name": "downstream-direct",
+        "type": "a2a"
+      },
+      "status": "HEALTHY",
+      "latency_ms": 18,
+      "checks": {
+        "reachability": {
+          "status": "HEALTHY"
+        },
+        "protocol": {
+          "status": "HEALTHY"
+        }
+      },
+      "dependencies": []
+    },
+    {
+      "target": {
+        "name": "downstream-via-route",
+        "type": "a2a"
+      },
+      "status": "UNHEALTHY",
+      "latency_ms": 21,
+      "checks": {
+        "reachability": {
+          "status": "HEALTHY"
+        },
+        "protocol": {
+          "status": "UNHEALTHY"
+        }
+      },
+      "dependencies": []
+    },
+    {
+      "target": {
+        "name": "route-read-only-probe",
+        "type": "router"
+      },
+      "status": "HEALTHY",
+      "latency_ms": 10,
+      "checks": {
+        "functional": {
+          "status": "HEALTHY"
+        }
+      },
+      "dependencies": []
+    }
+  ]
+}

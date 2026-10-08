@@ -52,3 +52,6 @@ python3 scripts/validate_doc_examples.py
 Tests cover A2A cards, MIME modes, passive task lookups, bearer credentials, required skills/capabilities, functional task outcomes, random-source failures, origin/redirect safety, and configuration fixtures, prerequisite gates, independent dependencies, timeout/partial-response classification, bounded retries and calls, active controls, panic recovery, secret suppression, TLS verification, redirect safety, HTTP authentication, and JSON envelopes. A Python integration test validates real example output against the result schema. CI runs all these checks.
 
 Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+
+Phase 9 Agent Router HTTP integration is implemented in source, not yet released.
+See [the router guide](../docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.

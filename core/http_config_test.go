@@ -40,3 +40,23 @@ func TestHTTPConfiguration(t *testing.T) {
 		t.Fatal("HTTP options accepted on MCP")
 	}
 }
+
+func TestRouterConfiguration(t *testing.T) {
+	for _, typ := range []string{"router", "gateway"} {
+		prefix := "version: v1\ntargets:\n  - name: signal\n    type: " + typ + "\n    endpoint: https://example.com/ready\n"
+		for _, tc := range []struct {
+			options string
+			valid   bool
+		}{
+			{"    http:\n      expected_status: [200]\n", true},
+			{"    checks: [functional]\n    http:\n      body_contains: ready\n      max_body_bytes: 1024\n", true},
+			{"    http:\n      body_contains: ready\n", false},
+			{"    checks: [functional]\n    http:\n      max_body_bytes: 1048577\n", false},
+		} {
+			_, err := LoadConfig(strings.NewReader(prefix + tc.options))
+			if (err == nil) != tc.valid {
+				t.Fatalf("%s valid=%v error=%v", typ, tc.valid, err)
+			}
+		}
+	}
+}

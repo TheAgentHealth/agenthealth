@@ -15,6 +15,7 @@ import (
 	gatewayadapter "github.com/TheAgentHealth/agenthealth/adapters/gateway"
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
+	routeradapter "github.com/TheAgentHealth/agenthealth/adapters/router"
 	"github.com/TheAgentHealth/agenthealth/core"
 )
 
@@ -29,7 +30,7 @@ const usage = `Usage:
   agenthealth login <configuration.yaml> <target-name>
   agenthealth version
 
-Available target types: agent, multi-agent, http, api, mcp, a2a, gateway.
+Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
 Agent task/path probes require the application to implement the safe probe handler.
 Other target types require future adapters.
@@ -148,6 +149,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		return fail("unknown command; use --help")
 	}
 	registry := core.NewRegistry()
+	if err := registry.Register(routeradapter.Adapter{}); err != nil {
+		return fail("cannot register router adapter")
+	}
 	if err := registry.Register(gatewayadapter.Adapter{}); err != nil {
 		return fail("cannot register gateway adapter")
 	}

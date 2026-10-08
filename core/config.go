@@ -173,7 +173,7 @@ type Dependency struct {
 
 func (d Dependency) IsCritical() bool { return d.Critical == nil || *d.Critical }
 
-var targetTypes = strings.Fields("agent multi-agent a2a mcp tool model llm http api vector-store database runtime gateway custom")
+var targetTypes = strings.Fields("agent multi-agent a2a mcp tool model llm http api vector-store database runtime gateway router custom")
 var dimensions = strings.Fields("reachability protocol authentication capability functional dependency latency configuration")
 
 func contains(values []string, value string) bool {
@@ -387,8 +387,8 @@ func validateTarget(t Target, path string, depth int) error {
 		return fmt.Errorf("%s: MCP functional check requires invocation", path)
 	}
 	if t.HTTP != nil {
-		if t.Type != "http" && t.Type != "api" && t.Type != "gateway" {
-			return fmt.Errorf("%s: http options require http, api or gateway target", path)
+		if t.Type != "http" && t.Type != "api" && t.Type != "gateway" && t.Type != "router" {
+			return fmt.Errorf("%s: http options require http, api, gateway or router target", path)
 		}
 		if t.HTTP.ExpectedStatus != nil && len(t.HTTP.ExpectedStatus) == 0 {
 			return fmt.Errorf("%s: expected_status requires at least one status", path)

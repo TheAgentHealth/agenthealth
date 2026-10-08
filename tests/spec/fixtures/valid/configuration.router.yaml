@@ -1,0 +1,26 @@
+version: v1
+targets:
+  - name: direct-agent
+    type: agent
+    endpoint: http://localhost:8080/health
+    dependencies:
+      - name: router-readiness
+        type: router
+        endpoint: http://localhost:8081/ready
+        http:
+          expected_status: [200]
+        dependencies:
+          - name: downstream-direct
+            type: a2a
+            endpoint: http://localhost:9090
+          - name: downstream-via-route
+            type: a2a
+            endpoint: http://localhost:8081/agents/downstream
+          - name: route-read-only-probe
+            type: router
+            endpoint: http://localhost:8081/routes/read-only-probe
+            checks: [functional]
+            http:
+              expected_status: [200]
+              body_contains: ready
+              max_body_bytes: 1024

@@ -6,7 +6,7 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
-See the [documentation guide](docs/README.md) for phase 0–8 references and examples.
+See the [documentation guide](docs/README.md) for phase 0–9 references and examples.
 
 ## Foundation stabilization before Phase 7
 
@@ -33,7 +33,7 @@ complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
 status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
-Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router, graph and AHP follow;
+Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration is implemented in source; graph and AHP follow;
 full distribution, SDK/ecosystem and observability/conformance remain later
 milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
 No additional adapter is declared implemented by this foundation milestone.
@@ -292,7 +292,7 @@ Implement the reference health engine.
 
 # Phase 3 — Universal CLI
 
-**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. Agent/multi-agent, gateway HTTP health signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC adapters with explicit 0.3.0 compatibility are available. See [CLI usage](docs/cli.md).
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. Agent/multi-agent, gateway/router HTTP health signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC adapters with explicit 0.3.0 compatibility are available. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -589,7 +589,7 @@ named peer/path/dependency evidence, names-only configured discovery and the
 distinction between runtime-declared readiness and completed task evidence.
 Path handlers contact the selected peer directly or through A2A; AgentHealth
 trusts their completion report and does not independently trace remote code.
-Phase 8 gateway HTTP signals are implemented in source; router adapters, graph scheduling and AHP serving remain planned.
+Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling and AHP serving remain planned.
 
 Compatibility: this additive v1 draft turns previously unsupported agent types
 into executable targets. Existing supported targets keep their behavior.
@@ -638,7 +638,7 @@ See the [Phase 8 RFC](docs/rfcs/phase-8-agentgateway.md) and
 
 # Phase 9 — Agent Router Integration
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source — vendor-neutral HTTP signals and configured route/backend evidence; [v0.7.0 release prepared](docs/releases/v0.7.0.md), not yet published.
 
 Goal:
 
@@ -647,30 +647,42 @@ agent, with separate evidence for router health and the health of routed targets
 
 ## Capabilities
 
-- [ ] Update AHS for router health, configured routes, routed backend health, and route-specific failures, including their aggregation and redaction requirements.
-- [ ] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
-- [ ] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
-- [ ] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
-- [ ] endpoint reachability and authentication
-- [ ] exposed health, liveness, and readiness signals
-- [ ] configured route and backend availability validation where supported
-- [ ] explicitly opted-in, bounded, non-destructive functional probes through a configured route
-- [ ] distinguish router failures from downstream agent, model, or tool failures
-- [ ] normalize results into the shared health model
-- [ ] document supported products, versions, transports, credentials, and diagnostic limits
-- [ ] examples connecting the user-facing agent, Agent Router, and downstream targets
+- [x] Update AHS for router health, configured routes, routed backend health, and route-specific failures, including their aggregation and redaction requirements.
+- [x] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
+- [x] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
+- [x] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
+- [x] endpoint reachability and authentication
+- [x] exposed health, liveness, and readiness signals
+- [x] configured route and backend availability validation where supported
+- [x] explicitly opted-in, bounded, non-destructive functional probes through a configured route
+- [x] distinguish router failures from downstream agent, model, or tool failures
+- [x] normalize results into the shared health model
+- [x] document supported products, versions, transports, credentials, and diagnostic limits
+- [x] examples connecting the user-facing agent, Agent Router, and downstream targets
 
-Start with existing HTTP/API, MCP, or A2A checks where the router exposes
-those interfaces. The specific router integrations, product-specific adapters,
-and any target-model extensions will be decided during design; this phase
-does not introduce a new target type or imply current support. Phase 10 will
-extend graph diagnostics across agent, gateway, router, and backend relationships.
+The `router` adapter uses explicitly configured read-only HTTP signals. Named
+HTTP/MCP/A2A dependencies represent direct backends and configured routes;
+functional probes require explicit opt-in. Product-specific discovery is
+unsupported. See the [Phase 9 RFC](docs/rfcs/phase-9-agent-router.md),
+[router guide](docs/agent-router.md) and [example](examples/router-check/README.md).
+Phase 10 will extend graph diagnostics and shared backend identity.
 
-- [ ] Add route-specific evidence without conflating Phase 7 peer health with first-runtime communication probes. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+- [x] Add route-specific evidence without conflating Phase 7 peer health with first-runtime communication probes. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
-Earlier: extend AHS/core/CLI as required and reuse agent/gateway checks. Preserve Phase 8 named HTTP-signal, direct-backend and proxied-path evidence; router-specific discovery remains separate. Later: supply route/backend evidence to the graph, AHP, and integration consumers.
+Earlier: add `router` to configuration/result type schemas and Go validation,
+register the CLI adapter, and reuse HTTP safety plus independent dependency
+aggregation. Preserve HTTP HEAD, gateway GET and Phase 7 runtime path probes.
+No result structure, health-state or exit-code changes are introduced.
+
+Later: graph, AHP, SDKs, observability and conformance must preserve named router
+signals, direct backends and individual routes. Shared backend identity and
+product-specific discovery remain unimplemented. Phase 25 must validate actual
+product interoperability rather than infer it from generic HTTP tests.
+
+Compatibility: existing configurations remain compatible; older binaries reject
+`router`. See the [Phase 9 impact review](docs/rfcs/phase-9-agent-router.md).
 
 ---
 
@@ -708,7 +720,7 @@ specification process before implementation.
 - [ ] Tree output
 - [ ] first-agent and downstream-agent relationships via direct integrations or A2A
 - [ ] gateway/router communication-path evidence separate from backend health
-- [ ] shared backend identity and multiple-route representation
+- [ ] shared backend identity and multiple-route representation, preserving Phase 9 named router/backend/route evidence
 - [ ] distinguish node failures from communication-path failures in propagation and output
 
 The Phase 2 core already executes nested dependencies and aggregates critical

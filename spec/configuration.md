@@ -148,7 +148,7 @@ The reference engine applies a 60-second whole-run budget, or a shorter caller d
 
 ## HTTP response expectations (Phase 4 draft)
 
-HTTP/API and gateway targets and dependencies accept an optional `http` map. Options are not inherited by dependencies.
+HTTP/API, gateway and router targets and dependencies accept an optional `http` map. Options are not inherited by dependencies.
 
 | Field | Type | Default | Meaning |
 |---|---|---|---|
@@ -325,3 +325,12 @@ HTTP expectations apply; body matching still requires functional opt-in. Separat
 named dependencies preserve backend and path evidence with existing aggregation
 and redaction. See [the Phase 8 RFC](../docs/rfcs/phase-8-agentgateway.md) and
 [integration guide](../docs/agentgateway.md).
+
+## Router health and routed paths (Phase 9)
+
+Router targets use read-only GET signals with HTTP expectations. Explicit named
+dependencies represent direct backends and each configured route independently.
+Functional checks require opt-in; aggregation and redaction follow the existing
+health contract. See the [Phase 9 RFC](../docs/rfcs/phase-9-agent-router.md) and
+[router guide](../docs/agent-router.md). The additive `router` type requires a
+binary implementing Phase 9; existing configurations remain compatible.

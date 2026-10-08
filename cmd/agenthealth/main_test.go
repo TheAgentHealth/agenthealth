@@ -257,3 +257,61 @@ func TestGatewayPingFormats(t *testing.T) {
 		})
 	}
 }
+
+func TestRouterPingFormats(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("unexpected health method: %s", r.Method)
+		}
+		w.WriteHeader(200)
+	}))
+	defer server.Close()
+	for _, format := range []string{"terminal", "json", "yaml"} {
+		t.Run(format, func(t *testing.T) {
+			var out, diagnostic bytes.Buffer
+			code := run(context.Background(), []string{"ping", "router", server.URL, "--format", format}, &out, &diagnostic)
+			if code != 0 || diagnostic.Len() != 0 {
+				t.Fatalf("code %d: %s", code, diagnostic.String())
+			}
+			if format == "terminal" {
+				return
+			}
+			var document map[string]any
+			var err error
+			if format == "json" {
+				err = json.Unmarshal(out.Bytes(), &document)
+			} else {
+				err = yaml.Unmarshal(out.Bytes(), &document)
+			}
+			if err != nil || document["spec_version"] != "v1" || document["status"] != "HEALTHY" {
+				t.Fatalf("invalid document: %s (%v)", out.String(), err)
+			}
+			if _, ok := document["latency_ms"]; !ok {
+				t.Fatal("missing wire field latency_ms")
+			}
+		})
+	}
+}
+
+func TestRouterCheckAndDoctor(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(503) }))
+	defer server.Close()
+	path := filepath.Join(t.TempDir(), "router.yaml")
+	if err := os.WriteFile(path, []byte("version: v1\ntargets:\n  - name: router\n    type: router\n    endpoint: "+server.URL+"\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, command := range []string{"check", "doctor"} {
+		var out, diagnostic bytes.Buffer
+		code := run(context.Background(), []string{command, path, "--format", "json"}, &out, &diagnostic)
+		if code != 2 || diagnostic.Len() != 0 {
+			t.Fatalf("%s code=%d: %s", command, code, diagnostic.String())
+		}
+		var document map[string]any
+		if err := json.Unmarshal(out.Bytes(), &document); err != nil {
+			t.Fatal(err)
+		}
+		if document["status"] != "UNHEALTHY" {
+			t.Fatalf("unexpected result: %s", out.String())
+		}
+	}
+}

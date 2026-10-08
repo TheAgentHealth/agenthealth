@@ -12,6 +12,7 @@ an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
 |---|---|
 | [Agent, peer and communication path](agent-check/README.md) | First-agent health, A2A peer, safe path probe and optional supporting dependency; requires a runtime probe handler |
 | [Agentgateway, backend and path](gateway-check/README.md) | Read-only gateway readiness, direct downstream health and proxied A2A evidence |
+| [Agent Router, backend and routes](router-check/README.md) | Read-only router readiness, direct and routed A2A evidence, and bounded opt-in route matching |
 | [HTTP readiness](core-check/agenthealth.yaml) | HTTP status checks and latency thresholds |
 | [MCP discovery](mcp-check/agenthealth.yaml) | Required tool names and resource URIs, with automatic protocol selection |
 | [Modern MCP](mcp-check/modern.yaml) | Pinning stateless MCP `2026-07-28` |
@@ -109,3 +110,16 @@ Configure your running agent, gateway and downstream endpoints using the
 ```bash
 agenthealth check examples/gateway-check/agenthealth.yaml --format json
 ```
+
+## Agent Router checks
+
+Phase 9 is implemented in source and not yet released. Configure your running
+agent, router and downstream endpoints using the [router setup guide](router-check/README.md).
+The functional route must be read-only and support the configured response marker.
+
+```bash
+agenthealth check examples/router-check/agenthealth.yaml --format json
+```
+
+See [the router guide](../docs/agent-router.md) for distinct signal/backend/path
+evidence, functional bounds, credentials and interface limitations.

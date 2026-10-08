@@ -19,13 +19,14 @@
 | `database` | A relational, document, or key-value database |
 | `runtime` | An agent runtime/framework process |
 | `gateway` | An agent or MCP gateway sitting in front of one or more targets |
+| `router` | An agent router with configured health signals and routed paths |
 | `custom` | Any target type not covered above, implemented via a community adapter |
 
 Not every target type is required to be implemented by a given release; see
 [ROADMAP.md](../ROADMAP.md) for adapter and integration phasing, including
 Agent Health, Agentgateway, and Agent Router before the Dependency Graph and AHP phases.
 
-The reference CLI currently implements `agent`, `multi-agent`, `http`, `api`, `mcp`, `a2a`, and `gateway`.
+The reference CLI currently implements `agent`, `multi-agent`, `http`, `api`, `mcp`, `a2a`, `gateway`, and `router`.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility; see the [adapter guide](../docs/a2a-adapter.md).
 
 ## Direct and composite agent health
@@ -65,6 +66,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `model` / `llm` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `http` / `api` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `gateway` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
+| `router` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `database` | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ |
 | `vector-store` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 

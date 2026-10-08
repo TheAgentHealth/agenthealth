@@ -36,8 +36,8 @@ paths, and supporting dependency failures. Follow the
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is implemented as a draft adapter interface.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
-is planned. Dependency Graph and AHP follow in Phases 10 and 11. Keep planned
-capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, and gateway adapters;
+is implemented in source. Dependency Graph and AHP follow in Phases 10 and 11. Keep planned
+capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway and router adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.
 
@@ -108,3 +108,6 @@ Do not open public issues for security vulnerabilities. See [SECURITY.md](SECURI
 Open a GitHub Discussion or issue on [github.com/TheAgentHealth/agenthealth](https://github.com/TheAgentHealth/agenthealth).
 
 Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+
+Phase 9 Agent Router HTTP integration is implemented in source, not yet released.
+See [the router guide](docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
