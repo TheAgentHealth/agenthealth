@@ -16,6 +16,7 @@
 | `http` | A generic HTTP/API endpoint without an agent-specific protocol |
 | `api` | A generic API dependency, synonymous with `http` for most checks |
 | `vector-store` | A vector database used for retrieval |
+| `gateway` | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ |
 | `database` | A relational, document, or key-value database |
 | `runtime` | An agent runtime/framework process |
 | `gateway` | An agent or MCP gateway sitting in front of one or more targets |
@@ -25,7 +26,7 @@ Not every target type is required to be implemented by a given release; see
 [ROADMAP.md](../ROADMAP.md) for adapter and integration phasing, including
 Agent Health, Agentgateway, and Agent Router before the Dependency Graph and AHP phases.
 
-The reference CLI currently implements `agent`, `multi-agent`, `http`, `api`, `mcp`, and `a2a`.
+The reference CLI currently implements `agent`, `multi-agent`, `http`, `api`, `mcp`, `a2a`, and `gateway`.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility; see the [adapter guide](../docs/a2a-adapter.md).
 
 ## Direct and composite agent health
@@ -64,6 +65,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `a2a` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `model` / `llm` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `http` / `api` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
+| `gateway` | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ |
 | `database` | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ |
 | `vector-store` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 
@@ -72,3 +74,7 @@ This table is indicative, not exhaustive — individual adapters define exactly 
 A ✓ in the Functional column means the dimension is *applicable* to that target type, not that it runs by default: `functional` is always an active, opt-in-only check regardless of target type (see [configuration.md § Default Checks](configuration.md#default-checks)).
 
 The Dependency column indicates only whether a `checks.dependency` summary entry is part of that type's *default* checks — it does not restrict whether a target of that type may declare nested `dependencies:`. Any target type may declare dependencies, which always execute and aggregate regardless of this column (see [configuration.md § Dependency Execution](configuration.md#dependency-execution)).
+
+Gateway health, independently configured backends and proxied paths use separate
+named targets/dependencies. The gateway adapter supports HTTP read-only signals;
+MCP and A2A paths use their own adapters. See [Phase 8](../docs/agentgateway.md).
