@@ -867,7 +867,11 @@ unverified. See the [coverage and alignment audit](docs/phase-11-alignment.md).
 
 # Phase 12 — Docker Distribution
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source — a multi-stage, multi-platform, non-root
+image build ([Dockerfile](Dockerfile)) and a validate/publish CI workflow
+([.github/workflows/container.yml](.github/workflows/container.yml)) are
+available; no image has been published to a registry under a tagged release
+yet. See the [Docker guide](docs/docker.md).
 
 Goal:
 
@@ -875,14 +879,14 @@ Allow AgentHealth to run without installing a programming language runtime.
 
 ## Deliverables
 
-- [ ] Official container image
-- [ ] Multi-stage build
-- [ ] Minimal runtime image
-- [ ] Linux AMD64
-- [ ] Linux ARM64
-- [ ] Signed images
-- [ ] SBOM
-- [ ] Versioned tags
+- [x] Official container image (buildable from source; publishing gated on the next tagged release)
+- [x] Multi-stage build
+- [x] Minimal runtime image (`FROM scratch`, non-root `65532:65532`, no shell)
+- [x] Linux AMD64
+- [x] Linux ARM64
+- [x] Signed images (cosign keyless signing in the publish workflow)
+- [x] SBOM (`sbom: true` and build-provenance/SBOM attestations in the publish workflow)
+- [x] Versioned tags (`vX.Y.Z`, floating `vX` and `latest`, pre-releases excluded from floating tags)
 
 Example:
 

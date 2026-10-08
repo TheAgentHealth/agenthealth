@@ -15,6 +15,8 @@ and example coverage across Phases 0–26.
 
 Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
 
+A container image can be built from source with Docker Buildx; see [Docker distribution](docs/docker.md). Published `ghcr.io` images remain future work.
+
 ### 60-second example
 
 Run a passive HTTP check against an endpoint you control:
@@ -70,7 +72,7 @@ The long-term scope includes these systems; the supported adapters above describ
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. A container image can be built from source (see [Docker distribution](docs/docker.md)); SDKs, published container images, Kubernetes integrations, and additional adapters remain roadmap work.
 
 **Release version: [v0.9.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.9.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.

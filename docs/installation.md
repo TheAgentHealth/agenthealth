@@ -52,6 +52,20 @@ Phase 10 graph fields require v0.8.0 or newer. Existing nested configurations re
 The [graph example](../examples/graph-check/README.md) requires configured services
 and a safe runtime handler.
 
+## Docker
+
+Phase 12 Docker distribution is implemented in source but not yet published to
+a registry. Build a local image from a source checkout:
+
+```bash
+docker buildx build --load --build-arg VERSION=dev -t agenthealth:dev .
+docker run --rm agenthealth:dev version
+```
+
+See [Docker distribution](docker.md) for image contents, multi-platform
+builds, mounting configuration files, and the planned `ghcr.io` publishing
+and signing workflow.
+
 ## Verify provenance and SBOMs
 
 Each archive has a matching `agenthealth_v0.9.0_<os>_<arch>.cdx.json` CycloneDX
