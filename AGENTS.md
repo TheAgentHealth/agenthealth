@@ -179,5 +179,5 @@ source and verified complete assets.
 
 Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
 
-Phase 9 Agent Router HTTP integration is implemented in source, not yet released.
+Phase 9 Agent Router HTTP integration is released in v0.7.0.
 See [the router guide](docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
