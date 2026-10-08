@@ -1,6 +1,6 @@
 # Go core engine
 
-The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5 and the [A2A adapter](../docs/a2a-adapter.md) implements Phase 6 for A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility. The [agent/multi-agent adapter](../docs/agent-adapter.md) implements Phase 7. Other adapters remain later roadmap work.
+The reference engine implements [Phase 2](../ROADMAP.md#phase-2--core-engine). The [Phase 3 CLI](../docs/cli.md) uses this engine; the [MCP adapter](../docs/mcp-adapter.md) implements Phase 5 and the [A2A adapter](../docs/a2a-adapter.md) implements Phase 6 for A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility. The [agent/multi-agent adapter](../docs/agent-adapter.md) implements Phase 7. The [gateway adapter](../docs/agentgateway.md) implements Phase 8 read-only HTTP health signals. Other adapters remain later roadmap work.
 
 ## Run it
 
@@ -50,3 +50,5 @@ python3 scripts/validate_doc_examples.py
 ```
 
 Tests cover A2A cards, MIME modes, passive task lookups, bearer credentials, required skills/capabilities, functional task outcomes, random-source failures, origin/redirect safety, and configuration fixtures, prerequisite gates, independent dependencies, timeout/partial-response classification, bounded retries and calls, active controls, panic recovery, secret suppression, TLS verification, redirect safety, HTTP authentication, and JSON envelopes. A Python integration test validates real example output against the result schema. CI runs all these checks.
+
+Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
