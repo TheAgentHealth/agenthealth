@@ -222,3 +222,38 @@ func TestHelpSupportedTargets(t *testing.T) {
 		}
 	}
 }
+
+func TestGatewayPingFormats(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			t.Errorf("unexpected health method: %s", r.Method)
+		}
+		w.WriteHeader(200)
+	}))
+	defer server.Close()
+	for _, format := range []string{"terminal", "json", "yaml"} {
+		t.Run(format, func(t *testing.T) {
+			var out, diagnostic bytes.Buffer
+			code := run(context.Background(), []string{"ping", "gateway", server.URL, "--format", format}, &out, &diagnostic)
+			if code != 0 || diagnostic.Len() != 0 {
+				t.Fatalf("code %d: %s", code, diagnostic.String())
+			}
+			if format == "terminal" {
+				return
+			}
+			var document map[string]any
+			var err error
+			if format == "json" {
+				err = json.Unmarshal(out.Bytes(), &document)
+			} else {
+				err = yaml.Unmarshal(out.Bytes(), &document)
+			}
+			if err != nil || document["spec_version"] != "v1" || document["status"] != "HEALTHY" {
+				t.Fatalf("invalid document: %s (%v)", out.String(), err)
+			}
+			if _, ok := document["latency_ms"]; !ok {
+				t.Fatal("missing wire field latency_ms")
+			}
+		})
+	}
+}
