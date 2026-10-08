@@ -1028,6 +1028,9 @@ readinessProbe:
       - /etc/agenthealth/config.yaml
 ```
 
+See the [Kubernetes examples](integrations/kubernetes/README.md) for init
+container, readiness probe, Job and CronJob manifests.
+
 Potential Kubernetes integrations include:
 
 - readiness probes,
@@ -1306,7 +1309,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 Coverage for phases 0–6 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, MCP HTTP/stdio adapter, and A2A JSON-RPC adapter are implemented. A container image build is implemented ([Phase 12](ROADMAP.md#phase-12--docker-distribution)). Other adapters, SDKs, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, MCP HTTP/stdio adapter, and A2A JSON-RPC adapter are implemented. A container image build is implemented ([Phase 12](ROADMAP.md#phase-12--docker-distribution)). [Kubernetes examples](integrations/kubernetes/README.md) are available (Phase 14 in progress). Other adapters, SDKs, Helm charts, and operator integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

@@ -107,6 +107,7 @@ def main() -> int:
 
     # Standalone configuration templates are also user-facing examples.
     configs = sorted((ROOT / "examples").rglob("*.yaml"))
+    configs += sorted((ROOT / "integrations").rglob("agenthealth.yaml"))
     for path in configs:
         try:
             data = yaml.safe_load(path.read_text(encoding="utf-8"))

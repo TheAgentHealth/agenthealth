@@ -24,7 +24,7 @@ jobs:
       - name: Install test dependencies
         run: pip install -r tests/requirements.txt
       - name: Run spec schema tests
-        run: python3 -m pytest tests/spec tests/test_release_archives.py tests/test_container_image.py -v
+        run: python3 -m pytest tests/spec tests/test_release_archives.py tests/test_container_image.py tests/test_kubernetes_examples.py -v
 
   markdown-link-check:
     name: Markdown link check
@@ -105,3 +105,18 @@ jobs:
           test "$(docker run --rm agenthealth:ci version)" = "agenthealth v0.0.0-ci"
           docker run --rm agenthealth:ci --help
           test "$(docker inspect agenthealth:ci --format '{{.Config.User}}')" = "65532:65532"
+
+  kubernetes-examples:
+    name: Kubernetes examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        with:
+          cluster_name: agenthealth
+      - name: Build and load the image
+        run: |
+          docker build --build-arg VERSION=v0.0.0-ci -t agenthealth:ci .
+          kind load docker-image agenthealth:ci --name agenthealth
+      - name: Run Kubernetes examples end to end
+        run: scripts/kubernetes_smoke.sh agenthealth:ci

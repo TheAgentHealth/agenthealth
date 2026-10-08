@@ -1,0 +1,24 @@
+version: v1
+targets:
+  # Supporting dependencies of the research-agent workload. Replace the
+  # in-cluster service names, paths and required tools with your own.
+  - name: tools-mcp
+    type: mcp
+    endpoint: http://tools-mcp.agents.svc.cluster.local:3000/mcp
+    mcp:
+      required_tools: [search]
+    timeout_ms: 2000
+    thresholds:
+      latency_ms: 1000
+  - name: model-gateway
+    type: http
+    endpoint: http://model-gateway.agents.svc.cluster.local:8080/health
+    auth:
+      bearer_env: MODEL_GATEWAY_TOKEN
+    http:
+      expected_status: [200]
+    timeout_ms: 2000
+    retries: 1
+    retry_delay_ms: 200
+    thresholds:
+      latency_ms: 1000

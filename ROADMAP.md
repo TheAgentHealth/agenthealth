@@ -892,7 +892,11 @@ Earlier: extend existing binary release tooling; no AHS/core/CLI health-contract
 
 # Phase 14 — Kubernetes Integration
 
-**Status:** Planned — not yet implemented.
+**Status:** In progress — [Kubernetes examples](integrations/kubernetes/README.md)
+cover init containers, startup/readiness probes, deployment-validation Jobs,
+CronJobs, ConfigMap configuration and Secret credentials using the Phase 12
+image, tested end to end on kind in CI. Sidecar mode, Helm and agent-role
+readiness examples remain planned.
 
 Goal:
 
@@ -911,16 +915,16 @@ readinessProbe:
 
 ## Planned Integrations
 
-- [ ] Readiness probes
-- [ ] Startup probes
-- [ ] Init containers
-- [ ] Jobs
-- [ ] CronJobs
+- [x] Readiness probes
+- [x] Startup probes
+- [x] Init containers
+- [x] Jobs
+- [x] CronJobs
 - [ ] Sidecar mode
-- [ ] ConfigMap configuration
-- [ ] Secret integration
+- [x] ConfigMap configuration
+- [x] Secret integration
 - [ ] Helm examples
-- [ ] Deployment validation
+- [x] Deployment validation
 - [ ] Readiness examples for first agents, downstream agents, and gateway/router paths using the updated AHS results
 
 ## Future Exploration
@@ -952,7 +956,7 @@ CRDs/operators are intentionally deferred until the basic health model proves us
 
 ## Impact Review
 
-Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving where used; review any required readiness contract extensions. Later: provide deployment scenarios for CI, interoperability, and hardening.
+Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving where used; review any required readiness contract extensions. The examples use the existing exit codes unchanged: `DEGRADED` (exit 1) fails a probe, so non-essential dependencies use `critical: false`. A first-class "ready when degraded" option would be a CLI change requiring review. Sidecar mode needs a long-running process and is deferred to AHP service mode (Phase 11). Later: provide deployment scenarios for CI, interoperability, and hardening.
 
 ---
 

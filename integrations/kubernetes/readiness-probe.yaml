@@ -1,0 +1,60 @@
+# Alternative to the init container: report the agent Ready only while its
+# supporting dependencies are HEALTHY. Exec probes run inside the agent
+# container, so its image must include the agenthealth binary, for example:
+#
+#   FROM registry.example.com/research-agent:1.0.0
+#   COPY --from=ghcr.io/theagenthealth/agenthealth:0.5.0 /usr/local/bin/agenthealth /usr/local/bin/agenthealth
+#
+# Never use dependency checks in a livenessProbe: restarting the agent does not
+# repair a dependency and turns an outage into a restart loop.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: research-agent
+  labels:
+    app.kubernetes.io/name: research-agent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: research-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: research-agent
+    spec:
+      containers:
+        - name: agent
+          image: registry.example.com/research-agent-with-agenthealth:1.0.0
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: agenthealth-credentials
+          startupProbe:
+            exec:
+              command: [/usr/local/bin/agenthealth, check, /etc/agenthealth/agenthealth.yaml]
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command: [/usr/local/bin/agenthealth, check, /etc/agenthealth/agenthealth.yaml]
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: agenthealth-config
+              mountPath: /etc/agenthealth
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: agenthealth-config
+          configMap:
+            name: agenthealth-config

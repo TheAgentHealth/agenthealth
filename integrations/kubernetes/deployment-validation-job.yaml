@@ -1,0 +1,43 @@
+# Post-deployment validation gate. Run after a rollout and wait for the Job:
+#   kubectl -n agents wait --for=condition=complete --timeout=120s job/agenthealth-validate
+# A failed check fails the Job; inspect `kubectl logs job/agenthealth-validate`.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: agenthealth-validate
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 120
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: agenthealth
+          image: ghcr.io/theagenthealth/agenthealth
+          args: [doctor, /etc/agenthealth/agenthealth.yaml]
+          envFrom:
+            - secretRef:
+                name: agenthealth-credentials
+          volumeMounts:
+            - name: agenthealth-config
+              mountPath: /etc/agenthealth
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+      volumes:
+        - name: agenthealth-config
+          configMap:
+            name: agenthealth-config

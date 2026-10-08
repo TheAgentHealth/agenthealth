@@ -1,0 +1,48 @@
+# Periodic health evidence. Each run writes one JSON result document to the
+# container log for collection by your log pipeline; failed runs are visible
+# as failed Jobs.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: agenthealth-periodic
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: agenthealth
+              image: ghcr.io/theagenthealth/agenthealth
+              args: [check, /etc/agenthealth/agenthealth.yaml, --format, json]
+              envFrom:
+                - secretRef:
+                    name: agenthealth-credentials
+              volumeMounts:
+                - name: agenthealth-config
+                  mountPath: /etc/agenthealth
+                  readOnly: true
+              securityContext:
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: [ALL]
+                seccompProfile:
+                  type: RuntimeDefault
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+          volumes:
+            - name: agenthealth-config
+              configMap:
+                name: agenthealth-config
