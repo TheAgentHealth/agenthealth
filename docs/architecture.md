@@ -27,7 +27,7 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 
 **Decision:** adapters are compiled into the core engine initially (in-repo, in-process), rather than loaded as external dynamic plugins. This keeps the trust boundary simple and avoids a plugin ABI before the model is proven. A true out-of-process/dynamic plugin mechanism is deferred to [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem). All adapters, in-process or future-external, must satisfy the [Adapter Contract](../spec/adapter-spec.md).
 
-The CLI currently registers agent/multi-agent, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters.
+The CLI currently registers agent/multi-agent, gateway HTTP health signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters.
 A2A uses the shared HTTP client and per-target run state for bounded card
 retrieval, then validates metadata and the advertised same-origin endpoint.
 The engine owns deadlines, retries, aggregation, latency, and output; the
