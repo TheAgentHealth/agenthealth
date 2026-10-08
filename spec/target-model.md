@@ -64,7 +64,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `a2a` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `model` / `llm` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `http` / `api` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
-| `gateway` | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ |
+| `gateway` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `database` | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ |
 | `vector-store` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 
