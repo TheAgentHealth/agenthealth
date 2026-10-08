@@ -29,6 +29,10 @@ Health commands return the most severe top-level status after dependency aggrega
 
 Build a binary when testing exit codes: `go run` reports its own process exit code when the program exits unsuccessfully.
 
+## Configuration trust boundary
+
+Configuration is trusted executable input: it can launch MCP stdio programs, pass referenced credentials, contact private-network endpoints, acquire OAuth tokens, and write token files. Review these settings before execution, including configurations supplied through external pull requests. Active-check opt-in does not sandbox commands or network access. See [trusted configuration](../SECURITY.md#trusted-configuration).
+
 ## Safety and scope
 
 The CLI inherits the [engine safety policies](../core/README.md#policies-and-safety): verified TLS, no redirect following, secret redaction, passive defaults, bounded timeouts and retries. Functional checks require explicit configuration opt-in. Interrupt and termination signals cancel the run through the engine context.

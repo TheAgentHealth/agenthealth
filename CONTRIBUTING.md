@@ -36,7 +36,7 @@ paths, and supporting dependency failures. Follow the
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is implemented as a draft adapter interface.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
-is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is implemented in source; AHP remains planned in Phase 11. Keep planned
+is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is released in v0.8.0; AHP remains planned in Phase 11. Keep planned
 capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway and router adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.
@@ -76,7 +76,7 @@ Every pull request runs the [CI workflow](.github/workflows/ci.yml):
 - **Markdown link check** (`scripts/check_markdown_links.py`) — verifies every relative markdown link and `#anchor` in the repository actually resolves.
 - **Doc example validation** (`scripts/validate_doc_examples.py`) — validates fenced JSON/YAML examples in README.md, ROADMAP.md, and spec/*.md that are explicitly marked `<!-- spec-example: result -->` or `<!-- spec-example: configuration -->` against the schemas, so prose examples can't silently drift from the schemas the way they did before this check existed. An example can only be exempted with `<!-- spec-example: skip reason="..." -->` — a documented, intentional reason is required.
 
-The **Go core tests** job also checks formatting, runs `go vet ./...`, and runs `go test -race ./...`.
+The **Go core tests** jobs check formatting, run `go vet ./...`, and run `go test -race ./...` on Linux, macOS, and Windows. **Go minimum version (1.23)** runs vet and race tests on Linux with automatic toolchain upgrades disabled. The vulnerability scan and current/legacy official SDK interoperability checks also run on pull requests.
 
 Run the checks locally before opening a PR:
 
