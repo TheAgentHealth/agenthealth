@@ -21,6 +21,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 8: Agentgateway (v0.6.0) | [Gateway signals and backend/path evidence](agentgateway.md), [impact proposal](rfcs/phase-8-agentgateway.md) | [Gateway configuration](../examples/gateway-check/README.md) |
 | 9: Agent Router (v0.7.0) | [Router signals and route/backend evidence](agent-router.md), [impact proposal](rfcs/phase-9-agent-router.md) | [Router configuration and setup](../examples/router-check/README.md) |
 | 10: Dependency graph (v0.8.0) | [Shared nodes, edge policies and budgets](dependency-graph.md), [impact review](rfcs/phase-10-dependency-graph.md) | [Graph configuration](../examples/graph-check/README.md), [earlier-phase alignment](phase-10-alignment.md) |
+| 11: AHP (experimental source) | [HTTP serving](ahp.md), [wire contract](../spec/protocol.md), [impact review](rfcs/phase-11-ahp.md) | [Serving example](../examples/ahp-check/README.md), [coverage and alignment](phase-11-alignment.md) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).

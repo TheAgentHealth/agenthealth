@@ -33,7 +33,7 @@ complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
 status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
-Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; AHP follows;
+Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; experimental AHP HTTP serving is implemented in source;
 full distribution, SDK/ecosystem and observability/conformance remain later
 milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
 No additional adapter is declared implemented by this foundation milestone.
@@ -589,7 +589,7 @@ named peer/path/dependency evidence, names-only configured discovery and the
 distinction between runtime-declared readiness and completed task evidence.
 Path handlers contact the selected peer directly or through A2A; AgentHealth
 trusts their completion report and does not independently trace remote code.
-Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling is implemented in source; AHP serving remains planned.
+Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling is implemented in source; experimental AHP HTTP serving is implemented in source.
 
 Compatibility: this additive v1 draft turns previously unsupported agent types
 into executable targets. Existing supported targets keep their behavior.
@@ -796,7 +796,7 @@ Define:
 - [x] content types
 - [x] caching behavior
 - [x] timeout semantics
-- [x] extension mechanism
+- [ ] vendor extension mechanism (deferred; v1 defines no extension fields)
 - [x] represent first/downstream agent relationships, supporting dependencies, and communication-path evidence established in Phase 10
 - [x] distinguish gateway/router health from routed backend health without exposing sensitive topology by default
 
@@ -808,7 +808,7 @@ Define:
 A reference "server mode" lets AgentHealth expose AHP instead of only consuming other systems' health:
 
 ```bash
-agenthealth serve
+agenthealth serve examples/ahp-check/agenthealth.yaml
 ```
 
 ```text
@@ -849,7 +849,8 @@ Define:
 
 ## Conformance
 
-AHP implementations should be testable independently of the AgentHealth reference implementation.
+The envelope schema and fixtures validate the wire shape independently. A separate
+implementation has not yet been tested; broader conformance remains Phase 24 work.
 
 - [x] Exchange Phase 7 declared readiness and completed functional/path evidence separately; do not infer communication from endpoint health. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
@@ -857,12 +858,12 @@ AHP implementations should be testable independently of the AgentHealth referenc
 
 Earlier: review AHS/graph contracts for wire exchange, add core serving support, and extend the CLI with `serve`. Later: provide a versioned exchange contract for Kubernetes, SDK consumers, and protocol conformance.
 
----
-
 Implementation choices, proxy rate limiting, authorization scope and transport
 limits are defined in the [contract](spec/protocol.md), [guide](docs/ahp.md) and
 [impact review](docs/rfcs/phase-11-ahp.md). Independent interoperability remains
-unverified.
+unverified. See the [coverage and alignment audit](docs/phase-11-alignment.md).
+
+---
 
 # Phase 12 — Docker Distribution
 

@@ -82,3 +82,65 @@ func TestAHPOptions(t *testing.T) {
 		}
 	}
 }
+
+func TestAHPStatusMappingAndGraphEvidence(t *testing.T) {
+	config := Config{Version: "v1", Targets: []Target{{Name: "test", Type: "http", Endpoint: "http://localhost"}}}
+	s, err := NewAHPServer(NewEngine(NewRegistry()), config, AHPOptions{Token: "1234567890123456"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	optional := false
+	result := Result{Target: TargetIdentity{ID: "direct", Name: "direct", Type: "agent"}, Status: Healthy, Checks: map[string]CheckResult{"capability": {Status: Healthy}, "functional": {Status: Unhealthy}}, Dependencies: []Result{{Target: TargetIdentity{ID: "peer", Name: "peer", Type: "a2a"}, Relationship: "downstream", Critical: &optional, Status: Unknown, Checks: map[string]CheckResult{}, Dependencies: []Result{}}}}
+	var snapshot strings.Builder
+	if err := WriteJSON(&snapshot, []Result{result}); err != nil {
+		t.Fatal(err)
+	}
+	s.running = true
+	s.updated = time.Now()
+	s.snapshot = []byte(snapshot.String())
+	for _, status := range statuses {
+		s.status = status
+		r := httptest.NewRequest("GET", "/ready", nil)
+		w := httptest.NewRecorder()
+		s.ServeHTTP(w, r)
+		want := 503
+		if status == Healthy || status == Degraded {
+			want = 200
+		}
+		if w.Code != want {
+			t.Fatalf("%s: %d", status, w.Code)
+		}
+	}
+	r := httptest.NewRequest("GET", "/health/capabilities", nil)
+	r.Header.Set("Authorization", "Bearer 1234567890123456")
+	w := httptest.NewRecorder()
+	s.ServeHTTP(w, r)
+	var envelope struct{ Evidence struct{ Result } }
+	if err := json.Unmarshal(w.Body.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	got := envelope.Evidence.Result
+	if got.Target.ID != "direct" || got.Checks["capability"].Status != Healthy || got.Checks["functional"].Status != Unhealthy || len(got.Dependencies) != 1 || got.Dependencies[0].Target.ID != "peer" || got.Dependencies[0].Relationship != "downstream" || got.Dependencies[0].Critical == nil || *got.Dependencies[0].Critical {
+		t.Fatal(w.Body.String())
+	}
+	r.Header.Set("Authorization", "Bearer incorrect-token")
+	w = httptest.NewRecorder()
+	s.ServeHTTP(w, r)
+	if w.Code != 401 {
+		t.Fatal(w.Code)
+	}
+	r = httptest.NewRequest("GET", "/health", nil)
+	r.Header.Set("AHP-Version", "v2")
+	w = httptest.NewRecorder()
+	s.ServeHTTP(w, r)
+	if w.Code != 400 {
+		t.Fatal(w.Code)
+	}
+	s.running = false
+	r = httptest.NewRequest("GET", "/live", nil)
+	w = httptest.NewRecorder()
+	s.ServeHTTP(w, r)
+	if w.Code != 503 {
+		t.Fatal(w.Code)
+	}
+}

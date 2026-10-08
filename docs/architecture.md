@@ -21,7 +21,7 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 
 ## CLI architecture
 
-**Decision:** a single `agenthealth` binary with subcommands (`ping`, `check`, `doctor`, `version`, and later `serve`), following the same pattern as `git`, `kubectl`, and `docker`. Subcommands share a common core engine rather than being separate binaries.
+**Decision:** a single `agenthealth` binary with subcommands (`ping`, `check`, `doctor`, `login`, `version`, and `serve`), following the same pattern as `git`, `kubectl`, and `docker`. Subcommands share a common core engine rather than being separate binaries.
 
 ## Adapter interface
 
@@ -90,3 +90,10 @@ Implemented in [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli)
 ## SDK strategy
 
 **Decision:** SDKs (Python, JavaScript/TypeScript) are thin wrappers that invoke the `agenthealth` binary or call the same result/configuration schemas, rather than reimplementing check logic per language. This keeps one source of truth for health semantics (the Go core engine and the [spec/](../spec/README.md) documents) instead of N parallel implementations drifting apart.
+
+## AHP serving
+
+Phase 11 adds a serial background refresh loop and immutable health snapshots.
+Public endpoints return aggregate summaries; bearer-authorized endpoints exchange
+validated recursive evidence, including Phase 10 graph identities and policies.
+See the [serving guide](ahp.md) and [alignment audit](phase-11-alignment.md).

@@ -3,6 +3,8 @@
 This index follows the source-tree scope in [ROADMAP.md](../ROADMAP.md).
 Phases 0–7 have released baselines; Phase 8 is released in v0.6.0; Phase 9 in v0.7.0.
 Phase 10 is included in v0.8.0; see the [alignment audit](phase-10-alignment.md).
+Phase 11 experimental HTTP serving is implemented in source; see its
+[coverage and alignment audit](phase-11-alignment.md).
 Phase 13 has released binary distribution with remaining channel/platform work.
 Planned phases have roadmap designs, not shipped adapters, packages or runnable
 integration examples. Existing repository CI and protocol interoperability tests

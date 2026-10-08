@@ -193,7 +193,7 @@ Independent interoperability and external standardization remain unverified.
 
 ## Reference Implementation
 
-The reference implementation is the concrete, versioned software that implements the specification (and, eventually, the protocol):
+The reference implementation is the concrete, versioned software that implements the specification and experimental HTTP protocol:
 
 - the `agenthealth` CLI,
 - language SDKs (Python, JavaScript/TypeScript),
@@ -209,7 +209,7 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | Organization | TheAgentHealth |
 | Project | AgentHealth |
 | Specification | Agent Health Specification (AHS) |
-| Protocol (proposed) | Agent Health Protocol (AHP) |
+| Protocol (experimental HTTP v1) | Agent Health Protocol (AHP) |
 | CLI | `agenthealth` |
 | Config file | `agenthealth.yaml` |
 | Python package | `agenthealth` |
@@ -917,7 +917,7 @@ AgentHealth is designed around a small core and extensible adapters.
                               └── Model / Tool / Data adapters
 ```
 
-The Health Engine is designed to implement the Agent Health Specification. Its [Go core engine](core/README.md) now provides configuration loading, check execution, timeout/retry policies, result normalization, dependency evaluation, output formatting, and safety controls (see [Phase 2 — Core Engine](ROADMAP.md#phase-2--core-engine)). The experimental Agent Health Protocol (AHP) (see [Specification → Protocol → Implementation](#specification--protocol--implementation)), once finalized, would standardize how the Output Engine exposes and exchanges these results over the wire.
+The Health Engine is designed to implement the Agent Health Specification. Its [Go core engine](core/README.md) now provides configuration loading, check execution, timeout/retry policies, result normalization, dependency evaluation, output formatting, and safety controls (see [Phase 2 — Core Engine](ROADMAP.md#phase-2--core-engine)). The experimental [AHP HTTP v1 binding](spec/protocol.md) exposes validated result snapshots through `agenthealth serve`.
 
 ---
 
@@ -1267,7 +1267,7 @@ The same health vocabulary should work across heterogeneous agent infrastructure
 
 # Repository Structure
 
-AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the proposed protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they version and release together from here:
+AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the experimental protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they version and release together from here:
 
 ```text
 agenthealth/
@@ -1283,7 +1283,7 @@ agenthealth/
 ├── spec/
 │   ├── README.md
 │   ├── health-model.md        # Agent Health Specification (AHS)
-│   ├── protocol.md            # Agent Health Protocol (AHP) — proposed/experimental
+│   ├── protocol.md            # Agent Health Protocol (AHP) — experimental HTTP v1
 │   ├── configuration.md
 │   ├── result-schema.md
 │   └── adapter-spec.md

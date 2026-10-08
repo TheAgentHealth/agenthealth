@@ -1,0 +1,39 @@
+{
+  "ahp_version": "v1",
+  "spec_version": "v1",
+  "status": "DEGRADED",
+  "observed_at": "2026-10-08T12:00:00Z",
+  "evidence": {
+    "spec_version": "v1",
+    "target": {
+      "id": "direct",
+      "name": "direct",
+      "type": "agent"
+    },
+    "status": "DEGRADED",
+    "latency_ms": null,
+    "checks": {
+      "capability": {
+        "status": "HEALTHY"
+      },
+      "functional": {
+        "status": "HEALTHY"
+      }
+    },
+    "dependencies": [
+      {
+        "target": {
+          "id": "peer",
+          "name": "peer",
+          "type": "a2a"
+        },
+        "relationship": "downstream",
+        "critical": false,
+        "status": "UNKNOWN",
+        "latency_ms": null,
+        "checks": {},
+        "dependencies": []
+      }
+    ]
+  }
+}
