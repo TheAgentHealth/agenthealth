@@ -1,0 +1,28 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "gateway",
+      "type": "gateway",
+      "endpoint": "https://example.com/ready",
+      "http": {
+        "expected_status": [
+          200
+        ],
+        "body_contains": "ready"
+      },
+      "dependencies": [
+        {
+          "name": "nested",
+          "type": "gateway",
+          "endpoint": "https://example.com/live",
+          "http": {
+            "expected_status": [
+              204
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

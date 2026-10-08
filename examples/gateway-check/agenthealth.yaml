@@ -1,0 +1,18 @@
+version: v1
+targets:
+  - name: direct-agent
+    type: agent
+    endpoint: http://localhost:8080/health
+    dependencies:
+      - name: agentgateway-readiness
+        type: gateway
+        endpoint: http://localhost:15021/healthz/ready
+        http:
+          expected_status: [200]
+        dependencies:
+          - name: downstream-direct
+            type: a2a
+            endpoint: http://localhost:9090
+          - name: downstream-via-gateway
+            type: a2a
+            endpoint: http://localhost:3000

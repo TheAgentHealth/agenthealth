@@ -172,7 +172,8 @@
               "type": {
                 "enum": [
                   "http",
-                  "api"
+                  "api",
+                  "gateway"
                 ]
               }
             }
@@ -717,7 +718,8 @@
               "type": {
                 "enum": [
                   "http",
-                  "api"
+                  "api",
+                  "gateway"
                 ]
               }
             }

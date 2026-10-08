@@ -6,7 +6,7 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
-See the [documentation guide](docs/README.md) for phase 0–7 references and examples.
+See the [documentation guide](docs/README.md) for phase 0–8 references and examples.
 
 ## Foundation stabilization before Phase 7
 
@@ -33,7 +33,7 @@ complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
 status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
-Phase 7 is now implemented in source after this milestone. Gateway/router, graph and AHP follow;
+Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router, graph and AHP follow;
 full distribution, SDK/ecosystem and observability/conformance remain later
 milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
 No additional adapter is declared implemented by this foundation milestone.
@@ -292,7 +292,7 @@ Implement the reference health engine.
 
 # Phase 3 — Universal CLI
 
-**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. HTTP/API, MCP, and A2A 1.0 JSON-RPC adapters with explicit 0.3.0 compatibility are available. See [CLI usage](docs/cli.md).
+**Status:** Implemented — `ping`, `check`, `doctor`, and `version` are available with terminal, JSON, YAML, and specification exit codes. Agent/multi-agent, gateway HTTP health signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC adapters with explicit 0.3.0 compatibility are available. See [CLI usage](docs/cli.md).
 
 Goal:
 
@@ -589,7 +589,7 @@ named peer/path/dependency evidence, names-only configured discovery and the
 distinction between runtime-declared readiness and completed task evidence.
 Path handlers contact the selected peer directly or through A2A; AgentHealth
 trusts their completion report and does not independently trace remote code.
-Gateway/router adapters, graph scheduling and AHP serving remain planned.
+Phase 8 gateway HTTP signals are implemented in source; router adapters, graph scheduling and AHP serving remain planned.
 
 Compatibility: this additive v1 draft turns previously unsupported agent types
 into executable targets. Existing supported targets keep their behavior.
@@ -600,7 +600,7 @@ configuration; arbitrary framework task APIs are outside this adapter contract.
 
 # Phase 8 — Agentgateway Integration
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source — HTTP health signals and explicitly configured protocol paths; product-version interoperability remains Phase 25 work.
 
 Goal:
 
@@ -609,31 +609,32 @@ with separate evidence for gateway health and the health of its backends.
 
 ## Capabilities
 
-- [ ] Update AHS for gateway health, backend health, and gateway communication-path evidence, including their aggregation and redaction requirements.
-- [ ] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
-- [ ] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
-- [ ] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
-- [ ] endpoint reachability and authentication
-- [ ] exposed health, liveness, and readiness signals
-- [ ] configured backend availability validation where supported
-- [ ] explicitly opted-in, bounded, non-destructive functional probes through the gateway
-- [ ] distinguish gateway failures from downstream agent, model, or tool failures
-- [ ] normalize results into the shared health model
-- [ ] document supported versions, transports, credentials, and diagnostic limits
-- [ ] examples connecting the user-facing agent, Agentgateway, and downstream targets
+- [x] Update AHS for gateway health, backend health, and gateway communication-path evidence, including their aggregation and redaction requirements.
+- [x] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
+- [x] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
+- [x] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
+- [x] endpoint reachability and authentication
+- [x] exposed health, liveness, and readiness signals
+- [x] configured backend availability validation where supported
+- [x] explicitly opted-in, bounded, non-destructive functional probes through the gateway
+- [x] distinguish gateway failures from downstream agent, model, or tool failures
+- [x] normalize results into the shared health model
+- [x] document supported versions, transports, credentials, and diagnostic limits
+- [x] examples connecting the user-facing agent, Agentgateway, and downstream targets
 
 Start with existing HTTP/API, MCP, or A2A checks where Agentgateway exposes
-those interfaces. Product-specific adapters and any target-model extensions
-will be decided during design; this phase does not introduce a new target type
-or imply current support.
+those interfaces. The gateway adapter uses the existing `gateway` type and HTTP options; no new target type is introduced.
 
-- [ ] Add gateway-specific path evidence while preserving the Phase 7 configured peer/path results and safe probe contract. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+- [x] Add gateway-specific path evidence while preserving the Phase 7 configured peer/path results and safe probe contract. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
 Earlier: extend AHS/core/CLI as required and build on Phase 7 agent roles. Later: supply gateway/backend evidence to router, graph, AHP, and validation phases.
 
 ---
+
+See the [Phase 8 RFC](docs/rfcs/phase-8-agentgateway.md) and
+[integration guide](docs/agentgateway.md) for contracts, impact, and limitations.
 
 # Phase 9 — Agent Router Integration
 
@@ -669,7 +670,7 @@ extend graph diagnostics across agent, gateway, router, and backend relationship
 
 ## Impact Review
 
-Earlier: extend AHS/core/CLI as required and reuse agent/gateway checks. Later: supply route/backend evidence to the graph, AHP, and integration consumers.
+Earlier: extend AHS/core/CLI as required and reuse agent/gateway checks. Preserve Phase 8 named HTTP-signal, direct-backend and proxied-path evidence; router-specific discovery remains separate. Later: supply route/backend evidence to the graph, AHP, and integration consumers.
 
 ---
 
@@ -881,7 +882,7 @@ Earlier: package the existing CLI; no AHS/core contract change is expected solel
 
 # Phase 13 — Standalone Binaries
 
-**Status:** Initial GitHub binary distribution implemented early for the v0.1.0 preview. Five platform archives, checksums, installation docs, and a tag-triggered release workflow are available. Signing and broader runtime validation remain future work.
+**Status:** Initial GitHub binary distribution implemented early for the v0.1.0 preview. Five platform archives, checksums, installation docs, and a tag-triggered release workflow are available. Per-platform CycloneDX SBOMs and keyless signed provenance/SBOM attestations are implemented in v0.4.0. OS-native executable signing, macOS notarization, additional package channels and broader runtime validation remain future work.
 
 Goal:
 

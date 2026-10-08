@@ -1,5 +1,8 @@
 # Example configurations
 
+See the [all-phase status index](../docs/phase-status.md) for implementation, documentation,
+and example coverage across Phases 0–26.
+
 These configurations are templates for your own running services. Replace
 placeholder endpoints, issuer URLs, client IDs, command paths, and required
 inventories before using them. They do not start an example server or provision
@@ -8,6 +11,7 @@ an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
 | Example | What it demonstrates |
 |---|---|
 | [Agent, peer and communication path](agent-check/README.md) | First-agent health, A2A peer, safe path probe and optional supporting dependency; requires a runtime probe handler |
+| [Agentgateway, backend and path](gateway-check/README.md) | Read-only gateway readiness, direct downstream health and proxied A2A evidence |
 | [HTTP readiness](core-check/agenthealth.yaml) | HTTP status checks and latency thresholds |
 | [MCP discovery](mcp-check/agenthealth.yaml) | Required tool names and resource URIs, with automatic protocol selection |
 | [Modern MCP](mcp-check/modern.yaml) | Pinning stateless MCP `2026-07-28` |
@@ -96,3 +100,12 @@ agenthealth check examples/a2a-check/agenthealth.yaml --format json
 See the [A2A example setup guide](a2a-check/README.md) and
 [A2A adapter guide](../docs/a2a-adapter.md) for bearer credentials,
 capability expectations, custom card URLs, and opt-in interactions.
+
+## Agentgateway checks
+
+Configure your running agent, gateway and downstream endpoints using the
+[gateway setup guide](gateway-check/README.md), then run:
+
+```bash
+agenthealth check examples/gateway-check/agenthealth.yaml --format json
+```
