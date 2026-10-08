@@ -58,5 +58,6 @@
         }
       }
     }
-  ]
+  ],
+  "$id": "https://github.com/TheAgentHealth/agenthealth/spec/schemas/ahp.schema.json"
 }

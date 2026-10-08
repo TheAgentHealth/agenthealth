@@ -29,7 +29,7 @@ Phases 0–9. Phase 11 adds the following changes or explicit no-impact decision
 | 3: CLI | Adds serve with loopback default, listen address and token environment reference. Existing health commands/formats/exit codes remain compatible; serving exits 0 on shutdown and 6 on tool failure. |
 | 4: HTTP/API | Existing HEAD/GET checks and expectations remain unchanged. The AHP binding uses GET; generic HTTP checks remain separate from an AHP-specific consumer, which is not implemented. Existing examples remain valid. |
 | 5: MCP | Existing HTTP/stdio/OAuth and inventory behavior remains unchanged. Each refresh starts a new engine run; no session is shared across refreshes. Existing examples require no migration. |
-| 6: A2A | Existing protocol versions, card/task checks and safety remain unchanged. Endpoint checks still do not establish first-agent communication. Existing examples remain valid. |
+| 6: A2A | Existing protocol versions, card/task checks and safety remain unchanged. Endpoint checks still do not establish direct-agent communication. Existing examples remain valid. |
 | 7: Agent health | Capability, declared readiness and completed functional/path evidence remain separate in authenticated results. Serving does not implement the application-specific runtime probe handler. |
 | 8: Agentgateway | Gateway signals, direct backends and path nodes remain separate evidence. Public summaries conceal topology; authenticated evidence retains the result tree. |
 | 9: Agent Router | Named router checks, direct backends and configured route evidence remain unchanged. Sharing a backend does not combine route nodes. |
