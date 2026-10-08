@@ -36,7 +36,8 @@ extensions below; it does not retroactively change older released binaries.
 
 Phase 13’s existing standalone binary baseline needs no new packaging interface:
 its build/release commands compile the same CLI. Installation versions and
-published release notes continue to describe the released artifacts. Docker,
+published release notes continue to describe the released artifacts. Docker
+distribution is implemented in source (Phase 12); published images,
 Kubernetes, SDKs and broader conformance/interoperability remain planned.
 
 ## Validation and limits

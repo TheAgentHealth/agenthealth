@@ -960,7 +960,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is built from the repository [Dockerfile](Dockerfile) and publishes with the first release tag after Phase 12 lands; see [container usage](docs/installation.md#container-image). The SDK and Kubernetes examples below describe planned integrations, not published packages.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is built from the repository [Dockerfile](Dockerfile) and publishes with the next release tag ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). The SDK and Kubernetes examples below describe planned integrations, not published packages.
 
 ## Standalone CLI
 
