@@ -15,6 +15,8 @@ and example coverage across Phases 0–26.
 
 Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
 
+A container image can be built from source with Docker Buildx; see [Docker distribution](docs/docker.md). Published `ghcr.io` images remain future work.
+
 ### 60-second example
 
 Run a passive HTTP check against an endpoint you control:
@@ -70,7 +72,7 @@ The long-term scope includes these systems; the supported adapters above describ
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. A container image can be built from source (see [Docker distribution](docs/docker.md)); SDKs, published container images, Kubernetes integrations, and additional adapters remain roadmap work.
 
 **Release version: [v0.9.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.9.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
@@ -214,7 +216,7 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | Config file | `agenthealth.yaml` |
 | Python package | `agenthealth` |
 | npm package | `@agenthealth/sdk` |
-| Docker image | `agenthealth/agenthealth` |
+| Container image | `ghcr.io/theagenthealth/agenthealth` |
 | Helm chart | `agenthealth` |
 
 ---
@@ -958,7 +960,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](docs/installation.md). The Docker, SDK, and Kubernetes examples below describe planned integrations, not published packages or images.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is built from the repository [Dockerfile](Dockerfile) and publishes with the next release tag ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). The SDK and Kubernetes examples below describe planned integrations, not published packages.
 
 ## Standalone CLI
 
@@ -982,16 +984,18 @@ agenthealth --version
 
 ## Docker
 
-AgentHealth can run without installing language runtimes.
+AgentHealth can run without installing language runtimes. The image is a
+minimal, non-root distroless image for `linux/amd64` and `linux/arm64`.
 
 Example:
 
 ```bash
-docker run --rm agenthealth/agenthealth \
+docker run --rm ghcr.io/theagenthealth/agenthealth \
   ping mcp http://host.docker.internal:3000
 ```
 
-Container images should support common CPU architectures where practical.
+See [container usage](docs/installation.md#container-image) for configuration
+files, credentials, and verification.
 
 ---
 
@@ -1344,7 +1348,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 Coverage for phases 0–10 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image build is implemented ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) but not yet published. Other adapters, SDKs, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

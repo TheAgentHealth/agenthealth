@@ -6,7 +6,7 @@ scope and preserve unrelated work in the working tree.
 
 ## Project and sources of truth
 
-AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters are
+AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility, gateway, and router adapters are
 implemented; other adapters follow the capability roadmap. The software is
 pre-1.0. Do not describe planned adapters or distribution channels as available.
 

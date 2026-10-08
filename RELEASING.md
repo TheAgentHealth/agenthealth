@@ -47,7 +47,8 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 | Adapters (MCP, A2A, HTTP, ...) | No, initially | Ship together with the core engine while adapters live in this repo |
 | Python SDK (`agenthealth` on PyPI) | Yes | Tracks, but is not required to match, the CLI version |
 | JavaScript SDK (`@agenthealth/sdk` on npm) | Yes | Tracks, but is not required to match, the CLI version |
-| Docker image (`agenthealth/agenthealth`) | Yes, tagged to CLI version | Plus `latest` and major-version floating tags |
+| Container image (`ghcr.io/theagenthealth/agenthealth`) | Yes, tagged to CLI version | `vX.Y.Z`, floating `vX` and `latest` for plain version tags; suffixed tags publish only `vX.Y.Z-suffix` |
+| Docker Hub mirror (`theagenthealth/agenthealth`) | Yes, same tags as GHCR | Optional: only published when `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN` repository secrets are configured |
 | Helm chart | Yes | Chart version and app version are tracked separately per Helm convention |
 
 ## Release steps (current, pre-1.0)
@@ -56,10 +57,26 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 2. When a release is cut, tag `main` as `vX.Y.Z`.
 3. Build and publish artifacts for that tag:
    - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
-   - Docker image (once [Phase 12](ROADMAP.md#phase-12--docker-distribution) lands),
+   - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published after the binary release succeeds,
    - PyPI package (once [Phase 15](ROADMAP.md#phase-15--python-sdk--pypi) lands),
    - npm package (once [Phase 16](ROADMAP.md#phase-16--javascript--typescript-sdk) lands).
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
+
+**First container release only:** GitHub creates a new organization package as
+private by default. After the very first `container` job publishes
+`ghcr.io/theagenthealth/agenthealth`, a maintainer with package admin access
+must open the package's settings on GitHub and change its visibility to
+public; otherwise `docker run ghcr.io/theagenthealth/agenthealth` fails with
+`unauthorized` for everyone except the publishing workflow. The release
+workflow's smoke test logs out of GHCR first so this is caught as a release
+failure instead of silently passing.
+
+**Docker Hub mirror (optional):** the `container` job also pushes to
+`docker.io/theagenthealth/agenthealth` once the `DOCKERHUB_USERNAME` and
+`DOCKERHUB_ACCESS_TOKEN` repository secrets exist (generate a Docker Hub access token
+under Account Settings → Personal access tokens, scope Read & Write). Until
+those secrets are added, the Docker Hub steps are skipped and only GHCR is
+published.
 
 The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), verifies the Linux AMD64 version and archive checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
 

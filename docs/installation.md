@@ -77,3 +77,49 @@ Phase 9 [Agent Router checks](agent-router.md) are included starting in v0.7.0.
 Phase 10 [dependency graphs](dependency-graph.md) are included starting in v0.8.0.
 
 Phase 11 experimental [AHP serving](ahp.md) is included starting in v0.9.0.
+
+## Container image
+
+Starting with the next release after Phase 12, each release tag publishes a
+multi-platform image (`linux/amd64`, `linux/arm64`) to
+`ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
+`latest` for plain version tags; suffixed pre-release tags publish only their
+exact `vX.Y.Z-suffix`. Until that release exists, build the image locally:
+
+```bash
+docker build --build-arg VERSION=dev -t agenthealth .
+docker run --rm agenthealth version
+```
+
+The image uses a digest-pinned distroless static base with CA certificates,
+runs as the non-root user `65532`, and contains no shell. Its entrypoint is
+`agenthealth`, so arguments are CLI arguments. The binaries inside are
+byte-identical to the binaries in the matching Linux release archives.
+
+```bash
+docker run --rm ghcr.io/theagenthealth/agenthealth ping http https://example.com
+
+# Mount configuration read-only and pass referenced credentials by name.
+docker run --rm \
+  -v "$PWD/agenthealth.yaml:/config/agenthealth.yaml:ro" \
+  -e AGENT_API_TOKEN \
+  ghcr.io/theagenthealth/agenthealth check /config/agenthealth.yaml --format json
+```
+
+Exit codes are the [CLI exit codes](../spec/exit-codes.md), so the container
+can gate CI jobs and Kubernetes probes directly. Use `host.docker.internal`
+(Docker Desktop) or a container network to reach services on the host. See
+[Docker distribution](docker.md) for a full guide, including multi-platform
+local builds with Buildx and AHP serve-mode usage.
+
+Limitations: MCP stdio targets run their configured executable inside the
+container, so build a derived image that adds that server. `agenthealth login`
+needs a browser callback and is intended for a workstation binary. Token files
+require owner-only permissions and may be rewritten on refresh, so a container
+reusing one needs a writable volume owned by UID 65532.
+
+Verify a published image's signed attestation with the GitHub CLI:
+
+```bash
+gh attestation verify oci://ghcr.io/theagenthealth/agenthealth:<version> --repo TheAgentHealth/agenthealth
+```

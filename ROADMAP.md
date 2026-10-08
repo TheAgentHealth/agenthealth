@@ -867,7 +867,14 @@ unverified. See the [coverage and alignment audit](docs/phase-11-alignment.md).
 
 # Phase 12 — Docker Distribution
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source — a multi-stage, digest-pinned, distroless,
+non-root image build ([Dockerfile](Dockerfile)) producing Linux AMD64/ARM64
+binaries that are byte-identical to the attested release archives, validated
+in CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) and published by
+the release workflow ([.github/workflows/release.yml](.github/workflows/release.yml))
+with BuildKit provenance, SBOM, and a GitHub-signed attestation, starting with
+the next tagged release. No image has been published yet. See the
+[container usage guide](docs/installation.md#container-image).
 
 Goal:
 
@@ -875,25 +882,38 @@ Allow AgentHealth to run without installing a programming language runtime.
 
 ## Deliverables
 
-- [ ] Official container image
-- [ ] Multi-stage build
-- [ ] Minimal runtime image
-- [ ] Linux AMD64
-- [ ] Linux ARM64
-- [ ] Signed images
-- [ ] SBOM
-- [ ] Versioned tags
+- [x] Official container image (`ghcr.io/theagenthealth/agenthealth`; publishing gated on the next tagged release)
+- [x] Multi-stage build
+- [x] Minimal runtime image (digest-pinned `distroless/static-debian12:nonroot`, non-root `65532:65532`, no shell)
+- [x] Linux AMD64
+- [x] Linux ARM64
+- [x] Signed images (keyless `actions/attest` attestation pushed to the registry)
+- [x] SBOM (`sbom: true` plus a pushed build-provenance/SBOM attestation)
+- [x] Versioned tags (`vX.Y.Z`, floating `vX` and `latest`, pre-releases excluded from floating tags)
+- [x] Docker Hub mirror (`theagenthealth/agenthealth`), implemented in source and gated on `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN` repository secrets
 
 Example:
 
 ```bash
-docker run --rm agenthealth/agenthealth \
+docker run --rm ghcr.io/theagenthealth/agenthealth \
   ping mcp http://host.docker.internal:3000
 ```
 
 ## Impact Review
 
-Earlier: package the existing CLI; no AHS/core contract change is expected solely for container distribution. Later: provide images for Kubernetes and CI, with container security validated during hardening.
+Earlier: packages the existing CLI unchanged; no AHS, schema, core, CLI or
+adapter contract changes. The release workflow gains a container job that runs
+only after the binary release and verifies image binaries against the attested
+archives (Phase 13). MCP stdio targets need their server executable in a derived
+image, and interactive `agenthealth login` is not supported in the minimal image.
+GitHub creates a new organization package as private by default, so the first
+publish needs a one-time manual visibility change; the release smoke test logs
+out of GHCR first so this is caught as a release failure instead of silently
+passing (see [RELEASING.md](RELEASING.md)).
+Later: Phase 14 consumes the image and its tags for probes, init containers and
+Jobs; CI integrations can use it directly; hardening should add image
+vulnerability scanning. The Docker Hub mirror publishes the same tags once its
+secrets exist, with build provenance/SBOM but no GitHub-signed attestation.
 
 
 Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
@@ -925,7 +945,7 @@ Potential channels:
 - [x] Linux standalone binary archives
 - [ ] Linux packages (DEB/RPM)
 - [ ] Windows package manager
-- [ ] container registries
+- [x] container registries (GHCR, optional Docker Hub mirror; Phase 12)
 
 ## Impact Review
 
