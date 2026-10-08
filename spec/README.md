@@ -30,7 +30,7 @@ protocol.md       -> (experimental) defines HOW health is exposed/exchanged over
 
 ## Implemented adapters
 
-Reference implementations currently support [Agent/multi-agent](../docs/agent-adapter.md), [HTTP/API](../docs/http-adapter.md),
+Reference implementations currently support [Agentgateway HTTP health signals](../docs/agentgateway.md), [Agent/multi-agent](../docs/agent-adapter.md), [HTTP/API](../docs/http-adapter.md),
 [MCP](../docs/mcp-adapter.md), and [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility](../docs/a2a-adapter.md).
 See [A2A configuration](configuration.md#a2a-expectations-phase-6-draft) and
 [Phase 6 examples](../examples/a2a-check/README.md) for discovery, credentials,
@@ -49,3 +49,5 @@ Specification documents use a `spec_version` field (e.g. `v1`) independent of th
 ## Proposing changes
 
 Specification changes are more sensitive than implementation changes because downstream adapters, SDKs, and (eventually) AHP conformance tests depend on them. See [GOVERNANCE.md](../GOVERNANCE.md) for the RFC-style process used for spec changes, and [CONTRIBUTING.md](../CONTRIBUTING.md) for the general contribution workflow.
+
+Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
