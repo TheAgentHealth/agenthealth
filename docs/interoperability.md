@@ -3,7 +3,7 @@
 The suite launches actual official SDK servers on loopback and runs the Go CLI
 against them. Fixture handlers return deterministic health text through the SDK;
 they do not handcraft protocol envelopes. Run on each PR, main push and nightly
-through [the interoperability workflow](../.github/workflows/interoperability.yml).
+through [the CI workflow](../.github/workflows/ci.yml).
 
 | Official Python SDK | Protocol | Verified behavior |
 |---|---|---|
