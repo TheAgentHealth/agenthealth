@@ -18,13 +18,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  validate:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-      attestations: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -46,6 +42,28 @@ jobs:
           python3 -m pytest tests -q
           python3 scripts/check_markdown_links.py
           python3 scripts/validate_doc_examples.py
+
+  release:
+    # Runs in parallel with container once validate passes; it does not
+    # depend on the container image and vice versa.
+    needs: validate
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.release_tag || github.ref_name }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          cache: true
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
       - name: Build archives and checksums
         env:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
@@ -121,9 +139,10 @@ jobs:
           gh release edit "$RELEASE_TAG" --draft=false
 
   container:
-    # Publishes only after the binary release succeeds. The image binaries must
-    # be byte-identical to the attested linux archives from the release job.
-    needs: release
+    # Runs in parallel with release once validate passes. Image binaries are
+    # compared against a freshly built reference binary instead of the
+    # release job's archives, so this job has no dependency on it.
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -134,24 +153,24 @@ jobs:
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
       IMAGE: ghcr.io/theagenthealth/agenthealth
       DOCKERHUB_IMAGE: theagenthealth/agenthealth
-      # if: cannot reference secrets directly, so pass it through env instead.
+      # if: cannot reference secrets directly, so pass them through env instead.
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.release_tag || github.ref_name }}
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          name: release-assets
-          path: dist
+          go-version: "1.27.1"
+          cache: true
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
-      - name: Verify image binaries match release archives
+      - name: Verify image binaries match a freshly built reference binary
         run: |
           for arch in amd64 arm64; do
             docker buildx build --platform "linux/$arch" --build-arg VERSION="$RELEASE_TAG" --output "type=local,dest=image-$arch" .
-            mkdir "archive-$arch"
-            tar -xzf "dist/agenthealth_${RELEASE_TAG}_linux_${arch}.tar.gz" -C "archive-$arch"
-            cmp "image-$arch/usr/local/bin/agenthealth" "archive-$arch/agenthealth"
+            CGO_ENABLED=0 GOOS=linux GOARCH="$arch" go build -trimpath -buildvcs=false -ldflags "-s -w -X main.version=$RELEASE_TAG" -o "ref-$arch" ./cmd/agenthealth
+            cmp "image-$arch/usr/local/bin/agenthealth" "ref-$arch"
           done
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -189,15 +208,15 @@ jobs:
           image="$IMAGE@${{ steps.push.outputs.digest }}"
           test "$(docker run --rm "$image" version)" = "agenthealth $RELEASE_TAG"
           docker run --rm "$image" --help
-      # Docker Hub mirror is optional: it only runs once DOCKERHUB_USERNAME/DOCKERHUB_ACCESS_TOKEN exist.
+      # Docker Hub mirror is optional: it only runs once DOCKERHUB_USERNAME/DOCKERHUB_ACCESS_TOKEN both exist.
       - name: Log in to Docker Hub
-        if: ${{ env.DOCKERHUB_ACCESS_TOKEN != '' }}
+        if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_ACCESS_TOKEN != '' }}
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_ACCESS_TOKEN }}
       - id: meta_dockerhub
-        if: ${{ env.DOCKERHUB_ACCESS_TOKEN != '' }}
+        if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_ACCESS_TOKEN != '' }}
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.DOCKERHUB_IMAGE }}
@@ -206,7 +225,7 @@ jobs:
             type=semver,pattern=v{{version}},value=${{ env.RELEASE_TAG }}
             type=semver,pattern=v{{major}},value=${{ env.RELEASE_TAG }},enable=${{ !contains(inputs.release_tag || github.ref_name, '-') }}
       - id: push_dockerhub
-        if: ${{ env.DOCKERHUB_ACCESS_TOKEN != '' }}
+        if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_ACCESS_TOKEN != '' }}
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
