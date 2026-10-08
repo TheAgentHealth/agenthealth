@@ -1,12 +1,9 @@
+# Only the Go module, sources and LICENSE are needed for the image.
 *
-!Dockerfile
 !go.mod
 !go.sum
-!LICENSE
 !cmd/
-!cmd/**
 !core/
-!core/**
 !adapters/
-!adapters/**
+!LICENSE
 **/*_test.go

@@ -47,7 +47,7 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 | Adapters (MCP, A2A, HTTP, ...) | No, initially | Ship together with the core engine while adapters live in this repo |
 | Python SDK (`agenthealth` on PyPI) | Yes | Tracks, but is not required to match, the CLI version |
 | JavaScript SDK (`@agenthealth/sdk` on npm) | Yes | Tracks, but is not required to match, the CLI version |
-| Docker image (`agenthealth/agenthealth`) | Yes, tagged to CLI version | Plus `latest` and major-version floating tags |
+| Container image (`ghcr.io/theagenthealth/agenthealth`) | Yes, tagged to CLI version | `vX.Y.Z`, floating `vX` and `latest` for plain version tags; suffixed tags publish only `vX.Y.Z-suffix` |
 | Helm chart | Yes | Chart version and app version are tracked separately per Helm convention |
 
 ## Release steps (current, pre-1.0)
@@ -56,7 +56,7 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 2. When a release is cut, tag `main` as `vX.Y.Z`.
 3. Build and publish artifacts for that tag:
    - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
-   - Docker image (once [Phase 12](ROADMAP.md#phase-12--docker-distribution) lands),
+   - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published after the binary release succeeds,
    - PyPI package (once [Phase 15](ROADMAP.md#phase-15--python-sdk--pypi) lands),
    - npm package (once [Phase 16](ROADMAP.md#phase-16--javascript--typescript-sdk) lands).
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.

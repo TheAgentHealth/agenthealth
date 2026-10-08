@@ -867,11 +867,14 @@ unverified. See the [coverage and alignment audit](docs/phase-11-alignment.md).
 
 # Phase 12 — Docker Distribution
 
-**Status:** Implemented in source — a multi-stage, multi-platform, non-root
-image build ([Dockerfile](Dockerfile)) and a validate/publish CI workflow
-([.github/workflows/container.yml](.github/workflows/container.yml)) are
-available; no image has been published to a registry under a tagged release
-yet. See the [Docker guide](docs/docker.md).
+**Status:** Implemented in source — a multi-stage, digest-pinned, distroless,
+non-root image build ([Dockerfile](Dockerfile)) producing Linux AMD64/ARM64
+binaries that are byte-identical to the attested release archives, validated
+in CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) and published by
+the release workflow ([.github/workflows/release.yml](.github/workflows/release.yml))
+with BuildKit provenance, SBOM, and a GitHub-signed attestation, starting with
+the next tagged release. No image has been published yet. See the
+[container usage guide](docs/installation.md#container-image).
 
 Goal:
 
@@ -879,25 +882,33 @@ Allow AgentHealth to run without installing a programming language runtime.
 
 ## Deliverables
 
-- [x] Official container image (buildable from source; publishing gated on the next tagged release)
+- [x] Official container image (`ghcr.io/theagenthealth/agenthealth`; publishing gated on the next tagged release)
 - [x] Multi-stage build
-- [x] Minimal runtime image (`FROM scratch`, non-root `65532:65532`, no shell)
+- [x] Minimal runtime image (digest-pinned `distroless/static-debian12:nonroot`, non-root `65532:65532`, no shell)
 - [x] Linux AMD64
 - [x] Linux ARM64
-- [x] Signed images (cosign keyless signing in the publish workflow)
-- [x] SBOM (`sbom: true` and build-provenance/SBOM attestations in the publish workflow)
+- [x] Signed images (keyless `actions/attest` attestation pushed to the registry)
+- [x] SBOM (`sbom: true` plus a pushed build-provenance/SBOM attestation)
 - [x] Versioned tags (`vX.Y.Z`, floating `vX` and `latest`, pre-releases excluded from floating tags)
+- [ ] Docker Hub mirror (`agenthealth/agenthealth`), pending registry ownership
 
 Example:
 
 ```bash
-docker run --rm agenthealth/agenthealth \
+docker run --rm ghcr.io/theagenthealth/agenthealth \
   ping mcp http://host.docker.internal:3000
 ```
 
 ## Impact Review
 
-Earlier: package the existing CLI; no AHS/core contract change is expected solely for container distribution. Later: provide images for Kubernetes and CI, with container security validated during hardening.
+Earlier: packages the existing CLI unchanged; no AHS, schema, core, CLI or
+adapter contract changes. The release workflow gains a container job that runs
+only after the binary release and verifies image binaries against the attested
+archives (Phase 13). MCP stdio targets need their server executable in a derived
+image, and interactive `agenthealth login` is not supported in the minimal image.
+Later: Phase 14 consumes the image and its tags for probes, init containers and
+Jobs; CI integrations can use it directly; hardening should add image
+vulnerability scanning and a Docker Hub mirror once registry ownership exists.
 
 
 Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
@@ -929,7 +940,7 @@ Potential channels:
 - [x] Linux standalone binary archives
 - [ ] Linux packages (DEB/RPM)
 - [ ] Windows package manager
-- [ ] container registries
+- [x] container registries (GHCR, Phase 12)
 
 ## Impact Review
 

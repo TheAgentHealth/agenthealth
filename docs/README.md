@@ -22,7 +22,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 9: Agent Router (v0.7.0) | [Router signals and route/backend evidence](agent-router.md), [impact proposal](rfcs/phase-9-agent-router.md) | [Router configuration and setup](../examples/router-check/README.md) |
 | 10: Dependency graph (v0.8.0) | [Shared nodes, edge policies and budgets](dependency-graph.md), [impact review](rfcs/phase-10-dependency-graph.md) | [Graph configuration](../examples/graph-check/README.md), [earlier-phase alignment](phase-10-alignment.md) |
 | 11: AHP (experimental, v0.9.0) | [HTTP serving](ahp.md), [wire contract](../spec/protocol.md), [impact review](rfcs/phase-11-ahp.md) | [Serving example](../examples/ahp-check/README.md), [coverage and alignment](phase-11-alignment.md) |
-| 12: Docker (source-only) | [Docker distribution](docker.md) | [Dockerfile](../Dockerfile), [container workflow](../.github/workflows/container.yml) |
+| 12: Docker (source-only) | [Docker distribution](docker.md), [container usage](installation.md#container-image) | [Dockerfile](../Dockerfile), [CI container job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).
@@ -37,9 +37,9 @@ all standalone example YAML files against the schemas. It does not establish
 connectivity to the placeholder servers or prove every command example works.
 
 Agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
-SDKs, and Kubernetes integrations remain planned. A container image can be built
-from source (see [Docker](docker.md)) but is not yet published to a registry.
-Historical release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
+SDKs, and Kubernetes integrations remain planned; a [container image](installation.md#container-image) can be built
+from source today and publishes from the next release tag. Historical
+release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.
 
 Foundation stabilization in v0.4.0 adds current A2A, shared probes and release

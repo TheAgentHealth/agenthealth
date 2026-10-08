@@ -29,7 +29,7 @@ jobs:
       - name: Install test dependencies
         run: pip install -r tests/requirements.txt
       - name: Run spec schema tests
-        run: python3 -m pytest tests/spec tests/test_release_archives.py -v
+        run: python3 -m pytest tests/spec tests/test_release_archives.py tests/test_container_image.py -v
 
   markdown-link-check:
     name: Markdown link check
@@ -137,3 +137,20 @@ jobs:
           AGENTHEALTH_INTEROP: '1'
           AGENTHEALTH_BINARY: /tmp/agenthealth-interop
         run: python -m pytest tests/interop -v
+
+  container-image:
+    name: Container image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build linux/amd64 and linux/arm64 images
+        run: docker buildx build --platform linux/amd64,linux/arm64 --build-arg VERSION=v0.0.0-ci .
+      - name: Build and smoke-test the linux/amd64 image
+        run: |
+          docker buildx build --platform linux/amd64 --build-arg VERSION=v0.0.0-ci --load -t agenthealth:ci .
+          python3 scripts/test_container.py agenthealth:ci --version v0.0.0-ci
