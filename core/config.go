@@ -387,8 +387,8 @@ func validateTarget(t Target, path string, depth int) error {
 		return fmt.Errorf("%s: MCP functional check requires invocation", path)
 	}
 	if t.HTTP != nil {
-		if t.Type != "http" && t.Type != "api" {
-			return fmt.Errorf("%s: http options require http or api target", path)
+		if t.Type != "http" && t.Type != "api" && t.Type != "gateway" {
+			return fmt.Errorf("%s: http options require http, api or gateway target", path)
 		}
 		if t.HTTP.ExpectedStatus != nil && len(t.HTTP.ExpectedStatus) == 0 {
 			return fmt.Errorf("%s: expected_status requires at least one status", path)
