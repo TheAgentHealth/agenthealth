@@ -66,3 +66,7 @@ GitHub OIDC identity. Checksums alone do not authenticate the publisher.
 Archives normalize owner IDs, names, modes, timestamps and gzip/ZIP metadata.
 Reproduction requires the same source commit, Go toolchain and build environment;
 archive timestamp defaults to the commit time and can use `SOURCE_DATE_EPOCH`.
+
+Phase 8 gateway checks are currently implemented in the source tree and are
+not included in the v0.5.0 binaries described above. Build from the Phase 8
+source to use [Agentgateway checks](agentgateway.md).
