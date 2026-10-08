@@ -48,6 +48,7 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 | Python SDK (`agenthealth` on PyPI) | Yes | Tracks, but is not required to match, the CLI version |
 | JavaScript SDK (`@agenthealth/sdk` on npm) | Yes | Tracks, but is not required to match, the CLI version |
 | Container image (`ghcr.io/theagenthealth/agenthealth`) | Yes, tagged to CLI version | `vX.Y.Z`, floating `vX` and `latest` for plain version tags; suffixed tags publish only `vX.Y.Z-suffix` |
+| Docker Hub mirror (`theagenthealth/agenthealth`) | Yes, same tags as GHCR | Optional: only published when `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` repository secrets are configured |
 | Helm chart | Yes | Chart version and app version are tracked separately per Helm convention |
 
 ## Release steps (current, pre-1.0)
@@ -69,6 +70,13 @@ public; otherwise `docker run ghcr.io/theagenthealth/agenthealth` fails with
 `unauthorized` for everyone except the publishing workflow. The release
 workflow's smoke test logs out of GHCR first so this is caught as a release
 failure instead of silently passing.
+
+**Docker Hub mirror (optional):** the `container` job also pushes to
+`docker.io/theagenthealth/agenthealth` once the `DOCKERHUB_USERNAME` and
+`DOCKERHUB_TOKEN` repository secrets exist (generate a Docker Hub access token
+under Account Settings → Personal access tokens, scope Read & Write). Until
+those secrets are added, the Docker Hub steps are skipped and only GHCR is
+published.
 
 The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), verifies the Linux AMD64 version and archive checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
 

@@ -95,6 +95,19 @@ fails loudly if the package is still private rather than passing on cached
 publisher credentials; see [RELEASING.md](../RELEASING.md) for the required
 one-time visibility change after the first publish.
 
+## Docker Hub mirror
+
+The same release job also pushes `theagenthealth/agenthealth` to Docker Hub
+with identical tags, once the `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN`
+repository secrets are configured (see [RELEASING.md](../RELEASING.md)); the
+mirror step is skipped otherwise. Docker Hub images carry the same
+BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
+which is only pushed to GHCR.
+
+```bash
+docker run --rm theagenthealth/agenthealth version
+```
+
 See [installation.md](installation.md) for standalone binary archives and
 their own provenance/SBOM verification, and [RELEASING.md](../RELEASING.md)
 for the release process that both distribution channels share.

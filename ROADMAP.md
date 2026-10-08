@@ -890,7 +890,7 @@ Allow AgentHealth to run without installing a programming language runtime.
 - [x] Signed images (keyless `actions/attest` attestation pushed to the registry)
 - [x] SBOM (`sbom: true` plus a pushed build-provenance/SBOM attestation)
 - [x] Versioned tags (`vX.Y.Z`, floating `vX` and `latest`, pre-releases excluded from floating tags)
-- [ ] Docker Hub mirror (`agenthealth/agenthealth`), pending registry ownership
+- [x] Docker Hub mirror (`theagenthealth/agenthealth`), implemented in source and gated on `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` repository secrets
 
 Example:
 
@@ -912,7 +912,8 @@ out of GHCR first so this is caught as a release failure instead of silently
 passing (see [RELEASING.md](RELEASING.md)).
 Later: Phase 14 consumes the image and its tags for probes, init containers and
 Jobs; CI integrations can use it directly; hardening should add image
-vulnerability scanning and a Docker Hub mirror once registry ownership exists.
+vulnerability scanning. The Docker Hub mirror publishes the same tags once its
+secrets exist, with build provenance/SBOM but no GitHub-signed attestation.
 
 
 Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
@@ -944,7 +945,7 @@ Potential channels:
 - [x] Linux standalone binary archives
 - [ ] Linux packages (DEB/RPM)
 - [ ] Windows package manager
-- [x] container registries (GHCR, Phase 12)
+- [x] container registries (GHCR, optional Docker Hub mirror; Phase 12)
 
 ## Impact Review
 
