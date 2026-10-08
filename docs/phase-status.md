@@ -2,6 +2,7 @@
 
 This index follows the source-tree scope in [ROADMAP.md](../ROADMAP.md).
 Phases 0–7 have released baselines; Phase 8 is released in v0.6.0; Phase 9 in v0.7.0.
+Phase 10 is included in v0.8.0; see the [alignment audit](phase-10-alignment.md).
 Phase 13 has released binary distribution with remaining channel/platform work.
 Planned phases have roadmap designs, not shipped adapters, packages or runnable
 integration examples. Existing repository CI and protocol interoperability tests
@@ -19,7 +20,7 @@ do not establish completion of the broader Phases 21, 25 or 26.
 | [7: Agent Health](../ROADMAP.md#phase-7--agent-health) | Released baseline | [Agent adapter](agent-adapter.md) | [Agent/peer/path example](../examples/agent-check/README.md) |
 | [8: Agentgateway Integration](../ROADMAP.md#phase-8--agentgateway-integration) | Released in v0.6.0 | [Agentgateway](agentgateway.md) | [Gateway example](../examples/gateway-check/README.md) |
 | [9: Agent Router Integration](../ROADMAP.md#phase-9--agent-router-integration) | Released in v0.7.0 | [Agent Router](agent-router.md) | [Router example](../examples/router-check/README.md) |
-| [10: Dependency Graph](../ROADMAP.md#phase-10--dependency-graph) | Planned | Roadmap design only | No implementation examples yet |
+| [10: Dependency Graph](../ROADMAP.md#phase-10--dependency-graph) | Included in v0.8.0 | [Dependency graph](dependency-graph.md) | [Graph contract and validation](rfcs/phase-10-dependency-graph.md) |
 | [11: Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp) | Proposed / experimental; unimplemented | Roadmap design only | No implementation examples yet |
 | [12: Docker Distribution](../ROADMAP.md#phase-12--docker-distribution) | Planned | Roadmap design only | No implementation examples yet |
 | [13: Standalone Binaries](../ROADMAP.md#phase-13--standalone-binaries) | Partial distribution implemented | [Installation](installation.md), [release policy](../RELEASING.md) | [Release builder](../scripts/build_release.py) |

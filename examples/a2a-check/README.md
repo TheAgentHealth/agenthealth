@@ -66,3 +66,7 @@ full supported scope, limits, and classifications.
 
 For a current v1 peer, use [the v1 configuration](v1.yaml). Legacy examples
 explicitly select 0.3.0. Unconfigured ping/doctor now select v1.
+
+## Phase 10 compatibility
+
+This nested example remains valid. To share a backend across paths, give that node an explicit `id` and use `ref` edges. Each communication path keeps a distinct node and its own checks; edge policy remains independent. See the [graph example](../graph-check/README.md). Graph fields require v0.8.0 or newer; v0.7.0 binaries reject them.

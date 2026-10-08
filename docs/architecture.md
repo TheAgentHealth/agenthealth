@@ -52,8 +52,7 @@ The [router adapter](agent-router.md) adds an additive `router` target type and
 reuses the HTTP adapter with GET for configured read-only signals. Direct
 backends and individual routed paths remain separate named dependencies; the
 engine preserves independent execution and critical/optional aggregation.
-Functional probes require explicit opt-in. Product-specific discovery and
-shared graph identity remain future work; an external route probe does not
+Functional probes require explicit opt-in. [Phase 10](dependency-graph.md) adds explicit shared graph identity. Product-specific discovery remains future work; an external route probe does not
 establish communication from the direct agent runtime.
 
 ## Configuration format

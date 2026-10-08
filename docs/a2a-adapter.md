@@ -95,3 +95,7 @@ Task states accept canonical enum names or their numeric protobuf values.
 See the [SDK interoperability matrix](interoperability.md) for the actual
 servers tested and limits of the evidence. Card signatures are not verified;
 this adapter checks operational compatibility, not agent identity certification.
+
+## Dependency graph integration
+
+[Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. References to one A2A node share card/passive evidence and any explicitly opted-in task per run. Distinct route nodes retain their own evidence. A healthy A2A endpoint still does not prove first-agent communication. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.

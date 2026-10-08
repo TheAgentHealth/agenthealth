@@ -30,14 +30,14 @@ AgentHealth is designed to work across:
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Current release: [v0.7.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.7.0).**
+**Release version: [v0.8.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.8.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
-Phase 9 adds [Agent Router HTTP signals](docs/agent-router.md) and named route/backend checks in v0.7.0. See [v0.7.0 release notes](docs/releases/v0.7.0.md).
+Phase 10 adds [shared dependency graphs](docs/dependency-graph.md), independent edge policies and bounded parallel execution in v0.8.0. See [v0.8.0 release notes](docs/releases/v0.8.0.md).
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release
 retains A2A 1.0 with explicit 0.3.0 compatibility and signed provenance/SBOM
-attestations. See [release and migration notes](docs/releases/v0.7.0.md).
+attestations. See [release and migration notes](docs/releases/v0.8.0.md).
 
 ---
 
@@ -741,7 +741,7 @@ and others
 
 # Dependency Graph
 
-Dependency-aware diagnostics are a core design principle.
+Dependency-aware diagnostics are implemented through [Phase 10](docs/dependency-graph.md): explicit shared node IDs, per-edge critical policy and relationship labels, cycle detection, bounded parallel checks, independent node budgets, and ordered tree/JSON/YAML output. See the [example](examples/graph-check/README.md) and [phase alignment audit](docs/phase-10-alignment.md). Graph fields require v0.8.0 or newer.
 
 Example:
 
@@ -761,7 +761,7 @@ Example:
                               HIGH LATENCY
 ```
 
-AgentHealth should be able to calculate an overall status based on:
+The engine calculates overall status using critical/optional dependency propagation and latency thresholds. More general health policy engines remain future work. The design accounts for:
 
 - critical dependencies,
 - optional dependencies,
@@ -1319,7 +1319,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-Coverage for phases 0–9 is indexed in [the documentation guide](docs/README.md).
+Coverage for phases 0–10 is indexed in [the documentation guide](docs/README.md).
 
 AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
@@ -1329,7 +1329,7 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
-The dependency graph, AHP, distribution, SDKs, and observability/conformance
+The [dependency graph](docs/dependency-graph.md) is implemented in source. AHP, distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---

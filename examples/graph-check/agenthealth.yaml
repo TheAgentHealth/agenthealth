@@ -1,0 +1,37 @@
+version: v1
+concurrency: 4
+targets:
+  - id: first
+    name: Research Agent
+    type: agent
+    endpoint: http://localhost:8080/health
+    budget_ms: 3000
+    dependencies:
+      - ref: peer
+        relationship: downstream
+      - ref: first-peer-path
+        relationship: path
+      - ref: router
+        relationship: router
+  - id: peer
+    name: Search Agent
+    type: agent
+    endpoint: http://localhost:8081/health
+  - id: first-peer-path
+    name: Search communication
+    type: agent
+    endpoint: http://localhost:8080/health
+    checks: [configuration, functional]
+    agent:
+      functional:
+        safe: true
+        text: Return a fixed health acknowledgement from the search peer.
+        downstream: Search Agent
+  - id: router
+    name: Router
+    type: router
+    endpoint: http://localhost:8082/health
+    dependencies:
+      - ref: peer
+        relationship: downstream
+        critical: false

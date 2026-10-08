@@ -20,16 +20,13 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 7: Agent health (v0.5.0) | [Health resource, capabilities, safe tasks and runtime handler prerequisites](agent-adapter.md), [impact proposal](rfcs/phase-7-agent-health.md) | [Agent, peer and path example](../examples/agent-check/README.md) |
 | 8: Agentgateway (v0.6.0) | [Gateway signals and backend/path evidence](agentgateway.md), [impact proposal](rfcs/phase-8-agentgateway.md) | [Gateway configuration](../examples/gateway-check/README.md) |
 | 9: Agent Router (v0.7.0) | [Router signals and route/backend evidence](agent-router.md), [impact proposal](rfcs/phase-9-agent-router.md) | [Router configuration and setup](../examples/router-check/README.md) |
+| 10: Dependency graph (v0.8.0) | [Shared nodes, edge policies and budgets](dependency-graph.md), [impact review](rfcs/phase-10-dependency-graph.md) | [Graph configuration](../examples/graph-check/README.md), [earlier-phase alignment](phase-10-alignment.md) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).
 
-The next planned phases are:
-
-- [Phase 10 — Dependency Graph](../ROADMAP.md#phase-10--dependency-graph): graph execution and failure propagation.
-- [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp): standardized health exchange.
-
-These phases are not yet implemented; their roadmap entries define planned scope.
+Phase 10 is included in [v0.8.0](releases/v0.8.0.md); older v0.7.0 binaries do not include it.
+The next planned phase is [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp), standardized health exchange. It remains unimplemented; its roadmap entry defines planned scope.
 
 Configuration examples are templates requiring your services and credentials.
 The documentation validator checks marked configuration/result blocks and
