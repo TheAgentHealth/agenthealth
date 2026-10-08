@@ -16,6 +16,6 @@ states and exit-code mapping are unchanged, and schema additions are optional.
 The pre-1.0 software minor version and migration notes identify the changed
 reference protocol default and corrected classifications.
 
-## Phase 7 draft extension
+## Phase 7 draft extension — software v0.5.0
 
 Phase 7 adds optional `agent` configuration for agent/multi-agent targets, capability expectations and safe task/path probes. Results, health states and exit codes stay v1-compatible; see the [contract proposal](../docs/rfcs/phase-7-agent-health.md).

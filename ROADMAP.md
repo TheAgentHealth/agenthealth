@@ -499,7 +499,8 @@ probes never retry or poll; pending work is inconclusive.
 
 # Phase 7 — Agent Health
 
-**Status:** Implemented draft in source; not yet released. See the
+**Status:** Released as a draft interface in [v0.5.0](docs/releases/v0.5.0.md),
+implemented in [PR #19](https://github.com/TheAgentHealth/agenthealth/pull/19). See the
 [adapter interface](docs/agent-adapter.md), [example](examples/agent-check/agenthealth.yaml),
 and [contract/impact proposal](docs/rfcs/phase-7-agent-health.md).
 
@@ -592,7 +593,7 @@ Gateway/router adapters, graph scheduling and AHP serving remain planned.
 
 Compatibility: this additive v1 draft turns previously unsupported agent types
 into executable targets. Existing supported targets keep their behavior.
-Specification and maintainer review precede release. Discovery requires explicit
+Maintainer review is recorded by the PR #19 merge and RFC #18. Discovery requires explicit
 configuration; arbitrary framework task APIs are outside this adapter contract.
 
 ---

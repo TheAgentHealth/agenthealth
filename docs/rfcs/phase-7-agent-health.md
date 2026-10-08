@@ -1,9 +1,9 @@
 # Phase 7 agent health contract
 
-Status: implemented draft for review, authorized by the request to implement
-Phase 7. Review discussion: [RFC issue #18](https://github.com/TheAgentHealth/agenthealth/issues/18).
+Status: accepted draft interface, merged in [PR #19](https://github.com/TheAgentHealth/agenthealth/pull/19)
+and released in [v0.5.0](../releases/v0.5.0.md). Review discussion: [RFC issue #18](https://github.com/TheAgentHealth/agenthealth/issues/18).
 This document records the RFC-style proposal and compatibility/impact
-assessment; implementation does not replace maintainer specification review.
+assessment. The maintainer authorized merging and releasing the reviewed implementation.
 
 The problem is that healthy supporting dependencies or a healthy A2A peer do
 not establish that the user's first agent accepts work, or that it can contact
@@ -25,7 +25,7 @@ agent diagnostics, schema fixtures, adapter/CLI regression tests and examples.
 No distribution format or exit-code changes are needed. Existing configurations
 continue to work. Previously unsupported agent targets now execute health
 checks; software ships this additive v1 draft extension in a future minor
-release. No release is published by this implementation.
+release. Publication is documented in the v0.5.0 release notes.
 
 Later phases: gateway/router adapters must preserve independent backend/path
 evidence; the graph phase must consume configured dependency IDs without
