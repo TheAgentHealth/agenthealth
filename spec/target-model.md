@@ -16,7 +16,6 @@
 | `http` | A generic HTTP/API endpoint without an agent-specific protocol |
 | `api` | A generic API dependency, synonymous with `http` for most checks |
 | `vector-store` | A vector database used for retrieval |
-| `gateway` | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ |
 | `database` | A relational, document, or key-value database |
 | `runtime` | An agent runtime/framework process |
 | `gateway` | An agent or MCP gateway sitting in front of one or more targets |
