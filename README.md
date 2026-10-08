@@ -183,7 +183,7 @@ Configuration Health
 
 This is documented throughout this README (see [Core Concepts](#core-concepts) and [Standard Health States](#standard-health-states)) and is the most mature layer of the project today.
 
-## Agent Health Protocol (AHP) — proposed / experimental
+## Agent Health Protocol (AHP) — experimental HTTP v1
 
 Experimental HTTP v1 serving is included in v0.9.0. `agenthealth serve`
 exposes public `/health`, `/ready` and `/live` summaries and bearer-authorized

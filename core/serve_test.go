@@ -157,7 +157,7 @@ func TestAHPBearerTokenValidation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !s.authorized("Bearer " + token) {
+		if !s.authorized("Bearer "+token) || !s.authorized("bearer "+token) || !s.authorized("bEaReR  "+token) {
 			t.Fatal("valid token denied")
 		}
 		for _, header := range []string{"", "Bearer short", "Bearer " + token + "x", "Bearer " + strings.Repeat("x", len(token)), "Bearer " + token + " ", "Basic " + token} {

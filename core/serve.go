@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -186,7 +187,13 @@ func validAHPToken(token string) bool {
 }
 
 func (s *AHPServer) authorized(header string) bool {
-	submitted := sha256.Sum256([]byte(header))
-	expected := sha256.Sum256([]byte("Bearer " + s.options.Token))
+	scheme, token, ok := strings.Cut(header, " ")
+	if !ok || !strings.EqualFold(scheme, "Bearer") {
+		return false
+	}
+	// RFC 6750 permits one or more spaces between scheme and credential.
+	token = strings.TrimLeft(token, " ")
+	submitted := sha256.Sum256([]byte(token))
+	expected := sha256.Sum256([]byte(s.options.Token))
 	return subtle.ConstantTimeCompare(submitted[:], expected[:]) == 1
 }
