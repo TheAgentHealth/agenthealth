@@ -15,6 +15,7 @@ import (
 type Engine struct {
 	registry *Registry
 	slots    chan struct{}
+	limit    chan struct{}
 }
 
 func NewEngine(registry *Registry) *Engine {
@@ -51,14 +52,14 @@ func (e *Engine) Run(ctx context.Context, config Config) ([]Result, error) {
 	redactor := NewRedactor(secrets...)
 	client := NewHTTPClient()
 	defer client.CloseIdleConnections()
-	results := make([]Result, 0, len(config.Targets))
-	for _, t := range config.Targets {
-		results = append(results, redactor.Result(e.runTarget(ctx, t, client, credentials, redactor)))
-	}
+	results := e.runGraph(ctx, config, client, credentials, redactor)
 	return results, nil
 }
 func passed(s Status) bool { return s == Healthy || s == Degraded }
-func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, credentials map[string]string, redactor *Redactor) Result {
+
+// runOwnTarget preserves configured dependency names for adapters; graph
+// scheduling and aggregation are owned by runGraph.
+func (e *Engine) runOwnTarget(ctx context.Context, t Target, client *http.Client, credentials map[string]string, redactor *Redactor) Result {
 	result := Result{Target: TargetIdentity{Name: t.Name, Type: t.Type}, Checks: map[string]CheckResult{}, Dependencies: []Result{}}
 	a := e.registry.lookup(t.Type)
 	requested := t.Checks
@@ -171,31 +172,40 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 			}
 		}
 	}
-	critical := make([]bool, 0, len(t.Dependencies))
-	contribution := Healthy
-	for _, d := range t.Dependencies {
-		dep := e.runTarget(ctx, d.Target, client, credentials, redactor)
-		result.Dependencies = append(result.Dependencies, dep)
-		critical = append(critical, d.IsCritical())
-		contribution = Worst(contribution, DependencyContribution(dep.Status, d.IsCritical()))
-	}
 	if contains(requested, "dependency") {
-		result.Checks["dependency"] = CheckResult{Status: contribution}
+		result.Checks["dependency"] = CheckResult{Status: Healthy}
 	}
-	result.Status = Aggregate(result.Checks, result.Dependencies, critical)
+	result.Status = Aggregate(result.Checks, result.Dependencies, nil)
 	return result
 }
 
 // Keep optional cleanup under the same bounded-call policy as adapter checks.
 func (e *Engine) closeTarget(ctx context.Context, closer TargetCloser, state *sync.Map) {
+	if e.limit != nil {
+		select {
+		case e.limit <- struct{}{}:
+		case <-ctx.Done():
+			return
+		}
+	}
 	select {
 	case e.slots <- struct{}{}:
 	case <-ctx.Done():
+		if e.limit != nil {
+			<-e.limit
+		}
 		return
 	}
 	done := make(chan struct{})
 	go func() {
-		defer func() { _ = recover(); <-e.slots; close(done) }()
+		defer func() {
+			_ = recover()
+			<-e.slots
+			if e.limit != nil {
+				<-e.limit
+			}
+			close(done)
+		}()
 		closer.CloseTarget(ctx, state)
 	}()
 	select {
@@ -264,9 +274,19 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 	client := *request.Client
 	client.Timeout = request.Target.timeout(dimension)
 	request.Client = &client
+	if e.limit != nil {
+		select {
+		case e.limit <- struct{}{}:
+		case <-ctx.Done():
+			return Observation{Check: NormalizeError(ctx.Err(), received.Load()), ResponseReceived: received.Load()}, 0
+		}
+	}
 	select {
 	case e.slots <- struct{}{}:
 	case <-ctx.Done():
+		if e.limit != nil {
+			<-e.limit
+		}
 		return Observation{Check: NormalizeError(ctx.Err(), received.Load()), ResponseReceived: received.Load()}, 0
 	}
 	start = time.Now()
@@ -276,7 +296,12 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 	}
 	done := make(chan answer, 1)
 	go func() {
-		defer func() { <-e.slots }()
+		defer func() {
+			<-e.slots
+			if e.limit != nil {
+				<-e.limit
+			}
+		}()
 		response := answer{}
 		defer func() {
 			if recover() != nil {

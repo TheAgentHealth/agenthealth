@@ -67,6 +67,7 @@ func DependencyContribution(s Status, critical bool) Status {
 }
 
 type TargetIdentity struct {
+	ID   string `json:"id,omitempty"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 }
@@ -77,6 +78,8 @@ type CheckResult struct {
 	Steps   map[string]Status `json:"steps,omitempty"`
 }
 type Result struct {
+	Relationship string                 `json:"relationship,omitempty"`
+	Critical     *bool                  `json:"critical,omitempty"`
 	Target       TargetIdentity         `json:"target"`
 	Status       Status                 `json:"status"`
 	LatencyMS    *float64               `json:"latency_ms"`

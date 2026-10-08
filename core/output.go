@@ -44,6 +44,9 @@ func validateResult(r Result, depth int) error {
 	if depth > maxResultDepth {
 		return errors.New("result dependencies exceed maximum depth 64 or contain a cycle")
 	}
+	if (r.Target.ID != "" && !graphID(r.Target.ID)) || !validRelationship(r.Relationship) {
+		return errors.New("invalid graph evidence")
+	}
 	if r.Target.Name == "" || !contains(targetTypes, r.Target.Type) || !r.Status.Valid() {
 		return errors.New("invalid result identity or status")
 	}
@@ -134,7 +137,17 @@ func printable(s string) string {
 }
 func writeHumanResult(w io.Writer, r Result, depth int) error {
 	indent := strings.Repeat("  ", depth)
-	if _, err := fmt.Fprintf(w, "%s%s (%s): %s\n", indent, printable(r.Target.Name), r.Target.Type, r.Status); err != nil {
+	name := printable(r.Target.Name)
+	if r.Target.ID != "" {
+		name += " [id=" + r.Target.ID + "]"
+	}
+	if r.Relationship != "" {
+		name = "[" + r.Relationship + "] " + name
+	}
+	if r.Critical != nil && !*r.Critical {
+		name += " [optional]"
+	}
+	if _, err := fmt.Fprintf(w, "%s%s (%s): %s\n", indent, name, r.Target.Type, r.Status); err != nil {
 		return err
 	}
 	if r.LatencyMS != nil {

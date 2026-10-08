@@ -16,8 +16,9 @@ import (
 )
 
 type Config struct {
-	Version string   `yaml:"version"`
-	Targets []Target `yaml:"targets"`
+	Concurrency int      `yaml:"concurrency"`
+	Version     string   `yaml:"version"`
+	Targets     []Target `yaml:"targets"`
 }
 
 // AgentOptions configures the bounded agent health interface.
@@ -33,6 +34,8 @@ type AgentTask struct {
 
 type Target struct {
 	Agent         *AgentOptions  `yaml:"agent"`
+	ID            string         `yaml:"id"`
+	BudgetMS      *int           `yaml:"budget_ms"`
 	Name          string         `yaml:"name"`
 	Type          string         `yaml:"type"`
 	Endpoint      string         `yaml:"endpoint"`
@@ -167,8 +170,10 @@ type Thresholds struct {
 	LatencyMS *float64 `yaml:"latency_ms"`
 }
 type Dependency struct {
-	Target   `yaml:",inline"`
-	Critical *bool `yaml:"critical"`
+	Target       `yaml:",inline"`
+	Ref          string `yaml:"ref"`
+	Relationship string `yaml:"relationship"`
+	Critical     *bool  `yaml:"critical"`
 }
 
 func (d Dependency) IsCritical() bool { return d.Critical == nil || *d.Critical }
@@ -237,9 +242,15 @@ func (c Config) Validate() error {
 			return err
 		}
 	}
-	return nil
+	return validateGraph(c)
 }
 func validateTarget(t Target, path string, depth int) error {
+	if t.ID != "" && !graphID(t.ID) {
+		return fmt.Errorf("%s: invalid node id", path)
+	}
+	if t.BudgetMS != nil && (*t.BudgetMS < 1 || *t.BudgetMS > 60000) {
+		return fmt.Errorf("%s: invalid node budget", path)
+	}
 	if depth > 64 {
 		return fmt.Errorf("%s: dependencies exceed maximum depth 64", path)
 	}
@@ -445,6 +456,15 @@ func validateTarget(t Target, path string, depth int) error {
 		}
 	}
 	for i, dep := range t.Dependencies {
+		if !validRelationship(dep.Relationship) {
+			return fmt.Errorf("%s: invalid relationship", path)
+		}
+		if dep.Ref != "" {
+			if !graphID(dep.Ref) || !emptyReferenceTarget(dep.Target) {
+				return fmt.Errorf("%s: reference cannot include target fields", path)
+			}
+			continue
+		}
 		if err := validateTarget(dep.Target, fmt.Sprintf("%s.dependencies[%d]", path, i), depth+1); err != nil {
 			return err
 		}
@@ -490,6 +510,14 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || strings.TrimSpace(value.Value) == "" {
 				return false
 			}
+		case "id", "ref":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || !graphID(value.Value) {
+				return false
+			}
+		case "relationship":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || value.Value == "" || !validRelationship(value.Value) {
+				return false
+			}
 		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
@@ -498,7 +526,15 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!bool" {
 				return false
 			}
-		case "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes", "redirect_port":
+		case "concurrency":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
+				return false
+			}
+			var concurrency int
+			if value.Decode(&concurrency) != nil || concurrency < 1 || concurrency > 16 {
+				return false
+			}
+		case "budget_ms", "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes", "redirect_port":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
 				return false
 			}
@@ -585,6 +621,14 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 		return seen["version"] && seen["targets"]
 	}
 	if kind == "target" {
+		if seen["ref"] {
+			for field := range seen {
+				if field != "ref" && field != "critical" && field != "relationship" {
+					return false
+				}
+			}
+			return true
+		}
 		return seen["name"] && seen["type"] && seen["endpoint"]
 	}
 	return true
