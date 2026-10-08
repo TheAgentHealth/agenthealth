@@ -276,3 +276,21 @@ operator has selected a non-destructive interaction. Credentials use the existin
 Unknown fields, null options, duplicate requirements, and options on other target
 types are rejected. See the [A2A adapter guide](../docs/a2a-adapter.md) for examples
 and runtime behavior.
+
+## Model expectations (Phase 17 draft)
+
+Targets of type `model` or `llm` may include `model` options. `api` accepts
+`openai` (the empty default, for OpenAI-compatible APIs) or `anthropic`.
+`required_models` lists nonempty unique model IDs expected in the model
+listing; expectations require the capability dimension when `checks` is explicit.
+
+`model.functional` requires explicit `functional` in `checks`, `safe: true`, a
+nonblank `model`, and a nonblank `prompt` of at most 4096 UTF-8 bytes.
+`max_output_tokens` (1–1024, default 16) bounds the response, and
+`token_parameter` selects `max_tokens` (default) or `max_completion_tokens` for
+the `openai` dialect; the `anthropic` dialect accepts only `max_tokens`. A
+functional check on a model target requires these inference options.
+Credentials use the existing `auth.bearer_env` reference. Unknown fields, null
+options, duplicate requirements, and options on other target types are
+rejected. No new health dimensions or result fields are introduced. See the
+[model adapter guide](../docs/model-adapter.md).

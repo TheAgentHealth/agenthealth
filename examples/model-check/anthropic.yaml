@@ -1,0 +1,12 @@
+version: v1
+targets:
+  - name: anthropic
+    type: llm
+    endpoint: https://api.anthropic.com/v1
+    auth:
+      bearer_env: ANTHROPIC_API_KEY
+    model:
+      api: anthropic
+      required_models: [claude-test]
+    thresholds:
+      latency_ms: 2000

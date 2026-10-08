@@ -1037,7 +1037,11 @@ Earlier: wrap the core/CLI and updated AHS graph results without duplicating hea
 
 # Phase 17 — Model / LLM Adapters
 
-**Status:** Planned — not yet implemented.
+**Status:** In progress — the [model adapter](docs/model-adapter.md) implements
+`model`/`llm` targets for OpenAI-compatible APIs (including Ollama, vLLM and
+LiteLLM) and the Anthropic API: passive listing-based checks, required models,
+rate-limit/overload classification and an opt-in, token-bounded minimal
+inference. Bedrock, Vertex AI and Azure-specific authentication remain planned.
 
 Goal:
 
@@ -1045,24 +1049,24 @@ Validate the model dependencies used by agents.
 
 ## Common Checks
 
-- [ ] endpoint
-- [ ] authentication
-- [ ] model availability
-- [ ] minimal inference
-- [ ] latency
-- [ ] timeout
-- [ ] rate limiting
-- [ ] provider errors
+- [x] endpoint
+- [x] authentication
+- [x] model availability
+- [x] minimal inference
+- [x] latency
+- [x] timeout
+- [x] rate limiting
+- [x] provider errors
 
 Potential adapters:
 
 ```text
-OpenAI-compatible APIs
-Anthropic
+OpenAI-compatible APIs   (implemented: api: openai)
+Anthropic                (implemented: api: anthropic)
 Amazon Bedrock
 Azure AI
 Google Vertex AI
-Ollama
+Ollama                   (via OpenAI-compatible /v1)
 others
 ```
 
@@ -1070,7 +1074,15 @@ Vendor-specific integrations should remain outside the core whenever practical.
 
 ## Impact Review
 
-Earlier: add model adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide model dependency coverage for runtime, conformance, and interoperability tests.
+Earlier: the adapter uses the existing adapter contract, dimensions, exit codes
+and `auth.bearer_env` reference, and registers through the CLI. The
+specification gains an optional `model` configuration block (schema, fixtures
+and Go validation) and allowlisted `model_*` diagnostic codes; no new health
+states, dimensions or result fields. `DEGRADED` for 429/529 follows the
+existing "works but impaired" meaning. Later: Phase 7 agent health can declare
+models as supporting dependencies; Phase 10 graphs and AHP consume the same
+results; conformance and interoperability suites should add hosted-provider
+and vLLM runs, and Bedrock/Vertex adapters need provider request signing.
 
 ---
 

@@ -1,0 +1,17 @@
+version: v1
+targets:
+  - name: openai-inference
+    type: llm
+    endpoint: https://api.openai.com/v1
+    auth:
+      bearer_env: OPENAI_API_KEY
+    checks: [reachability, authentication, capability, functional, latency]
+    timeout_ms: 15000
+    model:
+      required_models: [gpt-test]
+      functional:
+        safe: true
+        model: gpt-test
+        prompt: Reply with OK.
+        max_output_tokens: 16
+        token_parameter: max_completion_tokens
