@@ -11,7 +11,7 @@ AgentHealth is pre-1.0 and under active design (see [Project Status](README.md#p
 - Core engine implementation
 - Protocol adapters (MCP, A2A, HTTP, model, database, vector store)
 - Direct and composite agent health (Phase 7)
-- Planned Agentgateway (Phase 8) and Agent Router (Phase 9) integrations
+- Agentgateway integration (Phase 8) and planned Agent Router integration (Phase 9)
 - SDKs (Python, JavaScript/TypeScript)
 - Kubernetes and CI/CD integrations
 - Specification design (see [spec/](spec/README.md))
@@ -34,10 +34,10 @@ paths, and supporting dependency failures. Follow the
 [target-model terminology](spec/target-model.md#direct-and-composite-agent-health).
 
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is implemented as a draft adapter interface.
-[Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration),
-and [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
-are planned. Dependency Graph and AHP follow in Phases 10 and 11. Keep planned
-capabilities distinct from the implemented agent, HTTP/API, MCP, and A2A adapters;
+[Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
+is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
+is planned. Dependency Graph and AHP follow in Phases 10 and 11. Keep planned
+capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, and gateway adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.
 
@@ -106,3 +106,5 @@ Do not open public issues for security vulnerabilities. See [SECURITY.md](SECURI
 ## Questions
 
 Open a GitHub Discussion or issue on [github.com/TheAgentHealth/agenthealth](https://github.com/TheAgentHealth/agenthealth).
+
+Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.

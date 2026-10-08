@@ -40,7 +40,7 @@ the cooperating system as a whole. Keep evidence for each agent, the
 communication path, and supporting dependencies distinguishable.
 
 [Phase 7](ROADMAP.md#phase-7--agent-health) implements direct and composite agent
-health; [Phase 8](ROADMAP.md#phase-8--agentgateway-integration) plans Agentgateway;
+health; [Phase 8](ROADMAP.md#phase-8--agentgateway-integration) implements Agentgateway HTTP signals;
 [Phase 9](ROADMAP.md#phase-9--agent-router-integration) plans Agent Router.
 Dependency Graph and AHP follow in Phases 10 and 11 and remain planned; existing A2A endpoint checks do not establish that a first agent can
 communicate with its downstream agents. See the
@@ -176,3 +176,5 @@ to fail. Preserve tag integrity, avoid publishing incomplete assets, and do not
 delete or replace public releases without explicit authorization. A source fix
 requires a new version; infrastructure-only recovery must use the same tagged
 source and verified complete assets.
+
+Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
