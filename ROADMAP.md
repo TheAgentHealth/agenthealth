@@ -6,7 +6,7 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
-See the [documentation guide](docs/README.md) for phase 0–6 references and examples.
+See the [documentation guide](docs/README.md) for phase 0–7 references and examples.
 
 ## Foundation stabilization before Phase 7
 
@@ -33,7 +33,7 @@ complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
 status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
-After this milestone, implement Phase 7. Gateway/router, graph and AHP follow;
+Phase 7 is now implemented in source after this milestone. Gateway/router, graph and AHP follow;
 full distribution, SDK/ecosystem and observability/conformance remain later
 milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
 No additional adapter is declared implemented by this foundation milestone.
@@ -499,12 +499,22 @@ probes never retry or poll; pending work is inconclusive.
 
 # Phase 7 — Agent Health
 
-**Status:** Planned — direct agent health and composite agent health are not yet implemented.
+**Status:** Implemented draft in source; not yet released. See the
+[adapter interface](docs/agent-adapter.md), [example](examples/agent-check/agenthealth.yaml),
+and [contract/impact proposal](docs/rfcs/phase-7-agent-health.md).
 
 Goal:
 
 Check the user's first, user-facing agent itself, as well as the dependencies
 used by the first agent and its downstream agents.
+
+## Runtime prerequisite
+
+The agent application must implement the [health resource and safe probe handler](docs/agent-adapter.md).
+For first-to-downstream checks, that handler must actually contact the selected
+peer and report completion. AgentHealth implements the probe client and result
+classification; it does not install runtime handlers. Framework-specific handler
+integrations remain Phase 20 work. See the [setup example](examples/agent-check/README.md).
 
 ## Direct Agent Health
 
@@ -512,7 +522,7 @@ The `agent` target includes the first agent that receives the user's request.
 It may answer directly, use tools or a model, or delegate to other agents.
 Calling another agent is not a requirement for checking its own health.
 
-Planned checks cover the agent's endpoint, authentication, metadata,
+Implemented checks cover the agent's endpoint, authentication, metadata,
 capabilities, liveness, and readiness to accept work. An explicitly opted-in,
 bounded, non-destructive minimal task will provide functional evidence that
 the agent can respond. Dependency health alone does not establish that the
@@ -548,27 +558,42 @@ User-facing agent endpoint
 
 ## Capabilities
 
-- [ ] Update AHS for first (direct) and downstream (composite) agent roles, direct/A2A communication evidence, and agent liveness/readiness semantics.
-- [ ] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
-- [ ] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
-- [ ] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
-- [ ] agent endpoint health
-- [ ] direct user-facing agent checks without requiring downstream agents
-- [ ] composite downstream agent health via direct integrations or A2A
-- [ ] first-to-downstream agent communication-path validation
-- [ ] agent authentication, liveness, and readiness
-- [ ] metadata validation
-- [ ] capability validation
-- [ ] dependency discovery
-- [ ] dependency execution
-- [ ] explicit opt-in, bounded, non-destructive minimal agent task
-- [ ] distinguish direct agent failures from dependency failures
-- [ ] dependency aggregation
-- [ ] critical dependency propagation
+- [x] Update AHS for first (direct) and downstream (composite) agent roles, direct/A2A communication evidence, and agent liveness/readiness semantics.
+- [x] Extend the Phase 1 AHS baseline as required, including configuration/result schemas, adapter contracts, documentation, and compatibility/versioning review.
+- [x] Extend the Phase 2 core baseline as required to validate and execute the new checks, aggregate their results, and preserve distinct agent/path/dependency evidence; add meaningful fixtures and regression tests.
+- [x] Extend the Phase 3 CLI baseline as required to expose the new checks through `ping`, `check`, and `doctor`, with consistent terminal/JSON/YAML output and the existing exit-code contract.
+- [x] agent endpoint health
+- [x] direct user-facing agent checks without requiring downstream agents
+- [x] composite downstream agent health via direct integrations or A2A
+- [x] first-to-downstream agent communication-path validation
+- [x] agent authentication, liveness, and readiness
+- [x] metadata validation
+- [x] capability validation
+- [x] dependency discovery
+- [x] dependency execution
+- [x] explicit opt-in, bounded, non-destructive minimal agent task
+- [x] distinguish direct agent failures from dependency failures
+- [x] dependency aggregation
+- [x] critical dependency propagation
 
 ## Impact Review
 
-Earlier: extend AHS, core, and CLI baselines and reuse HTTP/A2A checks. Later: establish agent-role and communication evidence for Phases 8–11 and their consumers.
+Earlier: add optional v1 agent options/schema fixtures, strict Go validation,
+agent diagnostics, per-target document sharing and CLI registration/tests;
+reuse HTTP transport safety, A2A peer checks and independent critical/optional
+dependency aggregation. Result shape, states and exit codes are unchanged.
+
+Later: Phases 8–11 and their SDK/runtime/conformance consumers must preserve
+named peer/path/dependency evidence, names-only configured discovery and the
+distinction between runtime-declared readiness and completed task evidence.
+Path handlers contact the selected peer directly or through A2A; AgentHealth
+trusts their completion report and does not independently trace remote code.
+Gateway/router adapters, graph scheduling and AHP serving remain planned.
+
+Compatibility: this additive v1 draft turns previously unsupported agent types
+into executable targets. Existing supported targets keep their behavior.
+Specification and maintainer review precede release. Discovery requires explicit
+configuration; arbitrary framework task APIs are outside this adapter contract.
 
 ---
 
@@ -600,6 +625,8 @@ Start with existing HTTP/API, MCP, or A2A checks where Agentgateway exposes
 those interfaces. Product-specific adapters and any target-model extensions
 will be decided during design; this phase does not introduce a new target type
 or imply current support.
+
+- [ ] Add gateway-specific path evidence while preserving the Phase 7 configured peer/path results and safe probe contract. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
@@ -636,6 +663,8 @@ those interfaces. The specific router integrations, product-specific adapters,
 and any target-model extensions will be decided during design; this phase
 does not introduce a new target type or imply current support. Phase 10 will
 extend graph diagnostics across agent, gateway, router, and backend relationships.
+
+- [ ] Add route-specific evidence without conflating Phase 7 peer health with first-runtime communication probes. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
@@ -701,6 +730,8 @@ Research Agent
 
 Overall: DEGRADED
 ```
+
+- [ ] Resolve Phase 7 advertised dependency names only through explicit configuration and preserve agent, path and supporting dependency identity. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
@@ -806,6 +837,8 @@ Define:
 ## Conformance
 
 AHP implementations should be testable independently of the AgentHealth reference implementation.
+
+- [ ] Exchange Phase 7 declared readiness and completed functional/path evidence separately; do not infer communication from endpoint health. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
@@ -986,6 +1019,8 @@ print(result.status)
 
 The Python SDK must follow the Agent Health Specification rather than defining it.
 
+- [ ] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+
 ## Impact Review
 
 Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide Python APIs for runtime integrations and interoperability tests.
@@ -1028,6 +1063,8 @@ const result = await check({
 - [ ] dependency results
 - [ ] typed access to agent-role, gateway/router, and communication-path evidence defined by the updated AHS/graph contracts
 - [ ] browser/server scope definition
+
+- [ ] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
@@ -1163,6 +1200,8 @@ adapter
 - [ ] expose first-agent, downstream-agent, gateway/router, and communication-path evidence through supported framework integration patterns
 
 AgentHealth should remain framework-neutral.
+
+- [ ] Implement the Phase 7 safe health-resource handler in each supported runtime; downstream probes must actually contact the selected peer. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
@@ -1337,6 +1376,8 @@ AgentHealth Full Compatible
 
 Any certification/trademark program would require separate governance and community approval.
 
+- [ ] Verify the Phase 7 document contract, names-only discovery, safe task bounds and actual first-runtime peer communication. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+
 ## Impact Review
 
 Earlier: validate the approved AHS, AHP, adapters, outputs, and integrations; feed defects back to their owning layers. Later: provide conformance checks for interoperability and production hardening.
@@ -1383,6 +1424,8 @@ healthy gateway/router, shared backends, and multiple configured routes.
 - [ ] failing downstream agent behind a healthy gateway/router
 - [ ] shared downstream agents and backends reached through multiple configured routes
 - [ ] consistent results across CLI, SDKs, and AHP where supported
+
+- [ ] Exercise Phase 7 handlers that actually contact peers directly and via A2A, including a healthy peer behind a failed communication path. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 

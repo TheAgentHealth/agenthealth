@@ -149,6 +149,9 @@
         },
         "a2a": {
           "$ref": "#/$defs/A2AOptions"
+        },
+        "agent": {
+          "$ref": "#/$defs/AgentOptions"
         }
       },
       "required": [
@@ -505,6 +508,78 @@
                     }
                   }
                 ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "capability"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "agent"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "agent",
+                  "multi-agent"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "agent"
+            ],
+            "properties": {
+              "agent": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "agent",
+              "checks"
+            ],
+            "properties": {
+              "agent": {
+                "required": [
+                  "required_capabilities"
+                ],
+                "properties": {
+                  "required_capabilities": {
+                    "minItems": 1
+                  }
+                }
               }
             }
           },
@@ -619,6 +694,9 @@
         },
         "a2a": {
           "$ref": "#/$defs/A2AOptions"
+        },
+        "agent": {
+          "$ref": "#/$defs/AgentOptions"
         }
       },
       "required": [
@@ -975,6 +1053,78 @@
                     }
                   }
                 ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "capability"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "agent"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "agent",
+                  "multi-agent"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "agent"
+            ],
+            "properties": {
+              "agent": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "agent",
+              "checks"
+            ],
+            "properties": {
+              "agent": {
+                "required": [
+                  "required_capabilities"
+                ],
+                "properties": {
+                  "required_capabilities": {
+                    "minItems": 1
+                  }
+                }
               }
             }
           },
@@ -1390,6 +1540,43 @@
           "description": "Go validation additionally limits UTF-8 text to 65536 bytes."
         }
       }
+    },
+    "AgentOptions": {
+      "type": "object",
+      "properties": {
+        "required_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        },
+        "functional": {
+          "type": "object",
+          "properties": {
+            "safe": {
+              "const": true
+            },
+            "text": {
+              "type": "string",
+              "pattern": "\\S",
+              "maxLength": 65536
+            },
+            "downstream": {
+              "type": "string",
+              "pattern": "\\S",
+              "maxLength": 1024
+            }
+          },
+          "required": [
+            "safe",
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   },
   "type": "object",

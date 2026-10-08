@@ -25,7 +25,7 @@ AgentHealth is designed to work across:
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
 **Current release: [v0.4.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.4.0).**
 Foundation stabilization adds aligned AHS classifications, machine-readable
@@ -404,7 +404,7 @@ agenthealth version
 ```
 
 Configured dependencies are evaluated automatically; no `--dependencies` flag
-is needed. Agent and model adapters remain planned.
+is needed. The [agent adapter](docs/agent-adapter.md) is implemented; model adapters remain planned.
 
 ---
 
@@ -508,7 +508,7 @@ gateway
 custom
 ```
 
-Currently implemented target types are `http`, `api`, `mcp`, and `a2a` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility). The remaining types are specification vocabulary for future adapters.
+Currently implemented target types in source are `agent`, `multi-agent`, `http`, `api`, `mcp`, and `a2a` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility). The remaining types are specification vocabulary for future adapters.
 
 See [ROADMAP.md](ROADMAP.md).
 
@@ -587,9 +587,17 @@ and supported scope. Other A2A versions and transports remain future work.
 
 # Agent Health
 
-**Planned in [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health).**
+**Implemented draft in [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health).**
+See the [agent interface and examples](docs/agent-adapter.md).
+
+**Integration prerequisite:** your agent application must expose the documented
+health resource. For a first-to-downstream path probe, the first agent must
+implement a safe POST handler that actually contacts the selected downstream
+agent and reports completion. AgentHealth sends and evaluates the probe; it
+does not install this handler into your application. Phase 7 is available in
+source and has not yet been published in a release.
 This includes the user's first, user-facing agent, whether it answers directly
-or calls other agents. Checks will cover its own endpoint, authentication,
+or calls other agents. Checks cover its own endpoint, authentication,
 liveness, readiness, and capabilities, with an explicitly opted-in, bounded,
 non-destructive minimal task for functional validation.
 
@@ -607,13 +615,13 @@ A `multi-agent` target describes the cooperating system as a whole. Results
 should distinguish first-agent, downstream-agent, communication-path, and
 supporting-dependency failures.
 
-Conceptual command (the `agent` adapter is not yet implemented):
+Point the command at a resource implementing the agent health interface:
 
 ```bash
 agenthealth ping agent https://research-agent.example.com
 ```
 
-Potential checks:
+Checks and supporting dependencies:
 
 ```text
 Endpoint
@@ -782,6 +790,11 @@ targets:
       - functional
       - latency
 
+    agent:
+      functional:
+        safe: true
+        text: Return a fixed health acknowledgement without tools or writes.
+
     thresholds:
       latency_ms: 1000
 
@@ -912,7 +925,7 @@ The planned [Phase 23 — Plugin / Adapter Ecosystem](ROADMAP.md#phase-23--plugi
 includes extension examples for the first (direct) agent, downstream
 (composite) agents, Agentgateway, and Agent Router. Direct/composite describe
 agent roles, not separate target types or a requirement for separate adapters.
-The diagrams show intended coverage; HTTP/API, MCP, and A2A are the currently
+The diagrams show intended coverage; Agent/multi-agent, HTTP/API, MCP, and A2A are the currently
 implemented adapters. Gateway/router integrations will use the supported
 interfaces and contracts established in Phases 7–10.
 
@@ -1302,18 +1315,18 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-Coverage for phases 0–6 is indexed in [the documentation guide](docs/README.md).
+Coverage for phases 0–7 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, MCP HTTP/stdio adapter, and A2A JSON-RPC adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, and A2A JSON-RPC adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 
-Foundation stabilization is complete in v0.4.0. The next milestone is
+Foundation stabilization is released in v0.4.0. The current source implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Gateway/router integrations,
 the dependency graph, AHP, distribution, SDKs, and observability/conformance
-follow the [roadmap](ROADMAP.md).
+follow the [roadmap](ROADMAP.md). Phase 7 is not yet a published release.
 
 ---
 

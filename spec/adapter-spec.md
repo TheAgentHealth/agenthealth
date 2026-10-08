@@ -75,3 +75,7 @@ with an independent one-second cleanup budget; panics are suppressed and an
 uncooperative cleanup occupies a bounded adapter slot. MCP additionally limits
 HTTP DELETE to 250 ms, closes stdio/process groups, and discards canceled sessions.
 Existing adapters implementing only `Metadata` and `Check` remain compatible.
+
+## Phase 7 draft extension
+
+Agent/multi-agent adapters implement the [Phase 7 interface](../docs/agent-adapter.md). Share passive documents only within a target run; discovery must never authorize new network targets. Functional/path handlers must perform a bounded safe task and report completed evidence.

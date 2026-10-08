@@ -25,28 +25,23 @@ Not every target type is required to be implemented by a given release; see
 [ROADMAP.md](../ROADMAP.md) for adapter and integration phasing, including
 Agent Health, Agentgateway, and Agent Router before the Dependency Graph and AHP phases.
 
-The reference CLI currently implements `http`, `api`, `mcp`, and `a2a`.
-A2A support is limited to 0.3.0 JSON-RPC; see the [adapter guide](../docs/a2a-adapter.md).
+The reference CLI currently implements `agent`, `multi-agent`, `http`, `api`, `mcp`, and `a2a`.
+A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility; see the [adapter guide](../docs/a2a-adapter.md).
 
-## Direct and composite agent health (planned)
+## Direct and composite agent health
 
-[Phase 7](../ROADMAP.md#phase-7--agent-health) uses these agent roles:
+**Direct agent** means the user's first agent; **composite agents** are downstream
+agents it communicates with directly or through A2A. Individual agents use
+`agent`; A2A endpoints use `a2a`; a cooperating-system endpoint uses `multi-agent`.
+Supporting models, tools and data services remain dependencies.
 
-- **Direct agent:** the user's first, user-facing agent.
-- **Composite agents:** downstream agents that the first agent communicates with, directly or through A2A.
-
-Planned checks cover each agent's own endpoint, authentication, metadata,
-capabilities, liveness, readiness, and an optional safe functional task.
-Composite agent checks also cover the communication path from the first agent.
-Models, tools, MCP servers, data services, gateways, and routers are supporting
-dependencies, covered separately by dependency health.
-
-These role names do not introduce new target types, configuration fields, or
-result fields. An individual agent uses the existing `agent` vocabulary;
-`a2a` describes an A2A protocol endpoint, and `multi-agent` describes the
-cooperating system as a whole. Agent-specific checks remain planned. The
-current dependency aggregation contract is defined in
-[health-model.md](health-model.md#status-aggregation).
+The [agent adapter](../docs/agent-adapter.md) validates runtime metadata,
+liveness/readiness, required capabilities and named dependency discovery.
+Explicit safe functional probes validate completed responses. Configure each
+peer independently and a separate first-runtime path probe for communication
+evidence; endpoint health alone does not establish that path. Roles and paths
+use named nested results without new role or topology fields. The existing
+[aggregation contract](health-model.md#status-aggregation) applies.
 
 ## Required fields per target type
 

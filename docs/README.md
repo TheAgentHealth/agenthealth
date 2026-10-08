@@ -14,10 +14,13 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 4: HTTP/API | [Status, headers, bearer authentication, body checks, transport diagnostics, and safety](http-adapter.md), [HTTP configuration](../spec/configuration.md#http-response-expectations-phase-4-draft) | [HTTP readiness](../examples/core-check/agenthealth.yaml), complete configuration examples in the specification |
 | 5: MCP | [HTTP/stdio, protocol selection, inventories, OAuth, functional probes, and limits](mcp-adapter.md), [login](cli.md#mcp-oauth-login) | [Discovery, stateless, stdio, functional, and all OAuth flows](../examples/README.md) |
 | 6: A2A | [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A v1 configuration](../examples/a2a-check/v1.yaml), [0.3.0 compatibility](../examples/a2a-check/agenthealth.yaml) |
+| 7: Agent health (source only) | [Health resource, capabilities, safe tasks and runtime handler prerequisites](agent-adapter.md), [impact proposal](rfcs/phase-7-agent-health.md) | [Agent, peer and path example](../examples/agent-check/README.md) |
+
+Phase 7 is implemented in source: see the [agent adapter](agent-adapter.md) and
+[agent/peer/path example](../examples/agent-check/agenthealth.yaml).
 
 The next planned phases are:
 
-- [Phase 7 — Agent Health](../ROADMAP.md#phase-7--agent-health): direct health of the user's first agent, and composite agent health of downstream agents it communicates with directly or through A2A. Supporting dependencies are checked separately; `multi-agent` describes the cooperating system as a whole.
 - [Phase 8 — Agentgateway Integration](../ROADMAP.md#phase-8--agentgateway-integration): independent gateway health and backend diagnostics.
 - [Phase 9 — Agent Router Integration](../ROADMAP.md#phase-9--agent-router-integration): independent router health and route/backend diagnostics.
 - [Phase 10 — Dependency Graph](../ROADMAP.md#phase-10--dependency-graph): graph execution and failure propagation.
@@ -30,7 +33,7 @@ The documentation validator checks marked configuration/result blocks and
 all standalone example YAML files against the schemas. It does not establish
 connectivity to the placeholder servers or prove every command example works.
 
-HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
+Agent/multi-agent, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
 SDKs, container images, and Kubernetes integrations remain planned. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.

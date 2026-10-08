@@ -21,6 +21,11 @@ targets:
       - functional
       - latency
 
+    agent:
+      functional:
+        safe: true
+        text: Return a fixed health acknowledgement without tools or writes.
+
     thresholds:
       latency_ms: 1000
 
@@ -276,3 +281,35 @@ operator has selected a non-destructive interaction. Credentials use the existin
 Unknown fields, null options, duplicate requirements, and options on other target
 types are rejected. See the [A2A adapter guide](../docs/a2a-adapter.md) for examples
 and runtime behavior.
+
+## Agent expectations (Phase 7 draft)
+
+`agent` and `multi-agent` targets and dependencies accept `agent` options:
+`required_capabilities` is a unique list of nonempty names and requires the
+capability dimension when checks are explicit. `functional` requires explicit
+functional checks, `safe: true`, nonempty `text` up to 64 KiB and optional
+nonempty `downstream` up to 1024 characters. The downstream selector is sent to
+the first runtime; it is not a discovered URL. Names-only discovery validates
+that advertised dependencies are configured; execution uses the existing
+independent nested dependency policies. Defaults include the dependency
+summary for both agent types. See the [normative adapter interface](../docs/agent-adapter.md)
+and [impact/compatibility proposal](../docs/rfcs/phase-7-agent-health.md).
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: first
+    type: agent
+    endpoint: http://localhost:8080/health
+    checks: [protocol, capability, functional]
+    agent:
+      required_capabilities: [answer]
+      functional:
+        safe: true
+        text: Return a fixed acknowledgement without tools or writes.
+```
+
+Legacy agent configurations listing functional without task options remain
+syntactically valid but yield MISCONFIGURED before networking; they previously
+had no executable agent adapter. Add a safe task to enable functional execution.

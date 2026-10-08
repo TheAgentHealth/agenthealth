@@ -79,13 +79,12 @@ Problems that can only be discovered by actually contacting the target — such 
 
 AgentHealth targets are typed (`agent`, `mcp`, `a2a`, `model`, `http`, `database`, `vector-store`, and others). See [target-model.md](target-model.md) for the full list, required fields, and which health dimensions apply to which target type.
 
-For planned agent-specific support, [direct and composite agent health](target-model.md#direct-and-composite-agent-health-planned)
+For agent-specific support, [direct and composite agent health](target-model.md#direct-and-composite-agent-health)
 refer respectively to the user's first agent and the downstream agents it
 communicates with directly or through A2A. Each agent's own check evidence is
 distinct from communication-path and supporting-dependency evidence.
 Supporting dependencies follow the aggregation rules below. These role names
-do not add target types or health states and do not imply current `agent`
-adapter availability.
+do not add target types or health states and use the [agent adapter](../docs/agent-adapter.md) for runtime health and safe path probes.
 
 ## Error Classification
 

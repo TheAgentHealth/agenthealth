@@ -1,0 +1,26 @@
+version: v1
+targets:
+  - name: first
+    type: agent
+    endpoint: http://localhost:8080/health
+    agent:
+      required_capabilities: [answer]
+    dependencies:
+      - name: peer
+        type: a2a
+        endpoint: http://localhost:8081
+        a2a:
+          required_skills: [answer]
+      - name: first-to-peer
+        type: agent
+        endpoint: http://localhost:8080/health
+        checks: [functional]
+        agent:
+          functional:
+            safe: true
+            text: Return a fixed health acknowledgement without tools or writes.
+            downstream: peer
+      - name: model-health
+        type: http
+        endpoint: http://localhost:8082/health
+        critical: false

@@ -27,24 +27,24 @@ Python and JavaScript/TypeScript are not used for the core engine; they remain *
 
 **Decision:** adapters are compiled into the core engine initially (in-repo, in-process), rather than loaded as external dynamic plugins. This keeps the trust boundary simple and avoids a plugin ABI before the model is proven. A true out-of-process/dynamic plugin mechanism is deferred to [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem). All adapters, in-process or future-external, must satisfy the [Adapter Contract](../spec/adapter-spec.md).
 
-The CLI currently registers HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters.
+The CLI currently registers agent/multi-agent, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters.
 A2A uses the shared HTTP client and per-target run state for bounded card
 retrieval, then validates metadata and the advertised same-origin endpoint.
 The engine owns deadlines, retries, aggregation, latency, and output; the
 adapter owns protocol checks and the opt-in interaction. See the
 [A2A guide](a2a-adapter.md) for the Phase 6 behavior.
 
-## Planned agent health scopes
+## Agent health scopes
 
 [Phase 7](../ROADMAP.md#phase-7--agent-health) covers the direct agent
 (the user's first agent) and composite agents (the downstream agents it
-communicates with directly or through A2A). Planned checks distinguish each
+communicates with directly or through A2A). Checks distinguish each
 agent's own health from the health of the communication path between agents.
 Models, tools, MCP servers, data services, gateways, and routers are supporting
 dependencies, covered separately by dependency health. These agent roles use
 the existing target vocabulary; `multi-agent` describes the cooperating system
-as a whole. Agent-specific checks are not yet implemented.
-See the [target model](../spec/target-model.md#direct-and-composite-agent-health-planned).
+as a whole. Agent-specific checks use the [Phase 7 adapter interface](agent-adapter.md).
+See the [target model](../spec/target-model.md#direct-and-composite-agent-health).
 
 ## Configuration format
 

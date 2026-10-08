@@ -30,14 +30,14 @@ protocol.md       -> (experimental) defines HOW health is exposed/exchanged over
 
 ## Implemented adapters
 
-Reference implementations currently support [HTTP/API](../docs/http-adapter.md),
+Reference implementations currently support [Agent/multi-agent](../docs/agent-adapter.md), [HTTP/API](../docs/http-adapter.md),
 [MCP](../docs/mcp-adapter.md), and [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility](../docs/a2a-adapter.md).
 See [A2A configuration](configuration.md#a2a-expectations-phase-6-draft) and
 [Phase 6 examples](../examples/a2a-check/README.md) for discovery, credentials,
 expected skills/capabilities, and opt-in interaction. The target vocabulary
 also includes future adapters; implementation availability follows the roadmap.
 
-Planned [direct and composite agent health](target-model.md#direct-and-composite-agent-health-planned)
+[Direct and composite agent health](target-model.md#direct-and-composite-agent-health)
 covers the user's first agent and the downstream agents it communicates with,
 directly or through A2A. Models, tools, and data services remain supporting
 dependencies. `multi-agent` describes the cooperating system as a whole.
