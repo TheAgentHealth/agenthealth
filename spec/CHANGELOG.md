@@ -19,3 +19,9 @@ reference protocol default and corrected classifications.
 ## Phase 7 draft extension — software v0.5.0
 
 Phase 7 adds optional `agent` configuration for agent/multi-agent targets, capability expectations and safe task/path probes. Results, health states and exit codes stay v1-compatible; see the [contract proposal](../docs/rfcs/phase-7-agent-health.md).
+
+## Phase 9 (unreleased)
+
+Add the `router` target type to configuration/result schemas and HTTP options on router targets/dependencies.
+Existing result fields, health semantics and exit codes remain compatible.
+Older binaries reject the new type. See [the RFC](../docs/rfcs/phase-9-agent-router.md).

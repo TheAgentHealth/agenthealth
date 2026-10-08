@@ -1,0 +1,7 @@
+version: v1
+targets:
+  - name: router
+    type: router
+    endpoint: https://example.com/ready
+    http:
+      body_contains: ready

@@ -33,6 +33,7 @@
         "database",
         "runtime",
         "gateway",
+        "router",
         "custom"
       ]
     },
@@ -173,7 +174,8 @@
                 "enum": [
                   "http",
                   "api",
-                  "gateway"
+                  "gateway",
+                  "router"
                 ]
               }
             }
@@ -719,7 +721,8 @@
                 "enum": [
                   "http",
                   "api",
-                  "gateway"
+                  "gateway",
+                  "router"
                 ]
               }
             }

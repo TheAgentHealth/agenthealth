@@ -10,7 +10,7 @@
     },
     "TargetType": {
       "type": "string",
-      "enum": ["agent", "multi-agent", "a2a", "mcp", "tool", "model", "llm", "http", "api", "vector-store", "database", "runtime", "gateway", "custom"]
+      "enum": ["agent", "multi-agent", "a2a", "mcp", "tool", "model", "llm", "http", "api", "vector-store", "database", "runtime", "gateway", "router", "custom"]
     },
     "Target": {
       "type": "object",
