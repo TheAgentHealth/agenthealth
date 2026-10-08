@@ -120,7 +120,7 @@ AgentHealth aims to provide:
 
 1. A **vendor-neutral health model** for agentic systems.
 2. A **language-neutral Agent Health Specification**.
-3. An experimental **Agent Health Protocol (AHP)** proposal for standardizing how health is exposed and exchanged over the wire (future).
+3. An experimental **Agent Health Protocol (AHP)** HTTP v1 binding for exchanging health, implemented in source.
 4. A universal command-line interface.
 5. Health checks for common agent protocols and infrastructure.
 6. Dependency-aware health diagnostics.
@@ -185,36 +185,11 @@ This is documented throughout this README (see [Core Concepts](#core-concepts) a
 
 ## Agent Health Protocol (AHP) — proposed / experimental
 
-> **Status: experimental / future.** AHP is a direction, not a shipped standard. Running health checks with the CLI does not, by itself, constitute a protocol — a protocol requires a defined, versioned, interoperable wire contract that multiple independent implementations can agree on.
-
-AHP is the proposed answer to a narrower question than the specification: once you know what health means, how should it be **exposed and exchanged** over the wire so that any client, gateway, or orchestrator can query it consistently, regardless of language or framework?
-
-A future AHP could standardize endpoints such as:
-
-```text
-GET /health
-GET /ready
-GET /live
-GET /dependencies
-GET /capabilities
-```
-
-and a common response envelope such as:
-
-<!-- spec-example: skip reason="illustrative AHP sketch only; intentionally omits target.name (not yet a defined requirement for AHP) so it does not validate against the normative Result schema" -->
-```json
-{
-  "spec_version": "v1",
-  "status": "DEGRADED",
-  "target": {
-    "type": "agent"
-  },
-  "checks": {},
-  "dependencies": []
-}
-```
-
-The [Machine-Readable Health Format](#machine-readable-health-format) that AgentHealth's CLI produces (see [Phase 3 — Universal CLI](ROADMAP.md#phase-3--universal-cli)) is an early, implementation-specific version of this idea. Formalizing it into AHP, with a versioned schema, transport requirements, and conformance rules independent of this repository's CLI, is future work.
+Experimental HTTP v1 serving is implemented in current source. `agenthealth serve`
+exposes public `/health`, `/ready` and `/live` summaries and bearer-authorized
+`/health/dependencies` and `/health/capabilities` evidence. See the
+[protocol contract](spec/protocol.md) and [serving guide](docs/ahp.md).
+Independent interoperability and external standardization remain unverified.
 
 ## Reference Implementation
 
@@ -1377,7 +1352,7 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
-The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. AHP, distribution, SDKs, and observability/conformance
+The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is implemented in source. Distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---
@@ -1605,3 +1580,8 @@ AgentHealth is an independent open-source project.
 References to third-party projects, protocols, companies, products, or trademarks are for interoperability and descriptive purposes only and do not imply affiliation, sponsorship, or endorsement.
 
 Phase 8 Agentgateway integration is released in v0.6.0. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+
+## Experimental AHP serving
+
+`agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
+See the [AHP guide](docs/ahp.md) for authorization, freshness and deployment.

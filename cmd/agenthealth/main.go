@@ -28,6 +28,7 @@ const usage = `Usage:
   agenthealth doctor <type> <endpoint> [--format terminal|json|yaml]
   agenthealth doctor <configuration.yaml> [--format terminal|json|yaml]
   agenthealth login <configuration.yaml> <target-name>
+  agenthealth serve <configuration.yaml> [--listen host:port] [--token-env NAME]
   agenthealth version
 
 Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router.
@@ -47,6 +48,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	fail := func(message string) int {
 		fmt.Fprintln(diagnostics, message)
 		return 6
+	}
+	if len(args) > 0 && args[0] == "serve" {
+		return runServe(ctx, args[1:], out, diagnostics)
 	}
 	format := "terminal"
 	var positional []string
@@ -148,24 +152,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	default:
 		return fail("unknown command; use --help")
 	}
-	registry := core.NewRegistry()
-	if err := registry.Register(routeradapter.Adapter{}); err != nil {
-		return fail("cannot register router adapter")
-	}
-	if err := registry.Register(gatewayadapter.Adapter{}); err != nil {
-		return fail("cannot register gateway adapter")
-	}
-	if err := registry.Register(agentadapter.Adapter{}); err != nil {
-		return fail("cannot register agent adapter")
-	}
-	if err := registry.Register(httpadapter.Adapter{}); err != nil {
-		return fail("cannot register HTTP adapter")
-	}
-	if err := registry.Register(mcpadapter.Adapter{}); err != nil {
-		return fail("cannot register MCP adapter")
-	}
-	if err := registry.Register(a2aadapter.Adapter{}); err != nil {
-		return fail("cannot register A2A adapter")
+	registry, registryErr := newRegistry()
+	if registryErr != nil {
+		return fail("cannot register adapters")
 	}
 	results, err := core.NewEngine(registry).Run(ctx, config)
 	if err != nil {
@@ -227,4 +216,28 @@ func writeAdvice(w io.Writer, results []core.Result) error {
 		}
 	}
 	return nil
+}
+
+func newRegistry() (*core.Registry, error) {
+	registry := core.NewRegistry()
+	if err := registry.Register(routeradapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register router adapter")
+	}
+	if err := registry.Register(gatewayadapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register gateway adapter")
+	}
+	if err := registry.Register(agentadapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register agent adapter")
+	}
+	if err := registry.Register(httpadapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register HTTP adapter")
+	}
+	if err := registry.Register(mcpadapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register MCP adapter")
+	}
+	if err := registry.Register(a2aadapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register A2A adapter")
+	}
+
+	return registry, nil
 }

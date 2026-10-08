@@ -60,3 +60,8 @@ See [the router guide](../docs/agent-router.md). Named router signals, direct ba
 See the [explicit graph contract](../docs/rfcs/phase-10-dependency-graph.md) for shared node IDs, relationship evidence, independent edge policies, validation and bounded execution. Existing nested configurations and health semantics remain valid.
 
 Cleanup hooks remain serialized across nodes, runs and engines sharing a registry. Waiting for the serialization gate honors the cleanup deadline; an uncooperative hook holds the gate and its adapter-call slots until it actually returns.
+
+## Experimental AHP serving
+
+`agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
+See the [AHP guide](../docs/ahp.md) for authorization, freshness and deployment.

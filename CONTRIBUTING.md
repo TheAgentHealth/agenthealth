@@ -36,7 +36,7 @@ paths, and supporting dependency failures. Follow the
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is implemented as a draft adapter interface.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
-is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is released in v0.8.0; AHP remains planned in Phase 11. Keep planned
+is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is released in v0.8.0; experimental AHP HTTP serving is implemented in Phase 11. Keep planned
 capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway and router adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.

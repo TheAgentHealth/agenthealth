@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AHP v1 HTTP envelope",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ahp_version",
+        "error"
+      ],
+      "properties": {
+        "ahp_version": {
+          "const": "v1"
+        },
+        "error": {
+          "enum": [
+            "not_found",
+            "method_not_allowed",
+            "unsupported_version",
+            "unauthorized",
+            "snapshot_unavailable"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ahp_version",
+        "spec_version",
+        "status"
+      ],
+      "properties": {
+        "ahp_version": {
+          "const": "v1"
+        },
+        "spec_version": {
+          "const": "v1"
+        },
+        "status": {
+          "enum": [
+            "HEALTHY",
+            "DEGRADED",
+            "UNHEALTHY",
+            "UNREACHABLE",
+            "MISCONFIGURED",
+            "UNKNOWN"
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence": {
+          "$ref": "result.schema.json"
+        }
+      }
+    }
+  ]
+}

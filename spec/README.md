@@ -6,7 +6,7 @@ This directory contains the specification documents for AgentHealth, introduced 
 |---|---|---|
 | Agent Health Specification (AHS) | [health-model.md](health-model.md) | Draft — most mature layer |
 | Target Model | [target-model.md](target-model.md) | Draft |
-| Agent Health Protocol (AHP) | [protocol.md](protocol.md) | Proposed / experimental |
+| Agent Health Protocol (AHP) | [protocol.md](protocol.md) | Experimental HTTP v1, implemented in source |
 | Configuration | [configuration.md](configuration.md) | Draft |
 | Result Schema | [result-schema.md](result-schema.md) | Draft |
 | Exit Codes | [exit-codes.md](exit-codes.md) | Draft |

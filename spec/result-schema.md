@@ -1,6 +1,6 @@
 # Result Schema
 
-> Status: Draft. Defines the canonical machine-readable health result produced by `agenthealth check <configuration.yaml> --format json` (see [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli)), and referenced by the proposed [AHP response envelope](protocol.md#proposed-response-envelope-non-normative).
+> Status: Draft. Defines the canonical machine-readable health result produced by `agenthealth check <configuration.yaml> --format json` (see [Phase 3 — Universal CLI](../ROADMAP.md#phase-3--universal-cli)), and referenced by the experimental [AHP response envelope](protocol.md#operations-and-semantics).
 
 ## Recursive Shape
 

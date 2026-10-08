@@ -1,0 +1,6 @@
+version: v1
+targets:
+  - name: application
+    type: http
+    endpoint: http://127.0.0.1:9000/health
+    checks: [configuration, reachability, protocol]

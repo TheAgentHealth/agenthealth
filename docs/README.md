@@ -26,7 +26,7 @@ Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](age
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).
 
 Phase 10 is included in [v0.8.0](releases/v0.8.0.md); older v0.7.0 binaries do not include it.
-The next planned phase is [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp), standardized health exchange. It remains unimplemented; its roadmap entry defines planned scope.
+The current source phase is [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp), standardized health exchange. Experimental HTTP serving is implemented; see [AHP](ahp.md).
 
 Configuration examples are templates requiring your services and credentials.
 The documentation validator checks marked configuration/result blocks and
