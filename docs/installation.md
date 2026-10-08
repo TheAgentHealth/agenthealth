@@ -66,3 +66,47 @@ GitHub OIDC identity. Checksums alone do not authenticate the publisher.
 Archives normalize owner IDs, names, modes, timestamps and gzip/ZIP metadata.
 Reproduction requires the same source commit, Go toolchain and build environment;
 archive timestamp defaults to the commit time and can use `SOURCE_DATE_EPOCH`.
+
+## Container image
+
+Starting with the first release after Phase 12, each release tag publishes a
+multi-platform image (`linux/amd64`, `linux/arm64`) to
+`ghcr.io/theagenthealth/agenthealth`. Plain version tags publish `X.Y.Z`, `X.Y`
+and `latest`; suffixed preview tags publish only their exact version. Image
+tags omit the leading `v`. Until that release exists, build the image locally:
+
+```bash
+docker build --build-arg VERSION=dev -t agenthealth .
+docker run --rm agenthealth version
+```
+
+The image uses a distroless static base with CA certificates, runs as the
+non-root user `65532`, and contains no shell. Its entrypoint is `agenthealth`,
+so arguments are CLI arguments. The binaries inside are byte-identical to the
+binaries in the matching Linux release archives.
+
+```bash
+docker run --rm ghcr.io/theagenthealth/agenthealth ping http https://example.com
+
+# Mount configuration read-only and pass referenced credentials by name.
+docker run --rm \
+  -v "$PWD/agenthealth.yaml:/config/agenthealth.yaml:ro" \
+  -e AGENT_API_TOKEN \
+  ghcr.io/theagenthealth/agenthealth check /config/agenthealth.yaml --format json
+```
+
+Exit codes are the [CLI exit codes](../spec/exit-codes.md), so the container
+can gate CI jobs and Kubernetes probes directly. Use `host.docker.internal`
+(Docker Desktop) or a container network to reach services on the host.
+
+Limitations: MCP stdio targets run their configured executable inside the
+container, so build a derived image that adds that server. `agenthealth login`
+needs a browser callback and is intended for a workstation binary. Token files
+require owner-only permissions and may be rewritten on refresh, so a container
+reusing one needs a writable volume owned by UID 65532.
+
+Verify a published image's signed attestation with the GitHub CLI:
+
+```bash
+gh attestation verify oci://ghcr.io/theagenthealth/agenthealth:<version> --repo TheAgentHealth/agenthealth
+```

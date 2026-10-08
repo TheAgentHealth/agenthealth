@@ -31,7 +31,7 @@ all standalone example YAML files against the schemas. It does not establish
 connectivity to the placeholder servers or prove every command example works.
 
 HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
-SDKs, container images, and Kubernetes integrations remain planned. Historical
+SDKs and Kubernetes integrations remain planned; the [container image](installation.md#container-image) publishes from the next release tag. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.
 

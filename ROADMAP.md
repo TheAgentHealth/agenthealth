@@ -815,7 +815,11 @@ Earlier: review AHS/graph contracts for wire exchange, add core serving support,
 
 # Phase 12 — Docker Distribution
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented — the [Dockerfile](Dockerfile) builds a distroless,
+non-root image for Linux AMD64/ARM64 whose binaries are byte-identical to the
+release archives. The release workflow publishes it to GHCR with BuildKit
+provenance and SBOM and a GitHub-signed attestation, starting with the first
+release tag after this change. See [container usage](docs/installation.md#container-image).
 
 Goal:
 
@@ -823,25 +827,33 @@ Allow AgentHealth to run without installing a programming language runtime.
 
 ## Deliverables
 
-- [ ] Official container image
-- [ ] Multi-stage build
-- [ ] Minimal runtime image
-- [ ] Linux AMD64
-- [ ] Linux ARM64
-- [ ] Signed images
-- [ ] SBOM
-- [ ] Versioned tags
+- [x] Official container image (`ghcr.io/theagenthealth/agenthealth`)
+- [x] Multi-stage build
+- [x] Minimal runtime image (distroless static, non-root)
+- [x] Linux AMD64
+- [x] Linux ARM64
+- [x] Signed images (keyless GitHub attestation pushed to the registry)
+- [x] SBOM
+- [x] Versioned tags
+- [ ] Docker Hub mirror (`agenthealth/agenthealth`), pending registry ownership
 
 Example:
 
 ```bash
-docker run --rm agenthealth/agenthealth \
+docker run --rm ghcr.io/theagenthealth/agenthealth \
   ping mcp http://host.docker.internal:3000
 ```
 
 ## Impact Review
 
-Earlier: package the existing CLI; no AHS/core contract change is expected solely for container distribution. Later: provide images for Kubernetes and CI, with container security validated during hardening.
+Earlier: packages the existing CLI unchanged; no AHS, schema, core, CLI or
+adapter contract changes. The release workflow gains a container job that runs
+only after the binary release and verifies image binaries against the attested
+archives (Phase 13). MCP stdio targets need their server executable in a derived
+image, and interactive `agenthealth login` is not supported in the minimal image.
+Later: Phase 14 consumes the image and its tags for probes, init containers and
+Jobs; CI integrations can use it directly; hardening should add image
+vulnerability scanning and a Docker Hub mirror once registry ownership exists.
 
 ---
 
@@ -870,7 +882,7 @@ Potential channels:
 - [x] Linux standalone binary archives
 - [ ] Linux packages (DEB/RPM)
 - [ ] Windows package manager
-- [ ] container registries
+- [x] container registries (GHCR, Phase 12)
 
 ## Impact Review
 

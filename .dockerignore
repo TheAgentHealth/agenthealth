@@ -1,0 +1,9 @@
+# Only the Go module, sources and LICENSE are needed for the image.
+*
+!go.mod
+!go.sum
+!cmd/
+!core/
+!adapters/
+!LICENSE
+**/*_test.go
