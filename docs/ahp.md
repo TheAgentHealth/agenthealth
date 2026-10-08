@@ -1,6 +1,6 @@
 # Serving AHP
 
-Build the current source and run:
+Use v0.9.0 or newer, or build current source, and run:
 
 ```bash
 agenthealth serve examples/ahp-check/agenthealth.yaml
@@ -24,4 +24,4 @@ A health failure does not exit the serving process.
 
 Remote deployments should terminate HTTPS and enforce rate limits at a proxy.
 See the [protocol](../spec/protocol.md) and [impact review](rfcs/phase-11-ahp.md).
-This experimental implementation is available in source; v0.8.0 does not include it.
+This experimental implementation is included in v0.9.0; v0.8.0 does not include it.

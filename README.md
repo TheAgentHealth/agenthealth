@@ -9,7 +9,7 @@ and example coverage across Phases 0–26.
 
 ## Start here
 
-**Released: [v0.8.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.8.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Released: [v0.9.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.9.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
@@ -72,14 +72,14 @@ The long-term scope includes these systems; the supported adapters above describ
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Release version: [v0.8.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.8.0).**
+**Release version: [v0.9.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.9.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
 Phase 10 adds [shared dependency graphs](docs/dependency-graph.md), independent edge policies and bounded parallel execution in v0.8.0. See [v0.8.0 release notes](docs/releases/v0.8.0.md).
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release
 retains A2A 1.0 with explicit 0.3.0 compatibility and signed provenance/SBOM
-attestations. See [release and migration notes](docs/releases/v0.8.0.md).
+attestations. See [release and migration notes](docs/releases/v0.9.0.md).
 
 ---
 
@@ -185,7 +185,7 @@ This is documented throughout this README (see [Core Concepts](#core-concepts) a
 
 ## Agent Health Protocol (AHP) — proposed / experimental
 
-Experimental HTTP v1 serving is implemented in current source. `agenthealth serve`
+Experimental HTTP v1 serving is included in v0.9.0. `agenthealth serve`
 exposes public `/health`, `/ready` and `/live` summaries and bearer-authorized
 `/health/dependencies` and `/health/capabilities` evidence. See the
 [protocol contract](spec/protocol.md) and [serving guide](docs/ahp.md).
@@ -1352,7 +1352,7 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
-The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is implemented in source. Distribution, SDKs, and observability/conformance
+The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is included in v0.9.0. Distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---

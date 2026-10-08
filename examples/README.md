@@ -14,7 +14,7 @@ an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
 | [Agentgateway, backend and path](gateway-check/README.md) | Read-only gateway readiness, direct downstream health and proxied A2A evidence |
 | [Agent Router, backend and routes](router-check/README.md) | Read-only router readiness, direct and routed A2A evidence, and bounded opt-in route matching |
 | [Shared dependency graph](graph-check/README.md) | Shared node references, separate downstream/path evidence, concurrency and independent edge policies; requires v0.8.0 or newer |
-| [Experimental AHP serving](ahp-check/README.md) | Background snapshots, public readiness/liveness, bearer-authorized evidence; requires current source |
+| [Experimental AHP serving](ahp-check/README.md) | Background snapshots, public readiness/liveness, bearer-authorized evidence; requires v0.9.0 or newer |
 | [HTTP readiness](core-check/agenthealth.yaml) | HTTP status checks and latency thresholds |
 | [MCP discovery](mcp-check/agenthealth.yaml) | Required tool names and resource URIs, with automatic protocol selection |
 | [Modern MCP](mcp-check/modern.yaml) | Pinning stateless MCP `2026-07-28` |
@@ -132,11 +132,11 @@ evidence, functional bounds, credentials and interface limitations.
 
 ## Experimental AHP serving
 
-Build current source and start the [serving example](ahp-check/README.md):
+Use v0.9.0 or newer and start the [serving example](ahp-check/README.md):
 
 ```bash
 agenthealth serve examples/ahp-check/agenthealth.yaml
 ```
 
-AHP is available in source and is absent from v0.8.0 binaries. See the
+AHP is included in v0.9.0 and is absent from v0.8.0 binaries. See the
 [AHP guide](../docs/ahp.md) for endpoint access and refresh semantics.

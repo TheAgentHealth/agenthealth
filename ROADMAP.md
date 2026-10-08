@@ -754,7 +754,7 @@ Earlier: consolidate Phases 7–9 contracts, extend core graph execution, and ad
 
 # Phase 11 — Agent Health Protocol (AHP)
 
-**Status:** Implemented in source — experimental HTTP v1
+**Status:** Included in [v0.9.0](docs/releases/v0.9.0.md) — experimental HTTP v1
 
 Goal:
 
