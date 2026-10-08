@@ -12,7 +12,7 @@ type Adapter struct{}
 func (Adapter) Metadata() core.Metadata {
 	m := (httpadapter.Adapter{}).Metadata()
 	m.Name = "agentgateway"
-	m.Version = "0.5.0"
+	m.Version = "0.6.0"
 	m.TargetTypes = []string{"gateway"}
 	return m
 }
