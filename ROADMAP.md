@@ -906,6 +906,10 @@ adapter contract changes. The release workflow gains a container job that runs
 only after the binary release and verifies image binaries against the attested
 archives (Phase 13). MCP stdio targets need their server executable in a derived
 image, and interactive `agenthealth login` is not supported in the minimal image.
+GitHub creates a new organization package as private by default, so the first
+publish needs a one-time manual visibility change; the release smoke test logs
+out of GHCR first so this is caught as a release failure instead of silently
+passing (see [RELEASING.md](RELEASING.md)).
 Later: Phase 14 consumes the image and its tags for probes, init containers and
 Jobs; CI integrations can use it directly; hardening should add image
 vulnerability scanning and a Docker Hub mirror once registry ownership exists.

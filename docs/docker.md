@@ -89,6 +89,12 @@ pushed to the registry. Verify with:
 gh attestation verify oci://ghcr.io/theagenthealth/agenthealth:vX.Y.Z --repo TheAgentHealth/agenthealth
 ```
 
+GitHub creates a brand-new organization package as private by default. The
+release workflow's smoke test logs out of GHCR before pulling, so a release
+fails loudly if the package is still private rather than passing on cached
+publisher credentials; see [RELEASING.md](../RELEASING.md) for the required
+one-time visibility change after the first publish.
+
 See [installation.md](installation.md) for standalone binary archives and
 their own provenance/SBOM verification, and [RELEASING.md](../RELEASING.md)
 for the release process that both distribution channels share.

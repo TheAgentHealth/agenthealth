@@ -61,6 +61,15 @@ The specification documents under [spec/](spec/README.md) are versioned independ
    - npm package (once [Phase 16](ROADMAP.md#phase-16--javascript--typescript-sdk) lands).
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
+**First container release only:** GitHub creates a new organization package as
+private by default. After the very first `container` job publishes
+`ghcr.io/theagenthealth/agenthealth`, a maintainer with package admin access
+must open the package's settings on GitHub and change its visibility to
+public; otherwise `docker run ghcr.io/theagenthealth/agenthealth` fails with
+`unauthorized` for everyone except the publishing workflow. The release
+workflow's smoke test logs out of GHCR first so this is caught as a release
+failure instead of silently passing.
+
 The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), verifies the Linux AMD64 version and archive checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
 
 To prepare artifacts locally (the output directory must be empty):

@@ -180,8 +180,9 @@ jobs:
           subject-name: ${{ env.IMAGE }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
-      - name: Smoke-test published image
+      - name: Smoke-test published image as an unauthenticated user
         run: |
+          docker logout ghcr.io
           image="$IMAGE@${{ steps.push.outputs.digest }}"
           test "$(docker run --rm "$image" version)" = "agenthealth $RELEASE_TAG"
           docker run --rm "$image" --help
