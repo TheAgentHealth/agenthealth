@@ -63,6 +63,7 @@ FILES_TO_CHECK = [
     ROOT / "docs" / "mcp-adapter.md",
     ROOT / "docs" / "a2a-adapter.md",
     ROOT / "docs" / "agent-adapter.md",
+    ROOT / "docs" / "agent-router.md",
     ROOT / "examples" / "README.md",
 ]
 
