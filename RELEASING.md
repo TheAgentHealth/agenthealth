@@ -39,17 +39,42 @@ regular release; v0.1.0 remains a historical preview.
 
 The specification documents under [spec/](spec/README.md) are versioned independently via `spec_version` (e.g. `v1`), separate from the software release version. A software release can ship `spec_version: v1` across several `MINOR`/`PATCH` releases without a spec change.
 
-## What gets its own version
+## Component versions and synchronized distribution
 
-| Component | Versioned independently? | Notes |
-|---|---|---|
-| `agenthealth` CLI / core engine | Yes | Primary release artifact |
-| Adapters (MCP, A2A, HTTP, ...) | No, initially | Ship together with the core engine while adapters live in this repo |
-| Python SDK (`agenthealth` on PyPI) | Yes | Tracks, but is not required to match, the CLI version |
-| JavaScript SDK (`@agenthealth/sdk` on npm) | Yes | Tracks, but is not required to match, the CLI version |
-| Container image (`ghcr.io/theagenthealth/agenthealth`) | Yes, tagged to CLI version | `vX.Y.Z`, floating `vX` and `latest` for plain version tags; suffixed tags publish only `vX.Y.Z-suffix` |
-| Docker Hub mirror (`theagenthealth/agenthealth`) | Yes, same tags as GHCR | Optional: only published when `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN` repository secrets are configured |
-| Helm chart | Yes | Chart version and app version are tracked separately per Helm convention |
+Version components by their public interfaces. Release every distribution format
+of the same component together. A shared repository does not require every
+component to have the same version or to publish on every release.
+
+| Component or artifact | Version and publication policy |
+|---|---|
+| CLI, core engine and in-tree adapters | One CLI version, tagged `vX.Y.Z` |
+| Standalone archives, DEB/RPM and Homebrew/Scoop manifests | Same CLI version; generate and publish together for every CLI release |
+| GHCR container and configured Docker Hub mirror | Same CLI version and source; publish with every CLI release even when the Dockerfile is unchanged |
+| Python SDK / PyPI (planned) | Independent SDK version; publish when its code/API or bundled/pinned CLI dependency changes |
+| JavaScript/TypeScript SDK / npm (planned) | Independent SDK version; publish when its code/API or bundled/pinned CLI dependency changes |
+| Helm chart (planned) | Independent chart version; `appVersion` records the CLI version and the image reference pins an explicit tag or digest |
+| Kubernetes examples/manifests (planned) | Update with affected behavior; no separate package version unless a packaged component is introduced |
+| AHS/AHP contracts | Contract versions remain independent of software versions |
+
+For example, CLI `v0.11.0` publishes matching archives, Linux packages, channel
+manifests and container images. An unchanged SDK may retain its existing version
+if its documented compatibility covers that CLI. Updating an SDK's bundled or
+pinned CLI requires a new SDK release. Updating a published chart's default image
+requires a new chart version, even when the templates are unchanged.
+
+Publish by component release intent, not by arbitrary repository changes or
+Dockerfile-only path filters. Pull requests and merges run validation; they do
+not publish packages. The current `v*` release workflow publishes the implemented
+CLI formats only. Future SDK/chart workflows must use separate, component-specific
+release triggers (for example `python-vX.Y.Z`, `javascript-vX.Y.Z`,
+`helm-vX.Y.Z`) and must not trigger CLI publication. These names are a design
+for future workflows, not currently implemented triggers.
+
+Release notes identify the component, artifacts and compatibility requirements.
+Keep published versions immutable. Verify all required formats before declaring
+a CLI release complete; binary and container jobs may run in parallel, but a
+successful binary upload alone does not establish successful container publication.
+Public taps/buckets and package repositories remain separate hosting work.
 
 ## Release steps (current, pre-1.0)
 
@@ -57,9 +82,10 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 2. When a release is cut, tag `main` as `vX.Y.Z`.
 3. Build and publish artifacts for that tag:
    - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
-   - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published after the binary release succeeds,
-   - PyPI package (once [Phase 15](ROADMAP.md#phase-15--python-sdk--pypi) lands),
-   - npm package (once [Phase 16](ROADMAP.md#phase-16--javascript--typescript-sdk) lands).
+   - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published in parallel with the binary release after source validation,
+   - Linux packages and Homebrew/Scoop manifests once Phase 13 tooling is included.
+   SDKs and Helm charts publish through their own component releases once implemented;
+   a CLI tag does not automatically publish them.
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
 **First container release only:** GitHub creates a new organization package as
@@ -78,7 +104,7 @@ under Account Settings → Personal access tokens, scope Read & Write). Until
 those secrets are added, the Docker Hub steps are skipped and only GHCR is
 published.
 
-The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), verifies the Linux AMD64 version and archive checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
+The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), gates publication on native archive smoke tests for all five platforms, generates package assets and verifies checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
 
 To prepare artifacts locally (the output directory must be empty):
 
@@ -108,7 +134,7 @@ Once 1.0 ships, the project commits to:
 Before 1.0, no such guarantee is made; this document exists to make pre-1.0 expectations explicit rather than leaving them undocumented.
 
 Release builds use Go 1.27.1 and govulncheck v1.8.0. Each published release
-contains five archives, five matching SBOMs and checksums. Verify provenance and
+contains five archives, five matching SBOMs and checksums. Starting in v0.11.0, Phase 13 tooling also produces four DEB/RPM packages and two channel manifests. Verify provenance and
 SBOM attestations following [installation instructions](docs/installation.md#verify-provenance-and-sboms).
 
 ## Infrastructure-only recovery
@@ -124,3 +150,20 @@ existing provenance for every asset; source changes require a new version.
 v0.4.0 used this path after [PR #10](https://github.com/TheAgentHealth/agenthealth/pull/10)
 corrected the action's detection of schema-valid CycloneDX documents without
 the optional `serialNumber`. Published SBOMs use explicit CycloneDX predicates.
+
+## Phase 13 package assets
+
+After building archives, run `python3 scripts/package_release.py <tag> --output <directory>`.
+This verifies existing checksums, reuses the Linux executable bytes, invokes
+[nFPM](https://nfpm.goreleaser.com/docs/configuration/) v2.47.0 through Go (requires Go 1.26.4 or newer, or automatic toolchain download), and
+adds four DEB/RPM packages plus Homebrew/Scoop manifests to `checksums.txt`.
+The release workflow signs build provenance for every asset. Archive SBOMs
+remain bound to their archive executable; packages reuse that executable but
+do not yet have separate SBOM attestations. Verify package provenance before
+installing. Native signing and package repository signatures remain Phase 26.
+
+The release waits for native archive smoke tests on all five platforms.
+Publishing a tap/bucket or APT/YUM repository is separate from generating
+release assets and is not automated. Older tag recovery uses older tagged
+scripts, preserving the original asset set. Do not generate package assets
+for an already published release.

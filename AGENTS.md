@@ -123,6 +123,16 @@ Publish only when the user requests a release. Preparing release tooling or
 documentation does not by itself authorize pushing a tag. A tag push triggers
 publication through [.github/workflows/release.yml](.github/workflows/release.yml).
 
+Before preparing a release, identify its component under the
+[component release policy](RELEASING.md#component-versions-and-synchronized-distribution).
+CLI releases include all implemented distribution formats at the same CLI
+version, including Docker even when its files are unchanged. Verify the container
+job as well as binary publication before declaring release success. SDKs and
+Helm charts version independently; do not publish them merely because a CLI tag
+was pushed. Future component triggers must not match the CLI `v*` trigger.
+Changes to bundled/pinned CLI dependencies require a new SDK/chart release;
+record compatibility and chart `appVersion`/explicit image references.
+
 1. Inspect existing remote tags/releases and choose the next version under
    RELEASING.md. Never reuse, move, or overwrite a published tag. Software
    versions such as `v0.1.1` are independent of the `spec_version: v1` contract.
@@ -137,6 +147,8 @@ publication through [.github/workflows/release.yml](.github/workflows/release.ym
    python3 scripts/build_release.py v0.1.1 --output /tmp/agenthealth-v0.1.1-assets
    ```
 
+   For releases containing Phase 13 tooling, also run
+   `python3 scripts/package_release.py <tag> --output <same-output-directory>`.
    Check archive contents, hashes, and the native binary's `version` and CLI
    behavior. Do not claim runtime testing on platforms only cross-compiled.
 4. Commit the release changes in a PR, obtain the required review, and wait for
@@ -157,11 +169,13 @@ publication through [.github/workflows/release.yml](.github/workflows/release.ym
    tag, not every local tag. Do not tag an unmerged feature branch.
 6. Watch the Release workflow using GitHub CLI or GitHub Actions. It validates
    the tagged source, builds Linux AMD64/ARM64, macOS AMD64/ARM64, and Windows
-   AMD64 archives, adds `checksums.txt`, smoke-tests Linux AMD64, uploads assets
+   AMD64 archives, generates Phase 13 package assets, adds `checksums.txt`,
+   gates publication on all five native platform smoke checks, uploads assets
    to a draft, and publishes a regular **Latest** release for plain version tags, or a
    **prerelease** for suffixed preview tags, after upload succeeds.
 7. Verify that the release is public, targets the intended tag, and contains all
-   five archives, five matching CycloneDX SBOMs, and checksums. Verify signed
+   five archives, five matching CycloneDX SBOMs, and checksums. Releases containing
+   Phase 13 tooling also require four DEB/RPM packages and two channel manifests. Verify signed
    provenance and SBOM attestations before announcing the release. Download published assets, check hashes, and
    smoke-test the native binary. Report the release URL and validation results.
 

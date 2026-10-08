@@ -9,13 +9,15 @@ and example coverage across Phases 0–26.
 
 ## Start here
 
-**Released: [v0.10.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.10.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Release: [v0.11.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
 Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
 
 A container image is published to `ghcr.io/theagenthealth/agenthealth`, with an optional Docker Hub mirror; see [Docker distribution](docs/docker.md).
+
+Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
 ### 60-second example
 
@@ -74,7 +76,8 @@ The long-term scope includes these systems; the supported adapters above describ
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); SDKs, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Release version: [v0.10.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.10.0).**
+**Release version: [v0.11.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.0).**
+Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](docs/releases/v0.11.0.md).
 Phase 12 adds an [official container image](docs/docker.md) published to GHCR with an optional Docker Hub mirror, build provenance, SBOM, and a signed attestation. See [release and migration notes](docs/releases/v0.10.0.md).
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
 Phase 10 adds [shared dependency graphs](docs/dependency-graph.md), independent edge policies and bounded parallel execution in v0.8.0. See [v0.8.0 release notes](docs/releases/v0.8.0.md).
@@ -963,6 +966,18 @@ interfaces and contracts established in Phases 7–10.
 
 Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). The SDK and Kubernetes examples below describe planned integrations, not published packages.
 
+Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
+
+## Distribution versions
+
+CLI binaries, Linux packages, Homebrew/Scoop manifests and Docker images share
+one CLI version and publish together. Docker publishes on every CLI release,
+even when the Dockerfile has no changes. Planned Python/JavaScript SDKs and Helm
+charts have independent versions and publish when their own code or bundled/pinned
+dependencies change. Helm `appVersion` identifies the CLI, while its chart version
+tracks chart changes. A CLI release does not automatically publish an unchanged
+SDK or chart. See the [component release policy](RELEASING.md#component-versions-and-synchronized-distribution).
+
 ## Standalone CLI
 
 Pre-built binaries for:
@@ -1272,7 +1287,8 @@ The same health vocabulary should work across heterogeneous agent infrastructure
 
 # Repository Structure
 
-AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the experimental protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they version and release together from here:
+AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the experimental protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they are maintained together here, with component versions governed by the
+[release policy](RELEASING.md#component-versions-and-synchronized-distribution):
 
 ```text
 agenthealth/

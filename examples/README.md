@@ -6,7 +6,7 @@ and example coverage across Phases 0–26.
 These configurations are templates for your own running services. Replace
 placeholder endpoints, issuer URLs, client IDs, command paths, and required
 inventories before using them. They do not start an example server or provision
-an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
+an OAuth client. Install the CLI using [installation instructions](../docs/installation.md), or build it as described in [CLI usage](../docs/cli.md). Phase 13 packaging does not change these configurations or their service/runtime prerequisites.
 
 | Example | What it demonstrates |
 |---|---|
@@ -15,6 +15,7 @@ an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
 | [Agent Router, backend and routes](router-check/README.md) | Read-only router readiness, direct and routed A2A evidence, and bounded opt-in route matching |
 | [Shared dependency graph](graph-check/README.md) | Shared node references, separate downstream/path evidence, concurrency and independent edge policies; requires v0.8.0 or newer |
 | [Experimental AHP serving](ahp-check/README.md) | Background snapshots, public readiness/liveness, bearer-authorized evidence; requires v0.9.0 or newer |
+| [Standalone distribution](distribution/README.md) | Local archive/package preparation, verification and native smoke test; requires source tooling from v0.11.0 or newer |
 | [HTTP readiness](core-check/agenthealth.yaml) | HTTP status checks and latency thresholds |
 | [MCP discovery](mcp-check/agenthealth.yaml) | Required tool names and resource URIs, with automatic protocol selection |
 | [Modern MCP](mcp-check/modern.yaml) | Pinning stateless MCP `2026-07-28` |
