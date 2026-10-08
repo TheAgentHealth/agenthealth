@@ -25,3 +25,7 @@ Phase 7 adds optional `agent` configuration for agent/multi-agent targets, capab
 Add the `router` target type to configuration/result schemas and HTTP options on router targets/dependencies.
 Existing result fields, health semantics and exit codes remain compatible.
 Older binaries reject the new type. See [the RFC](../docs/rfcs/phase-9-agent-router.md).
+
+## Phase 10 (v0.8.0)
+
+Additive v1 graph configuration (`id`, dependency `ref`/`relationship`, `budget_ms`, `concurrency`) and result identity/edge evidence. See the [contract review](../docs/rfcs/phase-10-dependency-graph.md). Existing health states and exit codes are unchanged.

@@ -223,3 +223,7 @@ that cannot support the required version, transport or protocol extension yields
 `UNHEALTHY`. Explicitly required skills, tools, resources, prompts or capabilities
 that are absent yield `UNHEALTHY`. Optional dependency failures and latency
 threshold violations retain their existing `DEGRADED` semantics.
+
+## Phase 10 dependency graph
+
+Graph aggregation applies the existing contribution rule separately to each edge. Multiple parents may reference one node ID and apply different critical policies to the same evaluated status. Backend, gateway/router and communication-path nodes retain separate check evidence; a healthy peer cannot erase a failed path contribution. Shared probes execute once per run, while dependency checks remain optional summaries rather than execution gates. See the [explicit graph contract](../docs/rfcs/phase-10-dependency-graph.md).

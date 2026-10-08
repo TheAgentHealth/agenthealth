@@ -73,6 +73,9 @@ A JSON Schema enforcing this recursive shape is available at [spec/schemas/resul
 
 | Field | Type | Required | Description |
 |---|---|---|---|
+| `target.id` | string | no | Explicit shared graph node ID; repeated projections identify the same run evidence |
+| `relationship` | string | no | Incoming-edge relationship: `supporting`, `downstream`, `path`, `gateway`, or `router` |
+| `critical` | boolean | no | Incoming-edge policy; emitted for each engine-produced dependency, absent on root results |
 | `target.name` | string | yes | Identifier of the target being checked |
 | `target.type` | string | yes | One of the [target types](target-model.md) |
 | `status` | string | yes | One of the [health states](health-model.md#health-states) |
@@ -201,3 +204,19 @@ Other implementations may use additional identifiers conforming to the pattern.
 ## Phase 7 draft extension
 
 Phase 7 preserves this result shape: named nested targets distinguish first-agent, peer, first-to-peer path, and supporting dependency evidence. Optional agent diagnostic codes include `agent_document`, `agent_readiness`, `agent_required`, `agent_task`, and `agent_pending`; see the [adapter](../docs/agent-adapter.md).
+
+## Phase 10 dependency graph
+
+`target.id` is optional and identifies one explicitly configured node. Repeated
+projections of that ID contain the same run evidence; they do not represent
+additional probes. Every engine-produced dependency entry carries `critical`;
+`relationship` is emitted when configured (`supporting`, `downstream`, `path`,
+`gateway`, or `router`). These fields describe the incoming edge. Root results
+have no incoming-edge metadata.
+
+A node’s `checks` show its own evidence; `status` additionally aggregates its
+outgoing dependency edges. Each incoming edge applies its own critical policy
+to that status. A healthy backend does not override a failed path probe.
+JSON, YAML and terminal output preserve these distinctions. Existing result
+fields, health states, batch ordering and exit codes remain valid.
+See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).

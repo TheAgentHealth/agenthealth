@@ -51,6 +51,7 @@ targets:
 | Field | Type | Description |
 |---|---|---|
 | `version` | string | Configuration schema version (e.g. `v1`) |
+| `concurrency` | integer, 1–16 | Maximum adapter calls in flight per run, including cleanup; default 16, also subject to the engine-wide 16-call bound |
 | `targets` | list (min. 1 item) | One or more targets to check. A single target produces a single [Result](result-schema.md#result-object-recursive) document; more than one target produces a [batch envelope](result-schema.md#batch--check-run-envelope) |
 
 A JSON Schema for this configuration format is available at [spec/schemas/configuration.schema.json](schemas/configuration.schema.json).
@@ -59,20 +60,29 @@ A JSON Schema for this configuration format is available at [spec/schemas/config
 
 | Field | Type | Required | Description |
 |---|---|---|---|
+| `id` | string | no | Globally unique explicit graph identity; 1–64 ASCII letters/digits/dots/underscores/hyphens, starting with a letter or digit |
+| `budget_ms` | integer, 1–60000 | no | Total budget for this node’s own checks, retries and queue waits; dependencies keep independent budgets |
 | `name` | string | yes | Human-readable identifier for the target |
 | `type` | string | yes | One of the [target types](target-model.md) |
 | `endpoint` | string | yes | Address used to reach the target |
 | `checks` | list | no | Which [health dimensions](health-model.md#health-dimensions) to run. If omitted, see [Default Checks](#default-checks) |
 | `thresholds` | map | no | Numeric thresholds, e.g. `latency_ms`. See [Threshold Semantics](#threshold-semantics) |
-| `dependencies` | list | no | Nested targets this target depends on. See [Dependency Inheritance](#dependency-inheritance) |
+| `dependencies` | list | no | Inline targets or explicit `ref` edges this target depends on. See [Dependency Inheritance](#dependency-inheritance) |
 
 ## Dependency fields
 
-Each entry under `dependencies` accepts the same `name`/`type`/`endpoint`/`checks`/`thresholds`/`dependencies` fields as a target (dependencies may themselves have dependencies, recursively), plus:
+An inline entry under `dependencies` accepts the same `name`/`type`/`endpoint`/`checks`/`thresholds`/`dependencies` fields as a target (dependencies may themselves have dependencies, recursively), plus:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `critical` | boolean | no, defaults to `true` | Whether failure of this dependency should propagate to the parent target's overall status (see [Status Aggregation](health-model.md#status-aggregation)) |
+
+A reference entry instead accepts only `ref` (required node ID), `critical`
+(default true), and optional `relationship`. References resolve an explicit
+configured target or inline dependency ID and cannot override its endpoint,
+credentials, checks or budgets. Inline entries also accept `relationship`.
+The supported relationship values are `supporting`, `downstream`, `path`,
+`gateway`, and `router`; omission leaves the edge unlabeled.
 
 ## Default Checks
 
@@ -94,12 +104,14 @@ This is also why [target-model.md](target-model.md#applicable-dimensions-per-tar
 
 ## Dependency Inheritance
 
-Dependencies do **not** inherit `checks` or `thresholds` from their parent target. Each dependency entry is evaluated independently:
+Dependencies do **not** inherit `checks` or `thresholds` from their parent target. Each dependency node is evaluated independently of its parent’s policies. For inline nodes:
 
 - if the dependency declares its own `checks`, those are used;
 - otherwise, [Default Checks](#default-checks) applies based on the dependency's own `type` (not the parent's type).
 
 This matters because a dependency's `type` is frequently different from its parent's (e.g. an `agent` target depending on a `vector-store`), so inheriting the parent's dimension list would often be meaningless.
+
+References use the referenced node’s explicit policies. Multiple edges to one ID share one execution; critical policy remains specific to each edge.
 
 ## Threshold Semantics
 
@@ -142,7 +154,7 @@ Missing or empty referenced credentials yield a `MISCONFIGURED` configuration ch
 
 Active checks (including `functional`) never retry, even when `retries` is configured. A partial response before timeout yields `UNKNOWN` and never retries. Authentication rejection, functional failures, configuration failures, and generic adapter errors do not retry. Retry budgets apply separately to each check. Cancellation interrupts attempts and retry delays.
 
-The reference engine applies a 60-second whole-run budget, or a shorter caller deadline, encompassing all targets, dependencies, checks, attempts, and delays. Exhaustion stops further adapter work and produces diagnostics for remaining targets. Individual checks have their own deadlines, and at most 16 adapter calls can remain in flight per engine. Dependencies execute sequentially in declaration order and retain independent per-check policies; graph scheduling and configurable concurrency remain Phase 10 work.
+The reference engine applies a 60-second whole-run budget, or a shorter caller deadline, encompassing all targets, dependencies, checks, attempts, and delays. Exhaustion stops further adapter work and produces diagnostics for remaining targets. Individual checks have their own deadlines, and at most 16 adapter calls can remain in flight per engine. Targets and dependencies execute in parallel under the configured per-run `concurrency` bound (1–16, default 16), while results retain declaration order. Dependencies keep independent check policies and node budgets. Explicit graph IDs execute once per run; each referencing edge contributes separately to aggregation. See [Phase 10 dependency graph](#phase-10-dependency-graph).
 
 `latency_ms` measures the final successful reachability attempt, excluding local adapter-slot queue time, earlier failed attempts, and retry delays. It is null when reachability did not succeed. A latency check uses this measurement and does not issue another request.
 
@@ -334,3 +346,7 @@ Functional checks require opt-in; aggregation and redaction follow the existing
 health contract. See the [Phase 9 RFC](../docs/rfcs/phase-9-agent-router.md) and
 [router guide](../docs/agent-router.md). The additive `router` type requires a
 binary implementing Phase 9; existing configurations remain compatible.
+
+## Phase 10 dependency graph
+
+IDs are unique across root targets and inline dependencies. Missing references, duplicate IDs and cycles fail validation before adapter calls. Maximum graph depth is 64 and the output tree is limited to 10000 projections. The recursive result remains compatible with existing nested configurations; repeated IDs identify shared evidence. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md) and [configured example](../examples/graph-check/agenthealth.yaml).

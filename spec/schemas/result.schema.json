@@ -15,6 +15,7 @@
     "Target": {
       "type": "object",
       "properties": {
+        "id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,63}$", "maxLength": 64, "not": { "pattern": "[^a-zA-Z0-9_.-]" } },
         "name": { "type": "string", "minLength": 1 },
         "type": { "$ref": "#/$defs/TargetType" }
       },
@@ -50,6 +51,8 @@
     "Result": {
       "type": "object",
       "properties": {
+        "relationship": { "type": "string", "enum": ["supporting", "downstream", "path", "gateway", "router"] },
+        "critical": { "type": "boolean" },
         "target": { "$ref": "#/$defs/Target" },
         "status": { "$ref": "#/$defs/HealthState" },
         "latency_ms": { "type": ["number", "null"], "minimum": 0 },

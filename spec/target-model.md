@@ -41,7 +41,7 @@ liveness/readiness, required capabilities and named dependency discovery.
 Explicit safe functional probes validate completed responses. Configure each
 peer independently and a separate first-runtime path probe for communication
 evidence; endpoint health alone does not establish that path. Roles and paths
-use named nested results without new role or topology fields. The existing
+use named dependency nodes; Phase 10 additionally supplies explicit IDs and edge relationships without adding target types. The existing
 [aggregation contract](health-model.md#status-aggregation) applies.
 
 ## Required fields per target type
@@ -79,3 +79,7 @@ The Dependency column indicates only whether a `checks.dependency` summary entry
 Gateway health, independently configured backends and proxied paths use separate
 named targets/dependencies. The gateway adapter supports HTTP read-only signals;
 MCP and A2A paths use their own adapters. See [Phase 8](../docs/agentgateway.md).
+
+## Phase 10 dependency graph
+
+See the [explicit graph contract](../docs/rfcs/phase-10-dependency-graph.md) for shared node IDs, relationship evidence, independent edge policies, validation and bounded execution. Existing nested configurations and health semantics remain valid.
