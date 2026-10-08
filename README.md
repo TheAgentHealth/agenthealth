@@ -7,11 +7,53 @@ and example coverage across Phases 0–26.
 
 **AgentHealth** is an open-source, vendor-neutral, framework-neutral, and language-neutral project for determining whether AI agents and the infrastructure they depend on are **reachable, correctly configured, responsive, ready, and operationally healthy**.
 
+## Start here
+
+**Released: [v0.8.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.8.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+
+### Install
+
+Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
+
+### 60-second example
+
+Run a passive HTTP check against an endpoint you control:
+
+```bash
+./agenthealth version
+./agenthealth ping http http://localhost:8080/health
+```
+
+For a configuration file, save this as `agenthealth.yaml`:
+
+<!-- spec-example: configuration -->
+```yaml
+version: v1
+targets:
+  - name: local-api
+    type: http
+    endpoint: http://localhost:8080/health
+    checks:
+      - reachability
+      - protocol
+```
+
+```bash
+./agenthealth check agenthealth.yaml --format json
+./agenthealth doctor agenthealth.yaml
+```
+
+A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `0`; an unavailable endpoint produces `UNREACHABLE` and exit code `3`. See [sample output](#machine-readable-health-format) and [CLI usage](docs/cli.md) for all statuses and exit codes.
+
+**Configuration is trusted executable input.** Review commands, endpoints, credential references, and token-file paths before running a configuration. See [the security boundary](SECURITY.md#trusted-configuration).
+
+## Architecture and scope
+
 Think of AgentHealth as:
 
 > **`ping` + `curl` + `doctor` + Kubernetes health probes for the Agentic AI ecosystem.**
 
-AgentHealth is designed to work across:
+The long-term scope includes these systems; the supported adapters above describe what ships today:
 
 - AI agents
 - Multi-agent systems
@@ -651,6 +693,8 @@ supports configured HTTP signals and named route/backend evidence in source. A f
 
 # Model / LLM Health
 
+> Planned adapter. The released CLI does not implement this target type. Use an explicitly configured HTTP health endpoint for HTTP-level evidence today; it does not establish functional model or database readiness.
+
 AgentHealth can validate model dependencies without being tied to one provider.
 
 Checks may include:
@@ -689,6 +733,8 @@ Latency
 
 # Vector Store Health
 
+> Planned adapter. The released CLI does not implement this target type. Use an explicitly configured HTTP health endpoint for HTTP-level evidence today; it does not establish functional model or database readiness.
+
 Adapters may provide checks for vector infrastructure.
 
 Examples:
@@ -718,6 +764,8 @@ Provider integrations are expected to grow through community adapters.
 ---
 
 # Database Health
+
+> Planned adapter. The released CLI does not implement this target type. Use an explicitly configured HTTP health endpoint for HTTP-level evidence today; it does not establish functional model or database readiness.
 
 Database checks may include:
 
@@ -773,7 +821,7 @@ The engine calculates overall status using critical/optional dependency propagat
 
 # AgentHealth Configuration
 
-A configuration file could look like:
+This example uses released adapters and requires configured services and an agent safe-task handler:
 
 <!-- spec-example: configuration -->
 ```yaml
@@ -806,8 +854,8 @@ targets:
         endpoint: http://github-mcp:3000
         critical: true
 
-      - name: vector-store
-        type: vector-store
+      - name: vector-store-health
+        type: http
         endpoint: http://vector-db:6333
         critical: true
 
@@ -1329,7 +1377,7 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
-The [dependency graph](docs/dependency-graph.md) is implemented in source. AHP, distribution, SDKs, and observability/conformance
+The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. AHP, distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---

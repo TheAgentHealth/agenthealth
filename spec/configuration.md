@@ -2,6 +2,10 @@
 
 > Status: Draft. Describes the declarative format used by `agenthealth check <file>` and `agenthealth doctor <file>`.
 
+## Configuration trust boundary
+
+Configuration is trusted executable input: it can launch MCP stdio programs, pass referenced credentials, contact private-network endpoints, acquire OAuth tokens, and write token files. Review these settings before execution, including configurations supplied through external pull requests. Active-check opt-in does not sandbox commands or network access. See [trusted configuration](../SECURITY.md#trusted-configuration).
+
 ## Example
 
 <!-- spec-example: configuration -->
