@@ -1,0 +1,14 @@
+version: v1
+targets:
+  - name: local-llm
+    type: llm
+    endpoint: http://localhost:11434/v1
+    checks: [reachability, protocol, capability, functional, latency]
+    timeout_ms: 30000
+    model:
+      required_models: [qwen2.5:0.5b]
+      functional:
+        safe: true
+        model: qwen2.5:0.5b
+        prompt: Reply with OK.
+        max_output_tokens: 4

@@ -16,6 +16,7 @@ import (
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
 	routeradapter "github.com/TheAgentHealth/agenthealth/adapters/router"
+	modeladapter "github.com/TheAgentHealth/agenthealth/adapters/model"
 	"github.com/TheAgentHealth/agenthealth/core"
 )
 
@@ -31,7 +32,7 @@ const usage = `Usage:
   agenthealth serve <configuration.yaml> [--listen host:port] [--token-env NAME]
   agenthealth version
 
-Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router.
+Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router, model, llm.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
 Agent task/path probes require the application to implement the safe probe handler.
 Other target types require future adapters.

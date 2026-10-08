@@ -1,0 +1,22 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "llm",
+      "type": "model",
+      "endpoint": "https://api.example.com/v1",
+      "checks": [
+        "functional"
+      ],
+      "model": {
+        "api": "anthropic",
+        "functional": {
+          "safe": true,
+          "model": "c",
+          "prompt": "OK",
+          "token_parameter": "max_completion_tokens"
+        }
+      }
+    }
+  ]
+}

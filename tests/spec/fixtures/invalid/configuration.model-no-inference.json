@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "llm",
+      "type": "model",
+      "endpoint": "https://api.openai.com/v1",
+      "checks": [
+        "functional"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "llm",
+      "type": "model",
+      "endpoint": "https://api.openai.com/v1",
+      "model": {
+        "functional": {
+          "safe": true,
+          "model": "gpt-test",
+          "prompt": "Reply with OK."
+        }
+      }
+    }
+  ]
+}
