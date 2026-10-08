@@ -28,10 +28,11 @@ AgentHealth is designed to work across:
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, and gateway adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
 **Current release: [v0.6.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.6.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
+Phase 9 adds [Agent Router HTTP signals](docs/agent-router.md) and named route/backend checks in source; it is not yet released.
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release
@@ -395,7 +396,7 @@ Adapters may expose additional diagnostic details while mapping their overall re
 
 # Universal CLI
 
-The CLI supports `agent`, `multi-agent`, `gateway`, `http`, `api`, `mcp`, and `a2a` targets. See [CLI usage](docs/cli.md) for the complete command reference.
+The CLI supports `agent`, `multi-agent`, `gateway`, `router`, `http`, `api`, `mcp`, and `a2a` targets. See [CLI usage](docs/cli.md) for the complete command reference.
 
 ```bash
 agenthealth ping http https://service.example.com/health
@@ -510,10 +511,11 @@ vector-store
 database
 runtime
 gateway
+router
 custom
 ```
 
-Currently implemented target types in source are `agent`, `multi-agent`, `http`, `api`, `mcp`, `a2a`, and `gateway` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility). The remaining types are specification vocabulary for future adapters.
+Currently implemented target types in source are `agent`, `multi-agent`, `http`, `api`, `mcp`, `a2a`, `gateway`, and `router` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility). The remaining types are specification vocabulary for future adapters.
 
 See [ROADMAP.md](ROADMAP.md).
 
@@ -643,7 +645,7 @@ Latency
 [Phase 8 Agentgateway integration](docs/agentgateway.md) supports read-only
 HTTP health signals and independently configured backend and protocol-path checks.
 [Phase 9 Agent Router integration](ROADMAP.md#phase-9--agent-router-integration)
-remains planned. A failed proxied request alone cannot establish its cause.
+supports configured HTTP signals and named route/backend evidence in source. A failed proxied request alone cannot establish its cause.
 
 ---
 
@@ -926,7 +928,7 @@ includes extension examples for the first (direct) agent, downstream
 (composite) agents, Agentgateway, and Agent Router. Direct/composite describe
 agent roles, not separate target types or a requirement for separate adapters.
 The diagrams show intended coverage; Agent/multi-agent, HTTP/API, MCP, and A2A are the currently
-implemented adapters, together with the Phase 8 gateway adapter. Router integrations will use the supported
+implemented adapters, together with the Phase 8 gateway and Phase 9 router adapters. Router integrations use the supported
 interfaces and contracts established in Phases 7–10.
 
 ---
@@ -1274,6 +1276,7 @@ agenthealth/
 │   ├── a2a/
 │   ├── agent/
 │   ├── gateway/
+│   ├── router/
 │   └── model/                    # planned
 │
 ├── sdk/                       # planned
@@ -1316,17 +1319,17 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-Coverage for phases 0–8 is indexed in [the documentation guide](docs/README.md).
+Coverage for phases 0–9 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, and gateway HTTP health adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 
 Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
-agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router integrations,
-the dependency graph, AHP, distribution, SDKs, and observability/conformance
+agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is implemented in source.
+The dependency graph, AHP, distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---

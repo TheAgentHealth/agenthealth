@@ -17,15 +17,15 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 4: HTTP/API | [Status, headers, bearer authentication, body checks, transport diagnostics, and safety](http-adapter.md), [HTTP configuration](../spec/configuration.md#http-response-expectations-phase-4-draft) | [HTTP readiness](../examples/core-check/agenthealth.yaml), complete configuration examples in the specification |
 | 5: MCP | [HTTP/stdio, protocol selection, inventories, OAuth, functional probes, and limits](mcp-adapter.md), [login](cli.md#mcp-oauth-login) | [Discovery, stateless, stdio, functional, and all OAuth flows](../examples/README.md) |
 | 6: A2A | [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A v1 configuration](../examples/a2a-check/v1.yaml), [0.3.0 compatibility](../examples/a2a-check/agenthealth.yaml) |
-| 8: Agentgateway (v0.6.0) | [Gateway signals and backend/path evidence](agentgateway.md), [impact proposal](rfcs/phase-8-agentgateway.md) | [Gateway configuration](../examples/gateway-check/README.md) |
 | 7: Agent health (v0.5.0) | [Health resource, capabilities, safe tasks and runtime handler prerequisites](agent-adapter.md), [impact proposal](rfcs/phase-7-agent-health.md) | [Agent, peer and path example](../examples/agent-check/README.md) |
+| 8: Agentgateway (v0.6.0) | [Gateway signals and backend/path evidence](agentgateway.md), [impact proposal](rfcs/phase-8-agentgateway.md) | [Gateway configuration](../examples/gateway-check/README.md) |
+| 9: Agent Router (source; unreleased) | [Router signals and route/backend evidence](agent-router.md), [impact proposal](rfcs/phase-9-agent-router.md) | [Router configuration and setup](../examples/router-check/README.md) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).
 
 The next planned phases are:
 
-- [Phase 9 — Agent Router Integration](../ROADMAP.md#phase-9--agent-router-integration): independent router health and route/backend diagnostics.
 - [Phase 10 — Dependency Graph](../ROADMAP.md#phase-10--dependency-graph): graph execution and failure propagation.
 - [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp): standardized health exchange.
 
@@ -36,7 +36,7 @@ The documentation validator checks marked configuration/result blocks and
 all standalone example YAML files against the schemas. It does not establish
 connectivity to the placeholder servers or prove every command example works.
 
-Agent/multi-agent, gateway HTTP signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
+Agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
 SDKs, container images, and Kubernetes integrations remain planned. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.
@@ -46,3 +46,6 @@ hardening. See [interoperability](interoperability.md) and
 [v0.4.0 migration notes](releases/v0.4.0.md).
 
 Phase 8 Agentgateway integration is released in [v0.6.0](releases/v0.6.0.md). See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+
+Phase 9 Agent Router HTTP integration is implemented in source, not yet released.
+See [the router guide](agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.

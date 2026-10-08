@@ -41,7 +41,7 @@ communication path, and supporting dependencies distinguishable.
 
 [Phase 7](ROADMAP.md#phase-7--agent-health) implements direct and composite agent
 health; [Phase 8](ROADMAP.md#phase-8--agentgateway-integration) implements Agentgateway HTTP signals;
-[Phase 9](ROADMAP.md#phase-9--agent-router-integration) plans Agent Router.
+[Phase 9](ROADMAP.md#phase-9--agent-router-integration) implements configured Agent Router HTTP signals.
 Dependency Graph and AHP follow in Phases 10 and 11 and remain planned; existing A2A endpoint checks do not establish that a first agent can
 communicate with its downstream agents. See the
 [target model](spec/target-model.md#direct-and-composite-agent-health).
@@ -178,3 +178,6 @@ requires a new version; infrastructure-only recovery must use the same tagged
 source and verified complete assets.
 
 Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+
+Phase 9 Agent Router HTTP integration is implemented in source, not yet released.
+See [the router guide](docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
