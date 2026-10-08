@@ -50,6 +50,9 @@ func (r *Redactor) Redact(s string) string {
 }
 func (r *Redactor) Result(value Result) Result {
 	value.Target.Name = r.Redact(value.Target.Name)
+	if value.Target.ID != "" && r.Redact(value.Target.ID) != value.Target.ID {
+		value.Target.ID = "redacted"
+	}
 	checks := make(map[string]CheckResult, len(value.Checks))
 	for key, check := range value.Checks {
 		check.Message = r.Redact(check.Message)

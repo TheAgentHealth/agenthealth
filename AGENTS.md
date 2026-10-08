@@ -42,7 +42,7 @@ communication path, and supporting dependencies distinguishable.
 [Phase 7](ROADMAP.md#phase-7--agent-health) implements direct and composite agent
 health; [Phase 8](ROADMAP.md#phase-8--agentgateway-integration) implements Agentgateway HTTP signals;
 [Phase 9](ROADMAP.md#phase-9--agent-router-integration) implements configured Agent Router HTTP signals.
-Dependency Graph and AHP follow in Phases 10 and 11 and remain planned; existing A2A endpoint checks do not establish that a first agent can
+Dependency Graph is implemented in source in Phase 10; AHP remains planned in Phase 11; existing A2A endpoint checks do not establish that a first agent can
 communicate with its downstream agents. See the
 [target model](spec/target-model.md#direct-and-composite-agent-health).
 

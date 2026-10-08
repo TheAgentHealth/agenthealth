@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "concurrency": 2,
+  "targets": [
+    {
+      "id": "first",
+      "name": "first",
+      "type": "agent",
+      "endpoint": "http://localhost:8080/health",
+      "dependencies": [
+        {
+          "ref": "peer",
+          "relationship": "downstream",
+          "critical": false,
+          "endpoint": "http://localhost"
+        }
+      ]
+    },
+    {
+      "id": "peer",
+      "name": "peer",
+      "type": "agent",
+      "endpoint": "http://localhost:8081/health",
+      "budget_ms": 1000
+    }
+  ]
+}

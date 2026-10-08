@@ -17,7 +17,7 @@ agenthealth doctor examples/router-check/agenthealth.yaml
 Use separate named dependencies for router signals, direct backends and each
 configured routed endpoint. HTTP/API, MCP and A2A routes retain their own adapter
 contracts, credentials and functional opt-in. Multiple routes to one backend
-execute independently; shared graph identity remains Phase 10 work.
+execute independently. [Phase 10](dependency-graph.md) supports a shared backend `id` referenced by multiple edges, with each route kept as a distinct node.
 Critical dependencies propagate failure; optional failures degrade the aggregate.
 Backends and routes execute even when the router signal fails. Inspect checks
 and dependency results to distinguish evidence from aggregate status.

@@ -30,3 +30,9 @@ Once the [Agent Health Protocol](protocol.md) moves beyond proposed/experimental
 ## Relationship to this repository's own security policy
 
 Requirements in this document constrain what the specification allows a conformant implementation to do. [SECURITY.md](../SECURITY.md) in the repository root covers how to report a vulnerability in this repository's actual code. Both apply, but they answer different questions.
+
+## Phase 10 graph safety
+
+Graph references resolve only explicitly configured IDs; advertised names never authorize endpoints or topology discovery. The engine rejects missing references, duplicate IDs, cycles and excessive depth/tree projections before adapter work. Node budgets, bounded per-run concurrency and existing active opt-in/non-retry rules apply. Shared active probes execute once per ID per run.
+
+IDs, names and relationship structure can reveal sensitive topology. Avoid secrets in identifiers and restrict result access appropriately. Known credential values in IDs are replaced by `redacted`, which can collapse identities in sanitized output; consumers must not infer shared identity from that placeholder. Full AHP topology authorization remains planned. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).

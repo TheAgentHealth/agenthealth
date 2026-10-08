@@ -94,9 +94,12 @@ func NormalizeError(err error, responseReceived bool) CheckResult {
 type Registry struct {
 	mu       sync.RWMutex
 	adapters map[string]Adapter
+	cleanup  chan struct{}
 }
 
-func NewRegistry() *Registry { return &Registry{adapters: make(map[string]Adapter)} }
+func NewRegistry() *Registry {
+	return &Registry{adapters: make(map[string]Adapter), cleanup: make(chan struct{}, 1)}
+}
 func (r *Registry) Register(a Adapter) error {
 	if a == nil {
 		return errors.New("nil adapter")

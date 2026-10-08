@@ -11,7 +11,7 @@ AgentHealth is pre-1.0 and under active design (see [Project Status](README.md#p
 - Core engine implementation
 - Protocol adapters (MCP, A2A, HTTP, model, database, vector store)
 - Direct and composite agent health (Phase 7)
-- Agentgateway integration (Phase 8) and planned Agent Router integration (Phase 9)
+- Agentgateway integration (Phase 8) and Agent Router integration (Phase 9)
 - SDKs (Python, JavaScript/TypeScript)
 - Kubernetes and CI/CD integrations
 - Specification design (see [spec/](spec/README.md))
@@ -36,7 +36,7 @@ paths, and supporting dependency failures. Follow the
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is implemented as a draft adapter interface.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
-is implemented in source. Dependency Graph and AHP follow in Phases 10 and 11. Keep planned
+is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is implemented in source; AHP remains planned in Phase 11. Keep planned
 capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway and router adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.

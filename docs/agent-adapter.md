@@ -80,3 +80,7 @@ agenthealth doctor examples/agent-check/agenthealth.yaml --format yaml
 An empty `downstream` selector is equivalent to omission and probes the agent
 itself. Whitespace-only selectors are invalid. JSON Schema string lengths
 count Unicode characters; Go additionally enforces the task text byte limit.
+
+## Dependency graph integration
+
+[Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. Advertised dependency names match only explicitly configured inline nodes or resolved references. References never authorize remote discovery. Keep the peer node and the safe first-runtime communication probe as distinct IDs. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.

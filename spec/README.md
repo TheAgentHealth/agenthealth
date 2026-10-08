@@ -54,3 +54,7 @@ Phase 8 Agentgateway integration is implemented in source. See [the gateway guid
 
 Phase 9 Agent Router HTTP integration is released in v0.7.0.
 See [the router guide](../docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
+
+## Dependency graph extension
+
+Phase 10 is included in v0.8.0 as an additive v1 configuration/result extension. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md) and [phase alignment audit](../docs/phase-10-alignment.md). Older v0.7.0 binaries do not include it.

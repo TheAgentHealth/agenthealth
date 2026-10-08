@@ -64,6 +64,7 @@ FILES_TO_CHECK = [
     ROOT / "docs" / "a2a-adapter.md",
     ROOT / "docs" / "agent-adapter.md",
     ROOT / "docs" / "agent-router.md",
+    ROOT / "docs" / "dependency-graph.md",
     ROOT / "examples" / "README.md",
 ]
 

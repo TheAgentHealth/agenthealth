@@ -82,3 +82,20 @@ Phase 8 Agentgateway integration is implemented in source. See [the gateway guid
 
 Phase 9 Agent Router HTTP integration is released in v0.7.0.
 See [the router guide](agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
+
+## Phase 10 dependency graph
+
+Use v0.8.0 or newer for explicit graph fields; v0.7.0 binaries do not include them.
+
+```bash
+agenthealth check examples/graph-check/agenthealth.yaml --format json
+agenthealth check examples/graph-check/agenthealth.yaml --format yaml
+agenthealth doctor examples/graph-check/agenthealth.yaml
+```
+
+Terminal output labels IDs, relationships and optional edges. JSON/YAML retain
+`target.id`, incoming-edge `relationship` and `critical` alongside the existing
+recursive result. Graph validation failures return tool-failure exit code 6
+before adapter calls; health outcomes retain exit codes 0–5.
+See the [graph guide](dependency-graph.md) and [contract](rfcs/phase-10-dependency-graph.md).
+Existing nested configurations remain valid.

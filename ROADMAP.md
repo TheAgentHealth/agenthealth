@@ -6,7 +6,7 @@ AgentHealth is intended to become a universal, vendor-neutral health, readiness,
 
 The roadmap is intentionally capability-driven rather than tied to fixed calendar dates.
 
-See the [documentation guide](docs/README.md) for phase 0–9 references and examples.
+See the [documentation guide](docs/README.md) for phase 0–10 references and examples.
 
 ## Foundation stabilization before Phase 7
 
@@ -33,7 +33,7 @@ complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
 status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
-Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration is implemented in source; graph and AHP follow;
+Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; AHP follows;
 full distribution, SDK/ecosystem and observability/conformance remain later
 milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
 No additional adapter is declared implemented by this foundation milestone.
@@ -589,7 +589,7 @@ named peer/path/dependency evidence, names-only configured discovery and the
 distinction between runtime-declared readiness and completed task evidence.
 Path handlers contact the selected peer directly or through A2A; AgentHealth
 trusts their completion report and does not independently trace remote code.
-Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling and AHP serving remain planned.
+Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling is implemented in source; AHP serving remains planned.
 
 Compatibility: this additive v1 draft turns previously unsupported agent types
 into executable targets. Existing supported targets keep their behavior.
@@ -665,7 +665,7 @@ HTTP/MCP/A2A dependencies represent direct backends and configured routes;
 functional probes require explicit opt-in. Product-specific discovery is
 unsupported. See the [Phase 9 RFC](docs/rfcs/phase-9-agent-router.md),
 [router guide](docs/agent-router.md) and [example](examples/router-check/README.md).
-Phase 10 will extend graph diagnostics and shared backend identity.
+[Phase 10](docs/dependency-graph.md) now extends graph diagnostics and shared backend identity in source.
 
 - [x] Add route-specific evidence without conflating Phase 7 peer health with first-runtime communication probes. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
@@ -677,8 +677,8 @@ aggregation. Preserve HTTP HEAD, gateway GET and Phase 7 runtime path probes.
 No result structure, health-state or exit-code changes are introduced.
 
 Later: graph, AHP, SDKs, observability and conformance must preserve named router
-signals, direct backends and individual routes. Shared backend identity and
-product-specific discovery remain unimplemented. Phase 25 must validate actual
+signals, direct backends and individual routes. Phase 10 implements explicit shared backend identity;
+product-specific discovery remains unimplemented. Phase 25 must validate actual
 product interoperability rather than infer it from generic HTTP tests.
 
 Compatibility: existing configurations remain compatible; older binaries reject
@@ -688,7 +688,7 @@ Compatibility: existing configurations remain compatible; older binaries reject
 
 # Phase 10 — Dependency Graph
 
-**Status:** Planned — graph extensions are not yet implemented; existing core dependency execution and aggregation remain the baseline.
+**Status:** Included in [v0.8.0](docs/releases/v0.8.0.md) — explicit shared-node references, edge evidence, bounded parallel execution and tree output. See the [graph guide](docs/dependency-graph.md) and [contract review](docs/rfcs/phase-10-dependency-graph.md).
 
 Goal:
 
@@ -702,29 +702,28 @@ does not establish that the first agent can reach it through a configured route.
 
 The current nested dependency contract is a starting point. Shared backends,
 multiple routes, and path-specific health may require a richer graph model;
-its configuration and result representation must be designed through the
-specification process before implementation.
+its additive v1 contract is recorded in the [Phase 10 review](docs/rfcs/phase-10-dependency-graph.md).
 
 ## Features
 
-- [ ] Consolidate AHS updates from Phases 7–9 into the graph configuration and result contracts
-- [ ] Dependency graph construction
-- [ ] Extend existing nested dependencies to the graph model
-- [ ] Preserve existing critical dependency policies in graph execution
-- [ ] Preserve existing optional dependency policies in graph execution
-- [ ] Extend existing failure propagation to graph nodes and communication paths
-- [ ] Cycle detection
-- [ ] Parallel health execution
-- [ ] Configurable concurrency
-- [ ] Dependency timeout budgets
-- [ ] Tree output
-- [ ] first-agent and downstream-agent relationships via direct integrations or A2A
-- [ ] gateway/router communication-path evidence separate from backend health
-- [ ] shared backend identity and multiple-route representation, preserving Phase 9 named router/backend/route evidence
-- [ ] distinguish node failures from communication-path failures in propagation and output
+- [x] Consolidate AHS updates from Phases 7–9 into the graph configuration and result contracts
+- [x] Dependency graph construction
+- [x] Extend existing nested dependencies to the graph model
+- [x] Preserve existing critical dependency policies in graph execution
+- [x] Preserve existing optional dependency policies in graph execution
+- [x] Extend existing failure propagation to graph nodes and communication paths
+- [x] Cycle detection
+- [x] Parallel health execution
+- [x] Configurable concurrency
+- [x] Dependency timeout budgets
+- [x] Tree output
+- [x] first-agent and downstream-agent relationships via direct integrations or A2A
+- [x] gateway/router communication-path evidence separate from backend health
+- [x] shared backend identity and multiple-route representation, preserving Phase 9 named router/backend/route evidence
+- [x] distinguish node failures from communication-path failures in propagation and output
 
 The Phase 2 core already executes nested dependencies and aggregates critical
-and optional failures. The unchecked items above cover graph extensions and
+and optional failures. The items above cover graph extensions and
 preservation of that behavior, rather than initial implementation.
 
 Example:
@@ -745,11 +744,11 @@ Research Agent
 Overall: DEGRADED
 ```
 
-- [ ] Resolve Phase 7 advertised dependency names only through explicit configuration and preserve agent, path and supporting dependency identity. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+- [x] Resolve Phase 7 advertised dependency names only through explicit configuration and preserve agent, path and supporting dependency identity. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
-Earlier: consolidate Phases 7–9 contracts, extend core graph execution, and add CLI graph diagnostics. Later: establish graph evidence consumed by AHP, SDKs, integrations, and conformance.
+Earlier: consolidate Phases 7–9 contracts, extend core graph execution, and add CLI graph diagnostics. The [alignment audit](docs/phase-10-alignment.md) records affected earlier contracts, guides and examples, plus no-impact rationales. Later: establish graph evidence consumed by AHP, SDKs, integrations, and conformance.
 
 ---
 
@@ -787,7 +786,7 @@ Define:
 - [ ] health response envelope
 - [ ] readiness semantics
 - [ ] liveness semantics
-- [ ] dependency representation
+- [ ] dependency representation preserving Phase 10 node IDs and edge relationship/critical policy, with topology redaction
 - [ ] capability health
 - [ ] error representation
 - [ ] authentication
@@ -1035,6 +1034,8 @@ The Python SDK must follow the Agent Health Specification rather than defining i
 
 - [ ] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
+- [ ] Preserve Phase 10 node IDs and edge relationship/critical metadata in Python results. See the [graph contract](docs/rfcs/phase-10-dependency-graph.md).
+
 ## Impact Review
 
 Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide Python APIs for runtime integrations and interoperability tests.
@@ -1079,6 +1080,8 @@ const result = await check({
 - [ ] browser/server scope definition
 
 - [ ] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+
+- [ ] Preserve Phase 10 node IDs and edge relationship/critical metadata in JavaScript/TypeScript results. See the [graph contract](docs/rfcs/phase-10-dependency-graph.md).
 
 ## Impact Review
 
@@ -1297,6 +1300,8 @@ AgentHealth
     └── Webhooks
 ```
 
+- [ ] Export shared node evidence once per ID while retaining distinct edge policies and redacting sensitive topology. See the [graph contract](docs/rfcs/phase-10-dependency-graph.md).
+
 ## Impact Review
 
 Earlier: map approved result evidence to exports and extend output interfaces as required; no new health semantics are expected solely for export. Later: validate export compatibility and redaction during conformance and hardening.
@@ -1392,6 +1397,8 @@ Any certification/trademark program would require separate governance and commun
 
 - [ ] Verify the Phase 7 document contract, names-only discovery, safe task bounds and actual first-runtime peer communication. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
+- [ ] Validate Phase 10 shared execution, cycles, missing references, edge policies, independent node budgets and labeled tree projection. See the [graph contract](docs/rfcs/phase-10-dependency-graph.md).
+
 ## Impact Review
 
 Earlier: validate the approved AHS, AHP, adapters, outputs, and integrations; feed defects back to their owning layers. Later: provide conformance checks for interoperability and production hardening.
@@ -1467,6 +1474,8 @@ Before a stable 1.0 release:
 - [ ] Stable adapter interface
 - [ ] Stable CLI
 - [ ] Documentation review
+
+- [ ] Exercise Phase 10 DAG projection limits, shared active-check deduplication, cancellation and per-run concurrency retention for uncooperative adapters. See the [graph contract](docs/rfcs/phase-10-dependency-graph.md).
 
 ## Impact Review
 
