@@ -90,3 +90,5 @@ probes require explicit opt-in. See [the router contract](../docs/agent-router.m
 ## Phase 10 graph lifecycle
 
 Explicit references to one node ID share one execution, `RunState`, credential snapshot and cleanup per run. Distinct IDs and anonymous inline entries remain isolated, even when endpoints match. The engine supplies resolved immediate dependency identities to adapters for configured name matching. Adapter methods and compatibility version remain unchanged. Per-run `concurrency` and the engine-wide 16-call bound apply to both checks and cleanup; uncooperative calls retain their slots until completion. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
+
+Cleanup hooks remain serialized across nodes, runs and engines sharing a registry. Waiting for the serialization gate honors the cleanup deadline; an uncooperative hook holds the gate and its adapter-call slots until it actually returns.

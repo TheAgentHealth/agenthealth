@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -243,5 +244,79 @@ func TestGraphRedactsSecretsRegisteredByLaterNodes(t *testing.T) {
 	}
 	if strings.Contains(out.String(), secret) {
 		t.Fatal("later registered secret leaked")
+	}
+}
+
+func TestGraphCleanupSerializedAcrossNodesRunsAndEngines(t *testing.T) {
+	var active, peak, calls atomic.Int32
+	adapter := lifecycleAdapter{testAdapter: &testAdapter{}, close: func(context.Context, *sync.Map) {
+		n := active.Add(1)
+		defer active.Add(-1)
+		calls.Add(1)
+		for old := peak.Load(); n > old; old = peak.Load() {
+			if peak.CompareAndSwap(old, n) {
+				break
+			}
+		}
+		time.Sleep(5 * time.Millisecond)
+	}}
+	registry := NewRegistry()
+	if err := registry.Register(adapter); err != nil {
+		t.Fatal(err)
+	}
+	engine := NewEngine(registry)
+	config := Config{Version: "v1", Targets: []Target{targetForTest("configuration"), targetForTest("configuration"), targetForTest("configuration")}}
+	var wg sync.WaitGroup
+	for _, runner := range []*Engine{engine, engine, NewEngine(registry)} {
+		wg.Add(1)
+		go func(runner *Engine) {
+			defer wg.Done()
+			if _, err := runner.Run(context.Background(), config); err != nil {
+				t.Error(err)
+			}
+		}(runner)
+	}
+	wg.Wait()
+	if peak.Load() != 1 || calls.Load() != 9 {
+		t.Fatal(peak.Load(), calls.Load())
+	}
+}
+func TestGraphUncooperativeCleanupRetainsSerializationGate(t *testing.T) {
+	entered, release, finished := make(chan struct{}), make(chan struct{}), make(chan struct{})
+	var calls atomic.Int32
+	adapter := lifecycleAdapter{testAdapter: &testAdapter{}, close: func(context.Context, *sync.Map) {
+		if calls.Add(1) == 1 {
+			close(entered)
+			<-release
+			close(finished)
+		}
+	}}
+	registry := NewRegistry()
+	if err := registry.Register(adapter); err != nil {
+		t.Fatal(err)
+	}
+	engine := NewEngine(registry)
+	firstDone := make(chan struct{})
+	go func() {
+		defer close(firstDone)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+		defer cancel()
+		engine.closeTarget(ctx, adapter, &sync.Map{})
+	}()
+	<-entered
+	<-firstDone
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	engine.closeTarget(ctx, adapter, &sync.Map{})
+	cancel()
+	if calls.Load() != 1 {
+		t.Error("cleanup overlapped after prior deadline", calls.Load())
+	}
+	close(release)
+	<-finished
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	engine.closeTarget(ctx, adapter, &sync.Map{})
+	if calls.Load() != 2 {
+		t.Fatal("serialization gate was not released", calls.Load())
 	}
 }

@@ -62,3 +62,5 @@ Compatibility: additive v1 configuration/result fields require no migration
 for existing files. Consumers with closed local result schemas should update
 their schema. Parallel execution changes timing, never declaration-order output.
 No AHP wire binding or automatic topology discovery is introduced.
+
+Cleanup hooks remain serialized across nodes, runs and engines sharing a registry. Waiting for the serialization gate honors the cleanup deadline; an uncooperative hook holds the gate and its adapter-call slots until it actually returns.

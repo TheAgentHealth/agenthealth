@@ -181,6 +181,21 @@ func (e *Engine) runOwnTarget(ctx context.Context, t Target, client *http.Client
 
 // Keep optional cleanup under the same bounded-call policy as adapter checks.
 func (e *Engine) closeTarget(ctx context.Context, closer TargetCloser, state *sync.Map) {
+	// Preserve TargetCloser serialization across nodes, runs, and engines using
+	// this registry. Hold the gate until the hook actually returns, even when
+	// its caller's cleanup deadline expires.
+	select {
+	case e.registry.cleanup <- struct{}{}:
+	case <-ctx.Done():
+		return
+	}
+	releaseCleanup := true
+	defer func() {
+		if releaseCleanup {
+			<-e.registry.cleanup
+		}
+	}()
+
 	if e.limit != nil {
 		select {
 		case e.limit <- struct{}{}:
@@ -197,9 +212,11 @@ func (e *Engine) closeTarget(ctx context.Context, closer TargetCloser, state *sy
 		return
 	}
 	done := make(chan struct{})
+	releaseCleanup = false
 	go func() {
 		defer func() {
 			_ = recover()
+			<-e.registry.cleanup
 			<-e.slots
 			if e.limit != nil {
 				<-e.limit
