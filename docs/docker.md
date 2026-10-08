@@ -1,7 +1,8 @@
 # Docker distribution
 
-**Status:** Phase 12, source-only. Images are not yet published; building and
-running locally is documented below. See the [Docker Distribution roadmap](../ROADMAP.md#phase-12--docker-distribution).
+**Status:** Phase 12, released in v0.10.0. Images are published to GHCR (with
+an optional Docker Hub mirror); see [Published tags](#published-tags) below.
+See the [Docker Distribution roadmap](../ROADMAP.md#phase-12--docker-distribution).
 
 The [Dockerfile](../Dockerfile) builds a minimal, non-root AgentHealth image
 from source. It packages the same CLI described in [docs/cli.md](cli.md); no

@@ -867,13 +867,12 @@ unverified. See the [coverage and alignment audit](docs/phase-11-alignment.md).
 
 # Phase 12 — Docker Distribution
 
-**Status:** Implemented in source — a multi-stage, digest-pinned, distroless,
-non-root image build ([Dockerfile](Dockerfile)) producing Linux AMD64/ARM64
-binaries that are byte-identical to the attested release archives, validated
-in CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) and published by
-the release workflow ([.github/workflows/release.yml](.github/workflows/release.yml))
-with BuildKit provenance, SBOM, and a GitHub-signed attestation, starting with
-the next tagged release. No image has been published yet. See the
+**Status:** Released in [v0.10.0](docs/releases/v0.10.0.md) — a multi-stage,
+digest-pinned, distroless, non-root image build ([Dockerfile](Dockerfile))
+producing Linux AMD64/ARM64 binaries that are byte-identical to the attested
+release archives, validated in CI ([.github/workflows/ci.yml](.github/workflows/ci.yml))
+and published by the release workflow ([.github/workflows/release.yml](.github/workflows/release.yml))
+with BuildKit provenance, SBOM, and a GitHub-signed attestation. See the
 [container usage guide](docs/installation.md#container-image).
 
 Goal:
@@ -882,7 +881,7 @@ Allow AgentHealth to run without installing a programming language runtime.
 
 ## Deliverables
 
-- [x] Official container image (`ghcr.io/theagenthealth/agenthealth`; publishing gated on the next tagged release)
+- [x] Official container image (`ghcr.io/theagenthealth/agenthealth`)
 - [x] Multi-stage build
 - [x] Minimal runtime image (digest-pinned `distroless/static-debian12:nonroot`, non-root `65532:65532`, no shell)
 - [x] Linux AMD64
@@ -890,7 +889,7 @@ Allow AgentHealth to run without installing a programming language runtime.
 - [x] Signed images (keyless `actions/attest` attestation pushed to the registry)
 - [x] SBOM (`sbom: true` plus a pushed build-provenance/SBOM attestation)
 - [x] Versioned tags (`vX.Y.Z`, floating `vX` and `latest`, pre-releases excluded from floating tags)
-- [x] Docker Hub mirror (`theagenthealth/agenthealth`), implemented in source and gated on `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN` repository secrets
+- [x] Docker Hub mirror (`theagenthealth/agenthealth`), gated on `DOCKERHUB_USERNAME`/`DOCKERHUB_ACCESS_TOKEN` repository secrets
 
 Example:
 

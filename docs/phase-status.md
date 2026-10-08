@@ -5,8 +5,7 @@ Phases 0–7 have released baselines; Phase 8 is released in v0.6.0; Phase 9 in 
 Phase 10 is included in v0.8.0; see the [alignment audit](phase-10-alignment.md).
 Phase 11 experimental HTTP serving is included in v0.9.0; see its
 [coverage and alignment audit](phase-11-alignment.md).
-Phase 12 Docker distribution is implemented in source; no published image or
-release yet.
+Phase 12 Docker distribution is released in v0.10.0.
 Phase 13 has released binary distribution with remaining channel/platform work.
 Planned phases have roadmap designs, not shipped adapters, packages or runnable
 integration examples. Existing repository CI and protocol interoperability tests
@@ -26,7 +25,7 @@ do not establish completion of the broader Phases 21, 25 or 26.
 | [9: Agent Router Integration](../ROADMAP.md#phase-9--agent-router-integration) | Released in v0.7.0 | [Agent Router](agent-router.md) | [Router example](../examples/router-check/README.md) |
 | [10: Dependency Graph](../ROADMAP.md#phase-10--dependency-graph) | Included in v0.8.0 | [Dependency graph](dependency-graph.md) | [Graph contract and validation](rfcs/phase-10-dependency-graph.md) |
 | [11: Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp) | Included in v0.9.0; experimental HTTP v1 | [AHP](ahp.md) | [Serving example](../examples/ahp-check/README.md) |
-| [12: Docker Distribution](../ROADMAP.md#phase-12--docker-distribution) | Implemented in source; images not yet published | [Docker](docker.md) | [Dockerfile](../Dockerfile), [CI job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml), [static Dockerfile tests](../tests/test_container_image.py) |
+| [12: Docker Distribution](../ROADMAP.md#phase-12--docker-distribution) | Released in v0.10.0 | [Docker](docker.md) | [Dockerfile](../Dockerfile), [CI job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml), [static Dockerfile tests](../tests/test_container_image.py) |
 | [13: Standalone Binaries](../ROADMAP.md#phase-13--standalone-binaries) | Partial distribution implemented | [Installation](installation.md), [release policy](../RELEASING.md) | [Release builder](../scripts/build_release.py) |
 | [14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration) | Planned | Roadmap design only | No implementation examples yet |
 | [15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi) | Planned | Roadmap design only | No implementation examples yet |
