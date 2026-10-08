@@ -15,7 +15,7 @@ and example coverage across Phases 0–26.
 
 Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
 
-A container image is published to `ghcr.io/theagenthealth/agenthealth`, with an optional Docker Hub mirror; see [Docker distribution](docs/docker.md).
+The v0.11.0 container image is published to GHCR at `ghcr.io/theagenthealth/agenthealth:v0.11.0` and Docker Hub at `theagenthealth/agenthealth:v0.11.0`; see [Docker distribution](docs/docker.md).
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
@@ -220,7 +220,7 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | Config file | `agenthealth.yaml` |
 | Python package | `agenthealth` |
 | npm package | `@agenthealth/sdk` |
-| Container image | `ghcr.io/theagenthealth/agenthealth` |
+| Container image (GHCR / Docker Hub) | `ghcr.io/theagenthealth/agenthealth` / `theagenthealth/agenthealth` |
 | Helm chart | `agenthealth` |
 
 ---
@@ -1002,6 +1002,15 @@ agenthealth --version
 
 AgentHealth can run without installing language runtimes. The image is a
 minimal, non-root distroless image for `linux/amd64` and `linux/arm64`.
+Both registries provide v0.11.0:
+
+```bash
+# GitHub Container Registry
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.0 version
+
+# Docker Hub
+docker run --rm theagenthealth/agenthealth:v0.11.0 version
+```
 
 Example:
 

@@ -72,9 +72,10 @@ container-reachable hostname to reach services on the host.
 `.github/workflows/ci.yml` validates both platforms and smoke-tests the
 image (via [scripts/test_container.py](../scripts/test_container.py)) on
 every pull request and push. `.github/workflows/release.yml` publishes to
-`ghcr.io/theagenthealth/agenthealth` only after the binary release job
-succeeds, and only after verifying (via `cmp`) that each platform's image
-binary is byte-identical to the attested archive built for that same tag:
+`ghcr.io/theagenthealth/agenthealth` after source validation, in parallel
+with binary release checks and publication. Before publishing, it verifies
+(via `cmp`) that each image binary matches a reference built from the same
+source with the release archive build flags:
 
 - `ghcr.io/theagenthealth/agenthealth:vX.Y.Z` for every release tag.
 - `ghcr.io/theagenthealth/agenthealth:vX` and `:latest` are also updated,
@@ -105,8 +106,14 @@ mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
 which is only pushed to GHCR.
 
+v0.11.0 is available from both registries:
+
 ```bash
-docker run --rm theagenthealth/agenthealth version
+# GitHub Container Registry
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.0 version
+
+# Docker Hub
+docker run --rm theagenthealth/agenthealth:v0.11.0 version
 ```
 
 See [installation.md](installation.md) for standalone binary archives and

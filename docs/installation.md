@@ -86,7 +86,18 @@ Starting in v0.10.0, each CLI release tag publishes a
 multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
-exact `vX.Y.Z-suffix`. To build the image locally:
+exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
+tags when mirror credentials are configured; v0.11.0 is published to both:
+
+```bash
+# GitHub Container Registry
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.0 version
+
+# Docker Hub
+docker run --rm theagenthealth/agenthealth:v0.11.0 version
+```
+
+To build the image locally:
 
 ```bash
 docker build --build-arg VERSION=dev -t agenthealth .
