@@ -32,7 +32,7 @@ The project provides a common health model, a Go engine, a CLI, machine-readable
 
 **Current release: [v0.6.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.6.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
-Phase 9 adds [Agent Router HTTP signals](docs/agent-router.md) and named route/backend checks in source; it is not yet released.
+Phase 9 adds [Agent Router HTTP signals](docs/agent-router.md) and named route/backend checks in source; it is not yet released. See [v0.7.0 release preparation](docs/releases/v0.7.0.md).
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release

@@ -49,3 +49,6 @@ Phase 8 Agentgateway integration is released in [v0.6.0](releases/v0.6.0.md). Se
 
 Phase 9 Agent Router HTTP integration is implemented in source, not yet released.
 See [the router guide](agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
+
+Release preparation for Phase 9: [v0.7.0 notes](releases/v0.7.0.md).
+Publication remains pending; v0.6.0 is the current published release.

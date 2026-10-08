@@ -638,7 +638,7 @@ See the [Phase 8 RFC](docs/rfcs/phase-8-agentgateway.md) and
 
 # Phase 9 — Agent Router Integration
 
-**Status:** Implemented in source — vendor-neutral HTTP signals and configured route/backend evidence; not yet released.
+**Status:** Implemented in source — vendor-neutral HTTP signals and configured route/backend evidence; [v0.7.0 release prepared](docs/releases/v0.7.0.md), not yet published.
 
 Goal:
 
