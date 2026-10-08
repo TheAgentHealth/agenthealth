@@ -387,6 +387,7 @@ type lifecycleAdapter struct {
 func (a lifecycleAdapter) CloseTarget(ctx context.Context, state *sync.Map) { a.close(ctx, state) }
 func TestTargetCleanupIsolationAndPanic(t *testing.T) {
 	var states []*sync.Map
+	var statesMu sync.Mutex
 	adapter := lifecycleAdapter{testAdapter: &testAdapter{fn: func(_ context.Context, r Request, _ string) (Observation, error) {
 		if r.TargetContext == nil {
 			t.Error("missing target resource context")
@@ -394,7 +395,9 @@ func TestTargetCleanupIsolationAndPanic(t *testing.T) {
 		r.RunState.Store("context", r.TargetContext)
 		return Observation{Check: CheckResult{Status: Healthy}}, nil
 	}}, close: func(_ context.Context, state *sync.Map) {
+		statesMu.Lock()
 		states = append(states, state)
+		statesMu.Unlock()
 		value, _ := state.Load("context")
 		if value.(context.Context).Err() == nil {
 			t.Error("resource context not canceled before cleanup")

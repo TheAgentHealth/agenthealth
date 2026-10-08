@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -312,6 +313,125 @@ func TestRouterCheckAndDoctor(t *testing.T) {
 		}
 		if document["status"] != "UNHEALTHY" {
 			t.Fatalf("unexpected result: %s", out.String())
+		}
+	}
+}
+
+func TestGraphAgentReferencesAndPathEvidence(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path == "/first" {
+			w.Write([]byte(`{"version":"v1","name":"first","live":true,"ready":true,"capabilities":[],"dependencies":["peer"]}`))
+			return
+		}
+		if r.URL.Path == "/path" && r.Method == "POST" {
+			w.Write([]byte(`{"completed":true,"success":false,"downstream":"peer"}`))
+			return
+		}
+		w.Write([]byte(`{"version":"v1","name":"peer","live":true,"ready":true,"capabilities":[],"dependencies":[]}`))
+	}))
+	defer server.Close()
+	config := "version: v1\nconcurrency: 2\ntargets:\n- id: first\n  name: first\n  type: agent\n  endpoint: " + server.URL + "/first\n  dependencies:\n  - ref: peer\n    relationship: downstream\n  - ref: path\n    relationship: path\n- id: peer\n  name: peer\n  type: agent\n  endpoint: " + server.URL + "/peer\n- id: path\n  name: communication\n  type: agent\n  endpoint: " + server.URL + "/path\n  checks: [configuration, functional]\n  agent:\n    functional:\n      safe: true\n      text: health\n      downstream: peer\n"
+	path := filepath.Join(t.TempDir(), "graph.yaml")
+	if err := os.WriteFile(path, []byte(config), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, format := range []string{"terminal", "json", "yaml"} {
+		var out, diagnostic bytes.Buffer
+		if code := run(context.Background(), []string{"check", path, "--format", format}, &out, &diagnostic); code != 2 {
+			t.Fatal(code, diagnostic.String(), out.String())
+		}
+		if format == "terminal" {
+			if !strings.Contains(out.String(), "[path]") {
+				t.Fatal(out.String())
+			}
+			continue
+		}
+		var envelope struct {
+			Results []core.Result `json:"results"`
+		}
+		data := out.Bytes()
+		if format == "yaml" {
+			var doc any
+			if err := yaml.Unmarshal(data, &doc); err != nil {
+				t.Fatal(err)
+			}
+			data, _ = json.Marshal(doc)
+		}
+		if err := json.Unmarshal(data, &envelope); err != nil {
+			t.Fatal(err)
+		}
+		first := envelope.Results[0]
+		if first.Status != core.Unhealthy || first.Checks["capability"].Status != core.Healthy || first.Dependencies[0].Status != core.Healthy || first.Dependencies[1].Checks["functional"].Status != core.Unhealthy {
+			t.Fatal(first)
+		}
+	}
+}
+
+func TestGraphGatewayRouterSharedBackendAndFailedRoutes(t *testing.T) {
+	var counts [4]atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/gateway":
+			counts[0].Add(1)
+		case "/router":
+			counts[1].Add(1)
+		case "/backend":
+			counts[2].Add(1)
+		case "/route":
+			counts[3].Add(1)
+			w.WriteHeader(503)
+		}
+	}))
+	defer server.Close()
+	declarations := []string{
+		"- id: gateway\n  name: gateway\n  type: gateway\n  endpoint: " + server.URL + "/gateway\n  checks: [configuration, protocol]\n",
+		"- id: router\n  name: router\n  type: router\n  endpoint: " + server.URL + "/router\n  checks: [configuration, protocol]\n",
+		"- id: backend\n  name: backend\n  type: http\n  endpoint: " + server.URL + "/backend\n  checks: [configuration, protocol]\n",
+		"- id: route\n  name: route\n  type: http\n  endpoint: " + server.URL + "/route\n  checks: [configuration, protocol]\n",
+	}
+	path := filepath.Join(t.TempDir(), "signals.yaml")
+	// Compare request counts with isolated execution: multiple graph references
+	// must not issue additional backend probes or erase failed route evidence.
+	var baseline [4]int32
+	for i, node := range declarations {
+		if err := os.WriteFile(path, []byte("version: v1\ntargets:\n"+node), 0600); err != nil {
+			t.Fatal(err)
+		}
+		var out, diagnostic bytes.Buffer
+		expected := 0
+		if i == 3 {
+			expected = 2
+		}
+		if code := run(context.Background(), []string{"check", path, "--format", "json"}, &out, &diagnostic); code != expected {
+			t.Fatal(code, diagnostic.String())
+		}
+		baseline[i] = counts[i].Swap(0)
+	}
+	edges := "  dependencies:\n  - ref: backend\n    relationship: downstream\n  - ref: route\n    relationship: path\n"
+	graph := "version: v1\nconcurrency: 2\ntargets:\n" + declarations[0] + edges + declarations[1] + edges + declarations[2] + declarations[3]
+	if err := os.WriteFile(path, []byte(graph), 0600); err != nil {
+		t.Fatal(err)
+	}
+	var out, diagnostic bytes.Buffer
+	if code := run(context.Background(), []string{"check", path, "--format", "json"}, &out, &diagnostic); code != 2 {
+		t.Fatal(code, diagnostic.String())
+	}
+	var envelope struct {
+		Results []core.Result `json:"results"`
+	}
+	if err := json.Unmarshal(out.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 2; i++ {
+		r := envelope.Results[i]
+		if r.Status != core.Unhealthy || r.Checks["protocol"].Status != core.Healthy || r.Dependencies[0].Status != core.Healthy || r.Dependencies[1].Status != core.Unhealthy {
+			t.Fatal(r)
+		}
+	}
+	for i := range counts {
+		if counts[i].Load() != baseline[i] {
+			t.Fatalf("signal %d: isolated=%d graph=%d", i, baseline[i], counts[i].Load())
 		}
 	}
 }
