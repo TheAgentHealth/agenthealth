@@ -11,7 +11,7 @@ go build -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. Agent/multi-agent, HTTP/API, MCP Streamable HTTP/stdio, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are supported. Other specification target types produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
+`ping <type> <endpoint>` creates one target named `ping` with the engine's default passive checks. Agent/multi-agent, gateway HTTP signals, HTTP/API, MCP Streamable HTTP/stdio, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are supported. Other specification target types produce a `MISCONFIGURED` result until their adapters are implemented. An invalid target type is an invocation error.
 
 `check <configuration.yaml>` loads strict YAML and runs the configured targets and dependencies. `doctor <type> <endpoint>` runs the same passive defaults as ping. `doctor <configuration.yaml>` performs the same checks and adds status-based troubleshooting advice to terminal output. It does not enable additional functional checks. Failed checks and dependency evidence appear in all formats. Doctor advice is general guidance rather than a claim that a particular root cause has been identified.
 
@@ -77,3 +77,5 @@ For legacy A2A peers, use a configuration containing
 checks. `check` and `doctor` also accept required capabilities and explicit safe
 task/path probes. See the [agent adapter](agent-adapter.md) and
 [example](../examples/agent-check/agenthealth.yaml).
+
+Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
