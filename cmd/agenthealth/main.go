@@ -11,6 +11,7 @@ import (
 	"time"
 
 	a2aadapter "github.com/TheAgentHealth/agenthealth/adapters/a2a"
+	agentadapter "github.com/TheAgentHealth/agenthealth/adapters/agent"
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -27,7 +28,9 @@ const usage = `Usage:
   agenthealth login <configuration.yaml> <target-name>
   agenthealth version
 
-HTTP, API, MCP and A2A 0.3.0 JSON-RPC adapters are available.
+Available target types: agent, multi-agent, http, api, mcp, a2a.
+A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
+Agent task/path probes require the application to implement the safe probe handler.
 Other target types require future adapters.
 Checks are passive by default; functional checks require opt-in in configuration.
 `
@@ -144,6 +147,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		return fail("unknown command; use --help")
 	}
 	registry := core.NewRegistry()
+	if err := registry.Register(agentadapter.Adapter{}); err != nil {
+		return fail("cannot register agent adapter")
+	}
 	if err := registry.Register(httpadapter.Adapter{}); err != nil {
 		return fail("cannot register HTTP adapter")
 	}

@@ -13,6 +13,11 @@ targets:
       - functional
       - latency
 
+    agent:
+      functional:
+        safe: true
+        text: Return a fixed health acknowledgement without tools or writes.
+
     thresholds:
       latency_ms: 1000
 

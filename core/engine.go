@@ -73,7 +73,7 @@ func (e *Engine) runTarget(ctx context.Context, t Target, client *http.Client, c
 				}
 			}
 			requested = append(requested, "latency")
-			if t.Type == "agent" {
+			if t.Type == "agent" || t.Type == "multi-agent" {
 				requested = append(requested, "dependency")
 			}
 		}
@@ -322,17 +322,22 @@ func (e *Engine) attempt(ctx context.Context, a Adapter, request Request, dimens
 }
 
 var diagnosticMessages = map[string]string{
-	"a2a_card":       "invalid A2A agent card metadata",
-	"a2a_version":    "unsupported A2A protocol version, transport or required extension",
-	"a2a_origin":     "A2A discovered endpoint must use the configured origin",
-	"a2a_auth":       "A2A authentication rejected or declared scheme is unsupported or missing credentials",
-	"a2a_http":       "A2A endpoint returned an unexpected HTTP status",
-	"a2a_limit":      "A2A response exceeded the safety size limit",
-	"a2a_protocol":   "invalid A2A JSON-RPC response",
-	"a2a_rpc":        "A2A server rejected the protocol request",
-	"a2a_required":   "required A2A skill or capability is missing",
-	"a2a_functional": "A2A interaction failed",
-	"a2a_pending":    "A2A interaction requires continuation or has not completed",
+	"agent_document":  "invalid agent health metadata",
+	"agent_readiness": "agent is not live or ready",
+	"agent_required":  "required agent capability or configured dependency is missing",
+	"agent_task":      "agent task failed or downstream evidence mismatched",
+	"agent_pending":   "agent task completion is inconclusive",
+	"a2a_card":        "invalid A2A agent card metadata",
+	"a2a_version":     "unsupported A2A protocol version, transport or required extension",
+	"a2a_origin":      "A2A discovered endpoint must use the configured origin",
+	"a2a_auth":        "A2A authentication rejected or declared scheme is unsupported or missing credentials",
+	"a2a_http":        "A2A endpoint returned an unexpected HTTP status",
+	"a2a_limit":       "A2A response exceeded the safety size limit",
+	"a2a_protocol":    "invalid A2A JSON-RPC response",
+	"a2a_rpc":         "A2A server rejected the protocol request",
+	"a2a_required":    "required A2A skill or capability is missing",
+	"a2a_functional":  "A2A interaction failed",
+	"a2a_pending":     "A2A interaction requires continuation or has not completed",
 
 	"mcp_process":    "MCP subprocess could not start or exited before responding",
 	"mcp_oauth":      "MCP OAuth configuration, discovery or token acquisition failed",

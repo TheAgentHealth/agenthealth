@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -182,6 +183,42 @@ func TestA2APingAndDoctor(t *testing.T) {
 					t.Fatalf("missing health: %s", out.String())
 				}
 			})
+		}
+	}
+}
+
+func TestAgentCommands(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == "POST" {
+			t.Error("passive command invoked a task")
+		}
+		w.Write([]byte(`{"version":"v1","name":"first","live":true,"ready":true,"capabilities":[],"dependencies":[]}`))
+	}))
+	defer server.Close()
+	path := filepath.Join(t.TempDir(), "agent.yaml")
+	if err := os.WriteFile(path, []byte("version: v1\ntargets:\n  - name: first\n    type: agent\n    endpoint: "+server.URL+"\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, args := range [][]string{{"ping", "agent", server.URL}, {"ping", "multi-agent", server.URL}, {"check", path}, {"doctor", path}} {
+		for _, format := range []string{"terminal", "json", "yaml"} {
+			var out, diagnostic bytes.Buffer
+			cmd := append(append([]string{}, args...), "--format", format)
+			if code := run(context.Background(), cmd, &out, &diagnostic); code != 0 || diagnostic.Len() != 0 {
+				t.Fatalf("%v code=%d %s", cmd, code, diagnostic.String())
+			}
+		}
+	}
+}
+
+func TestHelpSupportedTargets(t *testing.T) {
+	var out, diagnostic bytes.Buffer
+	if code := run(context.Background(), []string{"--help"}, &out, &diagnostic); code != 0 {
+		t.Fatalf("code=%d %s", code, diagnostic.String())
+	}
+	for _, value := range []string{"agent, multi-agent, http, api, mcp, a2a", "1.0 JSON-RPC", "0.3.0 compatibility", "safe probe handler"} {
+		if !strings.Contains(out.String(), value) {
+			t.Fatalf("help missing %q: %s", value, out.String())
 		}
 	}
 }

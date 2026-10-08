@@ -6,7 +6,7 @@ scope and preserve unrelated work in the working tree.
 
 ## Project and sources of truth
 
-AgentHealth is a vendor-neutral health CLI and Go engine. HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters are
+AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility adapters are
 implemented; other adapters follow the capability roadmap. The software is
 pre-1.0. Do not describe planned adapters or distribution channels as available.
 
@@ -39,13 +39,12 @@ describes an individual agent, `a2a` a protocol endpoint, and `multi-agent`
 the cooperating system as a whole. Keep evidence for each agent, the
 communication path, and supporting dependencies distinguishable.
 
-[Phase 7](ROADMAP.md#phase-7--agent-health) plans direct and composite agent
+[Phase 7](ROADMAP.md#phase-7--agent-health) implements direct and composite agent
 health; [Phase 8](ROADMAP.md#phase-8--agentgateway-integration) plans Agentgateway;
 [Phase 9](ROADMAP.md#phase-9--agent-router-integration) plans Agent Router.
-Dependency Graph and AHP follow in Phases 10 and 11. These capabilities remain
-planned; existing A2A endpoint checks do not establish that a first agent can
+Dependency Graph and AHP follow in Phases 10 and 11 and remain planned; existing A2A endpoint checks do not establish that a first agent can
 communicate with its downstream agents. See the
-[target model](spec/target-model.md#direct-and-composite-agent-health-planned).
+[target model](spec/target-model.md#direct-and-composite-agent-health).
 
 ## Contribute changes
 

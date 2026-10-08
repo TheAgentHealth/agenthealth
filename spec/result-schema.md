@@ -197,3 +197,7 @@ Other implementations may use additional identifiers conforming to the pattern.
 | `http_body` | HTTP response body did not contain required text |
 | `http_body_limit` | HTTP response body exceeded the configured size limit |
 | `http_auth` | HTTP authentication rejected (401 or 403) |
+
+## Phase 7 draft extension
+
+Phase 7 preserves this result shape: named nested targets distinguish first-agent, peer, first-to-peer path, and supporting dependency evidence. Optional agent diagnostic codes include `agent_document`, `agent_readiness`, `agent_required`, `agent_task`, and `agent_pending`; see the [adapter](../docs/agent-adapter.md).

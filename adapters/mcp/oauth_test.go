@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -209,9 +210,10 @@ func TestOAuthFailures(t *testing.T) {
 }
 
 type loginWriter struct {
-	f      *oauthFixture
-	mode   string
-	buffer bytes.Buffer
+	f            *oauthFixture
+	mode         string
+	buffer       bytes.Buffer
+	callbackDone chan struct{}
 }
 
 func (w *loginWriter) Write(data []byte) (int, error) {
@@ -239,6 +241,7 @@ func (w *loginWriter) Write(data []byte) (int, error) {
 			values.Del("iss")
 		}
 		go func() {
+			defer close(w.callbackDone)
 			if w.mode == "bad-state-first" {
 				bad := url.Values{"state": {"wrong"}, "code": {"authorization-code"}}
 				callback.RawQuery = bad.Encode()
@@ -256,7 +259,19 @@ func (w *loginWriter) Write(data []byte) (int, error) {
 				w.f.t.Error(err)
 				return
 			}
-			response.Body.Close()
+			defer response.Body.Close()
+			body, err := io.ReadAll(response.Body)
+			if err != nil {
+				w.f.t.Error(err)
+				return
+			}
+			wantStatus := http.StatusOK
+			if w.mode == "issuer" || w.mode == "missing-issuer" {
+				wantStatus = http.StatusBadRequest
+			}
+			if response.StatusCode != wantStatus || len(body) == 0 {
+				w.f.t.Errorf("callback status=%d body length=%d", response.StatusCode, len(body))
+			}
 		}()
 	}
 	return len(data), nil
@@ -267,10 +282,15 @@ func TestOAuthPKCELogin(t *testing.T) {
 			f := newOAuthFixture(t)
 			target := f.target("authorization_code")
 			target.MCP.OAuth.TokenFile = filepath.Join(t.TempDir(), "credentials", "token.json")
-			writer := &loginWriter{f: f, mode: mode}
+			writer := &loginWriter{f: f, mode: mode, callbackDone: make(chan struct{})}
 			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 			defer cancel()
 			err := Login(ctx, target, writer)
+			select {
+			case <-writer.callbackDone:
+			case <-ctx.Done():
+				t.Fatal("browser callback did not finish")
+			}
 			if mode == "issuer" || mode == "missing-issuer" {
 				if err == nil || f.tokens.Load() != 0 {
 					t.Fatal("invalid issuer accepted")

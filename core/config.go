@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"gopkg.in/yaml.v3"
 )
@@ -18,7 +19,20 @@ type Config struct {
 	Version string   `yaml:"version"`
 	Targets []Target `yaml:"targets"`
 }
+
+// AgentOptions configures the bounded agent health interface.
+type AgentOptions struct {
+	RequiredCapabilities []string   `yaml:"required_capabilities"`
+	Functional           *AgentTask `yaml:"functional"`
+}
+type AgentTask struct {
+	Safe       bool   `yaml:"safe" json:"safe"`
+	Text       string `yaml:"text" json:"text"`
+	Downstream string `yaml:"downstream" json:"downstream,omitempty"`
+}
+
 type Target struct {
+	Agent         *AgentOptions  `yaml:"agent"`
 	Name          string         `yaml:"name"`
 	Type          string         `yaml:"type"`
 	Endpoint      string         `yaml:"endpoint"`
@@ -235,6 +249,27 @@ func validateTarget(t Target, path string, depth int) error {
 	if !contains(targetTypes, t.Type) {
 		return fmt.Errorf("%s: unsupported target type", path)
 	}
+	if t.Agent != nil {
+		if t.Type != "agent" && t.Type != "multi-agent" {
+			return fmt.Errorf("%s: agent options require agent or multi-agent target", path)
+		}
+		seen := map[string]bool{}
+		for _, name := range t.Agent.RequiredCapabilities {
+			if strings.TrimSpace(name) == "" || seen[name] {
+				return fmt.Errorf("%s: agent capabilities must be nonempty and unique", path)
+			}
+			seen[name] = true
+		}
+		if t.Checks != nil && !contains(t.Checks, "capability") && len(t.Agent.RequiredCapabilities) > 0 {
+			return fmt.Errorf("%s: agent expectations require capability check", path)
+		}
+		if f := t.Agent.Functional; f != nil {
+			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Text) == "" || len(f.Text) > 65536 || utf8.RuneCountInString(f.Downstream) > 1024 || (f.Downstream != "" && strings.TrimSpace(f.Downstream) == "") {
+				return fmt.Errorf("%s: agent task requires functional opt-in, safe task and bounded text", path)
+			}
+		}
+	}
+
 	if t.A2A != nil {
 		o := t.A2A
 		if t.Type != "a2a" || (o.ProtocolVersion != "" && o.ProtocolVersion != "0.3.0" && o.ProtocolVersion != "1.0") {
@@ -455,7 +490,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || strings.TrimSpace(value.Value) == "" {
 				return false
 			}
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
 			}
@@ -471,7 +506,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if !validYAMLNode(value, "auth", depth+1) {
 				return false
 			}
-		case "a2a", "mcp", "functional", "stdio", "oauth":
+		case "agent", "a2a", "mcp", "functional", "stdio", "oauth":
 			if !validYAMLNode(value, key.Value, depth+1) {
 				return false
 			}

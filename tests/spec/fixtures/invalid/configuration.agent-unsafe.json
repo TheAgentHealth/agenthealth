@@ -1,0 +1,24 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "first",
+      "type": "agent",
+      "endpoint": "http://localhost:8080/health",
+      "checks": [
+        "protocol",
+        "capability",
+        "functional"
+      ],
+      "agent": {
+        "required_capabilities": [
+          "answer"
+        ],
+        "functional": {
+          "safe": false,
+          "text": "Reply OK"
+        }
+      }
+    }
+  ]
+}

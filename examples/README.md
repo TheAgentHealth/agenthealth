@@ -7,6 +7,7 @@ an OAuth client. Build the CLI as described in [CLI usage](../docs/cli.md).
 
 | Example | What it demonstrates |
 |---|---|
+| [Agent, peer and communication path](agent-check/README.md) | First-agent health, A2A peer, safe path probe and optional supporting dependency; requires a runtime probe handler |
 | [HTTP readiness](core-check/agenthealth.yaml) | HTTP status checks and latency thresholds |
 | [MCP discovery](mcp-check/agenthealth.yaml) | Required tool names and resource URIs, with automatic protocol selection |
 | [Modern MCP](mcp-check/modern.yaml) | Pinning stateless MCP `2026-07-28` |

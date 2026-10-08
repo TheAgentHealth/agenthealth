@@ -524,7 +524,15 @@ func Login(ctx context.Context, target core.Target, out io.Writer) error {
 		fmt.Fprint(w, "Authorization received. You can close this window.")
 	})
 	server := &http.Server{Handler: handler, ReadHeaderTimeout: 5 * time.Second, WriteTimeout: 5 * time.Second}
-	defer server.Close()
+	defer func() {
+		// A callback can publish its outcome before net/http flushes the browser
+		// response. Drain the handler before closing active connections.
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		if err := server.Shutdown(cleanupCtx); err != nil {
+			_ = server.Close()
+		}
+	}()
 	go server.Serve(listener)
 	query := authorization.Query()
 	query.Set("response_type", "code")
