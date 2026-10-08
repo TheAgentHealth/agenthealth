@@ -113,7 +113,7 @@ agenthealth check examples/gateway-check/agenthealth.yaml --format json
 
 ## Agent Router checks
 
-Phase 9 is implemented in source and not yet released. Configure your running
+Phase 9 is released in v0.7.0. Configure your running
 agent, router and downstream endpoints using the [router setup guide](router-check/README.md).
 The functional route must be read-only and support the configured response marker.
 

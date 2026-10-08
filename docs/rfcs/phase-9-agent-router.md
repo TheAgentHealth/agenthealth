@@ -33,5 +33,6 @@ No remote response authorizes topology discovery or arbitrary active probes.
 The generic interface avoids guessing a router product or admin wire contract.
 Product-specific discovery is unsupported. Configured route availability uses
 existing HTTP/MCP/A2A protocol evidence; it does not prove membership, failover
-or communication from an agent runtime. This additive implementation is not a
-release; publication and maintainer specification review remain separate steps.
+or communication from an agent runtime. This additive implementation was merged in
+[PR #24](https://github.com/TheAgentHealth/agenthealth/pull/24) and ships in
+[v0.7.0](../releases/v0.7.0.md).

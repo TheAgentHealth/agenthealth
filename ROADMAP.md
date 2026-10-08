@@ -638,7 +638,7 @@ See the [Phase 8 RFC](docs/rfcs/phase-8-agentgateway.md) and
 
 # Phase 9 — Agent Router Integration
 
-**Status:** Implemented in source — vendor-neutral HTTP signals and configured route/backend evidence; [v0.7.0 release prepared](docs/releases/v0.7.0.md), not yet published.
+**Status:** Released in [v0.7.0](docs/releases/v0.7.0.md) — vendor-neutral HTTP signals and configured route/backend evidence, implemented in [PR #24](https://github.com/TheAgentHealth/agenthealth/pull/24); product interoperability remains Phase 25 work.
 
 Goal:
 

@@ -30,14 +30,14 @@ AgentHealth is designed to work across:
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Current release: [v0.6.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.6.0).**
+**Current release: [v0.7.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.7.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
-Phase 9 adds [Agent Router HTTP signals](docs/agent-router.md) and named route/backend checks in source; it is not yet released. See [v0.7.0 release preparation](docs/releases/v0.7.0.md).
+Phase 9 adds [Agent Router HTTP signals](docs/agent-router.md) and named route/backend checks in v0.7.0. See [v0.7.0 release notes](docs/releases/v0.7.0.md).
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release
 retains A2A 1.0 with explicit 0.3.0 compatibility and signed provenance/SBOM
-attestations. See [release and migration notes](docs/releases/v0.6.0.md).
+attestations. See [release and migration notes](docs/releases/v0.7.0.md).
 
 ---
 
@@ -1328,7 +1328,7 @@ Interfaces, schemas, commands, and configuration formats may change before the 1
 Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
-agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is implemented in source.
+agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
 The dependency graph, AHP, distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
