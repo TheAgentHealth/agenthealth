@@ -144,3 +144,26 @@ func TestAHPStatusMappingAndGraphEvidence(t *testing.T) {
 		t.Fatal(w.Code)
 	}
 }
+
+func TestAHPBearerTokenValidation(t *testing.T) {
+	config := Config{Version: "v1", Targets: []Target{{Name: "test", Type: "http", Endpoint: "http://localhost"}}}
+	for _, token := range []string{"1234567890123456 ", " 1234567890123456", "1234567890123456\t", "12345678 90123456", "1234567890123456\n", "1234567890123456é", "12345678=90123456", "================"} {
+		if _, err := NewAHPServer(NewEngine(NewRegistry()), config, AHPOptions{Token: token}); err == nil {
+			t.Fatal("accepted invalid bearer token")
+		}
+	}
+	for _, token := range []string{"1234567890123456", "aAzZ019-._~+/token=="} {
+		s, err := NewAHPServer(NewEngine(NewRegistry()), config, AHPOptions{Token: token})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !s.authorized("Bearer " + token) {
+			t.Fatal("valid token denied")
+		}
+		for _, header := range []string{"", "Bearer short", "Bearer " + token + "x", "Bearer " + strings.Repeat("x", len(token)), "Bearer " + token + " ", "Basic " + token} {
+			if s.authorized(header) {
+				t.Fatal("invalid header authorized")
+			}
+		}
+	}
+}

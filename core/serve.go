@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/json"
 	"errors"
@@ -48,7 +49,7 @@ func NewAHPServer(engine *Engine, config Config, options AHPOptions) (*AHPServer
 	if options.Interval < time.Second || options.Interval > time.Hour || options.MaxAge < options.Interval || options.MaxAge > time.Hour {
 		return nil, errors.New("invalid AHP refresh policy")
 	}
-	if options.Token != "" && (len(options.Token) < 16 || !validHTTPHeaderValue(options.Token)) {
+	if options.Token != "" && (len(options.Token) < 16 || !validAHPToken(options.Token)) {
 		return nil, errors.New("invalid AHP bearer token")
 	}
 	return &AHPServer{engine: engine, config: config, options: options, status: Unknown}, nil
@@ -119,7 +120,7 @@ func (s *AHPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	detailed := r.URL.Path == "/health/dependencies" || r.URL.Path == "/health/capabilities"
-	if detailed && (s.options.Token == "" || subtle.ConstantTimeCompare([]byte(r.Header.Get("Authorization")), []byte("Bearer "+s.options.Token)) != 1) {
+	if detailed && (s.options.Token == "" || !s.authorized(r.Header.Get("Authorization"))) {
 		w.Header().Set("WWW-Authenticate", "Bearer")
 		writeError(401, "unauthorized")
 		return
@@ -159,4 +160,33 @@ func (s *AHPServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(envelope)
+}
+
+// validAHPToken follows RFC 6750 b64token: nonempty ASCII token characters
+// followed only by optional padding. Whitespace is never part of a token.
+func validAHPToken(token string) bool {
+	padding := false
+	characters := 0
+	for i := 0; i < len(token); i++ {
+		c := token[i]
+		if c == '=' {
+			padding = true
+			continue
+		}
+		if padding {
+			return false
+		}
+		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '.' || c == '_' || c == '~' || c == '+' || c == '/' {
+			characters++
+			continue
+		}
+		return false
+	}
+	return characters > 0
+}
+
+func (s *AHPServer) authorized(header string) bool {
+	submitted := sha256.Sum256([]byte(header))
+	expected := sha256.Sum256([]byte("Bearer " + s.options.Token))
+	return subtle.ConstantTimeCompare(submitted[:], expected[:]) == 1
 }

@@ -56,7 +56,9 @@ serving configuration run on every refresh; review these before starting.
 Public responses disclose only aggregate status and observation time. Detailed
 endpoints require a configured bearer token and grant access to all configured
 result topology. The token is an environment reference in the CLI, compared in
-constant time, and never emitted. Result output uses the engine's existing
+constant time using fixed-size SHA-256 digests, and never emitted. Tokens
+must use RFC 6750 b64token characters, with optional trailing `=` padding
+and no whitespace. Result output uses the engine's existing
 validation and redaction. Target names and IDs are visible to authorized clients;
 use a dedicated configuration if different audiences need separate scopes.
 
