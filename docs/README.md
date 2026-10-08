@@ -17,7 +17,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 4: HTTP/API | [Status, headers, bearer authentication, body checks, transport diagnostics, and safety](http-adapter.md), [HTTP configuration](../spec/configuration.md#http-response-expectations-phase-4-draft) | [HTTP readiness](../examples/core-check/agenthealth.yaml), complete configuration examples in the specification |
 | 5: MCP | [HTTP/stdio, protocol selection, inventories, OAuth, functional probes, and limits](mcp-adapter.md), [login](cli.md#mcp-oauth-login) | [Discovery, stateless, stdio, functional, and all OAuth flows](../examples/README.md) |
 | 6: A2A | [A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility discovery, authentication, skills, and opt-in interactions](a2a-adapter.md) | [A2A v1 configuration](../examples/a2a-check/v1.yaml), [0.3.0 compatibility](../examples/a2a-check/agenthealth.yaml) |
-| 8: Agentgateway (source) | [Gateway signals and backend/path evidence](agentgateway.md), [impact proposal](rfcs/phase-8-agentgateway.md) | [Gateway configuration](../examples/gateway-check/README.md) |
+| 8: Agentgateway (v0.6.0) | [Gateway signals and backend/path evidence](agentgateway.md), [impact proposal](rfcs/phase-8-agentgateway.md) | [Gateway configuration](../examples/gateway-check/README.md) |
 | 7: Agent health (v0.5.0) | [Health resource, capabilities, safe tasks and runtime handler prerequisites](agent-adapter.md), [impact proposal](rfcs/phase-7-agent-health.md) | [Agent, peer and path example](../examples/agent-check/README.md) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
@@ -45,4 +45,4 @@ Foundation stabilization in v0.4.0 adds current A2A, shared probes and release
 hardening. See [interoperability](interoperability.md) and
 [v0.4.0 migration notes](releases/v0.4.0.md).
 
-Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+Phase 8 Agentgateway integration is released in [v0.6.0](releases/v0.6.0.md). See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.

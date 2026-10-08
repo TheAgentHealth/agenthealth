@@ -600,7 +600,7 @@ configuration; arbitrary framework task APIs are outside this adapter contract.
 
 # Phase 8 — Agentgateway Integration
 
-**Status:** Implemented in source — HTTP health signals and explicitly configured protocol paths; product-version interoperability remains Phase 25 work.
+**Status:** Released in [v0.6.0](docs/releases/v0.6.0.md) — HTTP health signals and explicitly configured protocol paths, implemented in [PR #21](https://github.com/TheAgentHealth/agenthealth/pull/21); product-version interoperability remains Phase 25 work.
 
 Goal:
 

@@ -30,12 +30,13 @@ AgentHealth is designed to work across:
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, and gateway adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Current release: [v0.5.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.5.0).**
+**Current release: [v0.6.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.6.0).**
+Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release
 retains A2A 1.0 with explicit 0.3.0 compatibility and signed provenance/SBOM
-attestations. See [release and migration notes](docs/releases/v0.5.0.md).
+attestations. See [release and migration notes](docs/releases/v0.6.0.md).
 
 ---
 
@@ -1324,7 +1325,7 @@ Interfaces, schemas, commands, and configuration formats may change before the 1
 Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
-agent, communication-path, and dependency evidence. Agentgateway integration is implemented in source. Agent Router integrations,
+agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router integrations,
 the dependency graph, AHP, distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
@@ -1552,4 +1553,4 @@ AgentHealth is an independent open-source project.
 
 References to third-party projects, protocols, companies, products, or trademarks are for interoperability and descriptive purposes only and do not imply affiliation, sponsorship, or endorsement.
 
-Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+Phase 8 Agentgateway integration is released in v0.6.0. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
