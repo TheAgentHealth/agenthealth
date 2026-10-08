@@ -13,12 +13,13 @@ import (
 	"github.com/TheAgentHealth/agenthealth/core"
 )
 
-type Adapter struct{}
+// ReadinessGET selects GET for read-only health endpoints that do not support HEAD.
+type Adapter struct{ ReadinessGET bool }
 
 func (Adapter) Metadata() core.Metadata {
 	return core.Metadata{Name: "http", Version: "0.2.0", CompatibilityVersion: "v1", TargetTypes: []string{"http", "api"}, Dimensions: []string{"configuration", "reachability", "protocol", "authentication", "functional"}, ActiveChecks: []string{"functional"}}
 }
-func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
+func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
 	if dimension == "configuration" {
 		endpoint, err := url.Parse(r.Target.Endpoint)
 		if err != nil || endpoint.Hostname() == "" || (endpoint.Scheme != "https" && endpoint.Scheme != "http") || endpoint.User != nil || endpoint.Fragment != "" || !validHeaderValue(r.Credential) {
@@ -27,7 +28,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		return core.Observation{Check: core.CheckResult{Status: core.Healthy}}, nil
 	}
 	method := http.MethodHead
-	if dimension == "functional" {
+	if dimension == "functional" || a.ReadinessGET {
 		method = http.MethodGet
 	}
 	request, err := http.NewRequestWithContext(ctx, method, r.Target.Endpoint, nil)
