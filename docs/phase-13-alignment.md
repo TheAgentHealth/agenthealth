@@ -14,7 +14,7 @@ repository source alignment, not publication or native installation certificatio
 | Examples | [Local distribution preparation](../examples/distribution/README.md); existing health configurations require no migration |
 | Archive tooling | [Release builder](../scripts/build_release.py) retains names, normalized metadata, executable SBOMs and version injection |
 | Package tooling | [Package builder](../scripts/package_release.py) verifies archive hashes, generates Homebrew/Scoop metadata and reuses Linux payloads for DEB/RPM |
-| Tests | [Archive/SBOM tests](../tests/test_release_archives.py), [manifest and tampering tests](../tests/test_package_release.py), [platform-selection/tampering tests](../tests/test_release_smoke.py), [native smoke checks](../scripts/test_release_binary.py) |
+| Tests | [Archive/SBOM tests](../tests/test_release_archives.py), [manifest and tampering tests](../tests/test_package_release.py), [platform-selection/tampering tests](../tests/test_release_smoke.py), [native smoke checks](../scripts/test_release_binary.py), [older-tag recovery tests](../tests/test_release_recovery.py) |
 | CI and release | [CI](../.github/workflows/ci.yml) builds and smoke-tests five native platforms; [release](../.github/workflows/release.yml) gates publication on those checks and attests all generated assets |
 
 ## Earlier phases

@@ -63,14 +63,19 @@ def generate(version, output):
                 binary = staging / 'agenthealth'
                 binary.write_bytes(bundle.extractfile(executable).read())
                 binary.chmod(0o755)
+                for name in ('LICENSE', 'INSTALL.md'):
+                    entry = bundle.getmember(name)
+                    if not entry.isfile():
+                        raise ValueError('archive documentation must be regular files')
+                    (staging / name).write_bytes(bundle.extractfile(entry).read())
             config = {'name': 'agenthealth', 'arch': arch, 'platform': 'linux',
                       'version': version[1:], 'maintainer': 'TheAgentHealth',
                       'description': 'Vendor-neutral agent health CLI', 'license': 'Apache-2.0',
                       'homepage': 'https://github.com/TheAgentHealth/agenthealth',
                       'depends': ['ca-certificates'], 'contents': [
-                          {'src': str(binary), 'dst': '/usr/bin/agenthealth'},
-                          {'src': str(ROOT / 'LICENSE'), 'dst': '/usr/share/doc/agenthealth/LICENSE'},
-                          {'src': str(ROOT / 'docs/installation.md'), 'dst': '/usr/share/doc/agenthealth/INSTALL.md'}]}
+                          {'src': str(binary), 'dst': '/usr/bin/agenthealth', 'file_info': {'mode': 0o755}},
+                          {'src': str(staging / 'LICENSE'), 'dst': '/usr/share/doc/agenthealth/LICENSE', 'file_info': {'mode': 0o644}},
+                          {'src': str(staging / 'INSTALL.md'), 'dst': '/usr/share/doc/agenthealth/INSTALL.md', 'file_info': {'mode': 0o644}}]}
             config_path = staging / 'nfpm.json'
             config_path.write_text(json.dumps(config))
             for kind in ('deb', 'rpm'):

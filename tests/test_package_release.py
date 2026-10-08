@@ -22,6 +22,10 @@ def assets(path):
                 entry = tarfile.TarInfo('agenthealth')
                 entry.size = 6
                 bundle.addfile(entry, io.BytesIO(b'binary'))
+                for name, data in [('LICENSE', b'archive license'), ('INSTALL.md', b'archive install')]:
+                    entry = tarfile.TarInfo(name)
+                    entry.size = len(data)
+                    bundle.addfile(entry, io.BytesIO(data))
         else:
             source.write_bytes(b'archive')
         names.append(source)
@@ -32,7 +36,12 @@ def test_manifests_and_packages(tmp_path, monkeypatch):
     assets(tmp_path)
     configs = []
     def package(command, **kwargs):
-        configs.append(json.loads(Path(command[command.index('--config') + 1]).read_text()))
+        config = json.loads(Path(command[command.index('--config') + 1]).read_text())
+        assert Path(config['contents'][1]['src']).read_bytes() == b'archive license'
+        assert Path(config['contents'][2]['src']).read_bytes() == b'archive install'
+        assert [c['file_info']['mode'] for c in config['contents']] == [0o755, 0o644, 0o644]
+        assert kwargs['env']['SOURCE_DATE_EPOCH'] == '0'
+        configs.append(config)
         Path(command[-1]).write_bytes(b'package')
     monkeypatch.setattr(packages.subprocess, 'run', package)
     packages.generate('v1.2.3', tmp_path)

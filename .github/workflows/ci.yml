@@ -29,7 +29,7 @@ jobs:
       - name: Install test dependencies
         run: pip install -r tests/requirements.txt
       - name: Run spec schema tests
-        run: python3 -m pytest tests/spec tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_container_image.py -v
+        run: python3 -m pytest tests/spec tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_container_image.py -v
 
   markdown-link-check:
     name: Markdown link check

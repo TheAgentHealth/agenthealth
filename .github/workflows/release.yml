@@ -69,7 +69,9 @@ jobs:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           python scripts/build_release.py "$RELEASE_TAG"
-          python scripts/test_release_binary.py "$RELEASE_TAG" --output dist
+          if [ -f scripts/test_release_binary.py ]; then
+            python scripts/test_release_binary.py "$RELEASE_TAG" --output dist
+          fi
 
   release:
     # Runs in parallel with container once validate passes; it does not
@@ -97,7 +99,9 @@ jobs:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           python3 scripts/build_release.py "$RELEASE_TAG"
-          python3 scripts/package_release.py "$RELEASE_TAG"
+          if [ -f scripts/package_release.py ]; then
+            python3 scripts/package_release.py "$RELEASE_TAG"
+          fi
       - name: Verify Linux binary
         env:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}

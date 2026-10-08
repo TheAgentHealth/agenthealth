@@ -154,7 +154,7 @@ the optional `serialNumber`. Published SBOMs use explicit CycloneDX predicates.
 ## Phase 13 package assets
 
 After building archives, run `python3 scripts/package_release.py <tag> --output <directory>`.
-This verifies existing checksums, reuses the Linux executable bytes, invokes
+This verifies existing checksums, reuses the Linux executable, license and install-document bytes from each verified archive, invokes
 [nFPM](https://nfpm.goreleaser.com/docs/configuration/) v2.47.0 through Go (requires Go 1.26.4 or newer, or automatic toolchain download), and
 adds four DEB/RPM packages plus Homebrew/Scoop manifests to `checksums.txt`.
 The release workflow signs build provenance for every asset. Archive SBOMs
@@ -164,6 +164,6 @@ installing. Native signing and package repository signatures remain Phase 26.
 
 The release waits for native archive smoke tests on all five platforms.
 Publishing a tap/bucket or APT/YUM repository is separate from generating
-release assets and is not automated. Older tag recovery uses older tagged
-scripts, preserving the original asset set. Do not generate package assets
+release assets and is not automated. Older tag recovery checks whether the tagged source contains the Phase 13
+helpers before invoking them, preserving the original asset set. Do not generate package assets
 for an already published release.
