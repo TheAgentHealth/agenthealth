@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -206,6 +207,18 @@ func TestAgentCommands(t *testing.T) {
 			if code := run(context.Background(), cmd, &out, &diagnostic); code != 0 || diagnostic.Len() != 0 {
 				t.Fatalf("%v code=%d %s", cmd, code, diagnostic.String())
 			}
+		}
+	}
+}
+
+func TestHelpSupportedTargets(t *testing.T) {
+	var out, diagnostic bytes.Buffer
+	if code := run(context.Background(), []string{"--help"}, &out, &diagnostic); code != 0 {
+		t.Fatalf("code=%d %s", code, diagnostic.String())
+	}
+	for _, value := range []string{"agent, multi-agent, http, api, mcp, a2a", "1.0 JSON-RPC", "0.3.0 compatibility", "safe probe handler"} {
+		if !strings.Contains(out.String(), value) {
+			t.Fatalf("help missing %q: %s", value, out.String())
 		}
 	}
 }

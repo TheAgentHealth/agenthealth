@@ -14,44 +14,46 @@ import (
 )
 
 func TestAgentHealth(t *testing.T) {
-	for _, tc := range []struct {
-		name, doc string
-		want      core.Status
-	}{
-		{"healthy", `{"version":"v1","name":"first","live":true,"ready":true,"capabilities":["answer"],"dependencies":[]}`, core.Healthy},
-		{"unready", `{"version":"v1","name":"first","live":true,"ready":false,"capabilities":["answer"],"dependencies":[]}`, core.Unhealthy},
-		{"missing metadata", `{}`, core.Unhealthy},
-		{"missing capability", `{"version":"v1","name":"first","live":true,"ready":true,"capabilities":[],"dependencies":[]}`, core.Unhealthy},
-		{"unconfigured discovery", `{"version":"v1","name":"first","live":true,"ready":true,"capabilities":["answer"],"dependencies":["unknown"]}`, core.Unknown},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			var gets, posts atomic.Int32
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				if r.Method == "GET" {
-					gets.Add(1)
+	for _, targetType := range []string{"agent", "multi-agent"} {
+		for _, tc := range []struct {
+			name, doc string
+			want      core.Status
+		}{
+			{"healthy", `{"version":"v1","name":"first","live":true,"ready":true,"capabilities":["answer"],"dependencies":[]}`, core.Healthy},
+			{"unready", `{"version":"v1","name":"first","live":true,"ready":false,"capabilities":["answer"],"dependencies":[]}`, core.Unhealthy},
+			{"missing metadata", `{}`, core.Unhealthy},
+			{"missing capability", `{"version":"v1","name":"first","live":true,"ready":true,"capabilities":[],"dependencies":[]}`, core.Unhealthy},
+			{"unconfigured discovery", `{"version":"v1","name":"first","live":true,"ready":true,"capabilities":["answer"],"dependencies":["unknown"]}`, core.Unknown},
+		} {
+			t.Run(targetType+"/"+tc.name, func(t *testing.T) {
+				var gets, posts atomic.Int32
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-Type", "application/json")
+					if r.Method == "GET" {
+						gets.Add(1)
+					}
+					if r.Method == "POST" {
+						posts.Add(1)
+					}
+					fmt.Fprint(w, tc.doc)
+				}))
+				defer server.Close()
+				registry := core.NewRegistry()
+				if err := registry.Register(Adapter{}); err != nil {
+					t.Fatal(err)
 				}
-				if r.Method == "POST" {
-					posts.Add(1)
+				results, err := core.NewEngine(registry).Run(context.Background(), core.Config{Version: "v1", Targets: []core.Target{{Name: "first", Type: targetType, Endpoint: server.URL, Agent: &core.AgentOptions{RequiredCapabilities: []string{"answer"}}}}})
+				if err != nil {
+					t.Fatal(err)
 				}
-				fmt.Fprint(w, tc.doc)
-			}))
-			defer server.Close()
-			registry := core.NewRegistry()
-			if err := registry.Register(Adapter{}); err != nil {
-				t.Fatal(err)
-			}
-			results, err := core.NewEngine(registry).Run(context.Background(), core.Config{Version: "v1", Targets: []core.Target{{Name: "first", Type: "agent", Endpoint: server.URL, Agent: &core.AgentOptions{RequiredCapabilities: []string{"answer"}}}}})
-			if err != nil {
-				t.Fatal(err)
-			}
-			if results[0].Status != tc.want {
-				t.Fatalf("%+v", results[0])
-			}
-			if gets.Load() != 1 || posts.Load() != 0 {
-				t.Fatalf("gets %d posts %d", gets.Load(), posts.Load())
-			}
-		})
+				if results[0].Status != tc.want {
+					t.Fatalf("%+v", results[0])
+				}
+				if gets.Load() != 1 || posts.Load() != 0 {
+					t.Fatalf("gets %d posts %d", gets.Load(), posts.Load())
+				}
+			})
+		}
 	}
 }
 func TestFunctionalAndPath(t *testing.T) {

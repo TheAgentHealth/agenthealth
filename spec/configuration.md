@@ -287,8 +287,8 @@ and runtime behavior.
 `agent` and `multi-agent` targets and dependencies accept `agent` options:
 `required_capabilities` is a unique list of nonempty names and requires the
 capability dimension when checks are explicit. `functional` requires explicit
-functional checks, `safe: true`, nonempty `text` up to 64 KiB and optional
-nonempty `downstream` up to 1024 characters. The downstream selector is sent to
+functional checks, `safe: true`, nonempty `text` up to 64 KiB of UTF-8 bytes and optional
+`downstream` up to 1024 Unicode characters. The downstream selector is sent to
 the first runtime; it is not a discovered URL. Names-only discovery validates
 that advertised dependencies are configured; execution uses the existing
 independent nested dependency policies. Defaults include the dependency
@@ -313,3 +313,7 @@ targets:
 Legacy agent configurations listing functional without task options remain
 syntactically valid but yield MISCONFIGURED before networking; they previously
 had no executable agent adapter. Add a safe task to enable functional execution.
+
+An empty `downstream` selector is equivalent to omission and probes the agent
+itself. Whitespace-only selectors are invalid. JSON Schema string lengths
+count Unicode characters; Go additionally enforces the task text byte limit.

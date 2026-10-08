@@ -28,7 +28,9 @@ const usage = `Usage:
   agenthealth login <configuration.yaml> <target-name>
   agenthealth version
 
-HTTP, API, MCP and A2A 0.3.0 JSON-RPC adapters are available.
+Available target types: agent, multi-agent, http, api, mcp, a2a.
+A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
+Agent task/path probes require the application to implement the safe probe handler.
 Other target types require future adapters.
 Checks are passive by default; functional checks require opt-in in configuration.
 `

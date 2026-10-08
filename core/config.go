@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"gopkg.in/yaml.v3"
 )
@@ -263,7 +264,7 @@ func validateTarget(t Target, path string, depth int) error {
 			return fmt.Errorf("%s: agent expectations require capability check", path)
 		}
 		if f := t.Agent.Functional; f != nil {
-			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Text) == "" || len(f.Text) > 65536 || len(f.Downstream) > 1024 || (f.Downstream != "" && strings.TrimSpace(f.Downstream) == "") {
+			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Text) == "" || len(f.Text) > 65536 || utf8.RuneCountInString(f.Downstream) > 1024 || (f.Downstream != "" && strings.TrimSpace(f.Downstream) == "") {
 				return fmt.Errorf("%s: agent task requires functional opt-in, safe task and bounded text", path)
 			}
 		}

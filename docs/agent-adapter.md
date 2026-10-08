@@ -63,8 +63,8 @@ See the [example](../examples/agent-check/agenthealth.yaml).
 
 ## Bounds and compatibility
 
-Responses are limited to 64 KiB; task text to 64 KiB and downstream IDs to 1024
-characters. Engine deadlines, cancellation, TLS verification, redirect refusal,
+Responses are limited to 64 KiB; task text to 64 KiB of UTF-8 bytes and downstream IDs to 1024
+Unicode characters. Engine deadlines, cancellation, TLS verification, redirect refusal,
 bearer environment references, credential redaction, and concurrency limits
 apply. `safe: true` declares operator authorization and handler safety; the CLI
 cannot sandbox a remote runtime. The interface is a Phase 7 adapter contract,
@@ -76,3 +76,7 @@ agenthealth ping agent http://localhost:8080/health
 agenthealth check examples/agent-check/agenthealth.yaml --format json
 agenthealth doctor examples/agent-check/agenthealth.yaml --format yaml
 ```
+
+An empty `downstream` selector is equivalent to omission and probes the agent
+itself. Whitespace-only selectors are invalid. JSON Schema string lengths
+count Unicode characters; Go additionally enforces the task text byte limit.
