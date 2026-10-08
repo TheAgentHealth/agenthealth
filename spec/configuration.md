@@ -148,7 +148,7 @@ The reference engine applies a 60-second whole-run budget, or a shorter caller d
 
 ## HTTP response expectations (Phase 4 draft)
 
-HTTP/API targets and dependencies accept an optional `http` map. Options are not inherited by dependencies.
+HTTP/API and gateway targets and dependencies accept an optional `http` map. Options are not inherited by dependencies.
 
 | Field | Type | Default | Meaning |
 |---|---|---|---|
@@ -317,3 +317,11 @@ had no executable agent adapter. Add a safe task to enable functional execution.
 An empty `downstream` selector is equivalent to omission and probes the agent
 itself. Whitespace-only selectors are invalid. JSON Schema string lengths
 count Unicode characters; Go additionally enforces the task text byte limit.
+
+## Gateway health signals (Phase 8)
+
+Gateway protocol checks use GET for explicitly configured read-only signals.
+HTTP expectations apply; body matching still requires functional opt-in. Separate
+named dependencies preserve backend and path evidence with existing aggregation
+and redaction. See [the Phase 8 RFC](../docs/rfcs/phase-8-agentgateway.md) and
+[integration guide](../docs/agentgateway.md).
