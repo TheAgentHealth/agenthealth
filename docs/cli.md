@@ -20,7 +20,7 @@ Use `--format terminal`, `--format json`, or `--format yaml` before or after pos
 `version` and `--version` print the build version (`dev` by default). Release builds can set it with:
 
 ```bash
-go build -ldflags '-X main.version=v0.4.0' -o agenthealth ./cmd/agenthealth
+go build -ldflags '-X main.version=v0.5.0' -o agenthealth ./cmd/agenthealth
 ```
 
 ## Exit behavior

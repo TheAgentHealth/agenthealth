@@ -1,7 +1,7 @@
 # Agent, peer and communication-path checks
 
 This Phase 7 configuration is a template for your running services. Phase 7
-requires a build from the current source; it is not in the published v0.4.0 binary.
+requires v0.5.0 or newer; see [installation](../../docs/installation.md).
 
 Before running [agenthealth.yaml](agenthealth.yaml):
 

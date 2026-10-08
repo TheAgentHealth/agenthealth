@@ -27,11 +27,12 @@ AgentHealth is designed to work across:
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Current release: [v0.4.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.4.0).**
-Foundation stabilization adds aligned AHS classifications, machine-readable
-diagnostic codes, default A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility,
-shared per-target probes, official SDK interoperability tests, and signed
-provenance/SBOM attestations. See [release and migration notes](docs/releases/v0.4.0.md).
+**Current release: [v0.5.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.5.0).**
+Phase 7 adds direct/composite agent health, declared liveness/readiness,
+capability and dependency discovery, and safe task/path probes. Path probes
+require a receiving handler in the first agent application. This release
+retains A2A 1.0 with explicit 0.3.0 compatibility and signed provenance/SBOM
+attestations. See [release and migration notes](docs/releases/v0.5.0.md).
 
 ---
 
@@ -594,8 +595,7 @@ See the [agent interface and examples](docs/agent-adapter.md).
 health resource. For a first-to-downstream path probe, the first agent must
 implement a safe POST handler that actually contacts the selected downstream
 agent and reports completion. AgentHealth sends and evaluates the probe; it
-does not install this handler into your application. Phase 7 is available in
-source and has not yet been published in a release.
+does not install this handler into your application. Phase 7 is available in v0.5.0 and newer.
 This includes the user's first, user-facing agent, whether it answers directly
 or calls other agents. Checks cover its own endpoint, authentication,
 liveness, readiness, and capabilities, with an explicitly opted-in, bounded,
@@ -1321,12 +1321,12 @@ AgentHealth is under active design and development. The Go engine, CLI, agent/mu
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 
-Foundation stabilization is released in v0.4.0. The current source implements
+Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Gateway/router integrations,
 the dependency graph, AHP, distribution, SDKs, and observability/conformance
-follow the [roadmap](ROADMAP.md). Phase 7 is not yet a published release.
+follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---
 
