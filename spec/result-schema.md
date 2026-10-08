@@ -197,3 +197,13 @@ Other implementations may use additional identifiers conforming to the pattern.
 | `http_body` | HTTP response body did not contain required text |
 | `http_body_limit` | HTTP response body exceeded the configured size limit |
 | `http_auth` | HTTP authentication rejected (401 or 403) |
+| `model_auth` | model API authentication rejected (401 or 403) |
+| `model_http` | model API returned an unexpected HTTP status |
+| `model_rate_limit` | model API rate limit reached (429) |
+| `model_overloaded` | model API reported overload (529) |
+| `model_protocol` | invalid model API response |
+| `model_limit` | model API response exceeded the safety size limit or listing was incomplete |
+| `model_required` | required model is not available |
+| `model_unavailable` | inference model was not found or is not served |
+| `model_functional` | minimal model inference failed |
+| `model_token_limit` | model API ignored the configured output token limit |

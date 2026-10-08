@@ -25,7 +25,7 @@ AgentHealth is designed to work across:
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API, MCP, and A2A adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, and HTTP/API, MCP, A2A, and model/LLM adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
 **Current release: [v0.4.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.4.0).**
 Foundation stabilization adds aligned AHS classifications, machine-readable
@@ -508,7 +508,7 @@ gateway
 custom
 ```
 
-Currently implemented target types are `http`, `api`, `mcp`, and `a2a` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility). The remaining types are specification vocabulary for future adapters.
+Currently implemented target types are `http`, `api`, `mcp`, `a2a` (A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility), and `model`/`llm` (OpenAI-compatible and Anthropic APIs). The remaining types are specification vocabulary for future adapters.
 
 See [ROADMAP.md](ROADMAP.md).
 
@@ -582,6 +582,28 @@ Examples require your own running peer and matching skill expectations. See the
 [example setup guide](examples/a2a-check/README.md) and
 [adapter guide](docs/a2a-adapter.md) for configuration, classifications,
 and supported scope. Other A2A versions and transports remain future work.
+
+---
+
+# Model Health
+
+The [model adapter](docs/model-adapter.md) checks the model endpoints agents
+depend on: OpenAI-compatible APIs (OpenAI, Ollama, vLLM, LiteLLM) and the
+Anthropic API. One model listing establishes reachability, authentication,
+protocol and required-model availability; rate limiting and overload are
+`DEGRADED`. An opt-in minimal inference is token-bounded and never retried.
+
+```bash
+agenthealth ping llm http://localhost:11434/v1
+agenthealth check examples/model-check/anthropic.yaml --format json
+```
+
+| Example | Behavior |
+|---|---|
+| [OpenAI](examples/model-check/openai.yaml) | Passive checks and a required model |
+| [Anthropic](examples/model-check/anthropic.yaml) | `api: anthropic` with `x-api-key` credentials |
+| [Ollama](examples/model-check/ollama.yaml) | Local OpenAI-compatible server with a bounded inference |
+| [Minimal inference](examples/model-check/functional.yaml) | `max_completion_tokens` for models that require it |
 
 ---
 
@@ -1304,7 +1326,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 Coverage for phases 0–6 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, MCP HTTP/stdio adapter, and A2A JSON-RPC adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, and model/LLM adapter are implemented. Other adapters, SDKs, containers, and Kubernetes integrations remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

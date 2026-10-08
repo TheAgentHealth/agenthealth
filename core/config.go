@@ -33,6 +33,28 @@ type Target struct {
 	HTTP          *HTTPOptions   `yaml:"http"`
 	MCP           *MCPOptions    `yaml:"mcp"`
 	A2A           *A2AOptions    `yaml:"a2a"`
+	Model         *ModelOptions  `yaml:"model"`
+}
+
+// ModelOptions selects the inference API dialect, passive model expectations,
+// and an explicitly safe, token-bounded minimal inference.
+type ModelOptions struct {
+	API            string          `yaml:"api"`
+	RequiredModels []string        `yaml:"required_models"`
+	Functional     *ModelInference `yaml:"functional"`
+}
+type ModelInference struct {
+	Safe            bool   `yaml:"safe"`
+	Model           string `yaml:"model"`
+	Prompt          string `yaml:"prompt"`
+	MaxOutputTokens *int   `yaml:"max_output_tokens"`
+	// TokenParameter names the OpenAI-compatible output limit field.
+	TokenParameter string `yaml:"token_parameter"`
+}
+
+// SupportedModelAPI reports whether api names an implemented inference dialect.
+func SupportedModelAPI(api string) bool {
+	return api == "" || api == "openai" || api == "anthropic"
 }
 
 // A2AOptions describes passive expectations and an explicitly safe interaction.
@@ -348,6 +370,36 @@ func validateTarget(t Target, path string, depth int) error {
 			}
 		}
 	}
+	if t.Model != nil {
+		o := t.Model
+		if (t.Type != "model" && t.Type != "llm") || !SupportedModelAPI(o.API) {
+			return fmt.Errorf("%s: model options require model or llm target and supported api", path)
+		}
+		seen := map[string]bool{}
+		for _, name := range o.RequiredModels {
+			if strings.TrimSpace(name) == "" || seen[name] {
+				return fmt.Errorf("%s: required models must be nonempty and unique", path)
+			}
+			seen[name] = true
+		}
+		if t.Checks != nil && !contains(t.Checks, "capability") && len(o.RequiredModels) > 0 {
+			return fmt.Errorf("%s: required models require capability check", path)
+		}
+		if f := o.Functional; f != nil {
+			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Model) == "" || strings.TrimSpace(f.Prompt) == "" || len(f.Prompt) > 4096 {
+				return fmt.Errorf("%s: model inference requires functional opt-in, safe: true, model and prompt of at most 4 KiB", path)
+			}
+			if f.MaxOutputTokens != nil && (*f.MaxOutputTokens < 1 || *f.MaxOutputTokens > 1024) {
+				return fmt.Errorf("%s: max_output_tokens must be between 1 and 1024", path)
+			}
+			if !contains([]string{"", "max_tokens", "max_completion_tokens"}, f.TokenParameter) || o.API == "anthropic" && f.TokenParameter == "max_completion_tokens" {
+				return fmt.Errorf("%s: unsupported token_parameter for model api", path)
+			}
+		}
+	}
+	if (t.Type == "model" || t.Type == "llm") && contains(t.Checks, "functional") && (t.Model == nil || t.Model.Functional == nil) {
+		return fmt.Errorf("%s: model functional check requires inference", path)
+	}
 	if t.Type == "mcp" && contains(t.Checks, "functional") && (t.MCP == nil || t.MCP.Functional == nil) {
 		return fmt.Errorf("%s: MCP functional check requires invocation", path)
 	}
@@ -455,7 +507,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || strings.TrimSpace(value.Value) == "" {
 				return false
 			}
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "api", "prompt", "token_parameter":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
 				return false
 			}
@@ -463,7 +515,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!bool" {
 				return false
 			}
-		case "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes", "redirect_port":
+		case "timeout_ms", "retries", "retry_delay_ms", "max_body_bytes", "redirect_port", "max_output_tokens":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
 				return false
 			}
@@ -473,6 +525,15 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			}
 		case "a2a", "mcp", "functional", "stdio", "oauth":
 			if !validYAMLNode(value, key.Value, depth+1) {
+				return false
+			}
+		case "model":
+			// A target's model options block; inside functional, the model ID.
+			if kind == "functional" {
+				if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
+					return false
+				}
+			} else if !validYAMLNode(value, "model", depth+1) {
 				return false
 			}
 		case "http":
@@ -516,7 +577,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
 				return false
 			}
-		case "checks", "required_tools", "required_resources", "required_prompts", "args", "scopes", "required_skills", "required_capabilities":
+		case "checks", "required_tools", "required_resources", "required_prompts", "args", "scopes", "required_skills", "required_capabilities", "required_models":
 			if value.Kind != yaml.SequenceNode {
 				return false
 			}

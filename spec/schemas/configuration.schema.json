@@ -619,6 +619,9 @@
         },
         "a2a": {
           "$ref": "#/$defs/A2AOptions"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelOptions"
         }
       },
       "required": [
@@ -987,6 +990,142 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "model"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "model",
+                  "llm"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type",
+              "checks"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "model",
+                  "llm"
+                ]
+              },
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "model",
+              "checks"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "required_models"
+                ],
+                "properties": {
+                  "required_models": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "capability"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "model"
+            ],
+            "properties": {
+              "model": {
+                "required": [
+                  "api",
+                  "functional"
+                ],
+                "properties": {
+                  "api": {
+                    "const": "anthropic"
+                  },
+                  "functional": {
+                    "required": [
+                      "token_parameter"
+                    ],
+                    "properties": {
+                      "token_parameter": {
+                        "const": "max_completion_tokens"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": false
         }
       ]
     },
@@ -1388,6 +1527,72 @@
           "maxLength": 65536,
           "pattern": "\\S",
           "description": "Go validation additionally limits UTF-8 text to 65536 bytes."
+        }
+      }
+    },
+    "ModelOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api": {
+          "enum": [
+            "",
+            "openai",
+            "anthropic"
+          ],
+          "description": "Inference API dialect. Empty selects openai (OpenAI-compatible)."
+        },
+        "required_models": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "functional": {
+          "$ref": "#/$defs/ModelInference"
+        }
+      }
+    },
+    "ModelInference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "safe",
+        "model",
+        "prompt"
+      ],
+      "properties": {
+        "safe": {
+          "const": true
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "\\S",
+          "description": "Go validation additionally limits UTF-8 prompt to 4096 bytes."
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024,
+          "default": 16
+        },
+        "token_parameter": {
+          "enum": [
+            "",
+            "max_tokens",
+            "max_completion_tokens"
+          ],
+          "description": "OpenAI-compatible output limit field; empty selects max_tokens. The anthropic api always uses max_tokens."
         }
       }
     }

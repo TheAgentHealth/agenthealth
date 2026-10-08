@@ -1,0 +1,21 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "llm",
+      "type": "model",
+      "endpoint": "https://api.openai.com/v1",
+      "auth": {
+        "bearer_env": "OPENAI_API_KEY"
+      },
+      "model": {
+        "required_models": [
+          "gpt-test"
+        ]
+      },
+      "thresholds": {
+        "latency_ms": 2000
+      }
+    }
+  ]
+}

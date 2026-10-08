@@ -185,3 +185,19 @@ func TestA2APingAndDoctor(t *testing.T) {
 		}
 	}
 }
+
+func TestModelPingIsPassive(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/v1/models" {
+			t.Errorf("unexpected request %s %s", r.Method, r.URL.Path)
+		}
+		json.NewEncoder(w).Encode(map[string]any{"object": "list", "data": []any{map[string]any{"id": "local"}}})
+	}))
+	defer server.Close()
+	for _, typ := range []string{"model", "llm"} {
+		var out, diagnostics bytes.Buffer
+		if code := run(context.Background(), []string{"ping", typ, server.URL + "/v1", "--format", "json"}, &out, &diagnostics); code != 0 || diagnostics.Len() != 0 {
+			t.Fatalf("%s: code %d: %s %s", typ, code, out.String(), diagnostics.String())
+		}
+	}
+}
