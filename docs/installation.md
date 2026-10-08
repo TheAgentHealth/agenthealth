@@ -13,10 +13,10 @@ Download the archive for your operating system and CPU from [GitHub Releases](ht
 ## Linux x86-64 example
 
 ```bash
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.8.0/agenthealth_v0.8.0_linux_amd64.tar.gz
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.8.0/checksums.txt
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.9.0/agenthealth_v0.9.0_linux_amd64.tar.gz
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.9.0/checksums.txt
 sha256sum --check --ignore-missing checksums.txt
-tar -xzf agenthealth_v0.8.0_linux_amd64.tar.gz
+tar -xzf agenthealth_v0.9.0_linux_amd64.tar.gz
 ./agenthealth version
 ./agenthealth ping http https://example.com
 ```
@@ -41,12 +41,12 @@ With Go 1.23 or newer:
 ```bash
 git clone https://github.com/TheAgentHealth/agenthealth.git
 cd agenthealth
-git checkout v0.8.0
-go build -ldflags '-X main.version=v0.8.0' -o agenthealth ./cmd/agenthealth
+git checkout v0.9.0
+go build -ldflags '-X main.version=v0.9.0' -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.8.0 release adds shared dependency graphs and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
+See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.9.0 release adds experimental AHP HTTP serving and includes shared dependency graphs and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
 
 Phase 10 graph fields require v0.8.0 or newer. Existing nested configurations remain valid.
 The [graph example](../examples/graph-check/README.md) requires configured services
@@ -54,15 +54,15 @@ and a safe runtime handler.
 
 ## Verify provenance and SBOMs
 
-Each archive has a matching `agenthealth_v0.8.0_<os>_<arch>.cdx.json` CycloneDX
+Each archive has a matching `agenthealth_v0.9.0_<os>_<arch>.cdx.json` CycloneDX
 1.6 SBOM describing linked Go modules, the standard-library version and the
 executable SHA-256. `checksums.txt` covers both archives and SBOMs.
 
 With a current GitHub CLI supporting `gh attestation`:
 
 ```bash
-gh attestation verify agenthealth_v0.8.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
-gh attestation verify agenthealth_v0.8.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
+gh attestation verify agenthealth_v0.9.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
+gh attestation verify agenthealth_v0.9.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
 ```
 
 Attestations bind artifacts to this repository’s release workflow through a
@@ -75,3 +75,5 @@ Phase 8 [Agentgateway checks](agentgateway.md) are included starting in v0.6.0.
 
 Phase 9 [Agent Router checks](agent-router.md) are included starting in v0.7.0.
 Phase 10 [dependency graphs](dependency-graph.md) are included starting in v0.8.0.
+
+Phase 11 experimental [AHP serving](ahp.md) is included starting in v0.9.0.

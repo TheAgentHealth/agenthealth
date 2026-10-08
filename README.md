@@ -9,7 +9,7 @@ and example coverage across Phases 0–26.
 
 ## Start here
 
-**Released: [v0.8.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.8.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Released: [v0.9.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.9.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
@@ -72,14 +72,14 @@ The long-term scope includes these systems; the supported adapters above describ
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, and agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters. SDKs, container distribution, Kubernetes integrations, and additional adapters remain roadmap work.
 
-**Release version: [v0.8.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.8.0).**
+**Release version: [v0.9.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.9.0).**
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
 Phase 10 adds [shared dependency graphs](docs/dependency-graph.md), independent edge policies and bounded parallel execution in v0.8.0. See [v0.8.0 release notes](docs/releases/v0.8.0.md).
 Phase 7 adds direct/composite agent health, declared liveness/readiness,
 capability and dependency discovery, and safe task/path probes. Path probes
 require a receiving handler in the first agent application. This release
 retains A2A 1.0 with explicit 0.3.0 compatibility and signed provenance/SBOM
-attestations. See [release and migration notes](docs/releases/v0.8.0.md).
+attestations. See [release and migration notes](docs/releases/v0.9.0.md).
 
 ---
 
@@ -120,7 +120,7 @@ AgentHealth aims to provide:
 
 1. A **vendor-neutral health model** for agentic systems.
 2. A **language-neutral Agent Health Specification**.
-3. An experimental **Agent Health Protocol (AHP)** proposal for standardizing how health is exposed and exchanged over the wire (future).
+3. An experimental **Agent Health Protocol (AHP)** HTTP v1 binding for exchanging health, implemented in source.
 4. A universal command-line interface.
 5. Health checks for common agent protocols and infrastructure.
 6. Dependency-aware health diagnostics.
@@ -183,42 +183,17 @@ Configuration Health
 
 This is documented throughout this README (see [Core Concepts](#core-concepts) and [Standard Health States](#standard-health-states)) and is the most mature layer of the project today.
 
-## Agent Health Protocol (AHP) — proposed / experimental
+## Agent Health Protocol (AHP) — experimental HTTP v1
 
-> **Status: experimental / future.** AHP is a direction, not a shipped standard. Running health checks with the CLI does not, by itself, constitute a protocol — a protocol requires a defined, versioned, interoperable wire contract that multiple independent implementations can agree on.
-
-AHP is the proposed answer to a narrower question than the specification: once you know what health means, how should it be **exposed and exchanged** over the wire so that any client, gateway, or orchestrator can query it consistently, regardless of language or framework?
-
-A future AHP could standardize endpoints such as:
-
-```text
-GET /health
-GET /ready
-GET /live
-GET /dependencies
-GET /capabilities
-```
-
-and a common response envelope such as:
-
-<!-- spec-example: skip reason="illustrative AHP sketch only; intentionally omits target.name (not yet a defined requirement for AHP) so it does not validate against the normative Result schema" -->
-```json
-{
-  "spec_version": "v1",
-  "status": "DEGRADED",
-  "target": {
-    "type": "agent"
-  },
-  "checks": {},
-  "dependencies": []
-}
-```
-
-The [Machine-Readable Health Format](#machine-readable-health-format) that AgentHealth's CLI produces (see [Phase 3 — Universal CLI](ROADMAP.md#phase-3--universal-cli)) is an early, implementation-specific version of this idea. Formalizing it into AHP, with a versioned schema, transport requirements, and conformance rules independent of this repository's CLI, is future work.
+Experimental HTTP v1 serving is included in v0.9.0. `agenthealth serve`
+exposes public `/health`, `/ready` and `/live` summaries and bearer-authorized
+`/health/dependencies` and `/health/capabilities` evidence. See the
+[protocol contract](spec/protocol.md) and [serving guide](docs/ahp.md).
+Independent interoperability and external standardization remain unverified.
 
 ## Reference Implementation
 
-The reference implementation is the concrete, versioned software that implements the specification (and, eventually, the protocol):
+The reference implementation is the concrete, versioned software that implements the specification and experimental HTTP protocol:
 
 - the `agenthealth` CLI,
 - language SDKs (Python, JavaScript/TypeScript),
@@ -234,7 +209,7 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | Organization | TheAgentHealth |
 | Project | AgentHealth |
 | Specification | Agent Health Specification (AHS) |
-| Protocol (proposed) | Agent Health Protocol (AHP) |
+| Protocol (experimental HTTP v1) | Agent Health Protocol (AHP) |
 | CLI | `agenthealth` |
 | Config file | `agenthealth.yaml` |
 | Python package | `agenthealth` |
@@ -942,7 +917,7 @@ AgentHealth is designed around a small core and extensible adapters.
                               └── Model / Tool / Data adapters
 ```
 
-The Health Engine is designed to implement the Agent Health Specification. Its [Go core engine](core/README.md) now provides configuration loading, check execution, timeout/retry policies, result normalization, dependency evaluation, output formatting, and safety controls (see [Phase 2 — Core Engine](ROADMAP.md#phase-2--core-engine)). The experimental Agent Health Protocol (AHP) (see [Specification → Protocol → Implementation](#specification--protocol--implementation)), once finalized, would standardize how the Output Engine exposes and exchanges these results over the wire.
+The Health Engine is designed to implement the Agent Health Specification. Its [Go core engine](core/README.md) now provides configuration loading, check execution, timeout/retry policies, result normalization, dependency evaluation, output formatting, and safety controls (see [Phase 2 — Core Engine](ROADMAP.md#phase-2--core-engine)). The experimental [AHP HTTP v1 binding](spec/protocol.md) exposes validated result snapshots through `agenthealth serve`.
 
 ---
 
@@ -1292,7 +1267,7 @@ The same health vocabulary should work across heterogeneous agent infrastructure
 
 # Repository Structure
 
-AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the proposed protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they version and release together from here:
+AgentHealth is developed as a **single repository (monorepo)**. The specification (AHS), the experimental protocol (AHP), the core engine, CLI, adapters, SDKs, and distribution integrations are not split across separate repos — they version and release together from here:
 
 ```text
 agenthealth/
@@ -1308,7 +1283,7 @@ agenthealth/
 ├── spec/
 │   ├── README.md
 │   ├── health-model.md        # Agent Health Specification (AHS)
-│   ├── protocol.md            # Agent Health Protocol (AHP) — proposed/experimental
+│   ├── protocol.md            # Agent Health Protocol (AHP) — experimental HTTP v1
 │   ├── configuration.md
 │   ├── result-schema.md
 │   └── adapter-spec.md
@@ -1377,7 +1352,7 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
-The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. AHP, distribution, SDKs, and observability/conformance
+The [dependency graph](docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is included in v0.9.0. Distribution, SDKs, and observability/conformance
 follow the [roadmap](ROADMAP.md). See the [v0.5.0 release notes](docs/releases/v0.5.0.md).
 
 ---
@@ -1605,3 +1580,8 @@ AgentHealth is an independent open-source project.
 References to third-party projects, protocols, companies, products, or trademarks are for interoperability and descriptive purposes only and do not imply affiliation, sponsorship, or endorsement.
 
 Phase 8 Agentgateway integration is released in v0.6.0. See [the gateway guide](docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
+
+## Experimental AHP serving
+
+`agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
+See the [AHP guide](docs/ahp.md) for authorization, freshness and deployment.

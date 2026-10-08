@@ -33,7 +33,7 @@ complete. Later phases: agent health, graph, AHP, SDKs and conformance consume
 status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
-Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; AHP follows;
+Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; experimental AHP HTTP serving is implemented in source;
 full distribution, SDK/ecosystem and observability/conformance remain later
 milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
 No additional adapter is declared implemented by this foundation milestone.
@@ -589,7 +589,7 @@ named peer/path/dependency evidence, names-only configured discovery and the
 distinction between runtime-declared readiness and completed task evidence.
 Path handlers contact the selected peer directly or through A2A; AgentHealth
 trusts their completion report and does not independently trace remote code.
-Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling is implemented in source; AHP serving remains planned.
+Phase 8 gateway and Phase 9 router HTTP signals are implemented in source; graph scheduling is implemented in source; experimental AHP HTTP serving is implemented in source.
 
 Compatibility: this additive v1 draft turns previously unsupported agent types
 into executable targets. Existing supported targets keep their behavior.
@@ -754,7 +754,7 @@ Earlier: consolidate Phases 7–9 contracts, extend core graph execution, and ad
 
 # Phase 11 — Agent Health Protocol (AHP)
 
-**Status:** Proposed / experimental
+**Status:** Included in [v0.9.0](docs/releases/v0.9.0.md) — experimental HTTP v1
 
 Goal:
 
@@ -764,9 +764,11 @@ The Agent Health Protocol implements the Phase 1 AHS baseline and its approved e
 
 This phase intentionally comes **after** the HTTP, MCP, A2A, Agent Health, Agentgateway, Agent Router, and Dependency Graph phases rather than immediately following the specification. The health semantics need to be proven across those adapters in reality first; AHP then generalizes the lessons learned into an interoperable wire contract. Standardizing an exchange protocol before understanding the operational requirements would risk locking in the wrong contract.
 
+See the [wire contract](spec/protocol.md) for the implemented choices and limits.
+
 ## Core Operations
 
-Potential protocol operations:
+Implemented HTTP operations:
 
 ```text
 GET /health
@@ -776,37 +778,37 @@ GET /health/dependencies
 GET /health/capabilities
 ```
 
-HTTP is a likely first binding, not necessarily the only one. Exact transport bindings and endpoint conventions — including whether AHP maps onto other transports such as MCP or A2A mechanisms — will be defined through the specification process rather than locked in now.
+HTTP JSON is the experimental v1 binding. Other transports remain future work.
 
 ## Protocol Model
 
 Define:
 
-- [ ] protocol versioning
-- [ ] health response envelope
-- [ ] readiness semantics
-- [ ] liveness semantics
-- [ ] dependency representation preserving Phase 10 node IDs and edge relationship/critical policy, with topology redaction
-- [ ] capability health
-- [ ] error representation
-- [ ] authentication
-- [ ] authorization
-- [ ] content types
-- [ ] caching behavior
-- [ ] timeout semantics
-- [ ] extension mechanism
-- [ ] represent first/downstream agent relationships, supporting dependencies, and communication-path evidence established in Phase 10
-- [ ] distinguish gateway/router health from routed backend health without exposing sensitive topology by default
+- [x] protocol versioning
+- [x] health response envelope
+- [x] readiness semantics
+- [x] liveness semantics
+- [x] dependency representation preserving Phase 10 node IDs and edge relationship/critical policy, with topology redaction
+- [x] capability health
+- [x] error representation
+- [x] authentication
+- [x] authorization
+- [x] content types
+- [x] caching behavior
+- [x] timeout semantics
+- [ ] vendor extension mechanism (deferred; v1 defines no extension fields)
+- [x] represent first/downstream agent relationships, supporting dependencies, and communication-path evidence established in Phase 10
+- [x] distinguish gateway/router health from routed backend health without exposing sensitive topology by default
 
 ## Service Mode
 
-- [ ] implement AHP serving in the core and expose the Phase 3 CLI extension `agenthealth serve`
-- [ ] validate serving against the updated AHS/configuration/result contracts and document compatibility
+- [x] implement AHP serving in the core and expose the Phase 3 CLI extension `agenthealth serve`
+- [x] validate serving against the updated AHS/configuration/result contracts and document compatibility
 
 A reference "server mode" lets AgentHealth expose AHP instead of only consuming other systems' health:
 
 ```bash
-agenthealth serve
+agenthealth serve examples/ahp-check/agenthealth.yaml
 ```
 
 ```text
@@ -828,34 +830,38 @@ agenthealth serve
          A2A Agent       Vector DB
 ```
 
-Service mode is a planned pre-1.0 deliverable in this phase, previously scoped
-only to Post-1.0 Exploration. Its implementation follows stabilization of the
-AHP wire contract and lets infrastructure query AgentHealth results.
+Service mode is implemented in source as an experimental pre-1.0 deliverable.
 
 ## Discovery
 
-Explore a standard mechanism through which systems can advertise Agent Health Protocol support.
+Explicit endpoints and the AHP-Version header identify support. Automatic discovery remains deferred.
 
 ## Security
 
 Define:
 
-- [ ] information disclosure requirements
-- [ ] authentication mechanisms
-- [ ] dependency redaction
-- [ ] sensitive metadata handling
-- [ ] public vs authenticated health information
-- [ ] rate limiting recommendations
+- [x] information disclosure requirements
+- [x] authentication mechanisms
+- [x] dependency redaction
+- [x] sensitive metadata handling
+- [x] public vs authenticated health information
+- [x] rate limiting recommendations
 
 ## Conformance
 
-AHP implementations should be testable independently of the AgentHealth reference implementation.
+The envelope schema and fixtures validate the wire shape independently. A separate
+implementation has not yet been tested; broader conformance remains Phase 24 work.
 
-- [ ] Exchange Phase 7 declared readiness and completed functional/path evidence separately; do not infer communication from endpoint health. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
+- [x] Exchange Phase 7 declared readiness and completed functional/path evidence separately; do not infer communication from endpoint health. See the [Phase 7 proposal](docs/rfcs/phase-7-agent-health.md).
 
 ## Impact Review
 
 Earlier: review AHS/graph contracts for wire exchange, add core serving support, and extend the CLI with `serve`. Later: provide a versioned exchange contract for Kubernetes, SDK consumers, and protocol conformance.
+
+Implementation choices, proxy rate limiting, authorization scope and transport
+limits are defined in the [contract](spec/protocol.md), [guide](docs/ahp.md) and
+[impact review](docs/rfcs/phase-11-ahp.md). Independent interoperability remains
+unverified. See the [coverage and alignment audit](docs/phase-11-alignment.md).
 
 ---
 
@@ -888,6 +894,9 @@ docker run --rm agenthealth/agenthealth \
 ## Impact Review
 
 Earlier: package the existing CLI; no AHS/core contract change is expected solely for container distribution. Later: provide images for Kubernetes and CI, with container security validated during hardening.
+
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
 
 ---
 
@@ -988,6 +997,9 @@ CRDs/operators are intentionally deferred until the basic health model proves us
 
 Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving where used; review any required readiness contract extensions. Later: provide deployment scenarios for CI, interoperability, and hardening.
 
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
+
 ---
 
 # Phase 15 — Python SDK / PyPI
@@ -1040,6 +1052,9 @@ The Python SDK must follow the Agent Health Specification rather than defining i
 
 Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide Python APIs for runtime integrations and interoperability tests.
 
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
+
 ---
 
 # Phase 16 — JavaScript / TypeScript SDK
@@ -1086,6 +1101,9 @@ const result = await check({
 ## Impact Review
 
 Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide JavaScript/TypeScript APIs for runtime integrations and interoperability tests.
+
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
 
 ---
 
@@ -1224,6 +1242,9 @@ AgentHealth should remain framework-neutral.
 
 Earlier: integrate the agent roles, gateway/router paths, adapters, SDKs, and AHP where applicable; review any contract extensions. Later: supply framework scenarios for CI, observability, and interoperability.
 
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
+
 ---
 
 # Phase 21 — CI/CD Integrations
@@ -1305,6 +1326,9 @@ AgentHealth
 ## Impact Review
 
 Earlier: map approved result evidence to exports and extend output interfaces as required; no new health semantics are expected solely for export. Later: validate export compatibility and redaction during conformance and hardening.
+
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
 
 ---
 
@@ -1403,6 +1427,9 @@ Any certification/trademark program would require separate governance and commun
 
 Earlier: validate the approved AHS, AHP, adapters, outputs, and integrations; feed defects back to their owning layers. Later: provide conformance checks for interoperability and production hardening.
 
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
+
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
@@ -1452,6 +1479,9 @@ healthy gateway/router, shared backends, and multiple configured routes.
 
 Earlier: test supported cross-phase combinations and feed contract or implementation defects back to their owning layers. Later: supply failure scenarios and evidence for production hardening.
 
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
+
 ---
 
 # Phase 26 — Production Hardening
@@ -1480,6 +1510,9 @@ Before a stable 1.0 release:
 ## Impact Review
 
 Earlier: audit and fix supported contracts, implementations, distribution, and integrations; track compatibility for resulting changes. Later: gate 1.0 and inform post-1.0 work; this phase adds no new feature contract by itself.
+
+
+Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
 
 ---
 

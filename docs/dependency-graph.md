@@ -65,4 +65,4 @@ rejected before probes. The engine accepts at most 10000 result tree projections
 
 Topology is explicit and may be sensitive. Only share machine output with
 appropriate consumers. IDs must not contain secrets; known credential values
-are redacted in output. AHP topology authorization remains Phase 11 work.
+are redacted in output. Experimental AHP serving requires bearer authorization for topology; see [AHP](ahp.md).

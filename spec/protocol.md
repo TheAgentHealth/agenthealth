@@ -1,72 +1,69 @@
 # Agent Health Protocol (AHP)
 
-> **Status: Proposed / experimental.** AHP is a direction, not a shipped standard. See [Phase 11 — Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp) in the roadmap. Nothing in this document is normative yet.
+Status: experimental v1 HTTP binding, implemented in source. This is a pre-1.0
+reference contract, not an independently ratified industry standard.
+See the [Phase 11 design and impact review](../docs/rfcs/phase-11-ahp.md).
 
-## Goal
+## Version and transport
 
-Define a vendor-neutral protocol through which agentic systems can **expose and exchange** standardized health and readiness information. AHP implements the semantics defined by the [Agent Health Specification](health-model.md) — it does not redefine health, only how health is transmitted.
+Use HTTP GET with JSON responses. HTTPS termination is required for bearer
+credentials outside a trusted local connection. Responses include `AHP-Version:
+v1`, `Content-Type: application/json`, `Cache-Control: no-store` and
+`X-Content-Type-Options: nosniff`. Clients may send `AHP-Version: v1`; another
+version returns 400. AHP version and AHS `spec_version` are independent.
+The [envelope schema](schemas/ahp.schema.json) defines the binding.
+Other transports and vendor extension fields are not defined in v1.
 
-## Why this is not defined yet
+## Operations and semantics
 
-Running health checks with the `agenthealth` CLI does not, by itself, constitute a protocol. A protocol requires a defined, versioned, interoperable wire contract that multiple independent implementations can agree on. Per the roadmap, AHP work begins only after the HTTP, MCP, A2A, direct and composite Agent Health, Agentgateway, Agent Router, and Dependency Graph phases prove the AHS model works in practice (Phases 4–10).
+| GET path | Access | Meaning |
+|---|---|---|
+| `/health` | Public | Aggregate health summary |
+| `/ready` | Public | Same aggregate evidence, readiness decision |
+| `/live` | Public | Refresh loop running; independent of target health |
+| `/health/dependencies` | Bearer | Full recursive result evidence with topology |
+| `/health/capabilities` | Bearer | Same evidence, including requested capability and functional dimensions |
 
-## Proposed core operations (non-normative)
+Successful envelopes contain `ahp_version`, `spec_version`, `status` and, for
+completed checks, UTC `observed_at`. Detailed endpoints add `evidence` containing
+the existing [result document](result-schema.md), including graph IDs,
+relationships, critical edge policy, dimension checks and recursive dependencies.
+They do not infer path success from endpoint, gateway or router health. Capability
+and functional evidence remain separate. Unrequested checks remain absent.
 
-```text
-GET /health
-GET /ready
-GET /live
-GET /health/dependencies
-GET /health/capabilities
-```
+Health/readiness returns 200 for HEALTHY or DEGRADED, 503 for other states.
+Optional dependency degradation therefore remains ready. Liveness returns 200
+while the refresh loop runs and 503 otherwise. Before the first snapshot, after
+shutdown, or when the snapshot exceeds its maximum age, health is UNKNOWN/503.
+Detailed stale responses contain only an error, never old evidence.
 
-HTTP is a likely first binding, not necessarily the only one. AHP may eventually need to map onto other transports (e.g. MCP or A2A native mechanisms) rather than assuming HTTP is universal.
+Errors contain `ahp_version` and a stable `error`: `not_found` (404),
+`method_not_allowed` (405, Allow: GET), `unsupported_version` (400),
+`unauthorized` (401, WWW-Authenticate: Bearer), or `snapshot_unavailable` (503).
+Clients must inspect HTTP status and body; no redirects or protocol negotiation
+fallback are specified. Endpoint availability and the version header provide
+explicit discovery; no automatic discovery advertisement is implemented.
 
-## Proposed response envelope (non-normative)
+## Execution and security
 
-<!-- spec-example: skip reason="illustrative AHP sketch only; intentionally omits target.name (not yet a defined requirement for AHP) so it does not validate against the normative Result schema" -->
-```json
-{
-  "spec_version": "v1",
-  "status": "DEGRADED",
-  "target": {
-    "type": "agent"
-  },
-  "checks": {},
-  "dependencies": []
-}
-```
+Requests read snapshots and never execute checks. The reference implementation
+refreshes serially every 30 seconds after each completed run, using the existing
+60-second engine budget; snapshots expire after two minutes. API callers can
+configure bounded refresh and age policies. Existing check opt-in, timeout,
+retry, concurrency and credential rules apply. Explicit functional checks in a
+serving configuration run on every refresh; review these before starting.
 
-This reuses the [recursive result shape](result-schema.md#recursive-shape) that the CLI is designed to produce (see [Phase 3](../ROADMAP.md#phase-3--universal-cli)); AHP would formalize it as a network-exchanged contract rather than a CLI output format. Each entry in `dependencies` would follow the same recursive shape, not a flattened summary.
+Public responses disclose only aggregate status and observation time. Detailed
+endpoints require a configured bearer token and grant access to all configured
+result topology. The token is an environment reference in the CLI, compared in
+constant time using fixed-size SHA-256 digests, and never emitted. Tokens
+must use RFC 6750 b64token characters, with optional trailing `=` padding
+and no whitespace. The Bearer scheme is case-insensitive; token values remain
+case-sensitive. Result output uses the engine's existing
+validation and redaction. Target names and IDs are visible to authorized clients;
+use a dedicated configuration if different audiences need separate scopes.
 
-## Open questions to resolve before this becomes normative
-
-- Protocol versioning and negotiation
-- Readiness vs liveness semantics (distinct from each other)
-- Dependency representation over the wire (inline vs reference)
-- Capability health representation
-- Error representation (vs a `200` with a `DEGRADED` body)
-- Authentication and authorization of the health endpoint itself
-- Content types (`application/json` only, or others)
-- Caching behavior (can `/health` responses be cached, and for how long)
-- Timeout semantics for slow dependency checks
-- An extension mechanism for vendor-specific fields
-- Discovery: how a system advertises AHP support
-- Security: information disclosure, dependency redaction, public vs authenticated health detail, rate limiting
-
-## Security
-
-Any eventual AHP implementation must, at minimum:
-
-- never expose secrets or credentials in responses,
-- distinguish public (unauthenticated) health summaries from authenticated/detailed health,
-- support rate limiting to prevent health endpoints from becoming a denial-of-service vector,
-- redact sensitive dependency metadata unless explicitly authorized.
-
-## Conformance
-
-AHP implementations should eventually be testable independently of the AgentHealth reference implementation (CLI, SDKs). No conformance suite exists yet.
-
-## Relationship to other spec documents
-
-AHP is one possible transport/exchange binding for the semantics defined in [health-model.md](health-model.md) and the shape defined in [result-schema.md](result-schema.md). It does not replace either.
+Bind to loopback by default. For remote access use a TLS proxy with rate limits
+and network restrictions. The server bounds header sizes and read/write/idle
+timeouts. Probe frequency is independent of request volume. Per-client rate
+limiting belongs at the proxy; multi-tenant authorization is future work.

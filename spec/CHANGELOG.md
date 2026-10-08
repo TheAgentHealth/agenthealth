@@ -29,3 +29,8 @@ Older binaries reject the new type. See [the RFC](../docs/rfcs/phase-9-agent-rou
 ## Phase 10 (v0.8.0)
 
 Additive v1 graph configuration (`id`, dependency `ref`/`relationship`, `budget_ms`, `concurrency`) and result identity/edge evidence. See the [contract review](../docs/rfcs/phase-10-dependency-graph.md). Existing health states and exit codes are unchanged.
+
+## Phase 11 experimental AHP HTTP v1
+
+Adds a separately versioned HTTP envelope schema and serving contract. Existing
+AHS v1 configuration and result documents remain compatible.

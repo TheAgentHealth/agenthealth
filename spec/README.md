@@ -6,13 +6,13 @@ This directory contains the specification documents for AgentHealth, introduced 
 |---|---|---|
 | Agent Health Specification (AHS) | [health-model.md](health-model.md) | Draft — most mature layer |
 | Target Model | [target-model.md](target-model.md) | Draft |
-| Agent Health Protocol (AHP) | [protocol.md](protocol.md) | Proposed / experimental |
+| Agent Health Protocol (AHP) | [protocol.md](protocol.md) | Experimental HTTP v1, implemented in source |
 | Configuration | [configuration.md](configuration.md) | Draft |
 | Result Schema | [result-schema.md](result-schema.md) | Draft |
 | Exit Codes | [exit-codes.md](exit-codes.md) | Draft |
 | Adapter Contract | [adapter-spec.md](adapter-spec.md) | Draft |
 | Security Requirements | [security.md](security.md) | Draft |
-| JSON Schemas | [schemas/](schemas/) | Draft — `result.schema.json`, `configuration.schema.json` |
+| JSON Schemas | [schemas/](schemas/) | Draft — `result.schema.json`, `configuration.schema.json`, experimental `ahp.schema.json` |
 
 ## Relationship between documents
 
@@ -58,3 +58,10 @@ See [the router guide](../docs/agent-router.md). Named router signals, direct ba
 ## Dependency graph extension
 
 Phase 10 is included in v0.8.0 as an additive v1 configuration/result extension. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md) and [phase alignment audit](../docs/phase-10-alignment.md). Older v0.7.0 binaries do not include it.
+
+## Experimental AHP HTTP v1
+
+[Protocol](protocol.md) defines a separately versioned envelope around existing
+AHS results. Serving adds no configuration fields, health states, dimensions,
+target types or changes to CLI health exit codes. See the
+[alignment audit](../docs/phase-11-alignment.md).

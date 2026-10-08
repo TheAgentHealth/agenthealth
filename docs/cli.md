@@ -103,3 +103,8 @@ recursive result. Graph validation failures return tool-failure exit code 6
 before adapter calls; health outcomes retain exit codes 0–5.
 See the [graph guide](dependency-graph.md) and [contract](rfcs/phase-10-dependency-graph.md).
 Existing nested configurations remain valid.
+
+## Experimental AHP serving
+
+`agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
+See the [AHP guide](ahp.md) for authorization, freshness and deployment.
