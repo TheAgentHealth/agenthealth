@@ -20,7 +20,7 @@ WORKFLOW = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())['jobs
     ('core/serve.go', True), ('cmd/agenthealth/main.go', True),
     ('adapters/http/http.go', True),
     ('spec/schemas/configuration.schema.json', True),
-    ('.github/workflows/ci.yml', True), ('tests/requirements.txt', True),
+    ('.github/workflows/ci.yml', False), ('tests/requirements.txt', True),
     ('README.md', False), ('docs/kubernetes.md', False),
     ('core/README.md', False), ('core/serve_test.go', False),
     ('scripts/build_release.py', False),

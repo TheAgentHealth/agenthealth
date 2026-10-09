@@ -116,9 +116,9 @@ binary/Kubernetes job to succeed; missing or skipped checks do not qualify.
 
 On ordinary PRs, **Kubernetes manifests and Helm** runs only with relevant changes:
 Kubernetes manifests, Helm charts, Kubernetes examples/tests, packaging and runtime
-scripts, configuration schema, test dependencies, the CI workflow, or container
+scripts, configuration schema, test dependencies, or container
 build inputs (Dockerfile, Docker ignore rules, Go modules and production Go source).
-Documentation-only changes and Go test-only changes skip this job. PRs compare
+Documentation-only, CI-workflow-only and Go test-only changes skip this job. PRs compare
 against their merge base. Scheduled and ordinary manual CI runs skip Kubernetes.
 If PR path detection fails, the Kubernetes job runs so a detector failure cannot
 silently bypass validation.

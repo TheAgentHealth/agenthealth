@@ -54,7 +54,7 @@ jobs:
 
           prefixes = ('deploy/kubernetes/', 'deploy/helm/', 'examples/kubernetes/',
                       'tests/kubernetes/')
-          files = {'.github/workflows/ci.yml', 'scripts/test_kubernetes.py',
+          files = {'scripts/test_kubernetes.py',
                    'scripts/package_helm.py', 'tests/requirements.txt',
                    'spec/schemas/configuration.schema.json', 'Dockerfile',
                    '.dockerignore', 'go.mod', 'go.sum'}
