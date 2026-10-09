@@ -71,7 +71,8 @@ container-reachable hostname to reach services on the host.
 
 `.github/workflows/ci.yml` validates both platforms and smoke-tests the
 image (via [scripts/test_container.py](../scripts/test_container.py)) on
-every pull request and push. `.github/workflows/release.yml` publishes to
+every pull request and during pre-release CI. Normal pushes to `main` do not
+trigger CI. `.github/workflows/release.yml` publishes to
 `ghcr.io/theagenthealth/agenthealth` after source validation, in parallel
 with binary release checks and publication. Before publishing, it verifies
 (via `cmp`) that each image binary matches a reference built from the same

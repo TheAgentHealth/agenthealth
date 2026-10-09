@@ -186,7 +186,9 @@ are still necessary to produce a release, even when test reruns are omitted.
 6. Watch the Release workflow using GitHub CLI or GitHub Actions. It validates
    the tagged source, builds Linux AMD64/ARM64, macOS AMD64/ARM64, and Windows
    AMD64 archives, generates Phase 13 package assets, adds `checksums.txt`,
-   gates publication on all five native platform smoke checks, uploads assets
+   dispatches and requires successful pre-release CI for the exact tagged commit (including all
+   five native platform binary-distribution jobs and, for synchronized releases,
+   the Kubernetes manifests and Helm job; skipped checks do not qualify), uploads assets
    to a draft, and publishes a regular **Latest** release for plain version tags, or a
    **prerelease** for suffixed preview tags, after upload succeeds.
 7. Verify that the release is public, targets the intended tag, and contains all
