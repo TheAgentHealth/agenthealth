@@ -71,7 +71,7 @@ safety requirements, validation, and the release runbook.
 ## Component release scope
 
 Follow the [component version and distribution policy](RELEASING.md#component-versions-and-synchronized-distribution).
-Starting with the next release, v0.12.0, all implemented artifacts share one
+Starting with v0.12.0, all implemented artifacts share one
 software version and source tag: CLI archives, Linux packages, channel
 manifests, Docker images, Helm chart and OCI binary bundle. Publish all required
 formats together, even when an individual format's files have not changed.
@@ -88,8 +88,8 @@ and verify anonymous access before advertising it as public.
 
 Identify affected components, shared version and distribution changes in PRs
 and phase impact reviews. Preserve existing published versions and their
-historical notes. OCI chart/binary publication and synchronized workflows are
-required work for the next release, not existing availability. See the
+historical notes. OCI chart/binary publication and synchronized workflows are available in
+v0.12.0; see [publication verification](docs/releases/verification-v0.12.0.md). See the
 [distribution plan](docs/distribution.md). Publication requires explicit release
 authorization. Normal PRs require the applicable CI checks; a maintainer's
 instruction to omit local test reruns does not change GitHub branch protection.
