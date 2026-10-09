@@ -24,7 +24,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 11: AHP (experimental, v0.9.0) | [HTTP serving](ahp.md), [wire contract](../spec/protocol.md), [impact review](rfcs/phase-11-ahp.md) | [Serving example](../examples/ahp-check/README.md), [coverage and alignment](phase-11-alignment.md) |
 | 12: Docker (v0.10.0) | [Docker distribution](docker.md), [container usage](installation.md#container-image) | [Dockerfile](../Dockerfile), [CI container job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml) |
 | 13: Standalone binaries (v0.11.0) | [Package installation](installation.md#package-channels-phase-13-v0110), [coverage and alignment](phase-13-alignment.md) | [Distribution example](../examples/distribution/README.md), [package builder](../scripts/package_release.py), [native smoke checks](../scripts/test_release_binary.py) |
-| 14: Kubernetes (implemented in source) | [Deployment guide](kubernetes.md), [coverage and alignment](phase-14-alignment.md) | [Manifests](../deploy/kubernetes/), [Helm chart](../deploy/helm/agenthealth/), [scenarios](../examples/kubernetes/README.md), [tests](../tests/kubernetes/) |
+| 14: Kubernetes (released chart 0.1.0) | [Deployment guide](kubernetes.md), [coverage and alignment](phase-14-alignment.md) | [Manifests](../deploy/kubernetes/), [Helm chart](../deploy/helm/agenthealth/), [scenarios](../examples/kubernetes/README.md), [tests](../tests/kubernetes/) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).
@@ -41,7 +41,7 @@ Kubernetes manifests and chart rendering also have dedicated tests. Validation
 does not establish connectivity to the placeholder servers or prove every command example works.
 
 Agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
-SDKs remain planned; Kubernetes integrations are implemented in source ([guide](kubernetes.md)); a [container image](installation.md#container-image) is
+SDKs remain planned; Kubernetes integrations and chart 0.1.0 are released ([guide](kubernetes.md)); a [container image](installation.md#container-image) is
 published starting in v0.10.0. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.

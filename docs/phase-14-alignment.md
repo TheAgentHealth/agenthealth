@@ -16,8 +16,8 @@ chart 0.1.0 pins that patched image. Component publication remains separate.
 | Helm | Independently versioned chart; serve/job/cronjob modes, schema validation, registry/digest overrides |
 | Deployment validation | Pytest manifests/configuration/templates, kind server validation and runtime scenarios |
 | Agent and path examples | Direct/composite fixture health and separate supporting gateway/router/route evidence; no first-to-peer claim |
-| Distribution | Chart package/checksum helper and separate component tag workflow; no publication during implementation |
-| Discovery | Guide, example instructions and prepared tag-pinned component notes |
+| Distribution | Independently published chart 0.1.0 and CLI v0.11.1; package/checksum provenance and download verification |
+| Discovery | Guide, example instructions and verified tag-pinned component notes |
 
 See [the guide](kubernetes.md), [tests](../tests/kubernetes/test_kubernetes.py),
 [runtime scenarios](../scripts/test_kubernetes.py), [CI](../.github/workflows/ci.yml)
@@ -39,7 +39,7 @@ and [component workflow](../.github/workflows/helm-release.yml).
 | 9: Agent Router | [Router guide](agent-router.md#kubernetes-deployment) and example retain named signal/backend/route evidence; no product certification. |
 | 10: Graph | Nested configurations remain valid. No graph model changes; explicit graphs can be supplied in a ConfigMap. |
 | 11: AHP | Existing freshness and aggregate readiness preserved; startup/liveness use process health. No endpoint, authentication or refresh changes. |
-| 12: Docker | Both v0.11.1 registry references require publication verification; Go builder advances to 1.27.2; entrypoint/runtime security and CLI behavior stay unchanged. |
+| 12: Docker | Both v0.11.1 registry references are anonymously verified; Go builder advances to 1.27.2; entrypoint/runtime security and CLI behavior stay unchanged. |
 | 13: Distribution | No archive/package changes; chart packages and release tags are independent of CLI assets. |
 
 ## Later phases
@@ -67,12 +67,13 @@ AHP/exec readiness recovery without restarts. Kubernetes 1.29 is
 the declared API floor, not a tested runtime version. No cloud cluster or other
 architecture was exercised.
 
-The implementation is prepared on a review branch, including selected
-contributor improvements. The existing roadmap layout edit was preserved.
-Release preparation does not itself publish a chart tag or component release. Release URL resolution and installation from the
-published chart await authorized publication and cannot be claimed from local
-source validation. Both v0.11.0 baseline image manifests were available anonymously on
-October 8, 2026; v0.11.1 image verification is required before chart publication.
+The implementation and selected contributor improvements merged through
+[PR #41](https://github.com/TheAgentHealth/agenthealth/pull/41). CLI `v0.11.1`
+and independent chart `helm-v0.1.0` are published from the same merge commit.
+Downloaded assets, signed provenance/SBOMs, package contents, both anonymous
+registries, tag-pinned links and published Kubernetes scenarios were verified
+on October 9, 2026. See the [release verification record](releases/verification-v0.11.1-helm-v0.1.0.md)
+for the exact revision, checks and validation limits.
 
 ## Contributor integration
 
@@ -87,7 +88,7 @@ credit is recorded here, in the guide and in the integration commit.
 ## Documentation alignment checklist
 
 - [x] Main README repository tree, current capability status and phase coverage.
-- [x] Roadmap source-completion status and separate publication checklist.
+- [x] Roadmap release status and completed publication checklist.
 - [x] Documentation/example/status indexes include Phase 14.
 - [x] Core, CLI, specification index, installation and Docker/AHP guides link the deployment consumers.
 - [x] HTTP, MCP, A2A, agent, gateway, router and graph guides record deployment-specific considerations.

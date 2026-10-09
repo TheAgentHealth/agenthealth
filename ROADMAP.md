@@ -986,7 +986,7 @@ Required extension tasks:
 
 # Phase 14 — Kubernetes Integration
 
-**Status:** Implemented in source — chart 0.1.0 prepared; not yet published.
+**Status:** Released — chart 0.1.0 (`helm-v0.1.0`), pinning CLI `v0.11.1`.
 
 Helm chart versions are independent of CLI versions; record `appVersion`, pin
 image tags/digests and release a new chart when defaults or templates change.
@@ -1032,20 +1032,20 @@ corresponding release tag.
 
 Source preparation is complete in [chart 0.1.0 notes](docs/releases/helm-v0.1.0.md),
 including source paths, tag-pinned links, package download, usage and validated
-versions. The checklist below tracks actual publication and released-revision
-verification, which remain pending an authorized chart release.
+versions. Publication and released-revision verification are complete; see the
+[release verification record](docs/releases/verification-v0.11.1-helm-v0.1.0.md).
 
-- [ ] Include the Kubernetes source paths in release descriptions/notes for
+- [x] Include the Kubernetes source paths in release descriptions/notes for
   releases that introduce or update these integrations.
-- [ ] Link to the exact released revision, using these GitHub URL patterns
+- [x] Link to the exact released revision, using these GitHub URL patterns
   (replace `<release-tag>` with the actual CLI or chart component tag):
   - Manifests: `https://github.com/TheAgentHealth/agenthealth/tree/<release-tag>/deploy/kubernetes`
   - Helm chart source: `https://github.com/TheAgentHealth/agenthealth/tree/<release-tag>/deploy/helm/agenthealth`
   - Usage examples: `https://github.com/TheAgentHealth/agenthealth/tree/<release-tag>/examples/kubernetes`
-- [ ] Include a runnable installation/usage example, the packaged chart download
+- [x] Include a runnable installation/usage example, the packaged chart download
   link when releasing a chart, and the supported CLI/image version, chart version
   where applicable, and Kubernetes versions actually validated.
-- [ ] Verify the release links resolve and the documented examples work against
+- [x] Verify the release links resolve and the documented examples work against
   that revision before announcing the release. Use tag-pinned links rather than
   moving `main` links so instructions stay aligned with the release.
 
@@ -1118,7 +1118,8 @@ Implementation and validation are recorded in the [Phase 14 alignment audit](doc
 Required extension tasks are complete: independent chart packaging and release
 trigger, embedded configuration/template validation, bounded exec/Job checks,
 Secret references, and dependency-outage readiness validation. Publication-time
-release-link checks above remain pending until an authorized chart release.
+release-link checks and downloaded-artifact/runtime verification are complete;
+see the [release verification record](docs/releases/verification-v0.11.1-helm-v0.1.0.md).
 
 ---
 
