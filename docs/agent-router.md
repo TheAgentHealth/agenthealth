@@ -46,3 +46,9 @@ response bodies nor expected values are emitted as diagnostics. No discovery,
 model generation, arbitrary mutation or automatic failover probe is performed.
 Local tests cover signal/backend/path failure isolation and aggregation;
 real product interoperability remains Phase 25 work.
+
+## Kubernetes deployment
+
+Configure named router signals, direct backends and routed endpoints separately using in-cluster addresses. The fixture scenarios do not certify a router product or establish first-agent communication.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

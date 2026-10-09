@@ -4,3 +4,9 @@ Start your HTTP application with a health resource on port 9000, then run
 `agenthealth serve examples/ahp-check/agenthealth.yaml` from the repository root.
 Query port 8080 for public summaries. See [serving setup](../../docs/ahp.md)
 for authenticated evidence and deployment requirements.
+
+## Kubernetes compatibility
+
+The same serving behavior is used in Phase 14 Deployments and sidecars, with process liveness separated from snapshot readiness.
+See [deployment scenarios](../kubernetes/README.md) and the
+[deployment guide](../../docs/kubernetes.md).

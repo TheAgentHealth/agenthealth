@@ -264,3 +264,9 @@ login to recreate a Windows token file made by an older release.
 ## Dependency graph integration
 
 [Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. References to one MCP node share one target lifecycle, session/process, inventory and any explicitly opted-in tool probe per run. Different IDs remain isolated, even if endpoints match; state is never shared across runs. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.
+
+## Kubernetes deployment
+
+HTTP MCP services retain protocol/OAuth/inventory checks. Stdio requires a derived image containing the trusted server executable. Token refresh files need private writable storage; a read-only ConfigMap or root filesystem is not token persistence.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

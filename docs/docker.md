@@ -119,3 +119,11 @@ docker run --rm theagenthealth/agenthealth:v0.11.0 version
 See [installation.md](installation.md) for standalone binary archives and
 their own provenance/SBOM verification, and [RELEASING.md](../RELEASING.md)
 for the release process that both distribution channels share.
+
+## Kubernetes consumers
+
+[Phase 14](kubernetes.md) deploys the same released CLI image through manifests,
+Helm and Kustomize. Image references are pinned; image tags and chart versions
+are independent. The chart does not rebuild or republish the image. The
+[application-image example](../examples/kubernetes/Dockerfile.exec-probe) copies
+the CLI into a derived image for application-container exec readiness probes.

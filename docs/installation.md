@@ -163,3 +163,13 @@ Release CI runs native archive version/help/tool-failure checks on Linux AMD64
 and ARM64, macOS Intel and Apple Silicon, and Windows AMD64. These are smoke
 checks, not a supported-OS certification or native code signing. Package-manager
 installation across distributions and public channel hosting remain follow-up work.
+
+## Kubernetes and Helm source installation
+
+Phase 14 provides [manifests](../deploy/kubernetes/), a
+[Helm chart](../deploy/helm/agenthealth/) and
+[runnable scenarios](../examples/kubernetes/README.md) in source. Chart 0.1.0
+pins the released CLI v0.11.0 image and has not been published yet. Use the
+[Kubernetes guide](kubernetes.md) for both registry choices, installation from
+a reviewed checkout and independent chart release instructions. Archive/package
+installation remains unchanged.

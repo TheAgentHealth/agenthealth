@@ -39,7 +39,9 @@ its build/release commands compile the same CLI. Installation versions and
 published release notes continue to describe the released artifacts. Docker
 distribution is released in v0.10.0 (Phase 12). Phase 13 now extends packaging
 in source; see the [current alignment audit](phase-13-alignment.md).
-Kubernetes, SDKs and broader conformance/interoperability remain planned.
+Kubernetes integration is implemented in source in Phase 14; see the
+[current Kubernetes alignment audit](phase-14-alignment.md). SDKs and broader
+conformance/interoperability remain planned.
 
 ## Validation and limits
 

@@ -49,3 +49,9 @@ and independent failure evidence.
 ## Dependency graph integration
 
 [Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. A direct backend can have one shared ID referenced by several gateways or routes. Keep each configured path probe as a distinct node; gateway readiness does not establish backend health or first-agent communication. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.
+
+## Kubernetes deployment
+
+Configure gateway readiness, direct backends and each routed endpoint separately using in-cluster addresses. The fixture scenarios exercise the HTTP contract, not a real Agentgateway deployment or first-agent communication.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

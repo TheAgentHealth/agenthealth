@@ -31,9 +31,12 @@ and [component workflow](../.github/workflows/helm-release.yml).
 | 1: AHS | No schema, status, target, dimension, aggregation or exit-code changes. Embedded configuration validated against existing v1 schema. |
 | 2: Engine | Existing timeout/budget/retry policies bound exec checks. No execution or diagnostic changes. |
 | 3: CLI | Existing check/serve commands used directly with absolute exec path. Nonzero health exits fail probes/Jobs; tool failures remain exit 6. |
-| 4–6: HTTP, MCP, A2A | No adapter changes. HTTP fixtures provide deterministic deployment evidence; MCP stdio/token-file use still requires suitable images/private writable storage. |
+| 4: HTTP/API | HEAD/status/auth/body contracts unchanged. [HTTP guide](http-adapter.md#kubernetes-deployment) records in-cluster addresses and deadline considerations. |
+| 5: MCP | Protocol/OAuth/inventory unchanged. [MCP guide](mcp-adapter.md#kubernetes-deployment) records stdio executables and private writable token storage. |
+| 6: A2A | Protocol versions/card/task/origin safety unchanged. [A2A guide](a2a-adapter.md#kubernetes-deployment) records peer addresses and repeated-active-check limits. |
 | 7: Agent health | Direct and composite health remain distinct from runtime communication. Passive examples add no functional authorization. |
-| 8–9: Gateway/router | Separate signals and route evidence use existing HTTP contracts; no product discovery or certification added. |
+| 8: Agentgateway | [Gateway guide](agentgateway.md#kubernetes-deployment) and example retain separate signal/backend/path evidence; no product certification. |
+| 9: Agent Router | [Router guide](agent-router.md#kubernetes-deployment) and example retain named signal/backend/route evidence; no product certification. |
 | 10: Graph | Nested configurations remain valid. No graph model changes; explicit graphs can be supplied in a ConfigMap. |
 | 11: AHP | Existing freshness and aggregate readiness preserved; startup/liveness use process health. No endpoint, authentication or refresh changes. |
 | 12: Docker | Both public v0.11.0 registry references verified anonymously; image build/entrypoint/security remain unchanged. |
@@ -80,3 +83,21 @@ readiness guidance, source-image loading into kind, and init outage/recovery
 checks. The original outdated image references and incorrect optional-dependency
 readiness advice were not copied; existing CLI exits are preserved. Contributor
 credit is recorded here, in the guide and in the integration commit.
+
+## Documentation alignment checklist
+
+- [x] Main README repository tree, current capability status and phase coverage.
+- [x] Roadmap source-completion status and separate publication checklist.
+- [x] Documentation/example/status indexes include Phase 14.
+- [x] Core, CLI, specification index, installation and Docker/AHP guides link the deployment consumers.
+- [x] HTTP, MCP, A2A, agent, gateway, router and graph guides record deployment-specific considerations.
+- [x] Agent/gateway/router/graph/AHP/distribution examples preserve their service and active-check prerequisites.
+- [x] Earlier alignment pages link forward without changing historical release claims.
+- [x] Contribution/release policy distinguishes CLI and chart component triggers.
+- [x] Existing schemas, fixtures, adapters and health semantics require no migration; regression tests remain applicable.
+
+Historical release notes and RFC proposals are intentionally not rewritten.
+Phases 0–13 remain aligned through the impact/no-impact decisions above; physical
+edits to every earlier file are neither required nor evidence of behavioral changes.
+Chart publication, release-link verification, broader Kubernetes versions and real
+product interoperability remain explicitly outside source-completion claims.

@@ -65,3 +65,11 @@ Cleanup hooks remain serialized across nodes, runs and engines sharing a registr
 
 `agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
 See the [AHP guide](../docs/ahp.md) for authorization, freshness and deployment.
+
+## Kubernetes deployment
+
+[Phase 14 integration](../docs/kubernetes.md) consumes the existing engine and
+AHP server. Check budgets must fit exec-probe and Job deadlines. HTTP liveness
+uses `/live` independently of dependency readiness; snapshot freshness and
+aggregation stay unchanged. See the [alignment audit](../docs/phase-14-alignment.md)
+for regression coverage and deployment validation limits.

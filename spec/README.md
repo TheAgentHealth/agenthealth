@@ -65,3 +65,12 @@ Phase 10 is included in v0.8.0 as an additive v1 configuration/result extension.
 AHS results. Serving adds no configuration fields, health states, dimensions,
 target types or changes to CLI health exit codes. See the
 [alignment audit](../docs/phase-11-alignment.md).
+
+## Kubernetes consumers
+
+[Phase 14 deployment tooling](../docs/kubernetes.md) consumes the existing v1
+configuration, AHS results, CLI exit mapping and experimental AHP HTTP binding.
+It adds no specification fields or adapter contracts. The
+[alignment audit](../docs/phase-14-alignment.md) records each earlier-phase
+impact decision; Kubernetes examples validate embedded configuration against
+these schemas. A chart version remains independent of `spec_version`.

@@ -66,3 +66,9 @@ rejected before probes. The engine accepts at most 10000 result tree projections
 Topology is explicit and may be sensitive. Only share machine output with
 appropriate consumers. IDs must not contain secrets; known credential values
 are redacted in output. Experimental AHP serving requires bearer authorization for topology; see [AHP](ahp.md).
+
+## Kubernetes deployment
+
+Existing explicit graphs can be mounted as reviewed configuration. Shared nodes and edge policies retain their aggregation and budgets. Optional-edge failures can yield DEGRADED, which still fails CLI exec probes; AHP readiness follows its own contract.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

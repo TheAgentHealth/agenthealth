@@ -84,8 +84,9 @@ Public taps/buckets and package repositories remain separate hosting work.
    - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
    - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published in parallel with the binary release after source validation,
    - Linux packages and Homebrew/Scoop manifests once Phase 13 tooling is included.
-   SDKs and Helm charts publish through their own component releases once implemented;
-   a CLI tag does not automatically publish them.
+   The implemented Helm chart publishes through its independent `helm-v*`
+   component workflow; future SDKs will also use separate component releases.
+   A CLI tag does not automatically publish them.
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
 **First container release only:** GitHub creates a new organization package as

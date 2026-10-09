@@ -51,3 +51,10 @@ claim completion of Phase 24 conformance or Phase 25 interoperability.
 
 Historical release notes and RFC proposals retain their historical scope;
 current behavior follows the specifications, guides and phase-status index.
+
+## Phase 14 follow-through
+
+Kubernetes integration is now implemented in source. Its
+[alignment audit](phase-14-alignment.md) records existing contract compatibility
+and validation. This earlier-phase baseline and historical release notes retain
+the capabilities of their own released versions.

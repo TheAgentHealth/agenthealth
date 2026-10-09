@@ -37,3 +37,12 @@ A health failure does not exit the serving process.
 Remote deployments should terminate HTTPS and enforce rate limits at a proxy.
 See the [protocol](../spec/protocol.md) and [impact review](rfcs/phase-11-ahp.md).
 This experimental implementation is included in v0.9.0; v0.8.0 does not include it.
+
+## Kubernetes serving
+
+[Phase 14 scenarios](../examples/kubernetes/README.md) use this server in a
+Deployment and conventional sidecar. `/ready` follows snapshot freshness and
+aggregate readiness; `/live` drives process liveness/startup. Unlike CLI exec
+probes, AHP readiness can accept DEGRADED. Refresh timing, protected endpoint
+authorization and graceful shutdown retain this guide's existing behavior.
+See the [deployment guide](kubernetes.md) for Secrets and network exposure.

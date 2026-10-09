@@ -1030,6 +1030,11 @@ corresponding release tag.
 
 ## Release notes and artifact discovery
 
+Source preparation is complete in [chart 0.1.0 notes](docs/releases/helm-v0.1.0.md),
+including source paths, tag-pinned links, package download, usage and validated
+versions. The checklist below tracks actual publication and released-revision
+verification, which remain pending an authorized chart release.
+
 - [ ] Include the Kubernetes source paths in release descriptions/notes for
   releases that introduce or update these integrations.
 - [ ] Link to the exact released revision, using these GitHub URL patterns
@@ -1101,7 +1106,7 @@ CRDs/operators are intentionally deferred until the basic health model proves us
 Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving where used; review any required readiness contract extensions. Later: provide deployment scenarios for CI, interoperability, and hardening.
 
 Artifact layout and release-note discovery add no changes to earlier CLI, Docker,
-AHS, or AHP contracts. Phase 14 must add manifest/chart validation and tested
+AHS, or AHP contracts. Phase 14 provides manifest/chart validation and tested
 examples in the paths above; later CI and hardening work should reuse those
 paths. Chart packaging and release notes follow the independent component
 versioning policy in [RELEASING.md](RELEASING.md#component-versions-and-synchronized-distribution).

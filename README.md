@@ -1336,12 +1336,19 @@ agenthealth/
 │   ├── python/                 # planned PyPI SDK
 │   └── javascript/             # planned npm SDK
 │
-├── integrations/               # planned
-│   ├── docker/
-│   ├── kubernetes/
-│   └── ci/
+├── Dockerfile                  # released CLI container
+├── deploy/
+│   ├── kubernetes/              # manifests and Kustomize base
+│   └── helm/agenthealth/        # independent chart, implemented in source
+│
+├── integrations/               # future integrations
+│   └── ci/                     # planned
 │
 ├── examples/
+│   └── kubernetes/              # runnable deployment scenarios
+│
+├── tests/
+│   └── kubernetes/              # manifest, configuration and chart checks
 │
 └── docs/
 ```
@@ -1372,7 +1379,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 > **Early-stage / Pre-1.0**
 
-Coverage for phases 0–10 is indexed in [the documentation guide](docs/README.md).
+Coverage for phases 0–14 is indexed in [the documentation guide](docs/README.md).
 
 AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and an independently versioned Helm chart are implemented in source ([guide](docs/kubernetes.md)). Other adapters and SDKs remain roadmap work.
 
