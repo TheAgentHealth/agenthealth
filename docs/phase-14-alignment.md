@@ -46,10 +46,11 @@ and [component workflow](../.github/workflows/helm-release.yml).
 
 The initial findings above describe v0.11.1/chart 0.1.0. The
 [shared-version policy](../RELEASING.md#component-versions-and-synchronized-distribution)
-now supersedes independent chart/SDK versioning for future releases. The next
-release is planned as v0.12.0 with matching chart/image metadata, one release
+now supersedes independent chart/SDK versioning for future releases. The synchronized
+release is published as v0.12.0 with matching chart/image metadata, one release
 page and GHCR Docker/chart/binary packages. Workflow coordination and OCI publication are now implemented in source.
-New artifact publication/verification remains pending an authorized v0.12.0 tag; see the
+New artifact publication and download verification passed; see
+[verification](releases/verification-v0.12.0.md) and the
 [distribution plan](distribution.md). Earlier release evidence stays historical;
 AHS/AHP contracts are unaffected.
 

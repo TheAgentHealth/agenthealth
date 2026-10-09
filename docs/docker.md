@@ -106,8 +106,7 @@ mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
 which is only pushed to GHCR.
 
-v0.12.0 references below are prepared for publication. The last published
-v0.11.1 image remains available from both registries:
+v0.12.0 is published and verified in both registries:
 
 ```bash
 # GitHub Container Registry
@@ -125,7 +124,7 @@ for the release process that both distribution channels share.
 
 [Phase 14](kubernetes.md) deploys the same released CLI image through manifests,
 Helm and Kustomize. Image references are pinned. The first chart used a separate
-version; the next synchronized release uses matching CLI/image/chart version
+version; v0.12.0 uses matching CLI/image/chart version
 0.12.0 and adds OCI chart/binary packages. See [the distribution plan](distribution.md).
 The chart consumes the published image. The
 [application-image example](../examples/kubernetes/Dockerfile.exec-probe) copies

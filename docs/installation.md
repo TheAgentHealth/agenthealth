@@ -1,6 +1,6 @@
 # Install AgentHealth
 
-The commands below target the prepared v0.12.0 release. Until publication completes, v0.11.1 remains the latest published CLI release.
+The commands below install the published v0.12.0 release. See [publication verification](releases/verification-v0.12.0.md).
 
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
@@ -89,7 +89,7 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured; v0.12.0 references are prepared for publication:
+tags when mirror credentials are configured; v0.12.0 is available from both registries:
 
 ```bash
 # GitHub Container Registry

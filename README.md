@@ -9,13 +9,13 @@ and example coverage across Phases 0–26.
 
 ## Start here
 
-**Last published CLI: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1), pre-1.0; v0.12.0 is prepared in source.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Latest release: [v0.12.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.12.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
 Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
 
-The last published v0.11.1 container is available at `ghcr.io/theagenthealth/agenthealth:v0.11.1` and Docker Hub at `theagenthealth/agenthealth:v0.11.1`; see [Docker distribution](docs/docker.md).
+The v0.12.0 container is available at `ghcr.io/theagenthealth/agenthealth:v0.12.0` and Docker Hub at `theagenthealth/agenthealth:v0.12.0`; see [Docker distribution](docs/docker.md).
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
@@ -74,13 +74,11 @@ The long-term scope includes these systems; the supported adapters above describ
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and independently published Helm chart 0.1.0 are available ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and Helm chart 0.12.0 are available ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
 
-**Release preparation: v0.12.0. Last published CLI: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1).**
+**Published synchronized release: [v0.12.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.12.0).**
 v0.12.0 coordinates Docker, Helm and standalone/package downloads under one
-version, with additional OCI chart and binary packages. The workflow and
-installation examples below are prepared in source; publication is pending an
-authorized tag. See [release notes](docs/releases/v0.12.0.md).
+version, with additional OCI chart and binary packages. All channels are published and their downloads verified. See [release notes](docs/releases/v0.12.0.md).
 Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](docs/releases/v0.11.0.md).
 Phase 12 adds an [official container image](docs/docker.md) published to GHCR with an optional Docker Hub mirror, build provenance, SBOM, and a signed attestation. See [release and migration notes](docs/releases/v0.10.0.md).
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
@@ -968,13 +966,13 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.1.0 are implemented; the first chart was published separately as `helm-v0.1.0`; future releases follow the shared-version policy below.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.12.0 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
 ## Distribution versions
 
-Starting with the next release, **v0.12.0**, all implemented artifacts use the
+Starting with **v0.12.0**, all implemented artifacts use the
 same software version and source tag: CLI archives, Linux packages,
 Homebrew/Scoop manifests, Docker image, Helm chart and an additional OCI binary
 bundle. Helm uses `version: 0.12.0`, `appVersion: v0.12.0` and a matching image.
@@ -983,10 +981,10 @@ separate. Existing CLI v0.11.1 and chart 0.1.0 remain historical releases.
 
 | Channel | Contents | Current availability |
 |---|---|---|
-| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | CLI v0.11.1/chart 0.1.0 remain public; the unified v0.12.0 workflow is prepared in source |
+| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | v0.12.0 published and verified |
 | GitHub Packages: Docker | GHCR multi-platform container image | Available |
-| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | Implemented in source for v0.12.0; publication pending |
-| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | Implemented in source for v0.12.0; publication pending; ordinary downloads remain available |
+| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | v0.12.0 available |
+| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | v0.12.0 available; ordinary downloads remain available |
 
 This replaces independent component versioning. OCI bundles do not create
 APT/YUM repositories or Homebrew/Scoop hosting. See the
@@ -1397,7 +1395,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 Coverage for phases 0–14 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and independently published Helm chart 0.1.0 are available ([guide](docs/kubernetes.md)). Other adapters and SDKs remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and Helm chart 0.12.0 are available ([guide](docs/kubernetes.md)). Other adapters and SDKs remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

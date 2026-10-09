@@ -41,7 +41,7 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 
 ## Component versions and synchronized distribution
 
-Starting with the next synchronized release, **v0.12.0**, all implemented
+Starting with **v0.12.0**, all implemented
 AgentHealth artifacts and packages share one software version and one immutable
 source tag. Publish them together, including unchanged distribution formats.
 This supersedes the earlier independent chart/SDK version policy. Do not move,
@@ -73,8 +73,8 @@ public accessibility, provenance, hashes and contents have been verified.
 [release.yml](.github/workflows/release.yml). It builds a complete checksum set,
 stages a signed draft, publishes Docker/chart/binary OCI packages and gates
 public release completion on all required jobs and anonymous package access.
-v0.12.0 has not been published. See [distribution](docs/distribution.md) for
-package names, commands, visibility recovery and remaining publication checks.
+v0.12.0 is published; see [verification](docs/releases/verification-v0.12.0.md). See [distribution](docs/distribution.md) for
+package names, commands, visibility recovery and publication checks.
 
 ## Release steps (current, pre-1.0)
 
@@ -84,7 +84,7 @@ package names, commands, visibility recovery and remaining publication checks.
    - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
    - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published in parallel with the binary release after source validation,
    - Linux packages and Homebrew/Scoop manifests once Phase 13 tooling is included.
-   The next synchronized release must also attach the same-version Helm chart
+   Synchronized releases also attach the same-version Helm chart
    and publish the chart/binary OCI packages through coordinated jobs. The
    shared workflow stages the draft and waits for all required publication jobs.
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
@@ -172,8 +172,8 @@ for an already published release.
 ## Helm chart releases
 
 The historical chart 0.1.0 was published as `helm-v0.1.0` with CLI
-`v0.11.1`. Preserve that release and its signed files. Starting with the next
-release, use the shared `vX.Y.Z` tag, chart `version: X.Y.Z`, CLI
+`v0.11.1`. Preserve that release and its signed files. Starting with v0.12.0,
+use the shared `vX.Y.Z` tag, chart `version: X.Y.Z`, CLI
 `appVersion: vX.Y.Z` and the matching image. Attach the chart package to the same
 GitHub release as the CLI and publish it as a GHCR OCI chart.
 

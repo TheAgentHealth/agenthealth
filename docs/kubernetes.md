@@ -2,8 +2,8 @@
 
 Phase 14's initial chart 0.1.0/CLI v0.11.1 releases remain public. The source
 chart is now **0.12.0**, with `appVersion: v0.12.0`, matching image defaults and
-coordinated OCI/chart/binary release jobs. v0.12.0 publication is pending an
-authorized tag; use the historical tags for current installation.
+coordinated OCI/chart/binary release jobs. v0.12.0 is published and verified.
+See [publication verification](releases/verification-v0.12.0.md).
 See [the distribution guide](distribution.md).
 
 Start with the [runnable scenarios](../examples/kubernetes/README.md),
@@ -17,8 +17,7 @@ Both public references for the pinned CLI version are:
 - GHCR: `ghcr.io/theagenthealth/agenthealth:v0.12.0`
 - Docker Hub: `docker.io/theagenthealth/agenthealth:v0.12.0`
 
-These references are the prepared synchronized v0.12.0 targets. Verify anonymous
-registry availability before installing from either registry.
+Both synchronized v0.12.0 references passed anonymous access checks.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
 reference in each AgentHealth container, including init containers. Registry

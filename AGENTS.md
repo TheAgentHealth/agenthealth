@@ -135,8 +135,9 @@ matching image references. Future SDKs adopt the shared version when implemented
 contract versions remain separate. Do not reuse historical CLI or chart tags.
 
 The shared workflow/helper implements coordinated source builds, signed draft
-staging and OCI chart/binary publication. Source preparation is complete;
-verify the actual publication before claiming new versions are available. Follow [the distribution checklist](docs/distribution.md);
+staging and OCI chart/binary publication. v0.12.0 publication and verification are complete; see
+[the verification record](docs/releases/verification-v0.12.0.md).
+Verify each future publication before claiming its new version is available. Follow [the distribution checklist](docs/distribution.md);
 verify all required jobs, signed provenance, checksums, package contents and
 anonymous access before declaring the release complete. OCI binary retrieval
 uses an artifact client, not Docker or Helm install. Preserve ordinary releases.
@@ -220,5 +221,5 @@ See [the guide](docs/kubernetes.md) and [alignment audit](docs/phase-14-alignmen
 For deployment/chart changes, run `helm lint deploy/helm/agenthealth --strict`,
 `python3 -m pytest tests/kubernetes -q`, and the explicit-context runtime smoke
 script on a disposable cluster unless the user explicitly omits test reruns.
-The historical chart used `helm-v*`; the next release must coordinate the chart
+The historical chart used `helm-v*`; v0.12.0 and later coordinate the chart
 and CLI under the shared version policy and publish the OCI packages.

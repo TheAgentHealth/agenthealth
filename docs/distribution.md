@@ -1,14 +1,14 @@
 # Releases, Packages and synchronized versions
 
-The agreed next release is **v0.12.0**. All implemented artifacts will use that
+The synchronized release is **v0.12.0**. All implemented artifacts use that
 software version and the same immutable source commit. This replaces the earlier
 independent chart/SDK version policy. CLI v0.11.1 and chart 0.1.0 remain published
 and immutable; historical release notes and verification records remain valid.
 
-This document records the target publication layout. The shared release workflow and OCI chart/binary publication are implemented
-in source. v0.12.0 and its new OCI packages are **not published yet**. An
-authorized shared tag builds new assets and coordinates all publication jobs;
-it does not rename old downloads.
+v0.12.0 and all three GHCR packages are published and verified. See
+[publication verification](releases/verification-v0.12.0.md). The shared release
+workflow builds new assets from one source tag and coordinates all publication
+jobs; it does not rename old downloads.
 
 ## One complete GitHub Release
 
@@ -30,9 +30,9 @@ is present.
 
 | Package | Target reference | User tool | Availability |
 |---|---|---|---|
-| Docker | `ghcr.io/theagenthealth/agenthealth:v0.12.0` | Docker-compatible container client | Existing image package; new version not published yet |
-| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.12.0` | Helm | Implemented in source; publication pending |
-| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.12.0` | ORAS or a compatible OCI artifact client | Implemented in source; publication pending |
+| Docker | `ghcr.io/theagenthealth/agenthealth:v0.12.0` | Docker-compatible container client | v0.12.0 public and verified |
+| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.12.0` | Helm | v0.12.0 public and verified |
+| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.12.0` | ORAS or a compatible OCI artifact client | v0.12.0 public and verified |
 
 Link every package to `TheAgentHealth/agenthealth`, record source/revision/version
 metadata and verify its public visibility. Publishing to GHCR does not establish
@@ -69,10 +69,8 @@ software releases do not rename `spec_version: v1`.
 
 ## Installation examples
 
-The following commands describe the **planned v0.12.0 channels** and are not
-available until publication and verification complete. Existing v0.11.1/archive
-and chart 0.1.0 releases remain available. Source installation guides prepare
-the v0.12.0 commands; substitute historical tags for currently published files.
+The following commands use the published and verified v0.12.0 channels.
+Historical v0.11.1 and chart 0.1.0 releases remain available.
 
 Direct installation from the unified Release download:
 
@@ -116,13 +114,13 @@ verification remain available directly through GitHub Releases.
 
 - [x] Update release workflows and the Helm helper to consume the same software tag; avoid separate release creation and conflicting checksum uploads.
 - [x] Advance chart metadata and all current image/install references to 0.12.0/v0.12.0 before tagging.
-- [ ] Build all release files from the exact same tagged source; generate the final checksum manifest after all formats are packaged.
-- [ ] Publish the Docker image, OCI chart and OCI binary bundle; attach all downloadable files to one GitHub Release.
-- [ ] Link packages to this repository and establish public visibility; verify anonymous registry access and repository Packages discovery.
-- [ ] Sign downloadable assets and OCI provenance; verify source tag/commit, digests, SBOMs, contents and byte identity across channels.
-- [ ] Gate release completion on all required publication jobs, regardless of whether jobs execute in parallel.
-- [ ] Download published files and verify native Linux behavior and actual chart installation; report other platforms according to evidence available.
-- [ ] Preserve existing releases and explain that v0.12.0 supersedes v0.11.1/chart 0.1.0.
+- [x] Build all release files from the exact same tagged source; generate the final checksum manifest after all formats are packaged.
+- [x] Publish the Docker image, OCI chart and OCI binary bundle; attach all downloadable files to one GitHub Release.
+- [x] Link packages to this repository and establish public visibility; verify anonymous registry access and repository Packages discovery.
+- [x] Sign downloadable assets and OCI provenance; verify source tag/commit, digests, SBOMs, contents and byte identity across channels.
+- [x] Gate release completion on all required publication jobs, regardless of whether jobs execute in parallel.
+- [x] Download published files and verify native Linux behavior and actual chart installation; report other platforms according to evidence available.
+- [x] Preserve existing releases and explain that v0.12.0 supersedes v0.11.1/chart 0.1.0.
 
 Skipping local test reruns at a maintainer's request does not mean that new
 workflow changes have passed old CI. Report skipped checks and respect actual
