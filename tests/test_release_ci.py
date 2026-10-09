@@ -76,7 +76,7 @@ def test_publication_requires_gate():
     for job in ['release', 'container']:
         assert 'ci-gate' in release[job]['needs']
     ci = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())['jobs']
-    assert ci['binary-distribution']['if'] == "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.release_sha != ''"
+    assert ci['binary-distribution']['if'] == "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.release_sha != '')"
     assert ci['binary-distribution']['strategy']['matrix']['os'] == list(gate.PLATFORMS)
 
 

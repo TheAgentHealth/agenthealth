@@ -109,7 +109,8 @@ the existing daily schedule and ordinary manual runs also keep those checks.
 At release time, the release gate dispatches a fresh pre-release CI run on `main`.
 Every test job checks out the immutable tagged source SHA supplied by the gate,
 including when recovering an older release after `main` has advanced.
-The five-platform **Binary distribution** matrix runs only in pre-release CI.
+The five-platform **Binary distribution** matrix runs on every PR and in
+pre-release CI.
 Synchronized releases additionally run **Kubernetes manifests and Helm** regardless
 of changed paths. Publication requires that specific CI run and every required
 binary/Kubernetes job to succeed; missing or skipped checks do not qualify.

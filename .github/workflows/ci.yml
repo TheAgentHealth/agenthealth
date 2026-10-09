@@ -236,7 +236,7 @@ jobs:
           python3 scripts/test_container.py agenthealth:ci --version v0.0.0-ci
 
   binary-distribution:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.release_sha != ''
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.release_sha != '')
     name: Binary distribution
     strategy:
       fail-fast: false
