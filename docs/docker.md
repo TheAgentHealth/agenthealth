@@ -123,8 +123,10 @@ for the release process that both distribution channels share.
 ## Kubernetes consumers
 
 [Phase 14](kubernetes.md) deploys the same released CLI image through manifests,
-Helm and Kustomize. Image references are pinned; image tags and chart versions
-are independent. The chart does not rebuild or republish the image. The
+Helm and Kustomize. Image references are pinned. The first chart used a separate
+version; the next synchronized release uses matching CLI/image/chart version
+0.12.0 and adds OCI chart/binary packages. See [the distribution plan](distribution.md).
+The chart consumes the published image. The
 [application-image example](../examples/kubernetes/Dockerfile.exec-probe) copies
 the CLI into a derived image for application-container exec readiness probes.
 

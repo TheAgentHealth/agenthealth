@@ -1,7 +1,10 @@
 # Kubernetes integration
 
 Phase 14 is released. The independently published chart is version **0.1.0**, with
-`appVersion: v0.11.1`. Chart publication is independent of CLI releases.
+`appVersion: v0.11.1`. This first chart was published separately. The next
+release adopts synchronized chart/CLI version 0.12.0 and adds OCI chart
+publication to GitHub Packages; that integration is not available yet.
+See [the distribution plan](distribution.md).
 The deployment files require Kubernetes 1.29 or newer; the runtime smoke suite
 uses Kubernetes 1.32.2. Only versions actually exercised are listed in the
 [alignment audit](phase-14-alignment.md).
@@ -159,10 +162,11 @@ CI builds and loads the current source image into kind and passes `--image`.
 Omit `--image` to exercise the pinned released image. It is not real agent/gateway/router interoperability
 certification: the scenario serves deterministic HTTP fixtures.
 
-A chart release uses `helm-v0.1.0`, attaches `agenthealth-0.1.0.tgz` and
-`checksums.txt`, and links to manifests, chart source and examples at that exact
-tag. See [chart releases](../RELEASING.md#helm-chart-releases). Source changes
-and local packaging do not publish a release.
+The first chart release used `helm-v0.1.0`, attaching `agenthealth-0.1.0.tgz`
+and checksums with tag-pinned source links. Future releases must use the shared
+software version and attach the chart to the common CLI release, with additional
+OCI publication. See [chart releases](../RELEASING.md#helm-chart-releases).
+Source changes and local packaging do not publish a release.
 
 ## Contributor credit
 
@@ -171,7 +175,9 @@ guidance, current-source image loading, and init outage/recovery scenarios adapt
 ideas from [sharath568's PR #15](https://github.com/TheAgentHealth/agenthealth/pull/15)
 and [issue #13](https://github.com/TheAgentHealth/agenthealth/issues/13).
 They are integrated into the Phase 14 layout, existing exit contracts and
-independent Helm release policy. Superseded Phase 12 changes were not imported.
+the initial Helm release layout. Future releases use the
+[shared-version policy](../RELEASING.md#component-versions-and-synchronized-distribution).
+Superseded Phase 12 changes were not imported.
 
 Chart packages and checksums have GitHub-signed build provenance. Verify the
 package with `gh attestation verify <chart.tgz> --repo TheAgentHealth/agenthealth

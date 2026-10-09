@@ -123,15 +123,30 @@ Publish only when the user requests a release. Preparing release tooling or
 documentation does not by itself authorize pushing a tag. A tag push triggers
 publication through [.github/workflows/release.yml](.github/workflows/release.yml).
 
-Before preparing a release, identify its component under the
+Before preparing a release, identify all required formats under the
 [component release policy](RELEASING.md#component-versions-and-synchronized-distribution).
-CLI releases include all implemented distribution formats at the same CLI
-version, including Docker even when its files are unchanged. Verify the container
-job as well as binary publication before declaring release success. SDKs and
-Helm charts version independently; do not publish them merely because a CLI tag
-was pushed. Future component triggers must not match the CLI `v*` trigger.
-Changes to bundled/pinned CLI dependencies require a new SDK/chart release;
-record compatibility and chart `appVersion`/explicit image references.
+Starting with v0.12.0, publish every implemented distribution format under the
+same software version and immutable `vX.Y.Z` source tag: CLI archives, DEB/RPM,
+channel manifests, Docker image, Helm chart and additional OCI binary bundle.
+The GitHub Release must list all downloads and package references. GHCR Packages
+must expose the Docker image, OCI chart and OCI binary bundle publicly and link
+them to this repository. Helm uses `version: X.Y.Z`, `appVersion: vX.Y.Z` and
+matching image references. Future SDKs adopt the shared version when implemented;
+contract versions remain separate. Do not reuse historical CLI or chart tags.
+
+The current workflows/helper still publish CLI and chart separately and lack
+OCI chart/binary publication. Implement coordinated publication before claiming
+the new policy is supported. Follow [the distribution checklist](docs/distribution.md);
+verify all required jobs, signed provenance, checksums, package contents and
+anonymous access before declaring the release complete. OCI binary retrieval
+uses an artifact client, not Docker or Helm install. Preserve ordinary releases.
+
+If the user explicitly asks to skip local tests or not wait for CI, honor that
+scope and report the omitted checks. Do not infer that old green CI covers newly
+edited workflows. Do not change branch protection or bypass required checks
+without explicit authorization; report the actual repository constraint and
+prepare the concrete PR/release changes first. Building and publishing artifacts
+are still necessary to produce a release, even when test reruns are omitted.
 
 1. Inspect existing remote tags/releases and choose the next version under
    RELEASING.md. Never reuse, move, or overwrite a published tag. Software
@@ -177,7 +192,10 @@ record compatibility and chart `appVersion`/explicit image references.
    five archives, five matching CycloneDX SBOMs, and checksums. Releases containing
    Phase 13 tooling also require four DEB/RPM packages and two channel manifests. Verify signed
    provenance and SBOM attestations before announcing the release. Download published assets, check hashes, and
-   smoke-test the native binary. Report the release URL and validation results.
+   smoke-test the native binary unless the user explicitly omits runtime checks.
+   For the synchronized release, also verify the downloadable chart and all three
+   GHCR package identities, including exact source/version, signed OCI provenance
+   and anonymous access. Report the release URL and actual validation results.
 
 Pre-1.0 versions can be regular releases; use suffixed tags for intentional
 previews as described in RELEASING.md. v0.4.0 publishes CycloneDX SBOMs and
@@ -201,5 +219,6 @@ pinning CLI `v0.11.1`.
 See [the guide](docs/kubernetes.md) and [alignment audit](docs/phase-14-alignment.md).
 For deployment/chart changes, run `helm lint deploy/helm/agenthealth --strict`,
 `python3 -m pytest tests/kubernetes -q`, and the explicit-context runtime smoke
-script on a disposable cluster. Helm publication uses independent `helm-v*`
-tags through the chart workflow; a CLI release never publishes the chart.
+script on a disposable cluster unless the user explicitly omits test reruns.
+The historical chart used `helm-v*`; the next release must coordinate the chart
+and CLI under the shared version policy and publish the OCI packages.

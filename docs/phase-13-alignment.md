@@ -39,9 +39,11 @@ Historical releases and RFC proposals retain their original scope; Phase 13
 source work does not add package assets to earlier published versions. Individual
 adapter READMEs need no packaging edits because their behavior did not change.
 
-Component versioning is aligned in README, CONTRIBUTING, AGENTS and the roadmap
-with the [canonical release policy](../RELEASING.md#component-versions-and-synchronized-distribution):
-all CLI formats publish together; SDKs/charts version independently.
+At the first Phase 13 release, CLI formats published together while SDKs/charts
+used independent versions. The [canonical release policy](../RELEASING.md#component-versions-and-synchronized-distribution)
+now requires shared software versions starting with the planned v0.12.0 release.
+See [the distribution plan](distribution.md) for the coordinated Releases/Packages
+layout and outstanding OCI publication work; historical release evidence stays valid.
 
 ## Later phases and limitations
 

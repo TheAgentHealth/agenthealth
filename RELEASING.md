@@ -41,40 +41,40 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 
 ## Component versions and synchronized distribution
 
-Version components by their public interfaces. Release every distribution format
-of the same component together. A shared repository does not require every
-component to have the same version or to publish on every release.
+Starting with the next synchronized release, **v0.12.0**, all implemented
+AgentHealth artifacts and packages share one software version and one immutable
+source tag. Publish them together, including unchanged distribution formats.
+This supersedes the earlier independent chart/SDK version policy. Do not move,
+rename or overwrite CLI `v0.11.1` or chart `helm-v0.1.0`; they remain historical
+releases. AHS/AHP and `spec_version` contract versions remain independent.
 
-| Component or artifact | Version and publication policy |
-|---|---|
-| CLI, core engine and in-tree adapters | One CLI version, tagged `vX.Y.Z` |
-| Standalone archives, DEB/RPM and Homebrew/Scoop manifests | Same CLI version; generate and publish together for every CLI release |
-| GHCR container and configured Docker Hub mirror | Same CLI version and source; publish with every CLI release even when the Dockerfile is unchanged |
-| Python SDK / PyPI (planned) | Independent SDK version; publish when its code/API or bundled/pinned CLI dependency changes |
-| JavaScript/TypeScript SDK / npm (planned) | Independent SDK version; publish when its code/API or bundled/pinned CLI dependency changes |
-| Helm chart | Independent chart version; `appVersion` records the CLI version and the image reference pins an explicit tag or digest |
-| Kubernetes examples/manifests | Update with affected behavior; no separate package version unless a packaged component is introduced |
-| AHS/AHP contracts | Contract versions remain independent of software versions |
+| Artifact | Version for v0.12.0 | GitHub Releases | Package distribution |
+|---|---|---|---|
+| CLI, engine and adapters | `v0.12.0` | Five platform archives, five CycloneDX SBOMs and checksums | Additional GHCR OCI binary bundle |
+| DEB/RPM and Homebrew/Scoop manifests | `0.12.0` package metadata | Four Linux packages and two channel manifests | Include in binary bundle; APT/YUM repositories and public taps/buckets remain separate work |
+| Docker image | `v0.12.0` image tag | Registry links, exact digests and installation instructions; offline image archives are optional | GHCR container image and configured Docker Hub mirror |
+| Helm chart | `version: 0.12.0`, `appVersion: v0.12.0` | Chart `.tgz`, checksums and verification instructions | GHCR OCI chart; Helm's OCI tag is `0.12.0` |
+| Future SDKs | Same software version when implemented | Release notes and appropriate distributions/registry links | Use supported ecosystem registries; do not claim planned SDKs are published |
 
-For example, CLI `v0.11.0` publishes matching archives, Linux packages, channel
-manifests and container images. An unchanged SDK may retain its existing version
-if its documented compatibility covers that CLI. Updating an SDK's bundled or
-pinned CLI requires a new SDK release. Updating a published chart's default image
-requires a new chart version, even when the templates are unchanged.
+The leading `v` is a Git/source and container-tag convention, not a different
+release version. Helm and package managers use their required numeric version
+syntax. Every image default and binary download reference must select the same
+release. A breaking change to any shipped component determines the shared
+version increment; backward-compatible capabilities require a minor release.
 
-Publish by component release intent, not by arbitrary repository changes or
-Dockerfile-only path filters. Pull requests and merges run validation; they do
-not publish packages. The current `v*` release workflow publishes the implemented
-CLI formats only. Future SDK/chart workflows must use separate, component-specific
-release triggers (for example `python-vX.Y.Z`, `javascript-vX.Y.Z`,
-`helm-vX.Y.Z`) and must not trigger CLI publication. Python/JavaScript names are a design for future workflows; the Phase 14
-`helm-v*` trigger is implemented for chart publication.
+Use one `vX.Y.Z` release as the discovery page for all downloads, registry
+packages and installation/verification commands. Package workflows may be
+separate jobs, but consume that same tag and source commit and form one
+coordinated release. Do not create another `helm-v*` release for the new policy.
+Do not announce success until every required distribution has published and its
+public accessibility, provenance, hashes and contents have been verified.
 
-Release notes identify the component, artifacts and compatibility requirements.
-Keep published versions immutable. Verify all required formats before declaring
-a CLI release complete; binary and container jobs may run in parallel, but a
-successful binary upload alone does not establish successful container publication.
-Public taps/buckets and package repositories remain separate hosting work.
+**Implementation status:** the existing workflows still publish CLI `v*` and
+historical `helm-v*` releases separately. Docker GHCR publication is implemented;
+OCI chart and binary-bundle publication and coordinated release completion must
+be implemented before publishing the synchronized release. See the
+[distribution plan](docs/distribution.md) for package names, user commands and
+the v0.12.0 checklist. Documentation changes alone do not publish packages.
 
 ## Release steps (current, pre-1.0)
 
@@ -84,9 +84,9 @@ Public taps/buckets and package repositories remain separate hosting work.
    - standalone binaries and checksums (implemented early from [Phase 13](ROADMAP.md#phase-13--standalone-binaries)),
    - multi-platform container image with provenance, SBOM and signed attestation ([Phase 12](ROADMAP.md#phase-12--docker-distribution)), published in parallel with the binary release after source validation,
    - Linux packages and Homebrew/Scoop manifests once Phase 13 tooling is included.
-   The implemented Helm chart publishes through its independent `helm-v*`
-   component workflow; future SDKs will also use separate component releases.
-   A CLI tag does not automatically publish them.
+   The next synchronized release must also attach the same-version Helm chart
+   and publish the chart/binary OCI packages through coordinated jobs. The
+   existing separate workflows must be updated before that release.
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
 **First container release only:** GitHub creates a new organization package as
@@ -171,24 +171,24 @@ for an already published release.
 
 ## Helm chart releases
 
-Phase 14 introduces independent `helm-v<chart-version>` releases through
-[the chart workflow](.github/workflows/helm-release.yml). CLI `v*` tags do not
-publish charts. Chart 0.1.0 has `appVersion: v0.11.1` and pins that released
-image. Change the chart version whenever templates or image defaults change.
+The historical chart 0.1.0 was published as `helm-v0.1.0` with CLI
+`v0.11.1`. Preserve that release and its signed files. Starting with the next
+release, use the shared `vX.Y.Z` tag, chart `version: X.Y.Z`, CLI
+`appVersion: vX.Y.Z` and the matching image. Attach the chart package to the same
+GitHub release as the CLI and publish it as a GHCR OCI chart.
 
-Prepare locally with `python3 scripts/package_helm.py helm-v0.1.0 --output
-/tmp/agenthealth-chart-release` (requires Helm 3 and an empty output directory).
-This validates chart metadata, requires component release notes, packages
-`agenthealth-0.1.0.tgz` and writes `checksums.txt`. Run the Kubernetes CI scenarios
-before an authorized release. Publishing requires a separately authorized,
-reviewed chart tag on the intended main commit; do not tag during implementation.
+The existing [chart workflow](.github/workflows/helm-release.yml) and
+[packaging helper](scripts/package_helm.py) currently expect `helm-v*` tags and
+component notes. They must accept the shared release context before v0.12.0.
+A release coordinator must prevent duplicate release creation and conflicting
+checksum uploads. Generate the complete checksum manifest after all asset
+formats, including the chart, are prepared; sign the final assets/manifests.
 
-Notes must link to `deploy/kubernetes`, `deploy/helm/agenthealth` and
-`examples/kubernetes` at the component tag, include the packaged chart download,
-record CLI/chart versions and actually validated Kubernetes versions, and show
-both same-version registry references. Verify anonymous image availability and
-all release links before announcement. Chart releases are not GitHub Latest,
-so they do not displace the CLI release. The chart workflow signs package/checksum build provenance through GitHub
-Actions attestations. Verify those signatures with the chart signer workflow
-and exact tag commit. GPG-signed Helm `.prov` files remain deferred; SHA-256
-checksums alone do not establish publisher identity.
+Release notes must link to `deploy/kubernetes`, `deploy/helm/agenthealth` and
+`examples/kubernetes` at the shared tag and include both chart download and OCI
+installation commands, the exact CLI/image version and tested Kubernetes
+versions. Verify the chart package's signed provenance and the OCI chart's
+published digest/source binding. GPG Helm `.prov` files remain deferred; use
+GitHub keyless attestations rather than suggesting `helm --verify` works.
+
+See [distribution and synchronized-release preparation](docs/distribution.md).

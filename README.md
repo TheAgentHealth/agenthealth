@@ -78,7 +78,7 @@ The project provides a common health model, a Go engine, a CLI, machine-readable
 
 **Release version: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1).**
 v0.11.1 rebuilds CLI distributions with Go 1.27.2 and adds Phase 14 Kubernetes
-source integrations; chart 0.1.0 publishes independently. See [release notes](docs/releases/v0.11.1.md).
+source integrations; the first chart was published separately as 0.1.0. See [release notes](docs/releases/v0.11.1.md).
 Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](docs/releases/v0.11.0.md).
 Phase 12 adds an [official container image](docs/docker.md) published to GHCR with an optional Docker Hub mirror, build provenance, SBOM, and a signed attestation. See [release and migration notes](docs/releases/v0.10.0.md).
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
@@ -966,19 +966,31 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.1.0 are implemented; the chart publishes independently as `helm-v0.1.0`.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.1.0 are implemented; the first chart was published separately as `helm-v0.1.0`; future releases follow the shared-version policy below.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
 ## Distribution versions
 
-CLI binaries, Linux packages, Homebrew/Scoop manifests and Docker images share
-one CLI version and publish together. Docker publishes on every CLI release,
-even when the Dockerfile has no changes. Planned Python/JavaScript SDKs and implemented Helm
-charts have independent versions and publish when their own code or bundled/pinned
-dependencies change. Helm `appVersion` identifies the CLI, while its chart version
-tracks chart changes. A CLI release does not automatically publish an unchanged
-SDK or chart. See the [component release policy](RELEASING.md#component-versions-and-synchronized-distribution).
+Starting with the next release, **v0.12.0**, all implemented artifacts use the
+same software version and source tag: CLI archives, Linux packages,
+Homebrew/Scoop manifests, Docker image, Helm chart and an additional OCI binary
+bundle. Helm uses `version: 0.12.0`, `appVersion: v0.12.0` and a matching image.
+Future SDKs adopt that version when implemented; AHS/AHP contract versions remain
+separate. Existing CLI v0.11.1 and chart 0.1.0 remain historical releases.
+
+| Channel | Contents | Current availability |
+|---|---|---|
+| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | CLI v0.11.1 and chart 0.1.0 currently have separate pages; unification is planned for v0.12.0 |
+| GitHub Packages: Docker | GHCR multi-platform container image | Available |
+| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | Planned for v0.12.0 |
+| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | Planned for v0.12.0; ordinary downloads remain available |
+
+This replaces independent component versioning. OCI bundles do not create
+APT/YUM repositories or Homebrew/Scoop hosting. See the
+[release policy](RELEASING.md#component-versions-and-synchronized-distribution)
+and [distribution plan](docs/distribution.md) for prerequisites, package
+identities, installation and verification requirements.
 
 ## Standalone CLI
 
