@@ -61,3 +61,9 @@ Phase 11 release and migration details: [v0.9.0 notes](releases/v0.9.0.md).
 
 - [Kubernetes integration](kubernetes.md) — manifests, chart, probes, Secrets and deployment validation.
 - [Phase 14 alignment](phase-14-alignment.md) — coverage, compatibility and validation limits.
+
+## Release and package distribution
+
+See the [synchronized distribution plan](distribution.md) for the agreed
+v0.12.0 policy, Releases/Packages layout, availability and implementation
+checklist. OCI chart/binary publication is planned.

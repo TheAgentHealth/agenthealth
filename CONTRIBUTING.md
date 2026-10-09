@@ -71,20 +71,28 @@ safety requirements, validation, and the release runbook.
 ## Component release scope
 
 Follow the [component version and distribution policy](RELEASING.md#component-versions-and-synchronized-distribution).
-CLI archives, Linux packages, Homebrew/Scoop manifests and Docker images are
-formats of the same component: publish the same CLI version together, including
-Docker when its Dockerfile is unchanged. SDKs and Helm charts have independent
-versions and release only when their code, packaging or pinned/bundled dependency
-changes. Record supported CLI/specification versions for SDKs; charts record
-`appVersion` and pin the container image explicitly.
+Starting with the next release, v0.12.0, all implemented artifacts share one
+software version and source tag: CLI archives, Linux packages, channel
+manifests, Docker images, Helm chart and OCI binary bundle. Publish all required
+formats together, even when an individual format's files have not changed.
+Chart `version` uses the numeric software version; `appVersion` and pinned
+images identify the matching CLI. Future SDKs adopt this policy when implemented.
+AHS/AHP contract versions remain separate.
 
-Identify affected components and compatibility in substantive PRs and phase
-impact reviews. Update their docs/examples and tests as needed. Sharing this
-repository does not require publishing unchanged SDKs or charts. CI validates
-PRs; publication requires an authorized component release. The implemented chart
-uses `helm-v*`; future SDK triggers must also be
-distinct from the CLI `v*` trigger. See the release policy for component
-trigger names and limitations.
+The GitHub Release is the complete release page. For synchronized releases,
+GitHub Packages must provide the GHCR Docker image, OCI Helm chart and
+additional OCI binary bundle. OCI binary
+bundles require an artifact client; they do not replace ordinary downloads or
+create APT/YUM/Homebrew/Scoop repositories. Link each package to this repository
+and verify anonymous access before advertising it as public.
+
+Identify affected components, shared version and distribution changes in PRs
+and phase impact reviews. Preserve existing published versions and their
+historical notes. OCI chart/binary publication and synchronized workflows are
+required work for the next release, not existing availability. See the
+[distribution plan](docs/distribution.md). Publication requires explicit release
+authorization. Normal PRs require the applicable CI checks; a maintainer's
+instruction to omit local test reruns does not change GitHub branch protection.
 
 ## CI checks
 
@@ -136,4 +144,5 @@ Phase 14 is implemented in source. See the [deployment guide](docs/kubernetes.md
 and [alignment audit](docs/phase-14-alignment.md). Deployment or chart changes
 must run Helm lint/template tests and the explicit-context runtime smoke suite
 on a disposable cluster, in addition to the applicable existing checks.
-Chart publication requires an independently authorized component release.
+Chart publication belongs to the authorized synchronized software release;
+complete the shared-version and distribution checklist first.

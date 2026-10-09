@@ -58,18 +58,18 @@ The first milestone is to prove that a common health model works across multiple
 
 # Component Release Policy
 
-All implemented CLI distribution formats share one version and release together:
-standalone archives, Linux packages, Homebrew/Scoop manifests and Docker images.
-Publish Docker even for a binary-packaging-only CLI release. Python/JavaScript
-SDKs and Helm charts have independent versions; release them when their code,
-packaging or bundled/pinned dependencies change, not on every CLI tag. Charts
-record CLI `appVersion` and pin the image reference. Shared repository layout
-does not imply synchronized component versions.
+Starting with the next release, v0.12.0, every implemented artifact shares the
+same software version and immutable source tag. Release CLI archives, DEB/RPM,
+channel manifests, Docker images, Helm chart and OCI binary bundle together.
+Future SDKs follow the shared version when implemented; AHS/AHP contract versions
+remain separate. Preserve historical CLI v0.11.1/chart 0.1.0 releases.
 
-Future SDK/chart workflows need distinct component release triggers, documented
-compatibility and immutable artifacts. Kubernetes examples/manifests do not need
-an independent release unless packaged as a component. See the canonical
-[release policy](RELEASING.md#component-versions-and-synchronized-distribution).
+The GitHub Release is the complete download/installation page. GitHub Packages
+provides GHCR Docker, OCI Helm and OCI binary distribution. Helm chart metadata
+uses the numeric release version and matching CLI appVersion/image references.
+OCI chart and binary publication are planned work, not currently available.
+See the canonical [release policy](RELEASING.md#component-versions-and-synchronized-distribution)
+and [distribution plan](docs/distribution.md).
 
 ---
 
@@ -988,8 +988,9 @@ Required extension tasks:
 
 **Status:** Released — chart 0.1.0 (`helm-v0.1.0`), pinning CLI `v0.11.1`.
 
-Helm chart versions are independent of CLI versions; record `appVersion`, pin
-image tags/digests and release a new chart when defaults or templates change.
+The initial chart used independent versioning. The next release adopts the
+shared software version: chart `version: 0.12.0`, `appVersion: v0.12.0` and
+matching images. The published chart 0.1.0 remains immutable.
 
 Goal:
 
@@ -1010,7 +1011,8 @@ tests/kubernetes/       # Manifest/chart validation and scenario checks
 
 These directories contain the implemented Phase 14 deliverables.
 Package the Helm chart as `agenthealth-<chart-version>.tgz` and attach it to its
-component's GitHub Release. Chart releases remain independent of CLI releases.
+shared software GitHub Release. Historical chart 0.1.0 used its own release;
+future charts and CLI artifacts publish together.
 YAML manifests and usage examples are available from the repository at the
 corresponding release tag.
 
@@ -1027,6 +1029,23 @@ corresponding release tag.
   release. Docker Hub publication is an optional mirror; if it was not published,
   label that reference as unavailable for that release rather than presenting
   it as a working installation option.
+
+## Synchronized release and Packages extension
+
+The next release is v0.12.0, superseding the independently numbered first chart.
+The following implementation work is required before that release is complete:
+
+- [ ] Coordinate all formats under one immutable v0.12.0 tag and GitHub Release.
+- [ ] Set chart version 0.12.0, appVersion v0.12.0 and matching current image/install references when publishing.
+- [ ] Publish the Helm chart to GHCR as an OCI chart and attach its package to the release.
+- [ ] Publish a GHCR OCI binary bundle with archives, packages, channel manifests, SBOMs and checksums.
+- [ ] Link all three package identities to this repository and verify anonymous access.
+- [ ] Generate the complete checksum set and signed asset/OCI provenance; verify downloads and registry artifacts.
+- [ ] Include package links, image digests, downloads and installation/verification commands on the release page.
+- [ ] Preserve v0.11.1/helm-v0.1.0 and identify v0.12.0 as their synchronized successor.
+
+See [the distribution plan](docs/distribution.md). Optional offline container
+archives and package-manager repositories remain separate work.
 
 ## Release notes and artifact discovery
 
@@ -1108,8 +1127,8 @@ Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving
 Artifact layout and release-note discovery add no changes to earlier CLI, Docker,
 AHS, or AHP contracts. Phase 14 provides manifest/chart validation and tested
 examples in the paths above; later CI and hardening work should reuse those
-paths. Chart packaging and release notes follow the independent component
-versioning policy in [RELEASING.md](RELEASING.md#component-versions-and-synchronized-distribution).
+paths. Chart packaging and release notes follow the synchronized software
+version policy in [RELEASING.md](RELEASING.md#component-versions-and-synchronized-distribution).
 
 
 Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
@@ -1130,8 +1149,9 @@ see the [release verification record](docs/releases/verification-v0.11.1-helm-v0
 Phase 13 integration requirement: binary downloads must select exact version/platform
 assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
 
-The Python SDK has an independent version and component release trigger.
-Publish on SDK or bundled/pinned CLI changes; document supported CLI/spec versions.
+When implemented, the Python SDK adopts the shared software release version
+and coordinated source tag. Publish to a supported ecosystem registry and
+document CLI/spec compatibility; an OCI binary bundle does not implement an SDK.
 
 Goal:
 
@@ -1191,8 +1211,9 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 Phase 13 integration requirement: binary downloads must select exact version/platform
 assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
 
-The JavaScript SDK has an independent version and component release trigger.
-Publish on SDK or bundled/pinned CLI changes; document supported CLI/spec versions.
+When implemented, the JavaScript SDK adopts the shared software release version
+and coordinated source tag. Publish to a supported ecosystem registry and
+document CLI/spec compatibility; an OCI binary bundle does not implement an SDK.
 
 Goal:
 

@@ -42,6 +42,17 @@ and [component workflow](../.github/workflows/helm-release.yml).
 | 12: Docker | Both v0.11.1 registry references are anonymously verified; Go builder advances to 1.27.2; entrypoint/runtime security and CLI behavior stay unchanged. |
 | 13: Distribution | No archive/package changes; chart packages and release tags are independent of CLI assets. |
 
+## Synchronized distribution follow-up
+
+The initial findings above describe v0.11.1/chart 0.1.0. The
+[shared-version policy](../RELEASING.md#component-versions-and-synchronized-distribution)
+now supersedes independent chart/SDK versioning for future releases. The next
+release is planned as v0.12.0 with matching chart/image metadata, one release
+page and GHCR Docker/chart/binary packages. Workflow coordination, OCI publication
+and new artifact verification remain required implementation work; see the
+[distribution plan](distribution.md). Earlier release evidence stays historical;
+AHS/AHP contracts are unaffected.
+
 ## Later phases
 
 Phases 15–16 SDKs need no new contract: chart packaging does not provide SDK
