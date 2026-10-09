@@ -23,11 +23,10 @@ def test_recovery_helper_guards(tmp_path, phase13):
     if phase13:
         helper('test_release_binary.py', 'smoke')
         helper('package_release.py', 'package')
-    for job, step_name in [('binary-smoke', 'Build and smoke-test native release archive'),
-                           ('release', 'Build archives and checksums')]:
+    for job, step_name in [('release', 'Build archives and checksums')]:
         step = next(s for s in workflow['jobs'][job]['steps'] if s.get('name') == step_name)
         command = step['run'].replace('python3 ', shlex.quote(sys.executable) + ' ').replace('python ', shlex.quote(sys.executable) + ' ')
         subprocess.run(['bash', '-e', '-c', command], cwd=tmp_path, check=True,
                        env={**os.environ, 'RELEASE_TAG': 'v0.11.0' if phase13 else 'v0.10.0'})
     assert (tmp_path / 'invocations').read_text().splitlines() == (
-        ['build', 'smoke', 'build', 'package'] if phase13 else ['build', 'build'])
+        ['build', 'package'] if phase13 else ['build'])

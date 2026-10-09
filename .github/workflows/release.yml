@@ -43,39 +43,34 @@ jobs:
           python3 scripts/check_markdown_links.py
           python3 scripts/validate_doc_examples.py
 
-  binary-smoke:
-    needs: validate
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
-    defaults:
-      run:
-        shell: bash
+  ci-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: write
     steps:
+      # Use the current helper even when recovering an older source tag.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: ${{ inputs.release_tag || github.ref_name }}
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version: "1.27.2"
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Build and smoke-test native release archive
+      - name: Trigger and require pre-release CI for the tagged commit
         env:
+          GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
-          python scripts/build_release.py "$RELEASE_TAG"
-          if [ -f scripts/test_release_binary.py ]; then
-            python scripts/test_release_binary.py "$RELEASE_TAG" --output dist
+          git fetch origin "refs/tags/$RELEASE_TAG"
+          source_sha=$(git rev-parse 'FETCH_HEAD^{commit}')
+          required_checks=(--dispatch)
+          if git cat-file -e "$source_sha:scripts/prepare_synchronized_release.py" 2>/dev/null; then
+            required_checks+=(--require-kubernetes)
           fi
+          python3 scripts/wait_for_release_ci.py "$source_sha" "${required_checks[@]}"
 
   release:
     # Stage signed files; publish only after container and OCI packages succeed.
-    needs: [validate, binary-smoke]
+    needs: [validate, ci-gate]
     outputs:
       synchronized: ${{ steps.layout.outputs.synchronized }}
     timeout-minutes: 30
@@ -189,10 +184,10 @@ jobs:
           gh release create "$RELEASE_TAG" dist/* --verify-tag --draft "${release_flags[@]}" --title "AgentHealth $RELEASE_TAG" --notes-file "docs/releases/${RELEASE_TAG}.md"
 
   container:
-    # Runs in parallel with release once validate passes. Image binaries are
+    # Runs in parallel with release once validation and the CI gate pass. Image binaries are
     # compared against a freshly built reference binary instead of the
     # release job's archives, so this job has no dependency on it.
-    needs: validate
+    needs: [validate, ci-gate]
     runs-on: ubuntu-latest
     outputs:
       image_digest: ${{ steps.push.outputs.digest }}
