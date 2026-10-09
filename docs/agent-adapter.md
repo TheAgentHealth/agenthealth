@@ -5,6 +5,10 @@ cooperating-system endpoint using the same interface. Direct means the user's
 first agent; composite means a downstream agent. Roles are expressed by the
 configuration's named result tree rather than new target types or result fields.
 
+Reference implementations for Go, FastAPI, Express and LangGraph are available
+in the [middleware guide](reference-middleware.md). Applications must integrate
+them explicitly; framework product certification remains separate work.
+
 ## Passive interface
 
 Point `endpoint` at a runtime's health resource. It must support HEAD for
@@ -67,8 +71,8 @@ Responses are limited to 64 KiB; task text to 64 KiB of UTF-8 bytes and downstre
 Unicode characters. Engine deadlines, cancellation, TLS verification, redirect refusal,
 bearer environment references, credential redaction, and concurrency limits
 apply. `safe: true` declares operator authorization and handler safety; the CLI
-cannot sandbox a remote runtime. The interface is a Phase 7 adapter contract,
-not the planned AHP serving protocol. Existing v1 configurations/results and
+cannot sandbox a remote runtime. The interface is a Phase 7 application contract,
+separate from the implemented experimental AHP serving protocol. Existing v1 configurations/results and
 exit codes remain compatible; `agent` options are an additive extension.
 
 ```bash
@@ -90,3 +94,7 @@ count Unicode characters; Go additionally enforces the task text byte limit.
 The Kubernetes fixture distinguishes direct and composite agent health from supporting gateway/router/route evidence. It does not supply a first-runtime safe downstream handler. Existing functional configurations remain opt-in and may repeat in serving mode.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+## Trust boundary
+
+See the [threat model](threat-model.md) for trusted configuration, credential handling, network access, output limits and in-process adapter isolation. A shared process is not a boundary for mutually untrusted tenants.

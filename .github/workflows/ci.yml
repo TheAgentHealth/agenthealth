@@ -90,12 +90,29 @@ jobs:
       - name: Run spec schema tests
         run: |
           test_paths=(tests/spec)
-          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py; do
+          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py; do
             if [ -f "$path" ]; then
               test_paths+=("$path")
             fi
           done
-          python3 -m pytest "${test_paths[@]}" -v
+          python3 -m pytest "${test_paths[@]}" -v -ra --junitxml=pytest.xml
+
+      - name: Summarize test skips
+        if: always()
+        shell: bash
+        run: |
+          if [ -f pytest.xml ] && [ -f scripts/summarize_test_skips.py ]; then
+            python3 scripts/summarize_test_skips.py pytest.xml test-skips.md
+            cat test-skips.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Collect test report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: test-report-spec-schema-tests
+          path: |
+            pytest.xml
+            test-skips.md
 
   markdown-link-check:
     name: Markdown link check
@@ -125,7 +142,9 @@ jobs:
       - name: Install test dependencies
         run: pip install -r tests/requirements.txt
       - name: Validate marked documentation examples
-        run: python3 scripts/validate_doc_examples.py
+        run: |
+          python3 scripts/validate_doc_examples.py
+          if [ -f scripts/generate_status.py ]; then python3 scripts/generate_status.py --check; fi
 
   go-core-tests:
     name: Go core tests (${{ matrix.os }})
@@ -151,14 +170,39 @@ jobs:
       - name: Vet core
         run: go vet ./...
       - name: Test core with race detector
-        run: go test -race ./...
+        run: go test -race -coverprofile=coverage.out ./...
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Install schema validation dependencies
         run: pip install -r tests/requirements.txt
+      - name: Enforce production coverage floor
+        run: if [ -f scripts/check_coverage.py ]; then python3 scripts/check_coverage.py coverage.out --minimum 80; fi
+      - name: Collect coverage profile
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: coverage-${{ matrix.os }}
+          path: coverage.out
       - name: Validate core example output against the specification
-        run: python3 -m pytest tests/core -v
+        run: python3 -m pytest tests/core -v -ra --junitxml=pytest.xml
+
+      - name: Summarize test skips
+        if: always()
+        shell: bash
+        run: |
+          if [ -f pytest.xml ] && [ -f scripts/summarize_test_skips.py ]; then
+            python3 scripts/summarize_test_skips.py pytest.xml test-skips.md
+            cat test-skips.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Collect test report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: test-report-go-core-tests-${{ matrix.os }}
+          path: |
+            pytest.xml
+            test-skips.md
 
   vulnerability-scan:
     name: Go vulnerability scan
@@ -214,7 +258,24 @@ jobs:
         env:
           AGENTHEALTH_INTEROP: '1'
           AGENTHEALTH_BINARY: /tmp/agenthealth-interop
-        run: python -m pytest tests/interop -v
+        run: python -m pytest tests/interop -v -ra --junitxml=pytest.xml
+
+      - name: Summarize test skips
+        if: always()
+        shell: bash
+        run: |
+          if [ -f pytest.xml ] && [ -f scripts/summarize_test_skips.py ]; then
+            python3 scripts/summarize_test_skips.py pytest.xml test-skips.md
+            cat test-skips.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Collect test report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: test-report-official-sdks-${{ matrix.sdk }}
+          path: |
+            pytest.xml
+            test-skips.md
 
   container-image:
     name: Container image
@@ -315,7 +376,7 @@ jobs:
           pip install -r tests/requirements.txt
       - name: Validate and package chart
         run: |
-          python3 -m pytest tests/kubernetes -q
+          python3 -m pytest tests/kubernetes -q -ra --junitxml=pytest.xml
           CHART_TAG=$(python3 -c 'import yaml; print("v" + yaml.safe_load(open("deploy/helm/agenthealth/Chart.yaml"))["version"])')
           python3 scripts/package_helm.py "$CHART_TAG" --output chart-dist
       - name: Runtime scenarios
@@ -331,3 +392,262 @@ jobs:
       - name: Remove disposable cluster
         if: always()
         run: kind delete cluster --name agenthealth-ci
+      - name: Summarize test skips
+        if: always()
+        shell: bash
+        run: |
+          if [ -f pytest.xml ] && [ -f scripts/summarize_test_skips.py ]; then
+            python3 scripts/summarize_test_skips.py pytest.xml test-skips.md
+            cat test-skips.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Collect test report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: test-report-kubernetes
+          path: |
+            pytest.xml
+            test-skips.md
+
+
+  parser-fuzz:
+    name: Parser fuzz smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - name: Fuzz parser boundaries
+        if: hashFiles('core/fuzz_test.go') != ''
+        run: |
+          go test ./core -run '^$' -fuzz '^FuzzLoadConfig$' -fuzztime=10s
+          go test ./adapters/mcp -run '^$' -fuzz '^FuzzJSONRPC$' -fuzztime=10s
+          go test ./adapters/mcp -run '^$' -fuzz '^FuzzSSE$' -fuzztime=10s
+          go test ./adapters/mcp -run '^$' -fuzz '^FuzzOAuthDiscovery$' -fuzztime=10s
+          go test ./adapters/a2a -run '^$' -fuzz '^FuzzA2ACard$' -fuzztime=10s
+      - name: Collect fuzz regression inputs
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: fuzz-regressions
+          path: '**/testdata/fuzz/**'
+
+  graph-profiles:
+    name: Large DAG profiles
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - name: Measure graph allocation and memory
+        if: hashFiles('core/benchmark_test.go') != ''
+        run: |
+          mkdir -p profiles
+          go test ./core -run '^$' -bench BenchmarkLargeDAG -benchmem -benchtime=1x -count=3 -memprofile=profiles/dag-memory.out | tee profiles/benchmarks.txt
+          go tool pprof -top profiles/dag-memory.out > profiles/memory.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: dag-profiles
+          path: profiles/
+
+  kubernetes-versions:
+    needs: kubernetes-changes
+    if: >-
+      always() &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' &&
+        inputs.release_sha != '' && inputs.require_kubernetes) ||
+       (github.event_name == 'pull_request' &&
+        (needs.kubernetes-changes.result != 'success' ||
+         needs.kubernetes-changes.outputs.relevant == 'true')))
+    name: Kubernetes interoperability (${{ matrix.kubernetes }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - kubernetes: '1.31.9'
+            node: kindest/node:v1.31.9@sha256:156da58ab617d0cb4f56bbdb4b493f4dc89725505347a4babde9e9544888bb92
+          - kubernetes: '1.33.1'
+            node: kindest/node:v1.33.1@sha256:8d866994839cd096b3590681c55a6fa4a071fdaf33be7b9660e5697d2ed13002
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install pinned Kubernetes tools
+        run: |
+          go install helm.sh/helm/v3/cmd/helm@v3.17.3
+          go install sigs.k8s.io/kind@v0.28.0
+          curl -fsSLO https://dl.k8s.io/release/v${{ matrix.kubernetes }}/bin/linux/amd64/kubectl
+          curl -fsSLO https://dl.k8s.io/release/v${{ matrix.kubernetes }}/bin/linux/amd64/kubectl.sha256
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+          pip install -r tests/requirements.txt
+      - name: Validate and package chart
+        run: |
+          python3 -m pytest tests/kubernetes -q -ra --junitxml=pytest.xml
+          CHART_TAG=$(python3 -c 'import yaml; print("v" + yaml.safe_load(open("deploy/helm/agenthealth/Chart.yaml"))["version"])')
+          python3 scripts/package_helm.py "$CHART_TAG" --output chart-dist
+      - name: Runtime scenarios
+        run: |
+          kind create cluster --name agenthealth-ci --image ${{ matrix.node }} --wait 90s
+          docker build --build-arg VERSION=v0.0.0-ci -t agenthealth:v0.0.0-ci .
+          kind load docker-image agenthealth:v0.0.0-ci --name agenthealth-ci
+          docker build -f examples/kubernetes/Dockerfile.exec-probe --build-arg AGENTHEALTH_IMAGE=agenthealth:v0.0.0-ci -t agenthealth-demo-exec:ci .
+          test "$(docker run --rm --entrypoint /usr/local/bin/agenthealth agenthealth-demo-exec:ci version)" = "agenthealth v0.0.0-ci"
+          kubectl kustomize examples/kubernetes > /tmp/agenthealth-kustomize.yaml
+          kubectl --context kind-agenthealth-ci apply --dry-run=server -f /tmp/agenthealth-kustomize.yaml
+          python3 scripts/test_kubernetes.py --context kind-agenthealth-ci --image agenthealth:v0.0.0-ci
+      - name: Remove disposable cluster
+        if: always()
+        run: kind delete cluster --name agenthealth-ci
+      - name: Summarize test skips
+        if: always()
+        shell: bash
+        run: |
+          if [ -f pytest.xml ] && [ -f scripts/summarize_test_skips.py ]; then
+            python3 scripts/summarize_test_skips.py pytest.xml test-skips.md
+            cat test-skips.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Collect test report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: test-report-kubernetes-${{ matrix.kubernetes }}
+          path: |
+            pytest.xml
+            test-skips.md
+
+
+  reference-middleware:
+    name: Reference application middleware
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Test FastAPI and compiled LangGraph handlers
+        if: hashFiles('examples/reference/python/requirements.txt') != ''
+        run: |
+          pip install -r examples/reference/python/requirements.txt
+          python -m pytest examples/reference/python -q -ra
+      - name: Typecheck and test Express handler
+        if: hashFiles('examples/reference/typescript/package-lock.json') != ''
+        run: |
+          node --version
+          npm ci --prefix examples/reference/typescript
+          npm --prefix examples/reference/typescript run typecheck
+          npm --prefix examples/reference/typescript test
+
+  real-mcp:
+    name: Real MCP filesystem server
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Test passive inventory against a maintained server
+        if: hashFiles('tests/interop/test_real_mcp.py') != ''
+        env:
+          AGENTHEALTH_REAL_MCP: '1'
+          AGENTHEALTH_BINARY: /tmp/agenthealth-interop
+          AGENTHEALTH_FILESYSTEM_SERVER: /tmp/real-mcp/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js
+        run: |
+          pip install -r tests/requirements.txt
+          npm install --prefix /tmp/real-mcp @modelcontextprotocol/server-filesystem@2026.8.31
+          go build -o /tmp/agenthealth-interop ./cmd/agenthealth
+          python -m pytest tests/interop/test_real_mcp.py -q -ra --junitxml=pytest.xml
+      - name: Collect product test report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: real-mcp-report
+          path: pytest.xml
+
+  released-configurations:
+    name: Released configuration upgrade and rollback
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - name: Run released/current/released sequence
+        if: hashFiles('scripts/test_config_upgrade.py') != ''
+        run: |
+          go build -o /tmp/agenthealth-current ./cmd/agenthealth
+          python3 scripts/fetch_release_binary.py v0.9.0 /tmp/agenthealth-v090
+          python3 scripts/fetch_release_binary.py v0.12.0 /tmp/agenthealth-v0120
+          python3 scripts/test_config_upgrade.py /tmp/agenthealth-v090 /tmp/agenthealth-current
+          python3 scripts/test_config_upgrade.py /tmp/agenthealth-v0120 /tmp/agenthealth-current
+
+  agentgateway-signal:
+    name: Real Agentgateway HTTP health signal
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - name: Test product readiness endpoint
+        if: hashFiles('scripts/test_agentgateway.py') != ''
+        run: |
+          go build -o /tmp/agenthealth-current ./cmd/agenthealth
+          curl -fsSL https://github.com/agentgateway/agentgateway/releases/download/v1.6.0/agentgateway-linux-amd64 -o /tmp/agentgateway
+          echo '496ed27e6a96b55a9ad7cabe5c2be7172511f44a3cb113e533d22bf93a7f079d  /tmp/agentgateway' | sha256sum --check
+          chmod +x /tmp/agentgateway
+          python3 scripts/test_agentgateway.py /tmp/agenthealth-current /tmp/agentgateway
+
+  router-signal:
+    name: Real LiteLLM router HTTP health signal
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Test product process liveness without model calls
+        if: hashFiles('scripts/test_router.py') != ''
+        run: |
+          pip install 'litellm[proxy]==1.104.2'
+          go build -o /tmp/agenthealth-current ./cmd/agenthealth
+          python3 scripts/test_router.py /tmp/agenthealth-current "$(command -v litellm)"

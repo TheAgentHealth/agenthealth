@@ -1243,6 +1243,12 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 1048576
+        },
+        "method": {
+          "enum": [
+            "HEAD",
+            "GET"
+          ]
         }
       },
       "additionalProperties": false

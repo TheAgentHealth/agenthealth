@@ -1,0 +1,199 @@
+{
+  "software_version": "v0.12.0",
+  "phases": [
+    {
+      "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
+      "status": "Released baseline",
+      "documentation": "[Architecture](architecture.md)",
+      "validation": "[CI](../.github/workflows/ci.yml)"
+    },
+    {
+      "phase": "[1: Agent Health Specification](../ROADMAP.md#phase-1--agent-health-specification)",
+      "status": "Released baseline",
+      "documentation": "[Specification](../spec/README.md)",
+      "validation": "[Schema fixtures](../tests/spec/fixtures/)"
+    },
+    {
+      "phase": "[2: Core Engine](../ROADMAP.md#phase-2--core-engine)",
+      "status": "Released baseline",
+      "documentation": "[Core engine](../core/README.md)",
+      "validation": "[Core example](../examples/core-check/agenthealth.yaml)"
+    },
+    {
+      "phase": "[3: Universal CLI](../ROADMAP.md#phase-3--universal-cli)",
+      "status": "Released baseline",
+      "documentation": "[CLI](cli.md)",
+      "validation": "[Examples](../examples/README.md)"
+    },
+    {
+      "phase": "[4: Generic HTTP Health Adapter](../ROADMAP.md#phase-4--generic-http-health-adapter)",
+      "status": "Released baseline",
+      "documentation": "[HTTP adapter](http-adapter.md)",
+      "validation": "[HTTP readiness](../examples/core-check/agenthealth.yaml)"
+    },
+    {
+      "phase": "[5: MCP Health Adapter](../ROADMAP.md#phase-5--mcp-health-adapter)",
+      "status": "Released baseline",
+      "documentation": "[MCP adapter](mcp-adapter.md)",
+      "validation": "[MCP examples](../examples/README.md)"
+    },
+    {
+      "phase": "[6: A2A Health Adapter](../ROADMAP.md#phase-6--a2a-health-adapter)",
+      "status": "Released baseline",
+      "documentation": "[A2A adapter](a2a-adapter.md)",
+      "validation": "[A2A examples](../examples/a2a-check/README.md)"
+    },
+    {
+      "phase": "[7: Agent Health](../ROADMAP.md#phase-7--agent-health)",
+      "status": "Released baseline",
+      "documentation": "[Agent adapter](agent-adapter.md)",
+      "validation": "[Agent/peer/path example](../examples/agent-check/README.md)"
+    },
+    {
+      "phase": "[8: Agentgateway Integration](../ROADMAP.md#phase-8--agentgateway-integration)",
+      "status": "Released in v0.6.0",
+      "documentation": "[Agentgateway](agentgateway.md)",
+      "validation": "[Gateway example](../examples/gateway-check/README.md)"
+    },
+    {
+      "phase": "[9: Agent Router Integration](../ROADMAP.md#phase-9--agent-router-integration)",
+      "status": "Released in v0.7.0",
+      "documentation": "[Agent Router](agent-router.md)",
+      "validation": "[Router example](../examples/router-check/README.md)"
+    },
+    {
+      "phase": "[10: Dependency Graph](../ROADMAP.md#phase-10--dependency-graph)",
+      "status": "Included in v0.8.0",
+      "documentation": "[Dependency graph](dependency-graph.md)",
+      "validation": "[Graph contract and validation](rfcs/phase-10-dependency-graph.md)"
+    },
+    {
+      "phase": "[11: Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp)",
+      "status": "Included in v0.9.0; experimental HTTP v1",
+      "documentation": "[AHP](ahp.md)",
+      "validation": "[Serving example](../examples/ahp-check/README.md)"
+    },
+    {
+      "phase": "[12: Docker Distribution](../ROADMAP.md#phase-12--docker-distribution)",
+      "status": "Released in v0.10.0",
+      "documentation": "[Docker](docker.md)",
+      "validation": "[Dockerfile](../Dockerfile), [CI job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml), [static Dockerfile tests](../tests/test_container_image.py)"
+    },
+    {
+      "phase": "[13: Standalone Binaries](../ROADMAP.md#phase-13--standalone-binaries)",
+      "status": "Included in v0.11.0",
+      "documentation": "[Installation](installation.md), [release policy](../RELEASING.md), [alignment audit](phase-13-alignment.md)",
+      "validation": "[Distribution example](../examples/distribution/README.md), [release builder](../scripts/build_release.py), [package tests](../tests/test_package_release.py)"
+    },
+    {
+      "phase": "[14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration)",
+      "status": "Released in v0.12.0; historical helm-v0.1.0 retained",
+      "documentation": "Chart 0.12.0; CLI v0.12.0",
+      "validation": "[Kubernetes scenarios](../examples/kubernetes/README.md), [alignment audit](phase-14-alignment.md)"
+    },
+    {
+      "phase": "[15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[17: Model / LLM Adapters](../ROADMAP.md#phase-17--model--llm-adapters)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[18: Database Adapters](../ROADMAP.md#phase-18--database-adapters)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[19: Vector Store Adapters](../ROADMAP.md#phase-19--vector-store-adapters)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[20: Agent Runtime / Framework Integrations](../ROADMAP.md#phase-20--agent-runtime--framework-integrations)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "[Reference middleware](reference-middleware.md); full framework integration remains planned"
+    },
+    {
+      "phase": "[21: CI/CD Integrations](../ROADMAP.md#phase-21--cicd-integrations)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[22: Observability Export](../ROADMAP.md#phase-22--observability-export)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[23: Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[24: AgentHealth Conformance](../ROADMAP.md#phase-24--agenthealth-conformance)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    },
+    {
+      "phase": "[25: Ecosystem Interoperability Testing](../ROADMAP.md#phase-25--ecosystem-interoperability-testing)",
+      "status": "Planned broader interoperability; focused smoke coverage in source",
+      "documentation": "Roadmap design only",
+      "validation": "[SDK/product smoke scope](stabilization.md#product-smoke-coverage-added-in-source)"
+    },
+    {
+      "phase": "[26: Production Hardening](../ROADMAP.md#phase-26--production-hardening)",
+      "status": "Planned",
+      "documentation": "Roadmap design only",
+      "validation": "No implementation examples yet"
+    }
+  ],
+  "distributions": [
+    {
+      "name": "Standalone CLI",
+      "download": "[Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/{version}): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64",
+      "guide": "[Download, verify and extract](docs/installation.md) \u2014 no Go required"
+    },
+    {
+      "name": "Docker image",
+      "download": "[Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:{version}`; GHCR: `ghcr.io/theagenthealth/agenthealth:{version}`",
+      "guide": "[Docker usage](docs/docker.md) \u2014 Linux AMD64/ARM64"
+    },
+    {
+      "name": "Kubernetes / Helm",
+      "download": "`oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `{numeric_version}`; chart archive also in release downloads",
+      "guide": "[Kubernetes setup and examples](docs/kubernetes.md)"
+    },
+    {
+      "name": "Linux DEB / RPM",
+      "download": "AMD64/ARM64 packages in release downloads",
+      "guide": "[Local package installation](docs/installation.md#package-channels-phase-13-v0110)"
+    },
+    {
+      "name": "Homebrew / Scoop",
+      "download": "`agenthealth.rb` / `agenthealth.json` in release downloads",
+      "guide": "[Manifest usage](docs/installation.md#package-channels-phase-13-v0110); official tap/bucket hosting is planned"
+    },
+    {
+      "name": "OCI download bundle",
+      "download": "`ghcr.io/theagenthealth/agenthealth-binaries:{version}`",
+      "guide": "[Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files"
+    }
+  ]
+}

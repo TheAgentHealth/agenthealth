@@ -1,7 +1,7 @@
-# Agentgateway integration
+# Gateway HTTP health signals
 
 `gateway` targets check explicitly configured read-only HTTP health, liveness
-or readiness endpoints using GET. A 2xx response passes protocol; 401/403
+or readiness endpoints using GET by default (source builds support explicit `http.method`). A 2xx response passes protocol; 401/403
 is MISCONFIGURED, other unexpected statuses are UNHEALTHY. Reachability alone
 records connectivity regardless of status. HTTP status/header expectations,
 bearer environment references, deadlines, latency thresholds, verified TLS,

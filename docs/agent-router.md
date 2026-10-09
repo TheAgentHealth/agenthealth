@@ -1,6 +1,6 @@
-# Agent Router integration
+# Router HTTP health signals
 
-`router` targets use GET on explicitly configured read-only HTTP health,
+`router` targets use GET by default on explicitly configured read-only HTTP health,
 liveness or readiness signals. Protocol accepts 2xx by default; configured
 status/header expectations override the defaults. Authentication failures
 (401/403) are MISCONFIGURED; other unexpected statuses are UNHEALTHY.
