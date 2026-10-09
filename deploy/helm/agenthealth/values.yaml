@@ -1,0 +1,20 @@
+mode: serve
+image:
+  repository: ghcr.io/theagenthealth/agenthealth
+  tag: v0.11.0
+  digest: ''
+  pullPolicy: IfNotPresent
+config: "version: v1\ntargets:\n- name: direct-agent\n  type: http\n  endpoint: http://demo:8080/health\n\
+  \  checks:\n  - reachability\n  - protocol\n  timeout_ms: 2000\n  retries: 0\n \
+  \ budget_ms: 5000\n"
+existingConfigMap: ''
+secretEnv: []
+ahpTokenEnv: ''
+schedule: '*/5 * * * *'
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi

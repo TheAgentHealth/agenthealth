@@ -52,8 +52,8 @@ component to have the same version or to publish on every release.
 | GHCR container and configured Docker Hub mirror | Same CLI version and source; publish with every CLI release even when the Dockerfile is unchanged |
 | Python SDK / PyPI (planned) | Independent SDK version; publish when its code/API or bundled/pinned CLI dependency changes |
 | JavaScript/TypeScript SDK / npm (planned) | Independent SDK version; publish when its code/API or bundled/pinned CLI dependency changes |
-| Helm chart (planned) | Independent chart version; `appVersion` records the CLI version and the image reference pins an explicit tag or digest |
-| Kubernetes examples/manifests (planned) | Update with affected behavior; no separate package version unless a packaged component is introduced |
+| Helm chart | Independent chart version; `appVersion` records the CLI version and the image reference pins an explicit tag or digest |
+| Kubernetes examples/manifests | Update with affected behavior; no separate package version unless a packaged component is introduced |
 | AHS/AHP contracts | Contract versions remain independent of software versions |
 
 For example, CLI `v0.11.0` publishes matching archives, Linux packages, channel
@@ -67,8 +67,8 @@ Dockerfile-only path filters. Pull requests and merges run validation; they do
 not publish packages. The current `v*` release workflow publishes the implemented
 CLI formats only. Future SDK/chart workflows must use separate, component-specific
 release triggers (for example `python-vX.Y.Z`, `javascript-vX.Y.Z`,
-`helm-vX.Y.Z`) and must not trigger CLI publication. These names are a design
-for future workflows, not currently implemented triggers.
+`helm-vX.Y.Z`) and must not trigger CLI publication. Python/JavaScript names are a design for future workflows; the Phase 14
+`helm-v*` trigger is implemented for chart publication.
 
 Release notes identify the component, artifacts and compatibility requirements.
 Keep published versions immutable. Verify all required formats before declaring
@@ -167,3 +167,25 @@ Publishing a tap/bucket or APT/YUM repository is separate from generating
 release assets and is not automated. Older tag recovery checks whether the tagged source contains the Phase 13
 helpers before invoking them, preserving the original asset set. Do not generate package assets
 for an already published release.
+
+## Helm chart releases
+
+Phase 14 introduces independent `helm-v<chart-version>` releases through
+[the chart workflow](.github/workflows/helm-release.yml). CLI `v*` tags do not
+publish charts. Chart 0.1.0 has `appVersion: v0.11.0` and pins that released
+image. Change the chart version whenever templates or image defaults change.
+
+Prepare locally with `python3 scripts/package_helm.py helm-v0.1.0 --output
+/tmp/agenthealth-chart-release` (requires Helm 3 and an empty output directory).
+This validates chart metadata, requires component release notes, packages
+`agenthealth-0.1.0.tgz` and writes `checksums.txt`. Run the Kubernetes CI scenarios
+before an authorized release. Publishing requires a separately authorized,
+reviewed chart tag on the intended main commit; do not tag during implementation.
+
+Notes must link to `deploy/kubernetes`, `deploy/helm/agenthealth` and
+`examples/kubernetes` at the component tag, include the packaged chart download,
+record CLI/chart versions and actually validated Kubernetes versions, and show
+both same-version registry references. Verify anonymous image availability and
+all release links before announcement. Chart releases are not GitHub Latest,
+so they do not displace the CLI release. Chart signing/attestation is deferred
+to Phase 26; SHA-256 checksums alone do not establish publisher identity.

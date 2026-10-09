@@ -1,0 +1,25 @@
+version: v1
+targets:
+- name: direct-agent
+  type: agent
+  endpoint: http://demo:8080/health
+  timeout_ms: 2000
+  budget_ms: 5000
+  dependencies:
+  - name: composite-agent
+    type: agent
+    endpoint: http://demo:8080/peer
+    agent:
+      required_capabilities:
+      - answer
+  - name: gateway-readiness
+    type: gateway
+    endpoint: http://demo:8080/ready
+  - name: router-readiness
+    type: router
+    endpoint: http://demo:8080/ready
+  - name: configured-route
+    type: http
+    endpoint: http://demo:8080/route
+    checks:
+    - protocol

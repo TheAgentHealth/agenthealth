@@ -66,6 +66,8 @@ FILES_TO_CHECK = [
     ROOT / "docs" / "agent-router.md",
     ROOT / "docs" / "dependency-graph.md",
     ROOT / "examples" / "README.md",
+    ROOT / "docs" / "kubernetes.md",
+    ROOT / "examples" / "kubernetes" / "README.md",
 ]
 
 
@@ -112,9 +114,30 @@ def main() -> int:
     configs = sorted((ROOT / "examples").rglob("*.yaml"))
     for path in configs:
         try:
-            data = yaml.safe_load(path.read_text(encoding="utf-8"))
-            jsonschema.validate(data, CONFIGURATION_SCHEMA)
-        except (yaml.YAMLError, jsonschema.ValidationError, OSError) as exc:
+            if path.parent == ROOT / "examples" / "kubernetes" and path.name != "agenthealth.yaml":
+                # Kubernetes wrappers are not AHS configuration documents. Validate
+                # embedded configuration and Helm overrides against their own contracts.
+                documents = list(yaml.safe_load_all(path.read_text(encoding="utf-8")))
+                if path.name == "secret-values.yaml":
+                    chart = ROOT / "deploy" / "helm" / "agenthealth"
+                    values = yaml.safe_load((chart / "values.yaml").read_text())
+                    values.update(documents[0])
+                    jsonschema.validate(values, json.loads((chart / "values.schema.json").read_text()))
+                else:
+                    for document in documents:
+                        if not isinstance(document, dict):
+                            raise ValueError("example must contain a YAML object")
+                        if "version" in document:
+                            jsonschema.validate(document, CONFIGURATION_SCHEMA)
+                        elif "apiVersion" in document and "kind" in document:
+                            if document["kind"] == "ConfigMap" and "config.yaml" in document.get("data", {}):
+                                jsonschema.validate(yaml.safe_load(document["data"]["config.yaml"]), CONFIGURATION_SCHEMA)
+                        else:
+                            raise ValueError("example must be AHS configuration or a Kubernetes resource")
+            else:
+                data = yaml.safe_load(path.read_text(encoding="utf-8"))
+                jsonschema.validate(data, CONFIGURATION_SCHEMA)
+        except (yaml.YAMLError, jsonschema.ValidationError, OSError, ValueError) as exc:
             errors.append(f"{path}: configuration example failed validation: {exc}")
 
     if errors:
@@ -124,7 +147,7 @@ def main() -> int:
         return 1
 
     print(f"All {checked} marked documentation example(s) validated OK ({skipped} explicitly exempt).")
-    print(f"All {len(configs)} standalone configuration example(s) validated OK.")
+    print(f"All {len(configs)} standalone YAML example(s) validated OK.")
     return 0
 
 

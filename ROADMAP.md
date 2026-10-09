@@ -986,7 +986,7 @@ Required extension tasks:
 
 # Phase 14 — Kubernetes Integration
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source — chart 0.1.0 prepared; not yet published.
 
 Helm chart versions are independent of CLI versions; record `appVersion`, pin
 image tags/digests and release a new chart when defaults or templates change.
@@ -994,6 +994,55 @@ image tags/digests and release a new chart when defaults or templates change.
 Goal:
 
 Make AgentHealth useful as a cloud-native operational primitive.
+
+## Deliverables and repository layout
+
+Produce deployable Kubernetes YAML manifests, a Helm chart, and tested usage
+examples that consume the existing CLI and Docker image. Store their source in
+`TheAgentHealth/agenthealth` on GitHub using this layout:
+
+```text
+deploy/kubernetes/       # Reusable Kubernetes YAML manifests
+deploy/helm/agenthealth/ # Chart.yaml, values.yaml, and Helm templates
+examples/kubernetes/    # Runnable scenarios and usage instructions
+tests/kubernetes/       # Manifest/chart validation and scenario checks
+```
+
+These directories contain the implemented Phase 14 deliverables.
+Package the Helm chart as `agenthealth-<chart-version>.tgz` and attach it to its
+component's GitHub Release. Chart releases remain independent of CLI releases.
+YAML manifests and usage examples are available from the repository at the
+corresponding release tag.
+
+## Container image references
+
+- [x] Whenever Kubernetes usage documentation or release notes refer to the
+  AgentHealth image, show both registry references for the same CLI version:
+  - GHCR: `ghcr.io/theagenthealth/agenthealth:<cli-tag>`
+  - Docker Hub: `docker.io/theagenthealth/agenthealth:<cli-tag>`
+- [x] Provide instructions for choosing either registry in manifests and Helm
+  values. Use an explicit released tag or a verified digest for the chosen
+  registry, and record the chart's default image reference.
+- [x] Verify both referenced images are publicly available for the documented
+  release. Docker Hub publication is an optional mirror; if it was not published,
+  label that reference as unavailable for that release rather than presenting
+  it as a working installation option.
+
+## Release notes and artifact discovery
+
+- [ ] Include the Kubernetes source paths in release descriptions/notes for
+  releases that introduce or update these integrations.
+- [ ] Link to the exact released revision, using these GitHub URL patterns
+  (replace `<release-tag>` with the actual CLI or chart component tag):
+  - Manifests: `https://github.com/TheAgentHealth/agenthealth/tree/<release-tag>/deploy/kubernetes`
+  - Helm chart source: `https://github.com/TheAgentHealth/agenthealth/tree/<release-tag>/deploy/helm/agenthealth`
+  - Usage examples: `https://github.com/TheAgentHealth/agenthealth/tree/<release-tag>/examples/kubernetes`
+- [ ] Include a runnable installation/usage example, the packaged chart download
+  link when releasing a chart, and the supported CLI/image version, chart version
+  where applicable, and Kubernetes versions actually validated.
+- [ ] Verify the release links resolve and the documented examples work against
+  that revision before announcing the release. Use tag-pinned links rather than
+  moving `main` links so instructions stay aligned with the release.
 
 ## Readiness
 
@@ -1006,19 +1055,19 @@ readinessProbe:
       - /etc/agenthealth/config.yaml
 ```
 
-## Planned Integrations
+## Implemented Integrations
 
-- [ ] Readiness probes
-- [ ] Startup probes
-- [ ] Init containers
-- [ ] Jobs
-- [ ] CronJobs
-- [ ] Sidecar mode
-- [ ] ConfigMap configuration
-- [ ] Secret integration
-- [ ] Helm examples
-- [ ] Deployment validation
-- [ ] Readiness examples for first agents, downstream agents, and gateway/router paths using the updated AHS results
+- [x] Readiness probes
+- [x] Startup probes
+- [x] Init containers
+- [x] Jobs
+- [x] CronJobs
+- [x] Sidecar mode
+- [x] ConfigMap configuration
+- [x] Secret integration
+- [x] Helm examples
+- [x] Deployment validation
+- [x] Readiness examples for first agents, downstream agents, and gateway/router paths using the updated AHS results
 
 ## Future Exploration
 
@@ -1051,8 +1100,20 @@ CRDs/operators are intentionally deferred until the basic health model proves us
 
 Earlier: consume updated AHS results, CLI checks, Docker images, and AHP serving where used; review any required readiness contract extensions. Later: provide deployment scenarios for CI, interoperability, and hardening.
 
+Artifact layout and release-note discovery add no changes to earlier CLI, Docker,
+AHS, or AHP contracts. Phase 14 must add manifest/chart validation and tested
+examples in the paths above; later CI and hardening work should reuse those
+paths. Chart packaging and release notes follow the independent component
+versioning policy in [RELEASING.md](RELEASING.md#component-versions-and-synchronized-distribution).
+
 
 Phase 11 integration requirements are recorded in the [AHP impact review](docs/rfcs/phase-11-ahp.md#later-phases).
+
+Implementation and validation are recorded in the [Phase 14 alignment audit](docs/phase-14-alignment.md).
+Required extension tasks are complete: independent chart packaging and release
+trigger, embedded configuration/template validation, bounded exec/Job checks,
+Secret references, and dependency-outage readiness validation. Publication-time
+release-link checks above remain pending until an authorized chart release.
 
 ---
 
@@ -1315,6 +1376,11 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 
 # Phase 21 — CI/CD Integrations
 
+Phase 14 integration requirement: Reuse `tests/kubernetes` and the explicit-context runtime scenarios in
+`scripts/test_kubernetes.py` for Kubernetes deployment gates; a created Job is
+not a successful validation result.
+
+
 **Status:** Planned — not yet implemented.
 
 Phase 13 integration requirement: binary downloads must select exact version/platform
@@ -1506,6 +1572,11 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 
 # Phase 25 — Ecosystem Interoperability Testing
 
+Phase 14 integration requirement: Add real agent/gateway/router Kubernetes interoperability and a broader
+cluster-version matrix; Phase 14 deterministic HTTP fixtures are not product
+certification.
+
+
 **Status:** Planned — not yet implemented.
 
 Goal:
@@ -1557,6 +1628,10 @@ Phase 11 integration requirements are recorded in the [AHP impact review](docs/r
 ---
 
 # Phase 26 — Production Hardening
+
+Phase 14 integration requirement: Extend Phase 14 with chart provenance/signing, registry digest maintenance,
+topology-specific network policy and broader Kubernetes security validation.
+
 
 **Status:** Planned — not yet implemented.
 

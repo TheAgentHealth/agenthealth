@@ -1,0 +1,9 @@
+{{- if not .Values.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "agenthealth.fullname" . }}
+data:
+  config.yaml: |
+{{ .Values.config | indent 4 }}
+{{- end }}

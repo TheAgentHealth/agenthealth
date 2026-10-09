@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agenthealth-config
+data:
+  config.yaml: "version: v1\ntargets:\n- name: direct-agent\n  type: http\n  endpoint:\
+    \ http://demo:8080/health\n  checks:\n  - reachability\n  - protocol\n  timeout_ms:\
+    \ 2000\n  retries: 0\n  budget_ms: 5000\n"

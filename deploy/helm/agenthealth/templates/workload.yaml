@@ -1,0 +1,36 @@
+{{- $name := include "agenthealth.fullname" . }}
+{{- if .Values.ahpTokenEnv }}
+{{- $found := false }}
+{{- range .Values.secretEnv }}
+{{- if eq .name $.Values.ahpTokenEnv }}{{- $found = true }}{{- end }}
+{{- end }}
+{{- if not $found }}{{- fail "ahpTokenEnv must reference a secretEnv entry" }}{{- end }}
+{{- end }}
+apiVersion: {{ if eq .Values.mode "serve" }}apps/v1{{ else }}batch/v1{{ end }}
+kind: {{ if eq .Values.mode "serve" }}Deployment{{ else if eq .Values.mode "job" }}Job{{ else }}CronJob{{ end }}
+metadata:
+  name: {{ $name }}
+spec:
+{{- if eq .Values.mode "serve" }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- else if eq .Values.mode "cronjob" }}
+  schedule: {{ .Values.schedule | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 60
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 30
+{{- else }}
+  backoffLimit: 0
+  activeDeadlineSeconds: 30
+  ttlSecondsAfterFinished: 300
+{{- end }}
+{{- $indent := 2 }}
+{{- if eq .Values.mode "cronjob" }}{{- $indent = 6 }}{{- end }}
+{{- include "agenthealth.pod" . | nindent $indent }}

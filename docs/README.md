@@ -38,7 +38,7 @@ all standalone example YAML files against the schemas. It does not establish
 connectivity to the placeholder servers or prove every command example works.
 
 Agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
-SDKs, and Kubernetes integrations remain planned; a [container image](installation.md#container-image) is
+SDKs remain planned; Kubernetes integrations are implemented in source ([guide](kubernetes.md)); a [container image](installation.md#container-image) is
 published starting in v0.10.0. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.
@@ -55,3 +55,6 @@ See [the router guide](agent-router.md). Named router signals, direct backends a
 Phase 9 release and migration details: [v0.7.0 notes](releases/v0.7.0.md).
 
 Phase 11 release and migration details: [v0.9.0 notes](releases/v0.9.0.md).
+
+- [Kubernetes integration](kubernetes.md) — manifests, chart, probes, Secrets and deployment validation.
+- [Phase 14 alignment](phase-14-alignment.md) — coverage, compatibility and validation limits.

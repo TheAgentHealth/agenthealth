@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-init
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-init
+  template:
+    metadata:
+      labels:
+        app: demo-init
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: demo
+        image: nginx:1.27.4-alpine
+        command:
+        - nginx
+        - -c
+        - /etc/demo/nginx.conf
+        - -g
+        - daemon off;
+        ports:
+        - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: nginx
+          mountPath: /etc/demo
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: nginx
+        configMap:
+          name: demo-nginx
+      - name: tmp
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: agenthealth-config
+      initContainers:
+      - name: agenthealth
+        image: ghcr.io/theagenthealth/agenthealth:v0.11.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - check
+        - /etc/agenthealth/config.yaml
+        - --format
+        - json
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/agenthealth
+          readOnly: true

@@ -74,7 +74,7 @@ The long-term scope includes these systems; the supported adapters above describ
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); SDKs, Kubernetes integrations, and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and a Helm chart are implemented in source ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
 
 **Release version: [v0.11.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.0).**
 Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](docs/releases/v0.11.0.md).
@@ -964,7 +964,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). The SDK and Kubernetes examples below describe planned integrations, not published packages.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.1.0 are implemented but the chart has not been published.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
@@ -972,7 +972,7 @@ Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifes
 
 CLI binaries, Linux packages, Homebrew/Scoop manifests and Docker images share
 one CLI version and publish together. Docker publishes on every CLI release,
-even when the Dockerfile has no changes. Planned Python/JavaScript SDKs and Helm
+even when the Dockerfile has no changes. Planned Python/JavaScript SDKs and implemented Helm
 charts have independent versions and publish when their own code or bundled/pinned
 dependencies change. Helm `appVersion` identifies the CLI, while its chart version
 tracks chart changes. A CLI release does not automatically publish an unchanged
@@ -1093,7 +1093,7 @@ readinessProbe:
       - /etc/agenthealth/config.yaml
 ```
 
-Potential Kubernetes integrations include:
+Implemented Kubernetes integrations include (see the [guide](docs/kubernetes.md) and [runnable examples](examples/kubernetes/README.md)):
 
 - readiness probes,
 - startup probes,
@@ -1374,7 +1374,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 Coverage for phases 0–10 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Other adapters, SDKs, and Kubernetes integrations remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and an independently versioned Helm chart are implemented in source ([guide](docs/kubernetes.md)). Other adapters and SDKs remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

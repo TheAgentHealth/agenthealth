@@ -1,0 +1,10 @@
+# Optional application image with AgentHealth for exec readiness probes.
+# Adapted from sharath568's Phase 14 contribution (PR #15).
+# Both registry choices for the same CLI version:
+#   ghcr.io/theagenthealth/agenthealth:v0.11.0
+#   docker.io/theagenthealth/agenthealth:v0.11.0
+ARG AGENTHEALTH_IMAGE=ghcr.io/theagenthealth/agenthealth:v0.11.0
+FROM ${AGENTHEALTH_IMAGE} AS health
+FROM nginx:1.27.4-alpine
+COPY --from=health /usr/local/bin/agenthealth /usr/local/bin/agenthealth
+USER 101:101
