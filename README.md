@@ -74,7 +74,7 @@ The long-term scope includes these systems; the supported adapters above describ
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and a Helm chart are implemented in source ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and independently published Helm chart 0.1.0 are available ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
 
 **Release version: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1).**
 v0.11.1 rebuilds CLI distributions with Go 1.27.2 and adds Phase 14 Kubernetes
@@ -1341,7 +1341,7 @@ agenthealth/
 ├── Dockerfile                  # released CLI container
 ├── deploy/
 │   ├── kubernetes/              # manifests and Kustomize base
-│   └── helm/agenthealth/        # independent chart, implemented in source
+│   └── helm/agenthealth/        # independently published chart 0.1.0
 │
 ├── integrations/               # future integrations
 │   └── ci/                     # planned
@@ -1383,7 +1383,7 @@ See [CLI usage](docs/cli.md) for formats, safety defaults, adapter availability,
 
 Coverage for phases 0–14 is indexed in [the documentation guide](docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and an independently versioned Helm chart are implemented in source ([guide](docs/kubernetes.md)). Other adapters and SDKs remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and independently published Helm chart 0.1.0 are available ([guide](docs/kubernetes.md)). Other adapters and SDKs remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

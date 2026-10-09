@@ -1,6 +1,6 @@
 # Kubernetes integration
 
-Phase 14 is implemented in source. The chart is version **0.1.0**, with
+Phase 14 is released. The independently published chart is version **0.1.0**, with
 `appVersion: v0.11.1`. Chart publication is independent of CLI releases.
 The deployment files require Kubernetes 1.29 or newer; the runtime smoke suite
 uses Kubernetes 1.32.2. Only versions actually exercised are listed in the
