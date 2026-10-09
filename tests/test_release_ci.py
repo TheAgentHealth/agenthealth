@@ -172,4 +172,8 @@ def test_ci_uses_immutable_release_commit():
     for job in workflow['jobs'].values():
         for step in job.get('steps', []):
             if step.get('uses', '').startswith('actions/checkout@'):
-                assert step['with']['ref'] == '${{ inputs.release_sha || github.sha }}'
+                if step['with'].get('path') == '.ci-tools':
+                    assert step['with']['ref'] == '${{ github.workflow_sha }}'
+                    assert step['with']['persist-credentials'] is False
+                else:
+                    assert step['with']['ref'] == '${{ inputs.release_sha || github.sha }}'

@@ -72,6 +72,9 @@ jobs:
           PYTHON
 
   spec-schema-tests:
+    defaults:
+      run:
+        shell: bash
     name: Spec schema tests
     timeout-minutes: 20
     runs-on: ubuntu-latest
@@ -85,7 +88,14 @@ jobs:
       - name: Install test dependencies
         run: pip install -r tests/requirements.txt
       - name: Run spec schema tests
-        run: python3 -m pytest tests/spec tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py -v
+        run: |
+          test_paths=(tests/spec)
+          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py; do
+            if [ -f "$path" ]; then
+              test_paths+=("$path")
+            fi
+          done
+          python3 -m pytest "${test_paths[@]}" -v
 
   markdown-link-check:
     name: Markdown link check
@@ -247,18 +257,29 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
+      # Older source tags may not contain the native smoke helper. Fetch it
+      # from the immutable workflow commit without replacing tagged source.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .ci-tools
+          sparse-checkout: scripts/test_release_binary.py
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
       - name: Build and smoke-test native archive
         run: |
           python scripts/build_release.py v0.0.0-ci
-          python scripts/test_release_binary.py v0.0.0-ci --output dist
+          python .ci-tools/scripts/test_release_binary.py v0.0.0-ci --output dist
       - name: Build package channels and verify DEB payload
         if: matrix.os == 'ubuntu-latest'
         run: |
-          python3 scripts/package_release.py v0.0.0-ci
-          cd dist
-          sha256sum --check checksums.txt
-          dpkg-deb --extract agenthealth_v0.0.0-ci_linux_amd64.deb deb-smoke
-          test "$(deb-smoke/usr/bin/agenthealth version)" = "agenthealth v0.0.0-ci"
+          if [ -f scripts/package_release.py ]; then
+            python3 scripts/package_release.py v0.0.0-ci
+            cd dist
+            sha256sum --check checksums.txt
+            dpkg-deb --extract agenthealth_v0.0.0-ci_linux_amd64.deb deb-smoke
+            test "$(deb-smoke/usr/bin/agenthealth version)" = "agenthealth v0.0.0-ci"
+          fi
 
   kubernetes:
     needs: kubernetes-changes

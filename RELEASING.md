@@ -176,7 +176,10 @@ CI uses `v0.0.0-ci`; the release still builds with the real tag and verifies the
 Linux binary and asset checksums. The synchronized layout is identified from
 `scripts/prepare_synchronized_release.py` in the tagged source. During older-tag
 recovery, the current CI workflow still checks out and validates that older SHA;
-`main` does not need to remain at the tagged commit.
+`main` does not need to remain at the tagged commit. CI selects only test files
+present in that checkout and skips package-channel verification for tags predating
+those assets. Native archive smoke verification always runs, using the helper
+from the immutable CI workflow commit in a separate tooling checkout.
 Publishing a tap/bucket or APT/YUM repository is separate from generating
 release assets and is not automated. Older tag recovery checks whether the tagged source contains the Phase 13
 helpers before invoking them, preserving the original asset set. Do not generate package assets
