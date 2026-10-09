@@ -9,7 +9,7 @@ and example coverage across Phases 0–26.
 
 ## Start here
 
-**Last published CLI: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1), pre-1.0; v0.12.0 is prepared in source.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Last published CLI: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1), pre-1.0; v0.12.1 is prepared in source.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
@@ -76,11 +76,11 @@ The long-term scope includes these systems; the supported adapters above describ
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and independently published Helm chart 0.1.0 are available ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
 
-**Release preparation: v0.12.0. Last published CLI: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1).**
-v0.12.0 coordinates Docker, Helm and standalone/package downloads under one
+**Release preparation: v0.12.1. Last published CLI: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1).**
+v0.12.1 coordinates Docker, Helm and standalone/package downloads under one
 version, with additional OCI chart and binary packages. The workflow and
 installation examples below are prepared in source; publication is pending an
-authorized tag. See [release notes](docs/releases/v0.12.0.md).
+authorized tag. See [release notes](docs/releases/v0.12.1.md).
 Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](docs/releases/v0.11.0.md).
 Phase 12 adds an [official container image](docs/docker.md) published to GHCR with an optional Docker Hub mirror, build provenance, SBOM, and a signed attestation. See [release and migration notes](docs/releases/v0.10.0.md).
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
@@ -974,19 +974,19 @@ Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifes
 
 ## Distribution versions
 
-Starting with the next release, **v0.12.0**, all implemented artifacts use the
+Starting with the next release, **v0.12.1**, all implemented artifacts use the
 same software version and source tag: CLI archives, Linux packages,
 Homebrew/Scoop manifests, Docker image, Helm chart and an additional OCI binary
-bundle. Helm uses `version: 0.12.0`, `appVersion: v0.12.0` and a matching image.
+bundle. Helm uses `version: 0.12.1`, `appVersion: v0.12.1` and a matching image.
 Future SDKs adopt that version when implemented; AHS/AHP contract versions remain
 separate. Existing CLI v0.11.1 and chart 0.1.0 remain historical releases.
 
 | Channel | Contents | Current availability |
 |---|---|---|
-| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | CLI v0.11.1/chart 0.1.0 remain public; the unified v0.12.0 workflow is prepared in source |
+| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | CLI v0.11.1/chart 0.1.0 remain public; the unified v0.12.1 workflow is prepared in source |
 | GitHub Packages: Docker | GHCR multi-platform container image | Available |
-| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | Implemented in source for v0.12.0; publication pending |
-| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | Implemented in source for v0.12.0; publication pending; ordinary downloads remain available |
+| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | Implemented in source for v0.12.1; publication pending |
+| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | Implemented in source for v0.12.1; publication pending; ordinary downloads remain available |
 
 This replaces independent component versioning. OCI bundles do not create
 APT/YUM repositories or Homebrew/Scoop hosting. See the
@@ -1018,14 +1018,14 @@ agenthealth --version
 
 AgentHealth can run without installing language runtimes. The image is a
 minimal, non-root distroless image for `linux/amd64` and `linux/arm64`.
-Both registry references for v0.12.0:
+Both registry references for v0.12.1:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.12.0 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.12.1 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.12.0 version
+docker run --rm theagenthealth/agenthealth:v0.12.1 version
 ```
 
 Example:

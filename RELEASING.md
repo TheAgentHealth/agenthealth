@@ -41,19 +41,19 @@ The specification documents under [spec/](spec/README.md) are versioned independ
 
 ## Component versions and synchronized distribution
 
-Starting with the next synchronized release, **v0.12.0**, all implemented
+Starting with the next synchronized release, **v0.12.1**, all implemented
 AgentHealth artifacts and packages share one software version and one immutable
 source tag. Publish them together, including unchanged distribution formats.
 This supersedes the earlier independent chart/SDK version policy. Do not move,
 rename or overwrite CLI `v0.11.1` or chart `helm-v0.1.0`; they remain historical
 releases. AHS/AHP and `spec_version` contract versions remain independent.
 
-| Artifact | Version for v0.12.0 | GitHub Releases | Package distribution |
+| Artifact | Version for v0.12.1 | GitHub Releases | Package distribution |
 |---|---|---|---|
-| CLI, engine and adapters | `v0.12.0` | Five platform archives, five CycloneDX SBOMs and checksums | Additional GHCR OCI binary bundle |
-| DEB/RPM and Homebrew/Scoop manifests | `0.12.0` package metadata | Four Linux packages and two channel manifests | Include in binary bundle; APT/YUM repositories and public taps/buckets remain separate work |
-| Docker image | `v0.12.0` image tag | Registry links, exact digests and installation instructions; offline image archives are optional | GHCR container image and configured Docker Hub mirror |
-| Helm chart | `version: 0.12.0`, `appVersion: v0.12.0` | Chart `.tgz`, checksums and verification instructions | GHCR OCI chart; Helm's OCI tag is `0.12.0` |
+| CLI, engine and adapters | `v0.12.1` | Five platform archives, five CycloneDX SBOMs and checksums | Additional GHCR OCI binary bundle |
+| DEB/RPM and Homebrew/Scoop manifests | `0.12.1` package metadata | Four Linux packages and two channel manifests | Include in binary bundle; APT/YUM repositories and public taps/buckets remain separate work |
+| Docker image | `v0.12.1` image tag | Registry links, exact digests and installation instructions; offline image archives are optional | GHCR container image and configured Docker Hub mirror |
+| Helm chart | `version: 0.12.1`, `appVersion: v0.12.1` | Chart `.tgz`, checksums and verification instructions | GHCR OCI chart; Helm's OCI tag is `0.12.1` |
 | Future SDKs | Same software version when implemented | Release notes and appropriate distributions/registry links | Use supported ecosystem registries; do not claim planned SDKs are published |
 
 The leading `v` is a Git/source and container-tag convention, not a different
@@ -73,7 +73,7 @@ public accessibility, provenance, hashes and contents have been verified.
 [release.yml](.github/workflows/release.yml). It builds a complete checksum set,
 stages a signed draft, publishes Docker/chart/binary OCI packages and gates
 public release completion on all required jobs and anonymous package access.
-v0.12.0 has not been published. See [distribution](docs/distribution.md) for
+v0.12.1 has not been published. See [distribution](docs/distribution.md) for
 package names, commands, visibility recovery and remaining publication checks.
 
 ## Release steps (current, pre-1.0)

@@ -12,6 +12,10 @@ ROOT = Path(__file__).resolve().parents[2]
 CHART = ROOT / 'deploy/helm/agenthealth'
 SCHEMA = json.loads((ROOT / 'spec/schemas/configuration.schema.json').read_text())
 HELM = shutil.which('helm')
+CHART_METADATA = yaml.safe_load((CHART / 'Chart.yaml').read_text())
+RELEASE_VERSION = CHART_METADATA['version']
+RELEASE_TAG = CHART_METADATA['appVersion']
+DEFAULT_IMAGE = 'ghcr.io/theagenthealth/agenthealth:' + RELEASE_TAG
 
 
 def pod_spec(doc):
@@ -75,7 +79,7 @@ def test_chart_modes(mode, tmp_path):
         validate(doc)
     assert docs[-1]['kind'] == {'serve': 'Deployment', 'job': 'Job', 'cronjob': 'CronJob'}[mode]
     subprocess.run([HELM, 'package', str(CHART), '--destination', str(tmp_path)], check=True, capture_output=True)
-    assert (tmp_path / 'agenthealth-0.12.0.tgz').exists()
+    assert (tmp_path / f'agenthealth-{RELEASE_VERSION}.tgz').exists()
 
 
 @pytest.mark.skipif(not HELM, reason='Helm required')
@@ -109,15 +113,15 @@ def test_component_package_integrity_and_preconditions(tmp_path):
     result = subprocess.run([sys.executable, str(script), 'helm-v9.9.9', '--output', str(out)], capture_output=True)
     assert result.returncode != 0
     assert not out.exists()
-    subprocess.run([sys.executable, str(script), 'v0.12.0', '--output', str(out)], check=True, capture_output=True)
-    package = out / 'agenthealth-0.12.0.tgz'
-    assert (out / 'checksums.txt').read_text() == hashlib.sha256(package.read_bytes()).hexdigest() + '  agenthealth-0.12.0.tgz\n'
+    subprocess.run([sys.executable, str(script), RELEASE_TAG, '--output', str(out)], check=True, capture_output=True)
+    package = out / f'agenthealth-{RELEASE_VERSION}.tgz'
+    assert (out / 'checksums.txt').read_text() == hashlib.sha256(package.read_bytes()).hexdigest() + f'  agenthealth-{RELEASE_VERSION}.tgz\n'
     with tarfile.open(package) as archive:
         metadata = yaml.safe_load(archive.extractfile('agenthealth/Chart.yaml').read())
-        assert metadata['version'] == '0.12.0'
-        assert metadata['appVersion'] == 'v0.12.0'
+        assert metadata['version'] == RELEASE_VERSION
+        assert metadata['appVersion'] == RELEASE_TAG
         assert 'agenthealth/templates/workload.yaml' in archive.getnames()
-    result = subprocess.run([sys.executable, str(script), 'v0.12.0', '--output', str(out)], capture_output=True)
+    result = subprocess.run([sys.executable, str(script), RELEASE_TAG, '--output', str(out)], capture_output=True)
     assert result.returncode != 0
 
 
@@ -151,7 +155,7 @@ def test_kustomize_config_hash_and_workload_references():
                 name = volume.get('configMap', {}).get('name', '')
                 if name.startswith('agenthealth-config'):
                     assert name == configmap['metadata']['name']
-    assert all(c['image'] == 'ghcr.io/theagenthealth/agenthealth:v0.11.1'
+    assert all(c['image'] == DEFAULT_IMAGE
                for doc in docs if pod_spec(doc)
                for c in pod_spec(doc)['containers'] + pod_spec(doc).get('initContainers', [])
                if c['name'] == 'agenthealth')

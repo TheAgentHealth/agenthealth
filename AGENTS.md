@@ -125,7 +125,7 @@ publication through [.github/workflows/release.yml](.github/workflows/release.ym
 
 Before preparing a release, identify all required formats under the
 [component release policy](RELEASING.md#component-versions-and-synchronized-distribution).
-Starting with v0.12.0, publish every implemented distribution format under the
+Starting with v0.12.1, publish every implemented distribution format under the
 same software version and immutable `vX.Y.Z` source tag: CLI archives, DEB/RPM,
 channel manifests, Docker image, Helm chart and additional OCI binary bundle.
 The GitHub Release must list all downloads and package references. GHCR Packages

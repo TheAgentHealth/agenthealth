@@ -45,6 +45,6 @@ Historical [release notes](README.md) describe their tagged versions. Phase 8
 does not retroactively add gateway support to v0.5.0 binaries. For current adapter
 limits, use the linked guides and the roadmap capability checklists.
 
-The next synchronized release is planned as v0.12.0. The existing releases
+The next synchronized release is planned as v0.12.1. The existing releases
 above remain available; see [distribution](distribution.md) for the common
-version policy and implemented OCI chart/binary workflows awaiting v0.12.0 publication.
+version policy and implemented OCI chart/binary workflows awaiting v0.12.1 publication.
