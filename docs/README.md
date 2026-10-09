@@ -24,6 +24,7 @@ see the [roadmap](../ROADMAP.md) for limitations and later phases.
 | 11: AHP (experimental, v0.9.0) | [HTTP serving](ahp.md), [wire contract](../spec/protocol.md), [impact review](rfcs/phase-11-ahp.md) | [Serving example](../examples/ahp-check/README.md), [coverage and alignment](phase-11-alignment.md) |
 | 12: Docker (v0.10.0) | [Docker distribution](docker.md), [container usage](installation.md#container-image) | [Dockerfile](../Dockerfile), [CI container job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml) |
 | 13: Standalone binaries (v0.11.0) | [Package installation](installation.md#package-channels-phase-13-v0110), [coverage and alignment](phase-13-alignment.md) | [Distribution example](../examples/distribution/README.md), [package builder](../scripts/package_release.py), [native smoke checks](../scripts/test_release_binary.py) |
+| 14: Kubernetes (implemented in source) | [Deployment guide](kubernetes.md), [coverage and alignment](phase-14-alignment.md) | [Manifests](../deploy/kubernetes/), [Helm chart](../deploy/helm/agenthealth/), [scenarios](../examples/kubernetes/README.md), [tests](../tests/kubernetes/) |
 
 Phase 7 is released in [v0.5.0](releases/v0.5.0.md): see the [agent adapter](agent-adapter.md) and
 [agent/peer/path example](../examples/agent-check/agenthealth.yaml).
@@ -34,11 +35,13 @@ is released in v0.10.0; see [Docker](docker.md).
 
 Configuration examples are templates requiring your services and credentials.
 The documentation validator checks marked configuration/result blocks and
-all standalone example YAML files against the schemas. It does not establish
-connectivity to the placeholder servers or prove every command example works.
+standalone health configuration examples and configuration embedded in
+Kubernetes resources against the AHS schema; Helm overrides use the chart schema.
+Kubernetes manifests and chart rendering also have dedicated tests. Validation
+does not establish connectivity to the placeholder servers or prove every command example works.
 
 Agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP, and A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility are the available adapters. Other adapter types,
-SDKs, and Kubernetes integrations remain planned; a [container image](installation.md#container-image) is
+SDKs remain planned; Kubernetes integrations are implemented in source ([guide](kubernetes.md)); a [container image](installation.md#container-image) is
 published starting in v0.10.0. Historical
 release notes describe their tagged release. Use v0.2.0 or newer for Phase 5
 MCP functionality and v0.3.0 or newer for Phase 6 A2A functionality.
@@ -55,3 +58,6 @@ See [the router guide](agent-router.md). Named router signals, direct backends a
 Phase 9 release and migration details: [v0.7.0 notes](releases/v0.7.0.md).
 
 Phase 11 release and migration details: [v0.9.0 notes](releases/v0.9.0.md).
+
+- [Kubernetes integration](kubernetes.md) — manifests, chart, probes, Secrets and deployment validation.
+- [Phase 14 alignment](phase-14-alignment.md) — coverage, compatibility and validation limits.

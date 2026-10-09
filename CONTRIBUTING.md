@@ -81,9 +81,10 @@ changes. Record supported CLI/specification versions for SDKs; charts record
 Identify affected components and compatibility in substantive PRs and phase
 impact reviews. Update their docs/examples and tests as needed. Sharing this
 repository does not require publishing unchanged SDKs or charts. CI validates
-PRs; publication requires an authorized component release. Future SDK/chart
-triggers must be distinct from the CLI `v*` trigger. See the release policy for
-planned trigger names and limitations.
+PRs; publication requires an authorized component release. The implemented chart
+uses `helm-v*`; future SDK triggers must also be
+distinct from the CLI `v*` trigger. See the release policy for component
+trigger names and limitations.
 
 ## CI checks
 
@@ -128,3 +129,11 @@ Phase 8 Agentgateway integration is implemented in source. See [the gateway guid
 
 Phase 9 Agent Router HTTP integration is released in v0.7.0.
 See [the router guide](docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
+
+## Kubernetes integration contributions
+
+Phase 14 is implemented in source. See the [deployment guide](docs/kubernetes.md)
+and [alignment audit](docs/phase-14-alignment.md). Deployment or chart changes
+must run Helm lint/template tests and the explicit-context runtime smoke suite
+on a disposable cluster, in addition to the applicable existing checks.
+Chart publication requires an independently authorized component release.

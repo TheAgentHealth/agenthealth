@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: agenthealth-check
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 30
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 10
+      restartPolicy: Never
+      containers:
+      - name: agenthealth
+        image: ghcr.io/theagenthealth/agenthealth:v0.11.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - check
+        - /etc/agenthealth/config.yaml
+        - --format
+        - json
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/agenthealth
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: agenthealth-config

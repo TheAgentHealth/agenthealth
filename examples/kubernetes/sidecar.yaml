@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agenthealth-local
+data:
+  config.yaml: "version: v1\ntargets:\n- name: direct-agent\n  type: http\n  endpoint:\
+    \ http://127.0.0.1:8080/health\n  checks:\n  - reachability\n  - protocol\n  timeout_ms:\
+    \ 2000\n  retries: 0\n  budget_ms: 5000\n"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-sidecar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-sidecar
+  template:
+    metadata:
+      labels:
+        app: demo-sidecar
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: demo
+        image: nginx:1.27.4-alpine
+        command:
+        - nginx
+        - -c
+        - /etc/demo/nginx.conf
+        - -g
+        - daemon off;
+        ports:
+        - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: nginx
+          mountPath: /etc/demo
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      - name: agenthealth
+        image: ghcr.io/theagenthealth/agenthealth:v0.11.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - serve
+        - /etc/agenthealth/config.yaml
+        - --listen
+        - 0.0.0.0:8081
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+          runAsUser: 65532
+          runAsGroup: 65532
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/agenthealth
+          readOnly: true
+        ports:
+        - name: ahp
+          containerPort: 8081
+        startupProbe:
+          httpGet:
+            path: /live
+            port: ahp
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 12
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: ahp
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: ahp
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+      volumes:
+      - name: nginx
+        configMap:
+          name: demo-nginx
+      - name: tmp
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: agenthealth-local

@@ -10,7 +10,7 @@ container-specific behavior is introduced.
 
 ## Image contents
 
-- Multi-stage build: `golang:1.27.1-bookworm` compiles a static (`CGO_ENABLED=0`)
+- Multi-stage build: `golang:1.27.2-bookworm` compiles a static (`CGO_ENABLED=0`)
   binary with the same flags as [scripts/build_release.py](../scripts/build_release.py),
   so image binaries are byte-identical to the attested release archives; the
   runtime stage is a digest-pinned `gcr.io/distroless/static-debian12:nonroot`.
@@ -110,12 +110,23 @@ v0.11.0 is available from both registries:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.0 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.1 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.11.0 version
+docker run --rm theagenthealth/agenthealth:v0.11.1 version
 ```
 
 See [installation.md](installation.md) for standalone binary archives and
 their own provenance/SBOM verification, and [RELEASING.md](../RELEASING.md)
 for the release process that both distribution channels share.
+
+## Kubernetes consumers
+
+[Phase 14](kubernetes.md) deploys the same released CLI image through manifests,
+Helm and Kustomize. Image references are pinned; image tags and chart versions
+are independent. The chart does not rebuild or republish the image. The
+[application-image example](../examples/kubernetes/Dockerfile.exec-probe) copies
+the CLI into a derived image for application-container exec readiness probes.
+
+v0.11.1 rebuilds the CLI image with Go 1.27.2 to fix GO-2026-6617. Both
+registry references above use the patched CLI version.

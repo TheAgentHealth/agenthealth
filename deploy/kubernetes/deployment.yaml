@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agenthealth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agenthealth
+  template:
+    metadata:
+      labels:
+        app: agenthealth
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 10
+      restartPolicy: Always
+      containers:
+      - name: agenthealth
+        image: ghcr.io/theagenthealth/agenthealth:v0.11.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - serve
+        - /etc/agenthealth/config.yaml
+        - --listen
+        - 0.0.0.0:8081
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/agenthealth
+          readOnly: true
+        ports:
+        - name: ahp
+          containerPort: 8081
+        startupProbe:
+          httpGet:
+            path: /live
+            port: ahp
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 12
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: ahp
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: ahp
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: agenthealth-config

@@ -51,3 +51,9 @@ TLS certificate and hostname verification remain mandatory. Redirects are never 
 ## Dependency graph integration
 
 [Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. HTTP nodes retain their HEAD/GET behavior, response limits and explicit functional opt-in. A referenced node uses its own credentials and expectations. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.
+
+## Kubernetes deployment
+
+Passive HTTP checks retain HEAD/status/header behavior inside Kubernetes. Use in-cluster service addresses and explicit deadlines that fit the workload budget; body matching still requires functional opt-in.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

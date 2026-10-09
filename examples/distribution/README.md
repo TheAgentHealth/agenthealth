@@ -36,3 +36,9 @@ and [release policy](../../RELEASING.md#phase-13-package-assets).
 Existing [health configuration examples](../README.md) work with the same CLI
 regardless of installation method. Services, credentials, trusted MCP stdio
 executables and safe runtime probe handlers must still be supplied by users.
+
+## Kubernetes compatibility
+
+Kubernetes tooling consumes the existing released image. Helm packages have independent chart versions and do not change these CLI archive/package preparation commands.
+See [deployment scenarios](../kubernetes/README.md) and the
+[deployment guide](../../docs/kubernetes.md).

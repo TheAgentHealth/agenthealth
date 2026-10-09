@@ -108,3 +108,11 @@ Existing nested configurations remain valid.
 
 `agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
 See the [AHP guide](ahp.md) for authorization, freshness and deployment.
+
+## Kubernetes deployment
+
+[Phase 14](kubernetes.md) runs the existing `check` and `serve` commands in
+manifests and a Helm chart. Exec probes, init gates and Jobs require exit 0;
+DEGRADED/1 still fails even when an optional dependency caused it. AHP readiness
+uses its separate aggregate contract. No CLI flag, exit mapping or output format
+changes are introduced.

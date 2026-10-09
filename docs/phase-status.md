@@ -27,7 +27,7 @@ do not establish completion of the broader Phases 21, 25 or 26.
 | [11: Agent Health Protocol (AHP)](../ROADMAP.md#phase-11--agent-health-protocol-ahp) | Included in v0.9.0; experimental HTTP v1 | [AHP](ahp.md) | [Serving example](../examples/ahp-check/README.md) |
 | [12: Docker Distribution](../ROADMAP.md#phase-12--docker-distribution) | Released in v0.10.0 | [Docker](docker.md) | [Dockerfile](../Dockerfile), [CI job](../.github/workflows/ci.yml), [release publish job](../.github/workflows/release.yml), [static Dockerfile tests](../tests/test_container_image.py) |
 | [13: Standalone Binaries](../ROADMAP.md#phase-13--standalone-binaries) | Included in v0.11.0 | [Installation](installation.md), [release policy](../RELEASING.md), [alignment audit](phase-13-alignment.md) | [Distribution example](../examples/distribution/README.md), [release builder](../scripts/build_release.py), [package tests](../tests/test_package_release.py) |
-| [14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration) | Planned | Roadmap design only | No implementation examples yet |
+| [14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration) | Implemented in source | Chart 0.1.0; CLI v0.11.1 | [Kubernetes scenarios](../examples/kubernetes/README.md), [alignment audit](phase-14-alignment.md) |
 | [15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi) | Planned | Roadmap design only | No implementation examples yet |
 | [16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk) | Planned | Roadmap design only | No implementation examples yet |
 | [17: Model / LLM Adapters](../ROADMAP.md#phase-17--model--llm-adapters) | Planned | Roadmap design only | No implementation examples yet |

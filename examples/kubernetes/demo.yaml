@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-nginx
+data:
+  nginx.conf: "pid /tmp/nginx.pid;\nevents {}\nhttp {\n  access_log off;\n  client_body_temp_path\
+    \ /tmp/client;\n  proxy_temp_path /tmp/proxy;\n  fastcgi_temp_path /tmp/fastcgi;\n\
+    \  uwsgi_temp_path /tmp/uwsgi;\n  scgi_temp_path /tmp/scgi;\n  server {\n    listen\
+    \ 8080;\n    location = /health { default_type application/json; return 200 '{\"\
+    version\":\"v1\",\"name\":\"direct-agent\",\"live\":true,\"ready\":true,\"capabilities\"\
+    :[\"answer\"],\"dependencies\":[]}'; }\n    location = /peer { default_type application/json;\
+    \ return 200 '{\"version\":\"v1\",\"name\":\"composite-agent\",\"live\":true,\"\
+    ready\":true,\"capabilities\":[\"answer\"],\"dependencies\":[]}'; }\n    location\
+    \ = /auth {\n      if ($http_authorization != \"Bearer fixture-token\") { return\
+    \ 401; }\n      return 204;\n    }\n    location = /ready { return 204; }\n  \
+    \  location = /route { return 204; }\n  }\n}\n"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: demo
+        image: nginx:1.27.4-alpine
+        command:
+        - nginx
+        - -c
+        - /etc/demo/nginx.conf
+        - -g
+        - daemon off;
+        ports:
+        - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: nginx
+          mountPath: /etc/demo
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: nginx
+        configMap:
+          name: demo-nginx
+      - name: tmp
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+spec:
+  selector:
+    app: demo
+  ports:
+  - port: 8080
+    targetPort: 8080

@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "image",
+    "config",
+    "existingConfigMap",
+    "secretEnv",
+    "ahpTokenEnv",
+    "schedule",
+    "resources"
+  ],
+  "properties": {
+    "mode": {
+      "enum": [
+        "serve",
+        "job",
+        "cronjob"
+      ]
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "tag",
+        "digest",
+        "pullPolicy"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tag": {
+          "type": "string",
+          "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^$|^sha256:[a-f0-9]{64}$"
+        },
+        "pullPolicy": {
+          "enum": [
+            "Always",
+            "IfNotPresent",
+            "Never"
+          ]
+        }
+      }
+    },
+    "config": {
+      "type": "string",
+      "minLength": 1
+    },
+    "existingConfigMap": {
+      "type": "string"
+    },
+    "ahpTokenEnv": {
+      "type": "string",
+      "pattern": "^$|^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "schedule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resources": {
+      "type": "object"
+    },
+    "secretEnv": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "secretName",
+          "key"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+          },
+          "secretName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ahpTokenEnv": {
+            "minLength": 1
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "mode": {
+            "const": "serve"
+          },
+          "secretEnv": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

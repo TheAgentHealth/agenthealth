@@ -1,0 +1,11 @@
+version: v1
+targets:
+- name: direct-agent
+  type: http
+  endpoint: http://demo:8080/health
+  checks:
+  - reachability
+  - protocol
+  timeout_ms: 2000
+  retries: 0
+  budget_ms: 5000

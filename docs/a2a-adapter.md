@@ -99,3 +99,9 @@ this adapter checks operational compatibility, not agent identity certification.
 ## Dependency graph integration
 
 [Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. References to one A2A node share card/passive evidence and any explicitly opted-in task per run. Distinct route nodes retain their own evidence. A healthy A2A endpoint still does not prove first-agent communication. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.
+
+## Kubernetes deployment
+
+Use in-cluster peer endpoints with the same protocol selection, discovery and bearer references. Passive peer health does not establish first-agent communication; do not repeat task interactions in routine probes without explicit authorization.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

@@ -72,7 +72,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.2"
           cache: true
       - name: Check formatting
         run: test -z "$(gofmt -l core adapters examples cmd)"
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.1'
+          go-version: '1.27.2'
       - name: Scan reachable vulnerabilities
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
 
@@ -126,7 +126,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.1'
+          go-version: '1.27.2'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -170,7 +170,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: "1.27.1"
+          go-version: "1.27.2"
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -186,3 +186,44 @@ jobs:
           sha256sum --check checksums.txt
           dpkg-deb --extract agenthealth_v0.0.0-ci_linux_amd64.deb deb-smoke
           test "$(deb-smoke/usr/bin/agenthealth version)" = "agenthealth v0.0.0-ci"
+
+  kubernetes:
+    name: Kubernetes manifests and Helm
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install pinned Kubernetes tools
+        run: |
+          go install helm.sh/helm/v3/cmd/helm@v3.17.3
+          go install sigs.k8s.io/kind@v0.27.0
+          curl -fsSLO https://dl.k8s.io/release/v1.32.2/bin/linux/amd64/kubectl
+          curl -fsSLO https://dl.k8s.io/release/v1.32.2/bin/linux/amd64/kubectl.sha256
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+          pip install -r tests/requirements.txt
+      - name: Validate and package chart
+        run: |
+          python3 -m pytest tests/kubernetes -q
+          CHART_TAG=$(python3 -c 'import yaml; print("helm-v" + yaml.safe_load(open("deploy/helm/agenthealth/Chart.yaml"))["version"])')
+          python3 scripts/package_helm.py "$CHART_TAG" --output chart-dist
+      - name: Runtime scenarios
+        run: |
+          kind create cluster --name agenthealth-ci --image kindest/node:v1.32.2 --wait 90s
+          docker build --build-arg VERSION=v0.0.0-ci -t agenthealth:v0.0.0-ci .
+          kind load docker-image agenthealth:v0.0.0-ci --name agenthealth-ci
+          docker build -f examples/kubernetes/Dockerfile.exec-probe --build-arg AGENTHEALTH_IMAGE=agenthealth:v0.0.0-ci -t agenthealth-demo-exec:ci .
+          test "$(docker run --rm --entrypoint /usr/local/bin/agenthealth agenthealth-demo-exec:ci version)" = "agenthealth v0.0.0-ci"
+          kubectl kustomize examples/kubernetes > /tmp/agenthealth-kustomize.yaml
+          kubectl --context kind-agenthealth-ci apply --dry-run=server -f /tmp/agenthealth-kustomize.yaml
+          python3 scripts/test_kubernetes.py --context kind-agenthealth-ci --image agenthealth:v0.0.0-ci
+      - name: Remove disposable cluster
+        if: always()
+        run: kind delete cluster --name agenthealth-ci

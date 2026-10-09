@@ -1,0 +1,17 @@
+# Adapted from sharath568's Phase 14 contribution (PR #15).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../deploy/kubernetes
+  - demo.yaml
+  - init.yaml
+  - sidecar.yaml
+  - exec-probes.yaml
+configMapGenerator:
+  - name: agenthealth-config
+    behavior: replace
+    files:
+      - config.yaml=agenthealth.yaml
+images:
+  - name: ghcr.io/theagenthealth/agenthealth
+    newTag: v0.11.1

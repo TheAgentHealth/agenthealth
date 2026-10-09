@@ -195,3 +195,10 @@ Phase 8 Agentgateway integration is implemented in source. See [the gateway guid
 
 Phase 9 Agent Router HTTP integration is released in v0.7.0.
 See [the router guide](docs/agent-router.md). Named router signals, direct backends and configured paths retain separate evidence.
+
+Phase 14 Kubernetes manifests and chart 0.1.0 are implemented in source.
+See [the guide](docs/kubernetes.md) and [alignment audit](docs/phase-14-alignment.md).
+For deployment/chart changes, run `helm lint deploy/helm/agenthealth --strict`,
+`python3 -m pytest tests/kubernetes -q`, and the explicit-context runtime smoke
+script on a disposable cluster. Helm publication uses independent `helm-v*`
+tags through the chart workflow; a CLI release never publishes the chart.

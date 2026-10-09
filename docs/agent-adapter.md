@@ -84,3 +84,9 @@ count Unicode characters; Go additionally enforces the task text byte limit.
 ## Dependency graph integration
 
 [Phase 10](dependency-graph.md) adds explicit node IDs and references while preserving this adapter’s checks and safety contract. Advertised dependency names match only explicitly configured inline nodes or resolved references. References never authorize remote discovery. Keep the peer node and the safe first-runtime communication probe as distinct IDs. Critical/optional policy belongs to each edge. The [graph example](../examples/graph-check/README.md) shows the configuration pattern. This extension is included in v0.8.0.
+
+## Kubernetes deployment
+
+The Kubernetes fixture distinguishes direct and composite agent health from supporting gateway/router/route evidence. It does not supply a first-runtime safe downstream handler. Existing functional configurations remain opt-in and may repeat in serving mode.
+See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
+probe policy and validation limits. No adapter or configuration migration is required.

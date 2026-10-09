@@ -17,3 +17,9 @@ See the [router guide](../../docs/agent-router.md) for safety and limitations.
 ## Phase 10 compatibility
 
 This nested example remains valid. To share a backend across paths, give that node an explicit `id` and use `ref` edges. Each communication path keeps a distinct node and its own checks; edge policy remains independent. See the [graph example](../graph-check/README.md). Graph fields require v0.8.0 or newer; v0.7.0 binaries reject them.
+
+## Kubernetes compatibility
+
+This example includes an explicitly active route check; review it before use in repeating probes. Use in-cluster addresses and retain separate router/backend/route evidence.
+See [deployment scenarios](../kubernetes/README.md) and the
+[deployment guide](../../docs/kubernetes.md).

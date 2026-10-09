@@ -62,3 +62,10 @@ upgrade/removal matrices, native signing/notarization and package-specific SBOM
 attestations remain follow-up work. Archive SBOMs describe the reused executable;
 build provenance covers package assets. Existing optional SDK integration tests
 may be skipped locally and do not establish live interoperability.
+
+## Phase 14 follow-through
+
+Kubernetes integration is now implemented in source. Its
+[alignment audit](phase-14-alignment.md) records existing contract compatibility
+and validation. This earlier-phase baseline and historical release notes retain
+the capabilities of their own released versions.
