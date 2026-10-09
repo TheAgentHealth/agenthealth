@@ -66,4 +66,4 @@ Phase 11 release and migration details: [v0.9.0 notes](releases/v0.9.0.md).
 
 See the [synchronized distribution plan](distribution.md) for the agreed
 v0.12.0 policy, Releases/Packages layout, availability and implementation
-checklist. OCI chart/binary publication is planned.
+checklist. OCI chart/binary publishing is implemented in source; publication is pending.

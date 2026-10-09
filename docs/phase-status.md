@@ -47,4 +47,4 @@ limits, use the linked guides and the roadmap capability checklists.
 
 The next synchronized release is planned as v0.12.0. The existing releases
 above remain available; see [distribution](distribution.md) for the common
-version policy and pending OCI chart/binary publication work.
+version policy and implemented OCI chart/binary workflows awaiting v0.12.0 publication.

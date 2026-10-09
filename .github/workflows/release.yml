@@ -74,9 +74,10 @@ jobs:
           fi
 
   release:
-    # Runs in parallel with container once validate passes; it does not
-    # depend on the container image and vice versa.
+    # Stage signed files; publish only after container and OCI packages succeed.
     needs: [validate, binary-smoke]
+    outputs:
+      synchronized: ${{ steps.layout.outputs.synchronized }}
     timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
@@ -94,6 +95,19 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
+      - name: Identify release layout
+        id: layout
+        run: |
+          if [ -f scripts/prepare_synchronized_release.py ]; then
+            echo "synchronized=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "synchronized=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install chart packaging dependency
+        if: steps.layout.outputs.synchronized == 'true'
+        run: |
+          go install helm.sh/helm/v3/cmd/helm@v3.17.3
+          pip install PyYAML==6.0.2
       - name: Build archives and checksums
         env:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
@@ -101,6 +115,9 @@ jobs:
           python3 scripts/build_release.py "$RELEASE_TAG"
           if [ -f scripts/package_release.py ]; then
             python3 scripts/package_release.py "$RELEASE_TAG"
+          fi
+          if [ -f scripts/prepare_synchronized_release.py ]; then
+            python3 scripts/prepare_synchronized_release.py "$RELEASE_TAG" --output dist
           fi
       - name: Verify Linux binary
         env:
@@ -160,17 +177,16 @@ jobs:
         with:
           name: release-assets
           path: dist/*
-      - name: Publish release
+      - name: Stage draft release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
-          release_flags=(--latest)
+          release_flags=(--latest=false)
           if [[ "$RELEASE_TAG" == *-* ]]; then
-            release_flags=(--prerelease --latest=false)
+            release_flags+=(--prerelease)
           fi
           gh release create "$RELEASE_TAG" dist/* --verify-tag --draft "${release_flags[@]}" --title "AgentHealth $RELEASE_TAG" --notes-file "docs/releases/${RELEASE_TAG}.md"
-          gh release edit "$RELEASE_TAG" --draft=false
 
   container:
     # Runs in parallel with release once validate passes. Image binaries are
@@ -178,6 +194,9 @@ jobs:
     # release job's archives, so this job has no dependency on it.
     needs: validate
     runs-on: ubuntu-latest
+    outputs:
+      image_digest: ${{ steps.push.outputs.digest }}
+      docker_digest: ${{ steps.push_dockerhub.outputs.digest }}
     permissions:
       contents: read
       packages: write
@@ -215,10 +234,9 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.IMAGE }}
-          flavor: latest=${{ !contains(inputs.release_tag || github.ref_name, '-') }}
+          flavor: latest=false
           tags: |
             type=semver,pattern=v{{version}},value=${{ env.RELEASE_TAG }}
-            type=semver,pattern=v{{major}},value=${{ env.RELEASE_TAG }},enable=${{ !contains(inputs.release_tag || github.ref_name, '-') }}
       - id: push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
@@ -254,10 +272,9 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.DOCKERHUB_IMAGE }}
-          flavor: latest=${{ !contains(inputs.release_tag || github.ref_name, '-') }}
+          flavor: latest=false
           tags: |
             type=semver,pattern=v{{version}},value=${{ env.RELEASE_TAG }}
-            type=semver,pattern=v{{major}},value=${{ env.RELEASE_TAG }},enable=${{ !contains(inputs.release_tag || github.ref_name, '-') }}
       - id: push_dockerhub
         if: ${{ env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_ACCESS_TOKEN != '' }}
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
@@ -277,3 +294,140 @@ jobs:
           image="docker.io/$DOCKERHUB_IMAGE@${{ steps.push_dockerhub.outputs.digest }}"
           test "$(docker run --rm "$image" version)" = "agenthealth $RELEASE_TAG"
           docker run --rm "$image" --help
+
+  packages:
+    needs: release
+    if: needs.release.outputs.synchronized == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      chart_digest: ${{ steps.oci.outputs.chart_digest }}
+      binary_digest: ${{ steps.oci.outputs.binary_digest }}
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_tag || github.ref_name }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: "1.27.2"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-assets
+          path: dist
+      - name: Install pinned registry tools
+        run: |
+          go install helm.sh/helm/v3/cmd/helm@v3.17.3
+          go install oras.land/oras/cmd/oras@v1.3.0
+          pip install PyYAML==6.0.2
+      - name: Verify signed assets before registry publication
+        run: |
+          for asset in dist/*; do
+            gh attestation verify "$asset" --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+              --source-digest "$(git rev-parse HEAD)" --deny-self-hosted-runners
+          done
+      - name: Authenticate package clients
+        env:
+          REGISTRY_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$REGISTRY_TOKEN" | helm registry login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          printf '%s' "$REGISTRY_TOKEN" | oras login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Publish same-version chart and binary bundle
+        id: oci
+        run: python3 scripts/publish_oci.py "$RELEASE_TAG" --output dist --report oci-report.json
+      - name: Attest OCI chart provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-name: ghcr.io/theagenthealth/charts/agenthealth
+          subject-digest: ${{ steps.oci.outputs.chart_digest }}
+          push-to-registry: true
+      - name: Attest OCI binary provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-name: ghcr.io/theagenthealth/agenthealth-binaries
+          subject-digest: ${{ steps.oci.outputs.binary_digest }}
+          push-to-registry: true
+      - name: Verify public manifests and every downloadable blob
+        run: python3 scripts/publish_oci.py "$RELEASE_TAG" --output dist --report oci-report.json --verify-public
+      - name: Verify Helm and ORAS client downloads match signed assets
+        run: |
+          mkdir pulled-chart
+          helm pull oci://ghcr.io/theagenthealth/charts/agenthealth --version "${RELEASE_TAG#v}" --destination pulled-chart
+          cmp "dist/agenthealth-${RELEASE_TAG#v}.tgz" "pulled-chart/agenthealth-${RELEASE_TAG#v}.tgz"
+          oras pull "ghcr.io/theagenthealth/agenthealth-binaries@${{ steps.oci.outputs.binary_digest }}" --output pulled-bundle
+          python3 -c 'from pathlib import Path; original={p.name:p.read_bytes() for p in Path("dist").iterdir()}; pulled={p.name:p.read_bytes() for p in Path("pulled-bundle").iterdir()}; assert original==pulled, "OCI bundle differs from signed release files"'
+      - name: Verify signed OCI references
+        run: |
+          gh attestation verify "oci://ghcr.io/theagenthealth/charts/agenthealth@${{ steps.oci.outputs.chart_digest }}" --repo "$GITHUB_REPOSITORY" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-digest "$(git rev-parse HEAD)" --deny-self-hosted-runners
+          gh attestation verify "oci://ghcr.io/theagenthealth/agenthealth-binaries@${{ steps.oci.outputs.binary_digest }}" --repo "$GITHUB_REPOSITORY" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-digest "$(git rev-parse HEAD)" --deny-self-hosted-runners
+
+  publish:
+    needs: [release, container, packages]
+    if: >-
+      always() && needs.release.result == 'success' && needs.container.result == 'success' &&
+      (needs.packages.result == 'success' ||
+       (needs.packages.result == 'skipped' && needs.release.outputs.synchronized != 'true'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+      SYNCHRONIZED: ${{ needs.release.outputs.synchronized }}
+      IMAGE_DIGEST: ${{ needs.container.outputs.image_digest }}
+      DOCKER_DIGEST: ${{ needs.container.outputs.docker_digest }}
+      CHART_DIGEST: ${{ needs.packages.outputs.chart_digest }}
+      BINARY_DIGEST: ${{ needs.packages.outputs.binary_digest }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_tag || github.ref_name }}
+      - name: Attach package links and exact digests
+        if: env.SYNCHRONIZED == 'true'
+        run: |
+          python3 scripts/release_notes.py "$RELEASE_TAG" --output published-notes.md
+          gh release edit "$RELEASE_TAG" --notes-file published-notes.md
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+        if: ${{ !contains(env.RELEASE_TAG, '-') }}
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
+        if: ${{ !contains(env.RELEASE_TAG, '-') }}
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Promote verified GHCR image aliases
+        if: ${{ !contains(env.RELEASE_TAG, '-') }}
+        run: |
+          version="${RELEASE_TAG#v}"
+          major="${version%%.*}"
+          docker buildx imagetools create --tag ghcr.io/theagenthealth/agenthealth:latest --tag "ghcr.io/theagenthealth/agenthealth:v$major" "ghcr.io/theagenthealth/agenthealth@$IMAGE_DIGEST"
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
+        if: ${{ !contains(env.RELEASE_TAG, '-') && env.DOCKER_DIGEST != '' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+      - name: Promote verified Docker Hub aliases
+        if: ${{ !contains(env.RELEASE_TAG, '-') && env.DOCKER_DIGEST != '' }}
+        run: |
+          version="${RELEASE_TAG#v}"
+          major="${version%%.*}"
+          docker buildx imagetools create --tag theagenthealth/agenthealth:latest --tag "theagenthealth/agenthealth:v$major" "theagenthealth/agenthealth@$DOCKER_DIGEST"
+      - name: Publish complete release
+        run: |
+          flags=(--latest)
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            flags=(--prerelease --latest=false)
+          fi
+          gh release edit "$RELEASE_TAG" --draft=false "${flags[@]}"

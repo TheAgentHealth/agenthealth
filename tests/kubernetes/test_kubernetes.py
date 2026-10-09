@@ -75,7 +75,7 @@ def test_chart_modes(mode, tmp_path):
         validate(doc)
     assert docs[-1]['kind'] == {'serve': 'Deployment', 'job': 'Job', 'cronjob': 'CronJob'}[mode]
     subprocess.run([HELM, 'package', str(CHART), '--destination', str(tmp_path)], check=True, capture_output=True)
-    assert (tmp_path / 'agenthealth-0.1.0.tgz').exists()
+    assert (tmp_path / 'agenthealth-0.12.0.tgz').exists()
 
 
 @pytest.mark.skipif(not HELM, reason='Helm required')
@@ -109,15 +109,15 @@ def test_component_package_integrity_and_preconditions(tmp_path):
     result = subprocess.run([sys.executable, str(script), 'helm-v9.9.9', '--output', str(out)], capture_output=True)
     assert result.returncode != 0
     assert not out.exists()
-    subprocess.run([sys.executable, str(script), 'helm-v0.1.0', '--output', str(out)], check=True, capture_output=True)
-    package = out / 'agenthealth-0.1.0.tgz'
-    assert (out / 'checksums.txt').read_text() == hashlib.sha256(package.read_bytes()).hexdigest() + '  agenthealth-0.1.0.tgz\n'
+    subprocess.run([sys.executable, str(script), 'v0.12.0', '--output', str(out)], check=True, capture_output=True)
+    package = out / 'agenthealth-0.12.0.tgz'
+    assert (out / 'checksums.txt').read_text() == hashlib.sha256(package.read_bytes()).hexdigest() + '  agenthealth-0.12.0.tgz\n'
     with tarfile.open(package) as archive:
         metadata = yaml.safe_load(archive.extractfile('agenthealth/Chart.yaml').read())
-        assert metadata['version'] == '0.1.0'
-        assert metadata['appVersion'] == 'v0.11.1'
+        assert metadata['version'] == '0.12.0'
+        assert metadata['appVersion'] == 'v0.12.0'
         assert 'agenthealth/templates/workload.yaml' in archive.getnames()
-    result = subprocess.run([sys.executable, str(script), 'helm-v0.1.0', '--output', str(out)], capture_output=True)
+    result = subprocess.run([sys.executable, str(script), 'v0.12.0', '--output', str(out)], capture_output=True)
     assert result.returncode != 0
 
 
