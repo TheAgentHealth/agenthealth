@@ -1,8 +1,5 @@
 # TheAgentHealth
 
-See the [all-phase status index](docs/phase-status.md) for implementation, documentation,
-and example coverage across Phases 0–26.
-
 > Universal Health & Readiness Framework for Agentic Systems
 
 **AgentHealth** is an open-source, vendor-neutral, framework-neutral, and language-neutral project for determining whether AI agents and the infrastructure they depend on are **reachable, correctly configured, responsive, ready, and operationally healthy**.
@@ -13,11 +10,42 @@ and example coverage across Phases 0–26.
 
 ### Install
 
-Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
+Choose how you want to run AgentHealth. Published distributions share **v0.12.0**:
 
-The v0.12.0 container is available at `ghcr.io/theagenthealth/agenthealth:v0.12.0` and Docker Hub at `theagenthealth/agenthealth:v0.12.0`; see [Docker distribution](docs/docker.md).
+| Use it as | Get it here | Installation guide |
+|---|---|---|
+| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.12.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
+| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.12.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.12.0` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
+| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.12.0`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
+| Linux DEB / RPM | AMD64/ARM64 packages in release downloads | [Local package installation](docs/installation.md#package-channels-phase-13-v0110) |
+| Homebrew / Scoop | `agenthealth.rb` / `agenthealth.json` in release downloads | [Manifest usage](docs/installation.md#package-channels-phase-13-v0110); official tap/bucket hosting is planned |
+| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.12.0` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
 
-Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
+**Run immediately with Docker:**
+
+```bash
+docker run --rm theagenthealth/agenthealth:v0.12.0 version
+docker run --rm theagenthealth/agenthealth:v0.12.0 --help
+```
+
+The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.12.0`.
+Use an exact version tag to pin a release; `v0` follows stable major-version-0
+releases and `latest` follows the latest stable release.
+
+**Install with Helm:** save a configuration describing your services as
+`agenthealth.yaml` (see the example below), then run against your selected cluster:
+
+```bash
+helm upgrade --install agenthealth \
+  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.12.0 \
+  --namespace agenthealth --create-namespace \
+  --set-file config=./agenthealth.yaml
+```
+
+See the [installation guide](docs/installation.md) for checksums and signed
+provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
+Python/PyPI and JavaScript/npm SDKs are **planned and not published**. Official
+APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
 
@@ -52,6 +80,9 @@ A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `
 **Configuration is trusted executable input.** Review commands, endpoints, credential references, and token-file paths before running a configuration. See [the security boundary](SECURITY.md#trusted-configuration).
 
 ## Architecture and scope
+
+See the [all-phase status index](docs/phase-status.md) for implementation, documentation,
+and example coverage across Phases 0–26.
 
 Think of AgentHealth as:
 
@@ -204,7 +235,7 @@ Independent interoperability and external standardization remain unverified.
 The reference implementation is the concrete, versioned software that implements the specification and experimental HTTP protocol:
 
 - the `agenthealth` CLI,
-- language SDKs (Python, JavaScript/TypeScript),
+- planned language SDKs (Python, JavaScript/TypeScript),
 - Docker images and Helm charts,
 - Kubernetes integrations.
 
@@ -220,8 +251,8 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | Protocol (experimental HTTP v1) | Agent Health Protocol (AHP) |
 | CLI | `agenthealth` |
 | Config file | `agenthealth.yaml` |
-| Python package | `agenthealth` |
-| npm package | `@agenthealth/sdk` |
+| Python package (planned) | `agenthealth` |
+| npm package (planned) | `@agenthealth/sdk` |
 | Container image (GHCR / Docker Hub) | `ghcr.io/theagenthealth/agenthealth` / `theagenthealth/agenthealth` |
 | Helm chart | `agenthealth` |
 
@@ -1040,11 +1071,8 @@ files, credentials, and verification.
 
 ## Python / PyPI
 
-Python applications can integrate AgentHealth through an SDK.
-
-```bash
-pip install agenthealth
-```
+The Python SDK is planned and is not published. The following illustrates the
+proposed API; use the CLI or Docker image for current integrations.
 
 Conceptual usage:
 
@@ -1067,11 +1095,8 @@ The Python package is an SDK/distribution mechanism.
 
 # JavaScript / TypeScript / npm
 
-Node.js and TypeScript applications can integrate AgentHealth through an SDK.
-
-```bash
-npm install @agenthealth/sdk
-```
+The JavaScript/TypeScript SDK is planned and is not published. The following
+illustrates the proposed API; use the CLI or Docker image for current integrations.
 
 Conceptual usage:
 

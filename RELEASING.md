@@ -105,7 +105,7 @@ under Account Settings → Personal access tokens, scope Read & Write). Until
 those secrets are added, the Docker Hub steps are skipped and only GHCR is
 published.
 
-The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), gates publication on native archive smoke tests for all five platforms, generates package assets and verifies checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
+The [release workflow](.github/workflows/release.yml) validates tagged source, cross-compiles five platform archives using [scripts/build_release.py](scripts/build_release.py), gates publication on a fresh pre-release CI run for the exact tagged commit, including native archive smoke tests for all five platforms, generates package assets and verifies checksums, and publishes the GitHub release only after asset upload succeeds. Each tag needs release notes at `docs/releases/vX.Y.Z.md`. The first release is `v0.1.0`.
 
 To prepare artifacts locally (the output directory must be empty):
 
@@ -163,7 +163,23 @@ remain bound to their archive executable; packages reuse that executable but
 do not yet have separate SBOM attestations. Verify package provenance before
 installing. Native signing and package repository signatures remain Phase 26.
 
-The release waits for native archive smoke tests on all five platforms.
+Normal pushes to `main` do not run CI. The release gate dispatches a fresh
+pre-release CI run on `main`, passing the immutable tagged SHA for every test job
+to check out. This run includes all five binary-distribution jobs and, for
+synchronized releases, the Kubernetes manifests and Helm runtime job regardless
+of changed paths. The gate waits for its unique request identifier, so prior CI
+runs cannot satisfy it. Missing, skipped or failed required jobs block asset
+staging and image publication. The gate has `actions: write` to dispatch CI with
+the repository token and waits up to 75 minutes for completion.
+
+CI uses `v0.0.0-ci`; the release still builds with the real tag and verifies the
+Linux binary and asset checksums. The synchronized layout is identified from
+`scripts/prepare_synchronized_release.py` in the tagged source. During older-tag
+recovery, the current CI workflow still checks out and validates that older SHA;
+`main` does not need to remain at the tagged commit. CI selects only test files
+present in that checkout and skips package-channel verification for tags predating
+those assets. Native archive smoke verification always runs, using the helper
+from the immutable CI workflow commit in a separate tooling checkout.
 Publishing a tap/bucket or APT/YUM repository is separate from generating
 release assets and is not automated. Older tag recovery checks whether the tagged source contains the Phase 13
 helpers before invoking them, preserving the original asset set. Do not generate package assets

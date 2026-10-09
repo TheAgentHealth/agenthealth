@@ -104,6 +104,26 @@ Every pull request runs the [CI workflow](.github/workflows/ci.yml):
 
 The **Go core tests** jobs check formatting, run `go vet ./...`, and run `go test -race ./...` on Linux, macOS, and Windows. **Go minimum version (1.23)** runs vet and race tests on Linux with automatic toolchain upgrades disabled. The vulnerability scan and current/legacy official SDK interoperability checks also run on pull requests.
 
+Normal pushes to `main` do not trigger CI. Pull requests keep the regular checks;
+the existing daily schedule and ordinary manual runs also keep those checks.
+At release time, the release gate dispatches a fresh pre-release CI run on `main`.
+Every test job checks out the immutable tagged source SHA supplied by the gate,
+including when recovering an older release after `main` has advanced.
+The five-platform **Binary distribution** matrix runs on every PR and in
+pre-release CI.
+Synchronized releases additionally run **Kubernetes manifests and Helm** regardless
+of changed paths. Publication requires that specific CI run and every required
+binary/Kubernetes job to succeed; missing or skipped checks do not qualify.
+
+On ordinary PRs, **Kubernetes manifests and Helm** runs only with relevant changes:
+Kubernetes manifests, Helm charts, Kubernetes examples/tests, packaging and runtime
+scripts, configuration schema, test dependencies, or container
+build inputs (Dockerfile, Docker ignore rules, Go modules and production Go source).
+Documentation-only, CI-workflow-only and Go test-only changes skip this job. PRs compare
+against their merge base. Scheduled and ordinary manual CI runs skip Kubernetes.
+If PR path detection fails, the Kubernetes job runs so a detector failure cannot
+silently bypass validation.
+
 Run the checks locally before opening a PR:
 
 ```bash

@@ -2,6 +2,18 @@
 
 The commands below install the published v0.12.0 release. See [publication verification](releases/verification-v0.12.0.md).
 
+Choose a distribution:
+
+| Method | Instructions |
+|---|---|
+| Standalone binary (Linux, macOS, Windows) | Platform downloads and commands below |
+| Docker Hub or GHCR | [Run the container](#container-image) |
+| Kubernetes / Helm | [Chart and manifests](#kubernetes-and-helm-source-installation), [Kubernetes guide](kubernetes.md) |
+| Linux DEB/RPM, Homebrew/Scoop manifests | [Package channels](#package-channels-phase-13-v0110) |
+| OCI release-file bundle | [ORAS download](distribution.md#installation-examples) |
+
+Python/PyPI and JavaScript/npm SDKs are planned and not published.
+
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
 | Platform | Archive suffix |
