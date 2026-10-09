@@ -15,7 +15,7 @@ MINOR — backward-compatible functionality (new adapters, new checks, new flags
 PATCH — backward-compatible bug fixes
 ```
 
-Until [AgentHealth 1.0](ROADMAP.md#agenthealth-10), the project is pre-1.0 (`0.y.z`): breaking changes may occur in minor releases, but will be called out in release notes.
+Until [AgentHealth 1.0](docs/roadmap-details.md#agenthealth-10), the project is pre-1.0 (`0.y.z`): breaking changes may occur in minor releases, but will be called out in release notes.
 
 ## Release labels
 

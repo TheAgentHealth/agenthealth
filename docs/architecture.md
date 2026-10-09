@@ -1,10 +1,10 @@
 # Architecture Decisions
 
-This document records the architecture decisions made in [Phase 0 — Project Foundation](../ROADMAP.md#phase-0--project-foundation). It complements the narrative [Architecture](../README.md#architecture) and [Adapter Architecture](../README.md#adapter-architecture) sections in the README, and the normative [spec/](../spec/README.md) documents.
+This document records the architecture decisions made in [Phase 0 — Project Foundation](../ROADMAP.md#phase-0--project-foundation). It complements the narrative [Architecture](project-reference.md#architecture) and [Adapter Architecture](project-reference.md#adapter-architecture) sections in the README, and the normative [spec/](../spec/README.md) documents.
 
 ## Repository strategy
 
-**Decision:** single repository (monorepo). See [Repository Structure](../README.md#repository-structure).
+**Decision:** single repository (monorepo). See [Repository Structure](project-reference.md#repository-structure).
 
 ## Core implementation language
 
@@ -12,12 +12,12 @@ This document records the architecture decisions made in [Phase 0 — Project Fo
 
 Rationale:
 
-- Compiles to a single static binary per platform, matching the project's "standalone binary + Docker + Kubernetes" distribution model (see [Distribution](../README.md#distribution)) without requiring a language runtime on the target machine.
+- Compiles to a single static binary per platform, matching the project's "standalone binary + Docker + Kubernetes" distribution model (see [Distribution](project-reference.md#distribution)) without requiring a language runtime on the target machine.
 - Well-suited to CLIs that talk to many network protocols concurrently (HTTP, MCP, A2A, databases) — mirrors the implementation language of comparable infrastructure CLIs (`kubectl`, `terraform`, `docker`).
 - Straightforward cross-compilation for Linux/macOS/Windows and AMD64/ARM64, needed for [Phase 13 — Standalone Binaries](../ROADMAP.md#phase-13--standalone-binaries).
 - Mature container/Kubernetes ecosystem tooling, relevant to [Phase 14 — Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration).
 
-Python and JavaScript/TypeScript are not used for the core engine; they remain **SDKs that wrap the reference implementation** (see [Phase 15](../ROADMAP.md#phase-15--python-sdk--pypi) and [Phase 16](../ROADMAP.md#phase-16--javascript--typescript-sdk)), consistent with ["AgentHealth itself is not a Python-specific standard."](../README.md#python--pypi)
+Python and JavaScript/TypeScript are not used for the core engine; they remain **SDKs that wrap the reference implementation** (see [Phase 15](../ROADMAP.md#phase-15--python-sdk--pypi) and [Phase 16](../ROADMAP.md#phase-16--javascript--typescript-sdk)), consistent with ["AgentHealth itself is not a Python-specific standard."](project-reference.md#python--pypi)
 
 ## CLI architecture
 

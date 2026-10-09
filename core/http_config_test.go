@@ -8,6 +8,8 @@ import (
 func TestHTTPConfiguration(t *testing.T) {
 	prefix := "version: v1\ntargets:\n  - name: http\n    type: http\n    endpoint: https://example.com\n"
 	valid := []string{
+		"    http:\n      method: GET\n",
+		"    http:\n      method: HEAD\n",
 		"    http: {}\n",
 		"    http:\n      expected_status: [200, 204]\n      headers:\n        Content-Type: application/json\n",
 		"    checks: [functional]\n    http:\n      body_contains: ready\n      max_body_bytes: 1024\n",
@@ -18,6 +20,10 @@ func TestHTTPConfiguration(t *testing.T) {
 		}
 	}
 	invalid := []string{
+		"    http:\n      method: ''\n",
+		"    http:\n      method: null\n",
+		"    http:\n      method: POST\n",
+		"    http:\n      method: get\n",
 		"    http: null\n",
 		"    http:\n      unknown: true\n",
 		"    http:\n      expected_status: []\n",

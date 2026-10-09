@@ -180,3 +180,7 @@ package with `gh attestation verify <chart.tgz> --repo TheAgentHealth/agenthealt
 --signer-workflow TheAgentHealth/agenthealth/.github/workflows/helm-release.yml`
 and the exact release commit, then verify its SHA-256. GPG Helm `.prov` signing
 remains separate future work.
+
+## Trust boundary
+
+See the [threat model](threat-model.md) for trusted configuration, credential handling, network access, output limits and in-process adapter isolation. A shared process is not a boundary for mutually untrusted tenants.

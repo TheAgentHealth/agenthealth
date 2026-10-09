@@ -46,3 +46,7 @@ aggregate readiness; `/live` drives process liveness/startup. Unlike CLI exec
 probes, AHP readiness can accept DEGRADED. Refresh timing, protected endpoint
 authorization and graceful shutdown retain this guide's existing behavior.
 See the [deployment guide](kubernetes.md) for Secrets and network exposure.
+
+## Trust boundary
+
+See the [threat model](threat-model.md) for trusted configuration, credential handling, network access, output limits and in-process adapter isolation. A shared process is not a boundary for mutually untrusted tenants.

@@ -56,6 +56,8 @@ MARKER_RE = re.compile(
 FILES_TO_CHECK = [
     ROOT / "README.md",
     ROOT / "ROADMAP.md",
+    ROOT / "docs" / "project-reference.md",
+    ROOT / "docs" / "roadmap-details.md",
     ROOT / "spec" / "result-schema.md",
     ROOT / "spec" / "configuration.md",
     ROOT / "spec" / "protocol.md",

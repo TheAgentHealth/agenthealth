@@ -23,7 +23,9 @@ AgentHealth configuration is trusted executable input. Review endpoints, MCP std
 
 Configuration can execute a configured stdio program with selected environment credentials, contact loopback or private-network services (including cloud metadata endpoints), acquire OAuth tokens, and write configured token files. Passive checks and active-check opt-in do not sandbox subprocesses or restrict network destinations. Run with only the credentials, filesystem permissions, and network access needed for the intended checks.
 
-AHP service mode remains planned. Its design must address network egress and target allowlists, stdio enablement, authorization, topology redaction, freshness, and rate limiting before accepting remote requests.
+AHP service mode is implemented since v0.9.0 and remains experimental; Helm defaults to serve mode. Detailed routes require a configured bearer token, while public routes expose aggregate status and observation time. Checks refresh independently of requests and freshness is enforced. The server has no built-in rate limiter or global egress allowlist; remote deployments need HTTPS, ingress controls and proxy limits. See the [threat model](docs/threat-model.md) for current controls, deployment requirements and residual risks.
+
+In-process adapters are trusted code: a timed-out call can continue running and retain its concurrency slot until it returns. Do not use a shared engine for mutually untrusted tenant configurations. Separate workloads, credentials, token storage and network access are required.
 
 ## Security principles
 
@@ -32,7 +34,7 @@ Because AgentHealth routinely interacts with credentials and production infrastr
 - Never print secrets or authentication material in output, logs, or diagnostics.
 - Redact credentials even in verbose/debug modes.
 - Health checks are non-destructive by default.
-- Checks that could have side effects (invoking a tool, running inference, writing data) must be explicit, opt-in **active** checks — see [Passive vs Active Checks](README.md#passive-vs-active-checks).
+- Checks that could have side effects (invoking a tool, running inference, writing data) must be explicit, opt-in **active** checks — see [Passive vs Active Checks](docs/project-reference.md#passive-vs-active-checks).
 - Secure defaults: TLS verification enabled by default, no insecure fallback without explicit opt-in.
 - Configurable timeouts to avoid checks hanging indefinitely or being used as a denial-of-service vector against targets.
 - Adapters must document the permissions/credentials their checks require (see [Adapter Contract](spec/adapter-spec.md)).
@@ -41,6 +43,6 @@ Because AgentHealth routinely interacts with credentials and production infrastr
 
 This policy covers the `agenthealth` core engine, CLI, official adapters, official SDKs (Python/JavaScript) and official Docker images/Helm charts when officially published from this repository. Community adapters outside this repository are out of scope and should publish their own security policy.
 
-## Future: Agent Health Protocol (AHP)
+## Experimental Agent Health Protocol (AHP)
 
-Once [AHP](spec/protocol.md) moves beyond proposed/experimental status, its own security requirements (information disclosure, authentication of health endpoints, dependency redaction, rate limiting) will be defined in [spec/protocol.md](spec/protocol.md) and enforced through conformance testing.
+The current [AHP contract](spec/protocol.md) defines the implemented HTTP binding. The [serving guide](docs/ahp.md) and [threat model](docs/threat-model.md) document authorization, topology exposure, freshness and deployment limits. Broader conformance, scoped authorization and stronger isolation remain future work. Security principles are implementation obligations, not a guarantee that arbitrary adapter output contains no secrets.

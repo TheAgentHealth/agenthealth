@@ -57,7 +57,7 @@ def check_file(path: pathlib.Path, errors: list) -> None:
 def main() -> int:
     errors: list = []
     for md_file in sorted(ROOT.rglob("*.md")):
-        if ".git" in md_file.parts:
+        if any(part in {".git", "node_modules", ".venv", "venv"} for part in md_file.parts):
             continue
         check_file(md_file, errors)
 

@@ -28,7 +28,13 @@ func (a Adapter) Check(ctx context.Context, r core.Request, dimension string) (c
 		return core.Observation{Check: core.CheckResult{Status: core.Healthy}}, nil
 	}
 	method := http.MethodHead
-	if dimension == "functional" || a.ReadinessGET {
+	if a.ReadinessGET {
+		method = http.MethodGet
+	}
+	if r.Target.HTTP != nil && r.Target.HTTP.Method != "" {
+		method = r.Target.HTTP.Method
+	}
+	if dimension == "functional" {
 		method = http.MethodGet
 	}
 	request, err := http.NewRequestWithContext(ctx, method, r.Target.Endpoint, nil)
