@@ -1,14 +1,14 @@
 # AgentHealth Helm chart
 
-Chart 0.1.0 pins CLI v0.11.1 and defaults to serving experimental AHP.
-`mode` accepts `serve`, `job`, or `cronjob`. Configure inline YAML through
-`--set-file config=<path>`, or mount an `existingConfigMap` with key
-`config.yaml`. `image.digest` overrides the explicit image tag.
+Chart 0.12.0 pins CLI v0.12.0 and defaults to serving experimental AHP.
+`mode` accepts `serve`, `job`, or `cronjob`. Supply inline YAML with
+`--set-file config=<path>` or an existing ConfigMap with key `config.yaml`.
+`image.digest` overrides the explicit image tag.
 
-See the [guide](../../../docs/kubernetes.md) and
-[scenarios](../../../examples/kubernetes/README.md) for both registry references,
-installation, Secrets, limitations and validation. Chart 0.1.0 was published
-under historical helm-v0.1.0; the existing workflow still uses that trigger.
-The next release must synchronize chart/CLI version 0.12.0 and publish the
-chart to GHCR and GitHub Releases. See the
-[distribution plan](../../../docs/distribution.md); OCI publishing is not implemented yet.
+The chart and CLI now share the software release version and `v*` source tag.
+The release workflow attaches the chart to the common GitHub Release and
+publishes `oci://ghcr.io/theagenthealth/charts/agenthealth`. Publication requires
+an authorized tag; source preparation alone does not make v0.12.0 available.
+See [distribution](../../../docs/distribution.md),
+[the guide](../../../docs/kubernetes.md) and
+[scenarios](../../../examples/kubernetes/README.md).

@@ -67,7 +67,7 @@ remain separate. Preserve historical CLI v0.11.1/chart 0.1.0 releases.
 The GitHub Release is the complete download/installation page. GitHub Packages
 provides GHCR Docker, OCI Helm and OCI binary distribution. Helm chart metadata
 uses the numeric release version and matching CLI appVersion/image references.
-OCI chart and binary publication are planned work, not currently available.
+OCI chart/binary publishing is implemented in source; v0.12.0 publication is pending.
 See the canonical [release policy](RELEASING.md#component-versions-and-synchronized-distribution)
 and [distribution plan](docs/distribution.md).
 
@@ -1035,8 +1035,8 @@ corresponding release tag.
 The next release is v0.12.0, superseding the independently numbered first chart.
 The following implementation work is required before that release is complete:
 
-- [ ] Coordinate all formats under one immutable v0.12.0 tag and GitHub Release.
-- [ ] Set chart version 0.12.0, appVersion v0.12.0 and matching current image/install references when publishing.
+- [x] Implement coordinated publication under one immutable software tag and GitHub Release; v0.12.0 tagging/publication remains pending.
+- [x] Set chart version 0.12.0, appVersion v0.12.0 and matching current image/install references when publishing.
 - [ ] Publish the Helm chart to GHCR as an OCI chart and attach its package to the release.
 - [ ] Publish a GHCR OCI binary bundle with archives, packages, channel manifests, SBOMs and checksums.
 - [ ] Link all three package identities to this repository and verify anonymous access.

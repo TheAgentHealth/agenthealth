@@ -106,14 +106,15 @@ mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
 which is only pushed to GHCR.
 
-v0.11.0 is available from both registries:
+v0.12.0 references below are prepared for publication. The last published
+v0.11.1 image remains available from both registries:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.1 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.12.0 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.11.1 version
+docker run --rm theagenthealth/agenthealth:v0.12.0 version
 ```
 
 See [installation.md](installation.md) for standalone binary archives and
@@ -130,5 +131,5 @@ The chart consumes the published image. The
 [application-image example](../examples/kubernetes/Dockerfile.exec-probe) copies
 the CLI into a derived image for application-container exec readiness probes.
 
-v0.11.1 rebuilds the CLI image with Go 1.27.2 to fix GO-2026-6617. Both
-registry references above use the patched CLI version.
+v0.12.0 retains the Go 1.27.2 rebuild that fixed GO-2026-6617 in v0.11.1.
+Both registry references use the same software release version.

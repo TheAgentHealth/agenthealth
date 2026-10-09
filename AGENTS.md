@@ -134,9 +134,9 @@ them to this repository. Helm uses `version: X.Y.Z`, `appVersion: vX.Y.Z` and
 matching image references. Future SDKs adopt the shared version when implemented;
 contract versions remain separate. Do not reuse historical CLI or chart tags.
 
-The current workflows/helper still publish CLI and chart separately and lack
-OCI chart/binary publication. Implement coordinated publication before claiming
-the new policy is supported. Follow [the distribution checklist](docs/distribution.md);
+The shared workflow/helper implements coordinated source builds, signed draft
+staging and OCI chart/binary publication. Source preparation is complete;
+verify the actual publication before claiming new versions are available. Follow [the distribution checklist](docs/distribution.md);
 verify all required jobs, signed provenance, checksums, package contents and
 anonymous access before declaring the release complete. OCI binary retrieval
 uses an artifact client, not Docker or Helm install. Preserve ordinary releases.

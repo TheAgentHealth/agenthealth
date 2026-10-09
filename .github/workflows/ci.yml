@@ -212,7 +212,7 @@ jobs:
       - name: Validate and package chart
         run: |
           python3 -m pytest tests/kubernetes -q
-          CHART_TAG=$(python3 -c 'import yaml; print("helm-v" + yaml.safe_load(open("deploy/helm/agenthealth/Chart.yaml"))["version"])')
+          CHART_TAG=$(python3 -c 'import yaml; print("v" + yaml.safe_load(open("deploy/helm/agenthealth/Chart.yaml"))["version"])')
           python3 scripts/package_helm.py "$CHART_TAG" --output chart-dist
       - name: Runtime scenarios
         run: |

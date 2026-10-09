@@ -1,5 +1,7 @@
 # Install AgentHealth
 
+The commands below target the prepared v0.12.0 release. Until publication completes, v0.11.1 remains the latest published CLI release.
+
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
 | Platform | Archive suffix |
@@ -13,10 +15,10 @@ Download the archive for your operating system and CPU from [GitHub Releases](ht
 ## Linux x86-64 example
 
 ```bash
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.11.1/agenthealth_v0.11.1_linux_amd64.tar.gz
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.11.1/checksums.txt
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.12.0/agenthealth_v0.12.0_linux_amd64.tar.gz
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.12.0/checksums.txt
 sha256sum --check --ignore-missing checksums.txt
-tar -xzf agenthealth_v0.11.1_linux_amd64.tar.gz
+tar -xzf agenthealth_v0.12.0_linux_amd64.tar.gz
 ./agenthealth version
 ./agenthealth ping http https://example.com
 ```
@@ -41,12 +43,12 @@ With Go 1.23 or newer:
 ```bash
 git clone https://github.com/TheAgentHealth/agenthealth.git
 cd agenthealth
-git checkout v0.11.1
-go build -ldflags '-X main.version=v0.11.1' -o agenthealth ./cmd/agenthealth
+git checkout v0.12.0
+go build -ldflags '-X main.version=v0.12.0' -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.11.1 security release rebuilds existing package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
+See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.12.0 security release rebuilds existing package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
 
 Phase 10 graph fields require v0.8.0 or newer. Existing nested configurations remain valid.
 The [graph example](../examples/graph-check/README.md) requires configured services
@@ -54,15 +56,15 @@ and a safe runtime handler.
 
 ## Verify provenance and SBOMs
 
-Each archive has a matching `agenthealth_v0.11.1_<os>_<arch>.cdx.json` CycloneDX
+Each archive has a matching `agenthealth_v0.12.0_<os>_<arch>.cdx.json` CycloneDX
 1.6 SBOM describing linked Go modules, the standard-library version and the
 executable SHA-256. `checksums.txt` covers both archives and SBOMs.
 
 With a current GitHub CLI supporting `gh attestation`:
 
 ```bash
-gh attestation verify agenthealth_v0.11.1_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
-gh attestation verify agenthealth_v0.11.1_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
+gh attestation verify agenthealth_v0.12.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
+gh attestation verify agenthealth_v0.12.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
 ```
 
 Attestations bind artifacts to this repository’s release workflow through a
@@ -87,14 +89,14 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured; v0.11.1 is published to both:
+tags when mirror credentials are configured; v0.12.0 references are prepared for publication:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.1 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.12.0 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.11.1 version
+docker run --rm theagenthealth/agenthealth:v0.12.0 version
 ```
 
 To build the image locally:
@@ -166,12 +168,11 @@ installation across distributions and public channel hosting remain follow-up wo
 
 ## Kubernetes and Helm source installation
 
-Phase 14 provides [manifests](../deploy/kubernetes/), a
+Phase 14 provides [manifests](../deploy/kubernetes/), the
 [Helm chart](../deploy/helm/agenthealth/) and
-[runnable scenarios](../examples/kubernetes/README.md) in source. Chart 0.1.0
-pins the released CLI v0.11.1 image and was released separately as `helm-v0.1.0`. Use the
-[Kubernetes guide](kubernetes.md) for both registry choices, installation from
-a reviewed checkout and direct release-URL installation. The next release
-will synchronize versions and add GHCR OCI chart/binary publication; those
-channels are not available yet. See [the distribution plan](distribution.md).
-Existing archive/package installation remains available.
+[runnable scenarios](../examples/kubernetes/README.md). Source chart 0.12.0
+pins CLI v0.12.0 and publishes through the shared release workflow. The
+historical chart 0.1.0 remains available as helm-v0.1.0, pinning CLI v0.11.1.
+See [Kubernetes](kubernetes.md) and [distribution](distribution.md) for direct
+release downloads, OCI Helm install and ORAS binary retrieval. New v0.12.0
+channels become available only after publication and verification.

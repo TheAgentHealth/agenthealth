@@ -1,48 +1,16 @@
-name: Helm chart release
+name: Legacy chart release (retired)
 
 on:
-  push:
-    tags: ['helm-v*']
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  chart:
+  notice:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: write
-      id-token: write
-      attestations: write
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version: '1.27.2'
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.12'
-      - name: Install validation tools
+      - name: Explain synchronized publication
         run: |
-          go install helm.sh/helm/v3/cmd/helm@v3.17.3
-          pip install -r tests/requirements.txt
-      - name: Validate and package component
-        env:
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: |
-          python3 -m pytest tests/kubernetes -q
-          python3 scripts/check_markdown_links.py
-          python3 scripts/package_helm.py "$RELEASE_TAG" --output chart-dist
-      - name: Attest chart package and checksums
-        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
-        with:
-          subject-path: chart-dist/*
-      - name: Publish chart release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: |
-          gh release create "$RELEASE_TAG" chart-dist/agenthealth-*.tgz chart-dist/checksums.txt \
-            --verify-tag --latest=false --title "AgentHealth chart ${RELEASE_TAG#helm-v}" \
-            --notes-file "docs/releases/$RELEASE_TAG.md"
+          echo 'New charts publish with the CLI through release.yml and one shared vX.Y.Z tag.'
+          echo 'Historical helm-v0.1.0 assets remain immutable; rerun their original workflow only for authorized historical recovery.'

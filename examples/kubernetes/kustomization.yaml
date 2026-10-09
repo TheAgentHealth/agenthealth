@@ -14,4 +14,4 @@ configMapGenerator:
       - config.yaml=agenthealth.yaml
 images:
   - name: ghcr.io/theagenthealth/agenthealth
-    newTag: v0.11.1
+    newTag: v0.12.0

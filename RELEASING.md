@@ -69,12 +69,12 @@ coordinated release. Do not create another `helm-v*` release for the new policy.
 Do not announce success until every required distribution has published and its
 public accessibility, provenance, hashes and contents have been verified.
 
-**Implementation status:** the existing workflows still publish CLI `v*` and
-historical `helm-v*` releases separately. Docker GHCR publication is implemented;
-OCI chart and binary-bundle publication and coordinated release completion must
-be implemented before publishing the synchronized release. See the
-[distribution plan](docs/distribution.md) for package names, user commands and
-the v0.12.0 checklist. Documentation changes alone do not publish packages.
+**Implementation status:** synchronized publication is implemented in source in
+[release.yml](.github/workflows/release.yml). It builds a complete checksum set,
+stages a signed draft, publishes Docker/chart/binary OCI packages and gates
+public release completion on all required jobs and anonymous package access.
+v0.12.0 has not been published. See [distribution](docs/distribution.md) for
+package names, commands, visibility recovery and remaining publication checks.
 
 ## Release steps (current, pre-1.0)
 
@@ -86,7 +86,7 @@ the v0.12.0 checklist. Documentation changes alone do not publish packages.
    - Linux packages and Homebrew/Scoop manifests once Phase 13 tooling is included.
    The next synchronized release must also attach the same-version Helm chart
    and publish the chart/binary OCI packages through coordinated jobs. The
-   existing separate workflows must be updated before that release.
+   shared workflow stages the draft and waits for all required publication jobs.
 4. Publish release notes summarizing changes, including any breaking changes and migration notes.
 
 **First container release only:** GitHub creates a new organization package as
@@ -177,12 +177,15 @@ release, use the shared `vX.Y.Z` tag, chart `version: X.Y.Z`, CLI
 `appVersion: vX.Y.Z` and the matching image. Attach the chart package to the same
 GitHub release as the CLI and publish it as a GHCR OCI chart.
 
-The existing [chart workflow](.github/workflows/helm-release.yml) and
-[packaging helper](scripts/package_helm.py) currently expect `helm-v*` tags and
-component notes. They must accept the shared release context before v0.12.0.
-A release coordinator must prevent duplicate release creation and conflicting
-checksum uploads. Generate the complete checksum manifest after all asset
-formats, including the chart, are prepared; sign the final assets/manifests.
+The [shared workflow](.github/workflows/release.yml) consumes the software tag.
+The [chart helper](scripts/package_helm.py) requires matching chart/app/image
+versions and normalizes the package for deterministic provenance-backed recovery.
+The [asset helper](scripts/prepare_synchronized_release.py) verifies the complete
+CLI set, adds the chart and regenerates one checksum manifest before signing.
+The [OCI publisher](scripts/publish_oci.py) consumes those exact signed files,
+links source/revision/version annotations, refuses to replace differing existing
+versions and verifies anonymous access to all asset blobs. The historical
+[chart workflow](.github/workflows/helm-release.yml) no longer responds to tags.
 
 Release notes must link to `deploy/kubernetes`, `deploy/helm/agenthealth` and
 `examples/kubernetes` at the shared tag and include both chart download and OCI
