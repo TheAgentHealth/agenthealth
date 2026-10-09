@@ -1,7 +1,7 @@
 # Kubernetes integration
 
 Phase 14 is implemented in source. The chart is version **0.1.0**, with
-`appVersion: v0.11.0`. Chart publication is independent of CLI releases.
+`appVersion: v0.11.1`. Chart publication is independent of CLI releases.
 The deployment files require Kubernetes 1.29 or newer; the runtime smoke suite
 uses Kubernetes 1.32.2. Only versions actually exercised are listed in the
 [alignment audit](phase-14-alignment.md).
@@ -14,21 +14,22 @@ They consume the existing executable without changing AHS, AHP or CLI contracts.
 
 Both public references for the pinned CLI version are:
 
-- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.11.0`
-- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.11.0`
+- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.11.1`
+- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.11.1`
 
-Anonymous registry manifest retrieval verified both on October 8, 2026.
+These references are the v0.11.1 security-release targets. Verify anonymous
+registry availability before installing from either registry.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
 reference in each AgentHealth container, including init containers. Registry
 index digests differ; use the digest verified for the chosen registry.
 
 ```bash
-helm lint deploy/helm/agenthealth --strict
-helm template agenthealth deploy/helm/agenthealth
+helm lint deploy/helm/agenthealth --strict --kube-version 1.32.2
+helm template agenthealth deploy/helm/agenthealth --kube-version 1.32.2
 helm upgrade --install agenthealth deploy/helm/agenthealth \
   --set image.repository=docker.io/theagenthealth/agenthealth \
-  --set image.tag=v0.11.0 \
+  --set image.tag=v0.11.1 \
   --set-file config=examples/kubernetes/agenthealth.yaml
 ```
 
@@ -50,8 +51,11 @@ instantaneous application probe. See [AHP serving](ahp.md).
 
 The exec example uses the absolute binary path with no shell. The CLI must be
 present in the probed container; Kubernetes cannot run a sidecar's executable
-inside the application container. Its 10-second probe timeout exceeds the sample
-five-second check budget. Only HEALTHY/exit 0 passes. DEGRADED/1 and all other
+inside the application container. Each sample target and dependency has its own five-second budget and
+two-second per-check deadline. Nodes run concurrently, and the exec readiness
+probe allows ten seconds for checks and output. A parent budget does not bound
+its dependencies. Increase the probe deadline or bound every node when changing
+this configuration. Only HEALTHY/exit 0 passes. DEGRADED/1 and all other
 nonzero exits fail, even when an optional dependency caused degradation. AHP
 readiness follows its separately defined aggregate contract, so it can accept
 DEGRADED. Choose the behavior deliberately. Kubernetes may restart a container
@@ -87,7 +91,7 @@ kubectl -n agenthealth-demo apply -k examples/kubernetes
 ```
 
 Edit the Kustomize `images` entry's `newName` to choose either registry listed
-above and keep `newTag: v0.11.0`. Do not combine these examples with separately
+above and keep `newTag: v0.11.1`. Do not combine these examples with separately
 installed same-name resources in the same namespace.
 
 For an application-container exec probe, the optional
@@ -101,10 +105,10 @@ docker build -f examples/kubernetes/Dockerfile.exec-probe \
 docker run --rm --entrypoint /usr/local/bin/agenthealth agenthealth-demo-exec:local version
 ```
 
-Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.11.0`
+Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.11.1`
 to use the mirror. Mount the reviewed configuration and Secret references in
 the application container; use the absolute executable path shown in the exec
-probe example. Startup should normally check the application's own process
+probe example. Startup should check the application's own process
 rather than its supporting dependencies.
 
 Shared-dependency readiness affects every application replica that uses the
@@ -168,3 +172,9 @@ ideas from [sharath568's PR #15](https://github.com/TheAgentHealth/agenthealth/p
 and [issue #13](https://github.com/TheAgentHealth/agenthealth/issues/13).
 They are integrated into the Phase 14 layout, existing exit contracts and
 independent Helm release policy. Superseded Phase 12 changes were not imported.
+
+Chart packages and checksums have GitHub-signed build provenance. Verify the
+package with `gh attestation verify <chart.tgz> --repo TheAgentHealth/agenthealth
+--signer-workflow TheAgentHealth/agenthealth/.github/workflows/helm-release.yml`
+and the exact release commit, then verify its SHA-256. GPG Helm `.prov` signing
+remains separate future work.

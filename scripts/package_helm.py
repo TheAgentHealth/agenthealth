@@ -25,7 +25,7 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     if any(args.output.iterdir()):
         parser.error('output directory must be empty')
-    subprocess.run(['helm', 'lint', str(chart), '--strict'], check=True)
+    subprocess.run(['helm', 'lint', str(chart), '--strict', '--kube-version', '1.32.2'], check=True)
     subprocess.run(['helm', 'package', str(chart), '--destination', str(args.output)], check=True)
     package = args.output / f"agenthealth-{metadata['version']}.tgz"
     checksum = hashlib.sha256(package.read_bytes()).hexdigest()

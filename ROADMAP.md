@@ -1072,7 +1072,7 @@ readinessProbe:
 - [x] Secret integration
 - [x] Helm examples
 - [x] Deployment validation
-- [x] Readiness examples for first agents, downstream agents, and gateway/router paths using the updated AHS results
+- [x] Readiness examples for direct agents, composite agents, and gateway/router paths using the updated AHS results
 
 ## Future Exploration
 

@@ -6,7 +6,10 @@ data:
   config.yaml: "version: v1\ntargets:\n- name: direct-agent\n  type: agent\n  endpoint:\
     \ http://demo:8080/health\n  timeout_ms: 2000\n  budget_ms: 5000\n  dependencies:\n\
     \  - name: composite-agent\n    type: agent\n    endpoint: http://demo:8080/peer\n\
-    \    agent:\n      required_capabilities:\n      - answer\n  - name: gateway-readiness\n\
-    \    type: gateway\n    endpoint: http://demo:8080/ready\n  - name: router-readiness\n\
-    \    type: router\n    endpoint: http://demo:8080/ready\n  - name: configured-route\n\
-    \    type: http\n    endpoint: http://demo:8080/route\n    checks:\n    - protocol\n"
+    \    agent:\n      required_capabilities:\n      - answer\n    timeout_ms: 2000\n\
+    \    budget_ms: 5000\n    retries: 0\n  - name: gateway-readiness\n    type: gateway\n\
+    \    endpoint: http://demo:8080/ready\n    timeout_ms: 2000\n    budget_ms: 5000\n\
+    \    retries: 0\n  - name: router-readiness\n    type: router\n    endpoint: http://demo:8080/ready\n\
+    \    timeout_ms: 2000\n    budget_ms: 5000\n    retries: 0\n  - name: configured-route\n\
+    \    type: http\n    endpoint: http://demo:8080/route\n    checks:\n    - protocol\n\
+    \    timeout_ms: 2000\n    budget_ms: 5000\n    retries: 0\n"

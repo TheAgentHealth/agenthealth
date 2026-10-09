@@ -82,6 +82,21 @@ def main():
             time.sleep(1)
         else:
             raise AssertionError('Init container did not block startup during dependency outage')
+        # Process startup must succeed even while dependency readiness is failing.
+        apply('deploy/kubernetes/deployment.yaml')
+        apply('examples/kubernetes/exec-probes.yaml')
+        deadline = time.monotonic() + 75
+        while time.monotonic() < deadline:
+            pod_groups = [json.loads(kube('get', 'pods', '-l', selector, '-o', 'json').stdout)['items']
+                          for selector in ('app=agenthealth', 'app=agenthealth-exec')]
+            if all(pods and all(c.get('started', False) for pod in pods for c in pod['status'].get('containerStatuses', []))
+                   and all(pod['status'].get('containerStatuses') for pod in pods) for pods in pod_groups):
+                break
+            time.sleep(1)
+        else:
+            raise AssertionError('Monitor process startup was blocked by a dependency outage')
+        wait_readiness(False)
+        wait_readiness(False, 'app=agenthealth-exec')
         kube('scale', 'deployment/demo', '--replicas=1')
         kube('rollout', 'status', 'deployment/demo', '--timeout=90s')
         kube('rollout', 'status', 'deployment/demo-init', '--timeout=90s')
@@ -110,7 +125,7 @@ def main():
         kube('create', 'job', 'scheduled-check', '--from=cronjob/agenthealth-check')
         wait_job('scheduled-check')
         for mode in ('serve', 'job', 'cronjob'):
-            command = ['helm', 'template', 'chart-' + mode, str(ROOT / 'deploy/helm/agenthealth'), '--set', 'mode=' + mode]
+            command = ['helm', 'template', '--kube-version', '1.32.2', 'chart-' + mode, str(ROOT / 'deploy/helm/agenthealth'), '--set', 'mode=' + mode]
             if args.image:
                 repository, tag = args.image.rsplit(':', 1)
                 command.extend(['--set', 'image.repository=' + repository, '--set', 'image.tag=' + tag])

@@ -1,6 +1,6 @@
 # AgentHealth Helm chart
 
-Chart 0.1.0 pins CLI v0.11.0 and defaults to serving experimental AHP.
+Chart 0.1.0 pins CLI v0.11.1 and defaults to serving experimental AHP.
 `mode` accepts `serve`, `job`, or `cronjob`. Configure inline YAML through
 `--set-file config=<path>`, or mount an `existingConfigMap` with key
 `config.yaml`. `image.digest` overrides the explicit image tag.

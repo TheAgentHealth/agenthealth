@@ -1,17 +1,17 @@
 # AgentHealth Helm chart 0.1.0
 
-Prepared component release notes; this chart has not been published yet.
+Chart component release; published independently of the CLI.
 
-Chart 0.1.0 pins CLI `v0.11.0` (`appVersion`) and supports AHP Deployment,
+Chart 0.1.0 pins CLI `v0.11.1` (`appVersion`) and supports AHP Deployment,
 one-shot Job and CronJob modes, read-only ConfigMap configuration and existing
 Secret references. Kubernetes runtime scenarios were validated on kind 1.32.2
 with Helm 3.17.3 on Linux AMD64. The declared manifest floor is Kubernetes 1.29;
 other cluster versions have not been runtime validated.
 
-Both public CLI image references were verified on October 8, 2026:
+CLI image references (verify both before chart publication):
 
-- Default: `ghcr.io/theagenthealth/agenthealth:v0.11.0`
-- Optional mirror: `docker.io/theagenthealth/agenthealth:v0.11.0`
+- Default: `ghcr.io/theagenthealth/agenthealth:v0.11.1`
+- Optional mirror: `docker.io/theagenthealth/agenthealth:v0.11.1`
 
 Kustomize source examples and an optional application-image exec-probe pattern
 are also included. Selected operational patterns credit Sharath K (`sharath568`)
@@ -32,6 +32,8 @@ After publication, download the chart and `checksums.txt` from the component
 release, verify the checksum, and use a reviewed configuration:
 
 ```bash
+gh attestation verify agenthealth-0.1.0.tgz --repo TheAgentHealth/agenthealth \
+  --signer-workflow TheAgentHealth/agenthealth/.github/workflows/helm-release.yml
 sha256sum --check checksums.txt
 helm upgrade --install agenthealth ./agenthealth-0.1.0.tgz \
   --set-file config=./agenthealth.yaml
@@ -46,4 +48,5 @@ existing aggregate contract and snapshot interval. The chart exposes no Service
 or Ingress; configure network isolation and HTTPS when needed. Completed Jobs
 need a new release name for reruns or a deliberate workload deletion for updates.
 No CRDs, operator, admission policy, real product interoperability certification,
-or chart provenance signatures are included.
+or GPG-signed Helm `.prov` files are included. Chart package and checksum
+provenance is signed through GitHub Actions attestations.

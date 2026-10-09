@@ -6,7 +6,7 @@
 template:
   metadata:
     labels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
     annotations:
       checksum/config: {{ .Values.config | sha256sum | quote }}
   spec:
@@ -79,5 +79,5 @@ template:
     volumes:
       - name: config
         configMap:
-          name: {{ default (include "agenthealth.fullname" .) .Values.existingConfigMap }}
+          name: {{ default (include "agenthealth.fullname" .) .Values.existingConfigMap | quote }}
 {{- end -}}

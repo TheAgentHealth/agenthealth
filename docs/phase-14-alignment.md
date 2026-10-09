@@ -1,8 +1,8 @@
 # Phase 14 coverage and alignment
 
-Kubernetes integration is implemented in source and remains unpublished pending
-review. Chart 0.1.0 consumes the existing released CLI v0.11.0. No CLI release is
-needed for this deployment-only change. Component publication remains separate.
+Kubernetes integration is included in CLI v0.11.1 source and independently
+versioned chart 0.1.0. Chart 0.1.0 consumes CLI v0.11.1. CLI v0.11.1 rebuilds all distributions with Go 1.27.2 to fix GO-2026-6617;
+chart 0.1.0 pins that patched image. Component publication remains separate.
 
 ## Coverage
 
@@ -39,7 +39,7 @@ and [component workflow](../.github/workflows/helm-release.yml).
 | 9: Agent Router | [Router guide](agent-router.md#kubernetes-deployment) and example retain named signal/backend/route evidence; no product certification. |
 | 10: Graph | Nested configurations remain valid. No graph model changes; explicit graphs can be supplied in a ConfigMap. |
 | 11: AHP | Existing freshness and aggregate readiness preserved; startup/liveness use process health. No endpoint, authentication or refresh changes. |
-| 12: Docker | Both public v0.11.0 registry references verified anonymously; image build/entrypoint/security remain unchanged. |
+| 12: Docker | Both v0.11.1 registry references require publication verification; Go builder advances to 1.27.2; entrypoint/runtime security and CLI behavior stay unchanged. |
 | 13: Distribution | No archive/package changes; chart packages and release tags are independent of CLI assets. |
 
 ## Later phases
@@ -48,7 +48,7 @@ Phases 15–16 SDKs need no new contract: chart packaging does not provide SDK
 interfaces. Phase 21 CI integrations can reuse the explicit-context disposable
 cluster scenarios and failed-Job gate. Phase 25 must add real framework,
 A2A/MCP, gateway/router and Kubernetes-version interoperability rather than
-claiming fixture certification. Phase 26 must cover chart provenance/signing,
+claiming fixture certification. Phase 26 must cover Helm `.prov` signing and expanded provenance verification,
 registry digest maintenance, topology-specific network policy and broader
 cluster/security validation. Other future adapters, observability and plugin
 phases have no contract impact because Phase 14 only deploys existing commands.
@@ -69,10 +69,10 @@ architecture was exercised.
 
 The implementation is prepared on a review branch, including selected
 contributor improvements. The existing roadmap layout edit was preserved.
-No chart tag or component release was published. Release URL resolution and installation from the
+Release preparation does not itself publish a chart tag or component release. Release URL resolution and installation from the
 published chart await authorized publication and cannot be claimed from local
-source validation. Both image manifests were available anonymously on
-October 8, 2026; this does not guarantee future mirror availability.
+source validation. Both v0.11.0 baseline image manifests were available anonymously on
+October 8, 2026; v0.11.1 image verification is required before chart publication.
 
 ## Contributor integration
 
@@ -99,5 +99,5 @@ credit is recorded here, in the guide and in the integration commit.
 Historical release notes and RFC proposals are intentionally not rewritten.
 Phases 0–13 remain aligned through the impact/no-impact decisions above; physical
 edits to every earlier file are neither required nor evidence of behavioral changes.
-Chart publication, release-link verification, broader Kubernetes versions and real
-product interoperability remain explicitly outside source-completion claims.
+Publication and release-link verification are separate release checks; broader
+Kubernetes versions and real product interoperability remain future validation.

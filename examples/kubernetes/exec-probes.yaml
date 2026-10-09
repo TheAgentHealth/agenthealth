@@ -23,7 +23,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: agenthealth
-        image: ghcr.io/theagenthealth/agenthealth:v0.11.0
+        image: ghcr.io/theagenthealth/agenthealth:v0.11.1
         imagePullPolicy: IfNotPresent
         args:
         - serve
@@ -51,15 +51,11 @@ spec:
         - name: ahp
           containerPort: 8081
         startupProbe:
-          exec:
-            command:
-            - /usr/local/bin/agenthealth
-            - check
-            - /etc/agenthealth/config.yaml
-            - --format
-            - json
-          timeoutSeconds: 10
-          periodSeconds: 15
+          httpGet:
+            path: /live
+            port: ahp
+          timeoutSeconds: 2
+          periodSeconds: 5
           failureThreshold: 12
         livenessProbe:
           httpGet:

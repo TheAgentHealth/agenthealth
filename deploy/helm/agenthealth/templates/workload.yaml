@@ -15,7 +15,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- else if eq .Values.mode "cronjob" }}
   schedule: {{ .Values.schedule | quote }}
   concurrencyPolicy: Forbid

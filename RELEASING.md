@@ -134,7 +134,7 @@ Once 1.0 ships, the project commits to:
 
 Before 1.0, no such guarantee is made; this document exists to make pre-1.0 expectations explicit rather than leaving them undocumented.
 
-Release builds use Go 1.27.1 and govulncheck v1.8.0. Each published release
+Release builds use Go 1.27.2 and govulncheck v1.8.0. Each published release
 contains five archives, five matching SBOMs and checksums. Starting in v0.11.0, Phase 13 tooling also produces four DEB/RPM packages and two channel manifests. Verify provenance and
 SBOM attestations following [installation instructions](docs/installation.md#verify-provenance-and-sboms).
 
@@ -173,7 +173,7 @@ for an already published release.
 
 Phase 14 introduces independent `helm-v<chart-version>` releases through
 [the chart workflow](.github/workflows/helm-release.yml). CLI `v*` tags do not
-publish charts. Chart 0.1.0 has `appVersion: v0.11.0` and pins that released
+publish charts. Chart 0.1.0 has `appVersion: v0.11.1` and pins that released
 image. Change the chart version whenever templates or image defaults change.
 
 Prepare locally with `python3 scripts/package_helm.py helm-v0.1.0 --output
@@ -188,5 +188,7 @@ Notes must link to `deploy/kubernetes`, `deploy/helm/agenthealth` and
 record CLI/chart versions and actually validated Kubernetes versions, and show
 both same-version registry references. Verify anonymous image availability and
 all release links before announcement. Chart releases are not GitHub Latest,
-so they do not displace the CLI release. Chart signing/attestation is deferred
-to Phase 26; SHA-256 checksums alone do not establish publisher identity.
+so they do not displace the CLI release. The chart workflow signs package/checksum build provenance through GitHub
+Actions attestations. Verify those signatures with the chart signer workflow
+and exact tag commit. GPG-signed Helm `.prov` files remain deferred; SHA-256
+checksums alone do not establish publisher identity.

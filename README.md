@@ -15,7 +15,7 @@ and example coverage across Phases 0–26.
 
 Download the archive for your platform from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases), verify its checksum, and extract it. Downloaded binaries do not require Go. See [installation instructions](docs/installation.md) for platform commands and provenance verification.
 
-The v0.11.0 container image is published to GHCR at `ghcr.io/theagenthealth/agenthealth:v0.11.0` and Docker Hub at `theagenthealth/agenthealth:v0.11.0`; see [Docker distribution](docs/docker.md).
+The v0.11.0 container image is published to GHCR at `ghcr.io/theagenthealth/agenthealth:v0.11.1` and Docker Hub at `theagenthealth/agenthealth:v0.11.1`; see [Docker distribution](docs/docker.md).
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
@@ -76,7 +76,9 @@ The long-term scope includes these systems; the supported adapters above describ
 
 The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](docs/docker.md)); Kubernetes manifests and a Helm chart are implemented in source ([Phase 14 guide](docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
 
-**Release version: [v0.11.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.0).**
+**Release version: [v0.11.1](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.11.1).**
+v0.11.1 rebuilds CLI distributions with Go 1.27.2 and adds Phase 14 Kubernetes
+source integrations; chart 0.1.0 publishes independently. See [release notes](docs/releases/v0.11.1.md).
 Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](docs/releases/v0.11.0.md).
 Phase 12 adds an [official container image](docs/docker.md) published to GHCR with an optional Docker Hub mirror, build provenance, SBOM, and a signed attestation. See [release and migration notes](docs/releases/v0.10.0.md).
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
@@ -964,7 +966,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.1.0 are implemented but the chart has not been published.
+Standalone binaries and source builds are available; see [installation](docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](ROADMAP.md#phase-12--docker-distribution)); see [container usage](docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.1.0 are implemented; the chart publishes independently as `helm-v0.1.0`.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](docs/phase-13-alignment.md).
 
@@ -1002,14 +1004,14 @@ agenthealth --version
 
 AgentHealth can run without installing language runtimes. The image is a
 minimal, non-root distroless image for `linux/amd64` and `linux/arm64`.
-Both registries provide v0.11.0:
+Both registry references for v0.11.1:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.0 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.11.1 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.11.0 version
+docker run --rm theagenthealth/agenthealth:v0.11.1 version
 ```
 
 Example:
