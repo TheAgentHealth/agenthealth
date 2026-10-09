@@ -58,7 +58,7 @@ The first milestone is to prove that a common health model works across multiple
 
 # Component Release Policy
 
-Starting with the next release, v0.12.1, every implemented artifact shares the
+Starting with the next release, v0.12.0, every implemented artifact shares the
 same software version and immutable source tag. Release CLI archives, DEB/RPM,
 channel manifests, Docker images, Helm chart and OCI binary bundle together.
 Future SDKs follow the shared version when implemented; AHS/AHP contract versions
@@ -67,7 +67,7 @@ remain separate. Preserve historical CLI v0.11.1/chart 0.1.0 releases.
 The GitHub Release is the complete download/installation page. GitHub Packages
 provides GHCR Docker, OCI Helm and OCI binary distribution. Helm chart metadata
 uses the numeric release version and matching CLI appVersion/image references.
-OCI chart/binary publishing is implemented in source; v0.12.1 publication is pending.
+OCI chart/binary publishing is implemented in source; v0.12.0 publication is pending.
 See the canonical [release policy](RELEASING.md#component-versions-and-synchronized-distribution)
 and [distribution plan](docs/distribution.md).
 
@@ -989,7 +989,7 @@ Required extension tasks:
 **Status:** Released — chart 0.1.0 (`helm-v0.1.0`), pinning CLI `v0.11.1`.
 
 The initial chart used independent versioning. The next release adopts the
-shared software version: chart `version: 0.12.1`, `appVersion: v0.12.1` and
+shared software version: chart `version: 0.12.0`, `appVersion: v0.12.0` and
 matching images. The published chart 0.1.0 remains immutable.
 
 Goal:
@@ -1032,17 +1032,17 @@ corresponding release tag.
 
 ## Synchronized release and Packages extension
 
-The next release is v0.12.1, superseding the independently numbered first chart.
+The next release is v0.12.0, superseding the independently numbered first chart.
 The following implementation work is required before that release is complete:
 
-- [x] Implement coordinated publication under one immutable software tag and GitHub Release; v0.12.1 tagging/publication remains pending.
-- [x] Set chart version 0.12.1, appVersion v0.12.1 and matching current image/install references when publishing.
+- [x] Implement coordinated publication under one immutable software tag and GitHub Release; v0.12.0 tagging/publication remains pending.
+- [x] Set chart version 0.12.0, appVersion v0.12.0 and matching current image/install references when publishing.
 - [ ] Publish the Helm chart to GHCR as an OCI chart and attach its package to the release.
 - [ ] Publish a GHCR OCI binary bundle with archives, packages, channel manifests, SBOMs and checksums.
 - [ ] Link all three package identities to this repository and verify anonymous access.
 - [ ] Generate the complete checksum set and signed asset/OCI provenance; verify downloads and registry artifacts.
 - [ ] Include package links, image digests, downloads and installation/verification commands on the release page.
-- [ ] Preserve v0.11.1/helm-v0.1.0 and identify v0.12.1 as their synchronized successor.
+- [ ] Preserve v0.11.1/helm-v0.1.0 and identify v0.12.0 as their synchronized successor.
 
 See [the distribution plan](docs/distribution.md). Optional offline container
 archives and package-manager repositories remain separate work.

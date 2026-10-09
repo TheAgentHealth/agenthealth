@@ -1,22 +1,22 @@
 # Releases, Packages and synchronized versions
 
-The agreed next release is **v0.12.1**. All implemented artifacts will use that
+The agreed next release is **v0.12.0**. All implemented artifacts will use that
 software version and the same immutable source commit. This replaces the earlier
 independent chart/SDK version policy. CLI v0.11.1 and chart 0.1.0 remain published
 and immutable; historical release notes and verification records remain valid.
 
 This document records the target publication layout. The shared release workflow and OCI chart/binary publication are implemented
-in source. v0.12.1 and its new OCI packages are **not published yet**. An
+in source. v0.12.0 and its new OCI packages are **not published yet**. An
 authorized shared tag builds new assets and coordinates all publication jobs;
 it does not rename old downloads.
 
 ## One complete GitHub Release
 
-Use one v0.12.1 release page containing:
+Use one v0.12.0 release page containing:
 
 - Five standalone archives: Linux AMD64/ARM64, macOS AMD64/ARM64 and Windows AMD64.
 - Five matching CycloneDX SBOMs, four Linux DEB/RPM packages and Homebrew/Scoop manifests.
-- Helm chart `agenthealth-0.12.1.tgz` and one complete asset checksum manifest.
+- Helm chart `agenthealth-0.12.0.tgz` and one complete asset checksum manifest.
 - Package links for Docker, Helm and the binary OCI bundle, with exact published digests.
 - Both configured container registry references, installation commands, verification instructions, source links and actual validation limits.
 
@@ -30,9 +30,9 @@ is present.
 
 | Package | Target reference | User tool | Availability |
 |---|---|---|---|
-| Docker | `ghcr.io/theagenthealth/agenthealth:v0.12.1` | Docker-compatible container client | Existing image package; new version not published yet |
-| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.12.1` | Helm | Implemented in source; publication pending |
-| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.12.1` | ORAS or a compatible OCI artifact client | Implemented in source; publication pending |
+| Docker | `ghcr.io/theagenthealth/agenthealth:v0.12.0` | Docker-compatible container client | Existing image package; new version not published yet |
+| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.12.0` | Helm | Implemented in source; publication pending |
+| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.12.0` | ORAS or a compatible OCI artifact client | Implemented in source; publication pending |
 
 Link every package to `TheAgentHealth/agenthealth`, record source/revision/version
 metadata and verify its public visibility. Publishing to GHCR does not establish
@@ -53,14 +53,14 @@ bucket. Those hosting channels remain separate work.
 
 One software version does not require identical punctuation in every format:
 
-| Field | v0.12.1 value |
+| Field | v0.12.0 value |
 |---|---|
-| Git tag and GitHub Release | `v0.12.1` |
-| CLI version and container tag | `v0.12.1` |
-| Chart version and Helm OCI tag | `0.12.1` |
-| Chart appVersion and default image | `v0.12.1` |
-| DEB/RPM, Homebrew/Scoop and future SDK version metadata | `0.12.1` |
-| OCI binary bundle tag | `v0.12.1` |
+| Git tag and GitHub Release | `v0.12.0` |
+| CLI version and container tag | `v0.12.0` |
+| Chart version and Helm OCI tag | `0.12.0` |
+| Chart appVersion and default image | `v0.12.0` |
+| DEB/RPM, Homebrew/Scoop and future SDK version metadata | `0.12.0` |
+| OCI binary bundle tag | `v0.12.0` |
 
 Helm derives its OCI tag from chart version metadata. See the
 [Helm OCI registry guide](https://helm.sh/docs/topics/registries/).
@@ -69,16 +69,16 @@ software releases do not rename `spec_version: v1`.
 
 ## Installation examples
 
-The following commands describe the **planned v0.12.1 channels** and are not
+The following commands describe the **planned v0.12.0 channels** and are not
 available until publication and verification complete. Existing v0.11.1/archive
 and chart 0.1.0 releases remain available. Source installation guides prepare
-the v0.12.1 commands; substitute historical tags for currently published files.
+the v0.12.0 commands; substitute historical tags for currently published files.
 
 Direct installation from the unified Release download:
 
 ```bash
 helm upgrade --install agenthealth \
-  https://github.com/TheAgentHealth/agenthealth/releases/download/v0.12.1/agenthealth-0.12.1.tgz \
+  https://github.com/TheAgentHealth/agenthealth/releases/download/v0.12.0/agenthealth-0.12.0.tgz \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
@@ -88,7 +88,7 @@ Installation from the OCI chart package:
 ```bash
 helm upgrade --install agenthealth \
   oci://ghcr.io/theagenthealth/charts/agenthealth \
-  --version 0.12.1 \
+  --version 0.12.0 \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
@@ -102,8 +102,8 @@ is not currently provided.
 Retrieve the additional binary OCI bundle:
 
 ```bash
-oras pull ghcr.io/theagenthealth/agenthealth-binaries:v0.12.1 \
-  --output ./agenthealth-v0.12.1
+oras pull ghcr.io/theagenthealth/agenthealth-binaries:v0.12.0 \
+  --output ./agenthealth-v0.12.0
 ```
 
 See [ORAS pull documentation](https://oras.land/docs/commands/oras_pull/).
@@ -115,14 +115,14 @@ verification remain available directly through GitHub Releases.
 ## Implementation and publication checklist
 
 - [x] Update release workflows and the Helm helper to consume the same software tag; avoid separate release creation and conflicting checksum uploads.
-- [x] Advance chart metadata and all current image/install references to 0.12.1/v0.12.1 before tagging.
+- [x] Advance chart metadata and all current image/install references to 0.12.0/v0.12.0 before tagging.
 - [ ] Build all release files from the exact same tagged source; generate the final checksum manifest after all formats are packaged.
 - [ ] Publish the Docker image, OCI chart and OCI binary bundle; attach all downloadable files to one GitHub Release.
 - [ ] Link packages to this repository and establish public visibility; verify anonymous registry access and repository Packages discovery.
 - [ ] Sign downloadable assets and OCI provenance; verify source tag/commit, digests, SBOMs, contents and byte identity across channels.
 - [ ] Gate release completion on all required publication jobs, regardless of whether jobs execute in parallel.
 - [ ] Download published files and verify native Linux behavior and actual chart installation; report other platforms according to evidence available.
-- [ ] Preserve existing releases and explain that v0.12.1 supersedes v0.11.1/chart 0.1.0.
+- [ ] Preserve existing releases and explain that v0.12.0 supersedes v0.11.1/chart 0.1.0.
 
 Skipping local test reruns at a maintainer's request does not mean that new
 workflow changes have passed old CI. Report skipped checks and respect actual

@@ -1,7 +1,7 @@
 mode: serve
 image:
   repository: ghcr.io/theagenthealth/agenthealth
-  tag: v0.12.1
+  tag: v0.12.0
   digest: ''
   pullPolicy: IfNotPresent
 config: "version: v1\ntargets:\n- name: direct-agent\n  type: http\n  endpoint: http://demo:8080/health\n\

@@ -1,8 +1,8 @@
 # Kubernetes integration
 
 Phase 14's initial chart 0.1.0/CLI v0.11.1 releases remain public. The source
-chart is now **0.12.1**, with `appVersion: v0.12.1`, matching image defaults and
-coordinated OCI/chart/binary release jobs. v0.12.1 publication is pending an
+chart is now **0.12.0**, with `appVersion: v0.12.0`, matching image defaults and
+coordinated OCI/chart/binary release jobs. v0.12.0 publication is pending an
 authorized tag; use the historical tags for current installation.
 See [the distribution guide](distribution.md).
 
@@ -14,10 +14,10 @@ They consume the existing executable without changing AHS, AHP or CLI contracts.
 
 Both public references for the pinned CLI version are:
 
-- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.12.1`
-- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.12.1`
+- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.12.0`
+- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.12.0`
 
-These references are the prepared synchronized v0.12.1 targets. Verify anonymous
+These references are the prepared synchronized v0.12.0 targets. Verify anonymous
 registry availability before installing from either registry.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
@@ -29,7 +29,7 @@ helm lint deploy/helm/agenthealth --strict --kube-version 1.32.2
 helm template agenthealth deploy/helm/agenthealth --kube-version 1.32.2
 helm upgrade --install agenthealth deploy/helm/agenthealth \
   --set image.repository=docker.io/theagenthealth/agenthealth \
-  --set image.tag=v0.12.1 \
+  --set image.tag=v0.12.0 \
   --set-file config=examples/kubernetes/agenthealth.yaml
 ```
 
@@ -91,7 +91,7 @@ kubectl -n agenthealth-demo apply -k examples/kubernetes
 ```
 
 Edit the Kustomize `images` entry's `newName` to choose either registry listed
-above and keep `newTag: v0.12.1`. Do not combine these examples with separately
+above and keep `newTag: v0.12.0`. Do not combine these examples with separately
 installed same-name resources in the same namespace.
 
 For an application-container exec probe, the optional
@@ -105,7 +105,7 @@ docker build -f examples/kubernetes/Dockerfile.exec-probe \
 docker run --rm --entrypoint /usr/local/bin/agenthealth agenthealth-demo-exec:local version
 ```
 
-Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.12.1`
+Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.12.0`
 to use the mirror. Mount the reviewed configuration and Secret references in
 the application container; use the absolute executable path shown in the exec
 probe example. Startup should check the application's own process
