@@ -16,13 +16,20 @@ export function agentHealth(snapshot: () => Document,
   router.get('/health', (_req, res) => {
     res.set('Cache-Control', 'no-store').json({ ...snapshot(), version: 'v1' });
   });
-  router.post('/health', json({ limit: '64kb' }), async (req, res) => {
+  router.post('/health', json({ limit: 512 * 1024 }), async (req, res) => {
     if (!probe) { res.sendStatus(405); return; }
     const task = req.body;
     if (!task || Array.isArray(task) || task.safe !== true ||
         typeof task.text !== 'string' || !task.text.trim() ||
         (task.downstream !== undefined && typeof task.downstream !== 'string') ||
         Object.keys(task).some(k => !['safe', 'text', 'downstream'].includes(k))) {
+      res.sendStatus(400); return;
+    }
+    // String.length counts UTF-16 units; downstream limits count Unicode code points.
+    if (Buffer.byteLength(task.text, 'utf8') > 65536 ||
+        (task.downstream !== undefined &&
+         (Array.from(task.downstream).length > 1024 ||
+          (task.downstream !== '' && !task.downstream.trim())))) {
       res.sendStatus(400); return;
     }
     const controller = new AbortController();

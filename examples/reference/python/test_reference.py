@@ -1,3 +1,5 @@
+import json
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from langgraph.graph import StateGraph, START, END
@@ -22,7 +24,7 @@ def test_passive_and_safe_task_contract():
         assert client.post('/health', json={'safe': True, 'text': 'health'}).json() == {
             'completed': True, 'success': True}
         assert client.post('/health', json={'safe': False, 'text': 'health'}).status_code == 400
-        assert client.post('/health', content='x' * 65537).status_code == 413
+        assert client.post('/health', content='x' * (512 * 1024 + 1)).status_code == 413
         assert client.post('/health', content='{} {}').status_code == 400
 
 
@@ -56,3 +58,30 @@ def test_real_compiled_langgraph():
     with TestClient(app) as client:
         assert client.post('/health', json={'safe': True, 'text': 'health'}).json()['success'] is True
         assert client.post('/health', json={'safe': True, 'text': 'health', 'downstream': 'peer'}).json()['success'] is False
+
+
+@pytest.mark.parametrize('text,downstream,status', [
+    ('x' * 65536, '', 200),
+    ('\x00' * 65536, '😀' * 1024, 200),
+    ('😀' * 16384, '', 200),
+    ('x' * 65537, '', 400),
+    ('😀' * 16384 + 'x', '', 400),
+    ('health', '😀' * 1025, 400),
+    ('health', ' ', 400),
+    (' ', '', 400),
+    ('\ud800', '', 400),
+    ('health', '\ud800', 400),
+])
+def test_task_boundaries(text, downstream, status):
+    called = []
+    async def probe(task):
+        called.append(task)
+        return {'completed': True, 'success': True}
+    app = FastAPI()
+    app.include_router(router(snapshot, probe))
+    # ensure_ascii exercises escaped Unicode as well as JSON framing overhead.
+    body = json.dumps({'safe': True, 'text': text, 'downstream': downstream})
+    with TestClient(app) as client:
+        response = client.post('/health', content=body, headers={'Content-Type': 'application/json'})
+        assert response.status_code == status
+        assert bool(called) == (status == 200)

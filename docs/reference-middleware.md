@@ -24,7 +24,11 @@ performing the authorized peer exchange. Never echo the selector as fabricated
 proof. The LangGraph bridge rejects downstream probes until you implement that
 exchange; use a dedicated safe graph, not an unrestricted production agent.
 
-Reference POST handlers bound request bodies and set a one-second probe deadline.
+Reference POST handlers cap the JSON envelope at 512 KiB to allow escaped text,
+framing and downstream identifiers. Decoded text remains limited to 65,536 UTF-8
+bytes and downstream identifiers to 1,024 Unicode characters. Oversized envelopes
+return 413; invalid or oversized decoded fields return 400. Probe deadlines are
+one second.
 Cancellation is cooperative: Go cannot terminate uncooperative callbacks, Python
 callbacks can suppress cancellation, and JavaScript work can ignore AbortSignal.
 Apply process limits, ingress timeouts and authentication. These examples do not

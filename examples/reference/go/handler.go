@@ -4,10 +4,17 @@ package agenthealthref
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
+	"strings"
 	"time"
+	"unicode/utf8"
 )
+
+// JSON escaping can expand each text byte sixfold; framing and downstream
+// identifiers need additional room. Decoded fields retain their contract limits.
+const maxTaskBodyBytes = 512 * 1024
 
 type Document struct {
 	Version      string   `json:"version"`
@@ -54,15 +61,29 @@ func Handler(snapshot func() Document, probe func(context.Context, Task) (Outcom
 				return
 			}
 			var task Task
-			decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 65536))
+			decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxTaskBodyBytes))
 			decoder.DisallowUnknownFields()
-			if err := decoder.Decode(&task); err != nil || !task.Safe || task.Text == "" {
+			if err := decoder.Decode(&task); err != nil {
+				var limit *http.MaxBytesError
+				if errors.As(err, &limit) {
+					w.WriteHeader(413)
+				} else {
+					w.WriteHeader(400)
+				}
+				return
+			}
+			if !task.Safe || strings.TrimSpace(task.Text) == "" || len(task.Text) > 65536 || utf8.RuneCountInString(task.Downstream) > 1024 || (task.Downstream != "" && strings.TrimSpace(task.Downstream) == "") {
 				w.WriteHeader(400)
 				return
 			}
 			var extra any
-			if decoder.Decode(&extra) != io.EOF {
-				w.WriteHeader(400)
+			if err := decoder.Decode(&extra); err != io.EOF {
+				var limit *http.MaxBytesError
+				if errors.As(err, &limit) {
+					w.WriteHeader(413)
+				} else {
+					w.WriteHeader(400)
+				}
 				return
 			}
 			ctx, cancel := context.WithTimeout(r.Context(), time.Second)

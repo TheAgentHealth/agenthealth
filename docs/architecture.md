@@ -1,6 +1,6 @@
 # Architecture Decisions
 
-This document records the architecture decisions made in [Phase 0 — Project Foundation](../ROADMAP.md#phase-0--project-foundation). It complements the narrative [Architecture](project-reference.md#architecture) and [Adapter Architecture](project-reference.md#adapter-architecture) sections in the README, and the normative [spec/](../spec/README.md) documents.
+This document records the architecture decisions made in [Phase 0 — Project Foundation](../ROADMAP.md#phase-0--project-foundation). It complements the narrative [Architecture](project-reference.md#architecture) and [Adapter Architecture](project-reference.md#adapter-architecture) sections in the archived project reference, and the normative [spec/](../spec/README.md) documents.
 
 ## Repository strategy
 
