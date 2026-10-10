@@ -13,7 +13,7 @@ A conforming implementation MUST:
 - never include secrets, API keys, tokens, or credentials in a [result](result-schema.md), log line, or diagnostic message, even in verbose/debug modes;
 - redact authentication material before it reaches any output format (terminal, JSON, AHP responses);
 - treat [functional checks](health-model.md#functional-health) as non-destructive/safe by default;
-- require explicit, opt-in configuration before running a check capable of side effects (see [Passive vs Active Checks](../README.md#passive-vs-active-checks));
+- require explicit, opt-in configuration before running a check capable of side effects (see [Passive vs Active Checks](../docs/project-reference.md#passive-vs-active-checks));
 - verify TLS by default when checking HTTPS/TLS-based targets, and require explicit opt-out rather than defaulting to insecure;
 - support configurable timeouts on every check, so a slow/unresponsive target cannot hang the caller indefinitely;
 - avoid amplifying checks into a denial-of-service vector against the target (e.g. bounded concurrency, bounded retries).

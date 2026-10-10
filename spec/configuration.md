@@ -92,7 +92,7 @@ The supported relationship values are `supporting`, `downstream`, `path`,
 
 If `checks` is omitted for a target or dependency, AgentHealth runs the default set of **passive** dimensions applicable to that entry's `type`, per the [applicable-dimensions table](target-model.md#applicable-dimensions-per-target-type) in target-model.md: `reachability`, `protocol`, `authentication`, `capability`, `dependency`, `latency`, and `configuration`.
 
-`functional` is **never** included in the default set, regardless of target type. [Functional Health](health-model.md#functional-health) checks exercise the target (running inference, executing a query, invoking an operation) and are classified **active** under [Passive vs Active Checks](../README.md#passive-vs-active-checks), so they require explicit opt-in. Listing `functional` in a target's or dependency's `checks` *is* that opt-in — no separate flag is needed.
+`functional` is **never** included in the default set, regardless of target type. [Functional Health](health-model.md#functional-health) checks exercise the target (running inference, executing a query, invoking an operation) and are classified **active** under [Passive vs Active Checks](../docs/project-reference.md#passive-vs-active-checks), so they require explicit opt-in. Listing `functional` in a target's or dependency's `checks` *is* that opt-in — no separate flag is needed.
 
 For example, an `http` target with no `checks` listed runs reachability, protocol (HTTP status/header expectations), authentication, latency, and configuration (all passive and applicable to `http`), but never `functional` unless explicitly requested.
 
@@ -354,3 +354,7 @@ binary implementing Phase 9; existing configurations remain compatible.
 ## Phase 10 dependency graph
 
 IDs are unique across root targets and inline dependencies. Missing references, duplicate IDs and cycles fail validation before adapter calls. Maximum graph depth is 64 and the output tree is limited to 10000 projections. The recursive result remains compatible with existing nested configurations; repeated IDs identify shared evidence. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md) and [configured example](../examples/graph-check/agenthealth.yaml).
+
+## Explicit passive HTTP method
+
+`http.method` accepts only `HEAD` or `GET`. Omission retains HEAD for `http`/`api` and GET for gateway/router HTTP signals. The configured method applies to passive checks, including latency measurement; functional body checks always use GET and retain explicit opt-in. No automatic fallback or redirect following is introduced. GET must point to a read-only endpoint; the engine cannot enforce remote handler safety. This is an additive v1 source extension, unavailable in v0.12.0. See the [impact review](../docs/rfcs/stabilization.md).

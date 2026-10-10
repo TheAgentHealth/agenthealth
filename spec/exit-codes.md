@@ -22,7 +22,7 @@ Codes `0`–`5` correspond exactly to the six [health states](health-model.md#he
 - Code `5` (`UNKNOWN`) means AgentHealth ran successfully and produced a result, but that result's status is genuinely indeterminate (e.g. a caught adapter error, or an ambiguous response received before timeout). This differs from code `6`, which means no result was produced at all.
 - Code `6` must never be used to represent a target's health state, so automation can distinguish "the target's health is unknown" (`5`, a valid but inconclusive result exists) from "the tool itself broke" (`6`, no result exists).
 - `agenthealth ping` and `agenthealth check` use the same mapping so scripts behave consistently across both commands.
-- This mapping is considered part of the public contract once [AgentHealth 1.0](../ROADMAP.md#agenthealth-10) ships; changes after that point follow the [backward compatibility policy](../RELEASING.md#backward-compatibility-policy).
+- This mapping is considered part of the public contract once [AgentHealth 1.0](../docs/roadmap-details.md#agenthealth-10) ships; changes after that point follow the [backward compatibility policy](../RELEASING.md#backward-compatibility-policy).
 
 ## Multiple targets
 

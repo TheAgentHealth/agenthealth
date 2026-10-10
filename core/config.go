@@ -128,8 +128,9 @@ func SupportedMCPVersion(v string) bool {
 	return v == "2026-07-28" || v == "2025-03-26" || v == "2025-06-18" || v == "2025-11-25"
 }
 
-// HTTPOptions specifies response expectations, never outgoing credentials.
+// HTTPOptions specifies passive method and response expectations, never credentials.
 type HTTPOptions struct {
+	Method         string            `yaml:"method"`
 	ExpectedStatus []int             `yaml:"expected_status"`
 	Headers        map[string]string `yaml:"headers"`
 	BodyContains   string            `yaml:"body_contains"`
@@ -401,6 +402,9 @@ func validateTarget(t Target, path string, depth int) error {
 		if t.Type != "http" && t.Type != "api" && t.Type != "gateway" && t.Type != "router" {
 			return fmt.Errorf("%s: http options require http, api, gateway or router target", path)
 		}
+		if t.HTTP.Method != "" && t.HTTP.Method != "HEAD" && t.HTTP.Method != "GET" {
+			return fmt.Errorf("%s: http method must be HEAD or GET", path)
+		}
 		if t.HTTP.ExpectedStatus != nil && len(t.HTTP.ExpectedStatus) == 0 {
 			return fmt.Errorf("%s: expected_status requires at least one status", path)
 		}
@@ -520,6 +524,10 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			}
 		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
+				return false
+			}
+		case "method":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || (value.Value != "HEAD" && value.Value != "GET") {
 				return false
 			}
 		case "critical", "safe":

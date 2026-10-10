@@ -1,6 +1,6 @@
 # HTTP health adapter
 
-The HTTP adapter supports `http` and `api` targets. Default checks use HEAD: connectivity, authentication, HTTP status/header expectations, configuration, and measured reachability latency. A default response must be 2xx to be healthy. A reachable 404 or 500 is `UNHEALTHY`; 401/403 is `MISCONFIGURED`. Explicit `checks: [reachability]` measures connectivity alone, independent of status.
+The HTTP adapter supports `http` and `api` targets. Default checks use HEAD (explicit `http.method: GET` selects read-only GET): connectivity, authentication, HTTP status/header expectations, configuration, and measured reachability latency. A default response must be 2xx to be healthy. A reachable 404 or 500 is `UNHEALTHY`; 401/403 is `MISCONFIGURED`. Explicit `checks: [reachability]` measures connectivity alone, independent of status.
 
 ```bash
 ./agenthealth ping http https://example.com
@@ -42,11 +42,11 @@ Reachability traces the actual HTTP request using Go's [HTTP tracing API](https:
 
 Transport stages appear under `checks.reachability.steps` in JSON/YAML and beneath reachability in terminal output. `HEALTHY` means a stage completed, `UNREACHABLE` means it failed, and `UNKNOWN` means it had started but had not completed at the observation boundary. Multiple connection address attempts can occur; a successful connection takes precedence over failed attempts. Retry diagnostics describe the final attempt.
 
-Connectivity latency measures the successful HEAD reachability attempt, including observed DNS/TCP/TLS work, rather than GET body reading or all checks combined. Threshold violations are `DEGRADED`. Per-check deadlines cover network work and body reading; retries apply only to passive failures before any response bytes arrive.
+Connectivity latency measures the successful configured-method reachability attempt, including observed DNS/TCP/TLS work, rather than GET body reading or all checks combined. Threshold violations are `DEGRADED`. Per-check deadlines cover network work and body reading; retries apply only to passive failures before any response bytes arrive.
 
 ## Safety
 
-TLS certificate and hostname verification remain mandatory. Redirects are never followed, and credentials use environment references (`auth.bearer_env`). Response bodies, response headers, expected values, addresses, and raw transport errors are not emitted. HEAD checks do not fall back automatically to GET. A service that rejects HEAD requires an explicit check policy.
+TLS certificate and hostname verification remain mandatory. Redirects are never followed, and credentials use environment references (`auth.bearer_env`). Response bodies, response headers, expected values, addresses, and raw transport errors are not emitted. HEAD checks do not fall back automatically to GET. For a read-only health endpoint that rejects HEAD, configure `http.method: GET`; this does not enable body inspection or functional tasks. Omitted method preserves HEAD for HTTP/API and GET for gateway/router targets. Explicit method applies to passive requests; functional body checks always use GET. This additive option is implemented in source and requires a build containing this change; v0.12.0 does not accept it.
 
 ## Dependency graph integration
 
@@ -54,6 +54,6 @@ TLS certificate and hostname verification remain mandatory. Redirects are never 
 
 ## Kubernetes deployment
 
-Passive HTTP checks retain HEAD/status/header behavior inside Kubernetes. Use in-cluster service addresses and explicit deadlines that fit the workload budget; body matching still requires functional opt-in.
+Passive HTTP checks retain their configured method/status/header behavior inside Kubernetes. Use in-cluster service addresses and explicit deadlines that fit the workload budget; body matching still requires functional opt-in.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.

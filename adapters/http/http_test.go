@@ -107,3 +107,53 @@ func TestFunctionalHTTPFailureAndLatency(t *testing.T) {
 		t.Fatal(result)
 	}
 }
+
+// A GET-only health endpoint must work without opting into functional tasks.
+func TestExplicitPassiveMethodAndNoFallback(t *testing.T) {
+	for _, status := range []int{405, 501} {
+		var gets atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == http.MethodHead {
+				w.WriteHeader(status)
+				return
+			}
+			gets.Add(1)
+			w.WriteHeader(204)
+		}))
+		target := core.Target{Name: "get-only", Type: "http", Endpoint: server.URL, Checks: []string{"protocol"}}
+		if result := execute(t, target); result.Status != core.Unhealthy || gets.Load() != 0 {
+			t.Fatalf("default silently fell back: %+v", result)
+		}
+		target.HTTP = &core.HTTPOptions{Method: "GET"}
+		if result := execute(t, target); result.Status != core.Healthy || gets.Load() == 0 {
+			t.Fatalf("explicit GET failed: %+v", result)
+		}
+		target.Checks = []string{"functional"}
+		target.HTTP.Method = "HEAD"
+		before := gets.Load()
+		if result := execute(t, target); result.Status != core.Healthy || gets.Load() != before+1 {
+			t.Fatalf("functional did not retain GET: %+v", result)
+		}
+		server.Close()
+	}
+}
+
+func TestTruncatedBodyIsUnknownAndDoesNotRetry(t *testing.T) {
+	var calls atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			w.WriteHeader(200)
+			return
+		}
+		calls.Add(1)
+		w.Header().Set("Content-Length", "100")
+		_, _ = w.Write([]byte("ready"))
+		// Handler return closes an intentionally truncated body.
+	}))
+	defer server.Close()
+	retries := 3
+	result := execute(t, core.Target{Name: "partial", Type: "http", Endpoint: server.URL, Checks: []string{"functional"}, Retries: &retries, HTTP: &core.HTTPOptions{BodyContains: "ready"}})
+	if result.Status != core.Unknown || calls.Load() != 1 {
+		t.Fatal(result, calls.Load())
+	}
+}

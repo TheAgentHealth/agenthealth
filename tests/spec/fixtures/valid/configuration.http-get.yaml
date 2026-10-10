@@ -1,0 +1,7 @@
+version: v1
+targets:
+  - name: api
+    type: http
+    endpoint: https://example.com/health
+    http:
+      method: GET

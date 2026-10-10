@@ -1,5 +1,13 @@
 # Specification changelog
 
+## Stabilization — unreleased source extension
+
+Add optional `http.method: HEAD | GET` for passive HTTP health signals. Omission
+preserves HTTP/API HEAD and gateway/router GET defaults. Functional body checks
+remain GET with explicit opt-in. Old binaries reject the new field; existing
+configurations, results and exit codes remain compatible. See the
+[impact proposal](../docs/rfcs/stabilization.md) for review scope.
+
 ## Foundation stabilization — software v0.4.0
 
 - Clarify that server protocol incompatibility and missing explicitly required

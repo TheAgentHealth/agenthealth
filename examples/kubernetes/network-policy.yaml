@@ -1,0 +1,33 @@
+# Opt-in template: label only the monitoring Pod with agenthealth-egress=restricted.
+# Replace the destination namespace/Pod selectors and port before applying.
+# The cluster CNI must enforce NetworkPolicy. This policy does not allow external
+# MCP/OAuth endpoints; add explicit destination rules for your configuration.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agenthealth-egress
+spec:
+  podSelector:
+    matchLabels:
+      agenthealth-egress: restricted
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: application
+          podSelector:
+            matchLabels:
+              app: health-target
+      ports:
+        - {protocol: TCP, port: 8080}

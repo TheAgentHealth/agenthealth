@@ -59,7 +59,7 @@ Does the target expose the capabilities required by the workload? (MCP tools/res
 
 Can the target successfully perform a minimal operation that actually exercises it (not merely list what it claims to support — that's Capability Health)? Examples: a minimal model inference request, a lightweight API operation, database `SELECT 1`, a vector store read operation.
 
-Functional checks are classified **active** per [Passive vs Active Checks](../README.md#passive-vs-active-checks): they MUST NOT run by default for any target type and require explicit opt-in by being listed in `checks` (see [configuration.md § Default Checks](configuration.md#default-checks)). Even when opted in, functional checks SHOULD remain minimal, safe, and non-destructive.
+Functional checks are classified **active** per [Passive vs Active Checks](../docs/project-reference.md#passive-vs-active-checks): they MUST NOT run by default for any target type and require explicit opt-in by being listed in `checks` (see [configuration.md § Default Checks](configuration.md#default-checks)). Even when opted in, functional checks SHOULD remain minimal, safe, and non-destructive.
 
 ### Dependency Health
 
