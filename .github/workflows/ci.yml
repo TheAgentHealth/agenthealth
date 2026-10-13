@@ -651,3 +651,54 @@ jobs:
           pip install 'litellm[proxy]==1.104.2'
           go build -o /tmp/agenthealth-current ./cmd/agenthealth
           python3 scripts/test_router.py /tmp/agenthealth-current "$(command -v litellm)"
+
+  python-sdk:
+    name: Python SDK (${{ matrix.os }}, ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Build wheel and source archive, then install wheel
+        if: hashFiles('sdk/python/pyproject.toml') != ''
+        shell: bash
+        run: |
+          pip install build==1.2.2.post1 twine==6.1.0 -r tests/requirements.txt
+          SDK_VERSION=$(python -c 'import ast; from pathlib import Path; print(ast.literal_eval(ast.parse(Path("sdk/python/src/agenthealth/version.py").read_text()).body[-1].value))')
+          python scripts/package_python.py "v$SDK_VERSION" --output python-dist
+          pip install python-dist/*.whl
+          go build -ldflags "-X main.version=v$SDK_VERSION" -o agenthealth-sdk.exe ./cmd/agenthealth
+          echo "AGENTHEALTH_SDK_BINARY=$PWD/agenthealth-sdk.exe" >> "$GITHUB_ENV"
+      - name: Test installed wheel against real CLI
+        if: hashFiles('sdk/python/pyproject.toml') != ''
+        env:
+          AGENTHEALTH_INSTALLED_SDK: '1'
+        run: python -m pytest tests/python_sdk -q -ra --junitxml=python-sdk.xml
+      - name: Rebuild and install from source archive
+        if: hashFiles('sdk/python/pyproject.toml') != ''
+        shell: bash
+        run: |
+          mkdir sdist-source
+          tar -xzf python-dist/agenthealth-*.tar.gz -C sdist-source
+          python -m build --wheel sdist-source/agenthealth-* --outdir sdist-wheel
+          pip install --force-reinstall sdist-wheel/*.whl
+          python -c 'import agenthealth; assert agenthealth.__version__'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: python-sdk-${{ matrix.os }}-${{ matrix.python }}
+          path: |
+            python-sdk.xml
+            python-dist/*
