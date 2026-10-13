@@ -76,6 +76,18 @@ def write_sbom(output, binary, version, system, arch):
     output.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n")
 
 
+def installation_guide(version):
+    """Render current installation references for the archive's software version."""
+    if not re.fullmatch(r"v\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?", version):
+        raise ValueError("invalid installation version")
+    document = (ROOT / "docs/installation.md").read_text()
+    references = re.findall(r"<!-- release-version: (v\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?) -->", document)
+    if len(references) != 1:
+        raise ValueError("installation guide requires exactly one release-version marker")
+    current = references[0]
+    return document.replace(current, version).replace(current[1:], version[1:])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("version", help="release tag, such as v0.1.0")
@@ -90,6 +102,8 @@ def main():
     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", subprocess.check_output(
         ["git", "log", "-1", "--format=%ct"], cwd=ROOT, text=True).strip()))
     with tempfile.TemporaryDirectory(prefix="agenthealth-release-") as temporary:
+        guide = Path(temporary) / "INSTALL.md"
+        guide.write_text(installation_guide(args.version))
         for system, arch in PLATFORMS:
             binary_name = "agenthealth.exe" if system == "windows" else "agenthealth"
             binary = Path(temporary) / binary_name
@@ -101,7 +115,7 @@ def main():
             )
             stem = f"agenthealth_{args.version}_{system}_{arch}"
             files = [(binary, binary_name), (ROOT / "LICENSE", "LICENSE"),
-                     (ROOT / "docs/installation.md", "INSTALL.md")]
+                     (guide, "INSTALL.md")]
             archive = args.output / (f"{stem}.zip" if system == "windows" else f"{stem}.tar.gz")
             write_archive(archive, files, epoch, windows=system == "windows")
             sbom = args.output / f"{stem}.cdx.json"

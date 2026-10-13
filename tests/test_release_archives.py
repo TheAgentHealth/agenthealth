@@ -51,3 +51,42 @@ def test_sbom_describes_linked_binary(tmp_path, monkeypatch):
     assert components["go-stdlib"]["version"] == "go1.27.1"
     assert components["executable"]["hashes"][0]["content"] == hashlib.sha256(binary.read_bytes()).hexdigest()
     assert set(bom["dependencies"][0]["dependsOn"]) == set(components)
+
+
+def test_embedded_installation_guide_tracks_archive_version(tmp_path, monkeypatch):
+    docs = tmp_path / 'docs'
+    docs.mkdir()
+    (docs / 'installation.md').write_text('<!-- release-version: v0.12.0 -->\n'
+        'Download /v0.12.0/agenthealth_v0.12.0_linux_amd64.tar.gz\n'
+        'Chart 0.12.0 and CLI v0.12.0; historical baseline v0.11.0.\n')
+    monkeypatch.setattr(release, 'ROOT', tmp_path)
+    for version in ('v0.13.1', 'v0.0.0-ci'):
+        guide = release.installation_guide(version)
+        assert version in guide and version[1:] in guide
+        assert '0.12.0' not in guide
+        assert 'historical baseline v0.11.0' in guide
+        path = tmp_path / 'INSTALL.md'
+        path.write_text(guide)
+        for windows in (False, True):
+            archive_path = tmp_path / ('guide.zip' if windows else 'guide.tar.gz')
+            release.write_archive(archive_path, [(path, 'INSTALL.md')], 1700000000, windows)
+            if windows:
+                with zipfile.ZipFile(archive_path) as archive:
+                    archived = archive.read('INSTALL.md')
+            else:
+                with tarfile.open(archive_path) as archive:
+                    archived = archive.extractfile('INSTALL.md').read()
+            assert archived == guide.encode()
+
+
+def test_installation_guide_requires_explicit_template_version(tmp_path, monkeypatch):
+    import pytest
+    docs = tmp_path / 'docs'
+    docs.mkdir()
+    monkeypatch.setattr(release, 'ROOT', tmp_path)
+    for text in ('unversioned', '<!-- release-version: v0.12.0 -->\n<!-- release-version: v0.13.0 -->'):
+        (docs / 'installation.md').write_text(text)
+        with pytest.raises(ValueError, match='exactly one'):
+            release.installation_guide('v0.13.1')
+    with pytest.raises(ValueError, match='invalid installation version'):
+        release.installation_guide('../../secret')

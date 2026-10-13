@@ -49,3 +49,13 @@ def test_native_archive_selection_and_tampering(tmp_path, monkeypatch, system, m
     with pytest.raises(AssertionError):
         smoke.smoke('v1.2.3', tmp_path)
     assert not calls
+
+
+def test_current_guide_cannot_point_at_a_different_release():
+    guide = b'<!-- release-version: v0.13.1 -->\n/download/v0.13.1/agenthealth_v0.13.1_linux_amd64.tar.gz'
+    smoke.verify_installation_guide(guide, 'v0.13.1')
+    with pytest.raises(AssertionError):
+        smoke.verify_installation_guide(guide, 'v0.13.2')
+    with pytest.raises(AssertionError):
+        smoke.verify_installation_guide(guide.replace(b'/download/v0.13.1/', b'/download/v0.12.0/'), 'v0.13.1')
+    smoke.verify_installation_guide(b'historical unmarked guide', 'v0.4.0')

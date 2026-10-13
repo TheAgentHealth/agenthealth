@@ -10,6 +10,13 @@ import zipfile
 from pathlib import Path
 
 
+def verify_installation_guide(guide, version):
+    # Historical archives predate this marker; preserve their recovery checks.
+    if b"<!-- release-version:" in guide:
+        assert f"<!-- release-version: {version} -->".encode() in guide
+        assert f"/download/{version}/agenthealth_{version}_".encode() in guide
+
+
 def smoke(version, output):
     system = {'Linux': 'linux', 'Darwin': 'darwin', 'Windows': 'windows'}[platform.system()]
     arch = {'x86_64': 'amd64', 'AMD64': 'amd64', 'aarch64': 'arm64', 'arm64': 'arm64'}[platform.machine()]
@@ -21,9 +28,13 @@ def smoke(version, output):
         binary = Path(temporary) / ('agenthealth.exe' if system == 'windows' else 'agenthealth')
         if system == 'windows':
             with zipfile.ZipFile(archive) as bundle:
+                if "INSTALL.md" in bundle.namelist():
+                    verify_installation_guide(bundle.read("INSTALL.md"), version)
                 binary.write_bytes(bundle.read(binary.name))
         else:
             with tarfile.open(archive) as bundle:
+                if 'INSTALL.md' in bundle.getnames():
+                    verify_installation_guide(bundle.extractfile('INSTALL.md').read(), version)
                 binary.write_bytes(bundle.extractfile('agenthealth').read())
             binary.chmod(0o755)
         assert subprocess.check_output([str(binary), 'version'], text=True).strip() == f'agenthealth {version}'
