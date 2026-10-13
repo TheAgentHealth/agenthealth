@@ -149,3 +149,5 @@ AHP is included in v0.9.0 and is absent from v0.8.0 binaries. See the
 See [Kubernetes scenarios](kubernetes/README.md) for probes, init gates, sidecars,
 Jobs/CronJobs, existing Secrets and the published Helm chart. Future releases
 follow the [synchronized distribution policy](../docs/distribution.md).
+
+[Python SDK example](python-sdk/README.md): sync/async checks using reviewed CLI configurations.
