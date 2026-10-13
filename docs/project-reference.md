@@ -50,7 +50,7 @@ helm upgrade --install agenthealth \
 
 See the [installation guide](../docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](../docs/kubernetes.md) for workload modes.
-Python/PyPI and JavaScript/npm SDKs are **planned and not published**. Official
+The [Python SDK](python-sdk.md) is implemented in source for v0.13.1; PyPI publication is pending. JavaScript/npm remains planned. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -257,7 +257,7 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | Protocol (experimental HTTP v1) | Agent Health Protocol (AHP) |
 | CLI | `agenthealth` |
 | Config file | `agenthealth.yaml` |
-| Python package (planned) | `agenthealth` |
+| Python SDK / PyPI (publication pending) | `agenthealth` |
 | npm package (planned) | `@agenthealth/sdk` |
 | Container image (GHCR / Docker Hub) | `ghcr.io/theagenthealth/agenthealth` / `theagenthealth/agenthealth` |
 | Helm chart | `agenthealth` |
@@ -1003,7 +1003,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](../docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)); see [container usage](../docs/installation.md#container-image). SDK examples remain planned. Kubernetes source examples and chart 0.12.0 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
+Standalone binaries and source builds are available; see [installation](../docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)); see [container usage](../docs/installation.md#container-image). Python SDK examples are available; JavaScript/npm remains planned. Kubernetes source examples and chart 0.12.0 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](../docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](../docs/phase-13-alignment.md).
 
@@ -1077,10 +1077,10 @@ files, credentials, and verification.
 
 ## Python / PyPI
 
-The Python SDK is planned and is not published. The following illustrates the
-proposed API; use the CLI or Docker image for current integrations.
+The Python SDK is implemented in source for v0.13.1; publication is pending.
+Install a matching CLI separately. See the [SDK guide](python-sdk.md).
 
-Conceptual usage:
+Usage:
 
 ```python
 from agenthealth import check
