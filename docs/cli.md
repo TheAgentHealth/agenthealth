@@ -116,3 +116,5 @@ manifests and a Helm chart. Exec probes, init gates and Jobs require exit 0;
 DEGRADED/1 still fails even when an optional dependency caused it. AHP readiness
 uses its separate aggregate contract. No CLI flag, exit mapping or output format
 changes are introduced.
+
+The [Python SDK](python-sdk.md) consumes JSON check output and existing exit codes using an explicitly installed matching CLI.

@@ -109,6 +109,9 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 15 — Python SDK / PyPI
 
+Implemented in source: typed sync/async CLI wrapper, configuration loading and
+shared-version Python distribution. Publication/validation status is tracked separately.
+
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-15--python-sdk--pypi).
 
 # Phase 16 — JavaScript / TypeScript SDK

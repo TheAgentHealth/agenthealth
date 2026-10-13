@@ -24,3 +24,6 @@ Examples are templates requiring your services and credentials. Schema/example
 validation proves structure, not connectivity or product interoperability.
 See [examples](../examples/README.md) and [testing](stabilization.md) for repeatable
 local commands and remaining acceptance criteria.
+
+The [Python SDK](python-sdk.md) provides typed sync/async CLI access; see its
+[impact review](phase-15-alignment.md) and [example](../examples/python-sdk/README.md).

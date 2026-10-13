@@ -149,3 +149,10 @@ GitHub package settings and use `gh run rerun <run-id> --failed`. Keep the draft
 original signed files and immutable tag. The publisher reuses matching existing
 OCI versions and rejects different content. Do not rerun every job, recreate a
 tag or overwrite a public release to resolve a visibility issue.
+
+## Python SDK distribution
+
+Phase 15 source adds the shared-version wheel and source archive to GitHub
+Release assets, checksums, build provenance and OCI binary bundles, with
+identical artifacts published to PyPI. GitHub Packages has no PyPI registry.
+See [release requirements](../RELEASING.md#python-distribution-phase-15).

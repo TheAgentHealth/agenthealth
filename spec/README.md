@@ -74,3 +74,5 @@ It adds no specification fields or adapter contracts. The
 [alignment audit](../docs/phase-14-alignment.md) records each earlier-phase
 impact decision; Kubernetes examples validate embedded configuration against
 these schemas. A chart version remains independent of `spec_version`.
+
+The [Python SDK](../docs/python-sdk.md) consumes existing v1 configuration and result schemas; schema equality is checked in SDK tests.

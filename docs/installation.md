@@ -188,3 +188,8 @@ historical chart 0.1.0 remains available as helm-v0.1.0, pinning CLI v0.11.1.
 See [Kubernetes](kubernetes.md) and [distribution](distribution.md) for direct
 release downloads, OCI Helm install and ORAS binary retrieval. New v0.12.0
 channels become available only after publication and verification.
+
+## Python SDK
+
+See the [Python SDK guide](python-sdk.md). The wheel does not install a CLI;
+install and verify a matching binary separately.

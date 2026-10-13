@@ -93,9 +93,9 @@
     },
     {
       "phase": "[15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source; PyPI publication pending",
+      "documentation": "[Python SDK](python-sdk.md), [alignment audit](phase-15-alignment.md)",
+      "validation": "[Python example](../examples/python-sdk/README.md), [SDK tests](../tests/python_sdk/)"
     },
     {
       "phase": "[16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk)",
