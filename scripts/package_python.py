@@ -78,7 +78,8 @@ def build_python(tag, output):
     epoch = int(os.environ.get('SOURCE_DATE_EPOCH') or subprocess.check_output(
         ['git', 'log', '-1', '--format=%ct'], cwd=ROOT, text=True).strip())
     with tempfile.TemporaryDirectory(prefix='agenthealth-python-build-') as directory:
-        subprocess.run([sys.executable, '-m', 'build', str(package), '--outdir', directory], check=True)
+        subprocess.run([sys.executable, '-m', 'build', str(package), '--outdir', directory],
+                       check=True, env={**os.environ, 'SOURCE_DATE_EPOCH': str(epoch)})
         distributions = list(Path(directory).iterdir())
         if {path.name for path in distributions} != asset_names(tag):
             raise ValueError('Unexpected Python distribution set')
