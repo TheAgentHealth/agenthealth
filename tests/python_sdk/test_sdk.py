@@ -221,3 +221,20 @@ def test_vendored_schemas_match_source():
     from importlib.resources import files
     for name in ('configuration', 'result'):
         assert files('agenthealth').joinpath('schemas', name + '.schema.json').read_bytes() == (ROOT / 'spec/schemas' / (name + '.schema.json')).read_bytes()
+
+
+def test_upgrade_suite_rejects_stderr_credential_disclosure(binary, monkeypatch):
+    import importlib
+    monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
+    upgrade = importlib.import_module('test_config_upgrade')
+    tokens = iter(('accepted-test-credential', 'rejected-test-credential'))
+    monkeypatch.setattr(upgrade.secrets, 'token_hex', lambda _: next(tokens))
+    original = subprocess.run
+    def disclose(*args, **kwargs):
+        result = original(*args, **kwargs)
+        if kwargs.get('env', {}).get('AGENTHEALTH_UPGRADE_TOKEN') == 'rejected-test-credential':
+            result.stderr += 'rejected-test-credential'
+        return result
+    monkeypatch.setattr(upgrade.subprocess, 'run', disclose)
+    with pytest.raises(RuntimeError, match='credential disclosure'):
+        upgrade.run_suite(Path(binary), Path(binary))

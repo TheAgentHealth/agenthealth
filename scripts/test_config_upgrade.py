@@ -13,6 +13,7 @@ import threading
 
 def run_suite(old_binary, new_binary):
     token = secrets.token_hex(24)
+    rejected_token = secrets.token_hex(24)
     state = {'outage': False}
 
     class Endpoint(BaseHTTPRequestHandler):
@@ -62,7 +63,7 @@ def run_suite(old_binary, new_binary):
     # Expected roots preserve health status and edge metadata through both directions.
     cases = [('http', basic, False, token, 0),
              ('bearer-accepted', auth, False, token, 0),
-             ('bearer-rejected', auth, False, 'rejected', 4),
+             ('bearer-rejected', auth, False, rejected_token, 4),
              ('bearer-missing', auth, False, '', 4),
              ('nested-healthy', nested, False, token, 0),
              ('nested-optional-outage', nested, True, token, 1),
@@ -90,7 +91,8 @@ def run_suite(old_binary, new_binary):
                     version = subprocess.check_output([str(binary.resolve()), 'version'], text=True).strip()
                     run = subprocess.run([str(binary.resolve()), 'check', str(config), '--format', 'json'],
                                          capture_output=True, text=True, env=env, timeout=30)
-                    if token in run.stdout or token in run.stderr or 'rejected' in run.stdout:
+                    if any(value and (value in run.stdout or value in run.stderr)
+                           for value in (token, credential)):
                         raise RuntimeError(f'{name}: credential disclosure')
                     if run.returncode != exit_code:
                         raise RuntimeError(f'{name}: expected exit {exit_code}, got {run.returncode}')
