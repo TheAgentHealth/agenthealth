@@ -7,6 +7,7 @@ import shutil
 import tempfile
 
 from package_helm import package_chart
+from package_python import has_python, asset_names as python_assets, build_python
 
 
 def asset_names(tag):
@@ -18,18 +19,22 @@ def asset_names(tag):
         names.update({stem + ('.zip' if system == 'windows' else '.tar.gz'), stem + '.cdx.json'})
         if system == 'linux':
             names.update({stem + '.deb', stem + '.rpm'})
+    if has_python(tag):
+        names.update(python_assets(tag))
     return names
 
 
 def prepare(tag, output):
     expected = asset_names(tag)
     chart_name = f'agenthealth-{tag.removeprefix("v")}.tgz'
-    if not output.is_dir() or {p.name for p in output.iterdir()} != expected - {chart_name}:
+    sdk_assets = python_assets(tag) if has_python(tag) else set()
+    initial = expected - {chart_name} - sdk_assets
+    if not output.is_dir() or {p.name for p in output.iterdir()} != initial:
         raise ValueError('complete CLI asset set is required; stale or missing files are not allowed')
     lines = (output / 'checksums.txt').read_text().splitlines()
-    if {line.split('  ', 1)[1] for line in lines} != expected - {chart_name, 'checksums.txt'}:
+    if {line.split('  ', 1)[1] for line in lines} != initial - {'checksums.txt'}:
         raise ValueError('CLI checksum manifest must cover every asset exactly once')
-    if len(lines) != len(expected) - 2:
+    if len(lines) != len(initial) - 1:
         raise ValueError('duplicate checksum entries are not allowed')
     for line in lines:
         digest, name = line.split('  ', 1)
@@ -40,6 +45,8 @@ def prepare(tag, output):
     with tempfile.TemporaryDirectory(prefix='agenthealth-chart-') as temporary:
         chart = package_chart(tag, Path(temporary), lint=False)
         shutil.copyfile(chart, output / chart.name)
+    if sdk_assets:
+        build_python(tag, output)
     (output / 'checksums.txt').write_text(''.join(
         f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n'
         for path in sorted(output.iterdir()) if path.name != 'checksums.txt'))
