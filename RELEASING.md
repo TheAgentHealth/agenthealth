@@ -211,3 +211,18 @@ published digest/source binding. GPG Helm `.prov` files remain deferred; use
 GitHub keyless attestations rather than suggesting `helm --verify` works.
 
 See [distribution and synchronized-release preparation](docs/distribution.md).
+
+## Python distribution (Phase 15)
+
+Starting with v0.13.0, synchronized releases also require the `agenthealth` wheel
+and source archive. SDK metadata and CLI version share the source tag; prerelease
+`vX.Y.Z-rc.N` maps to Python `X.Y.ZrcN`. Build with
+`scripts/package_python.py`; synchronized preparation adds both to checksums,
+GitHub provenance, Release assets and the existing OCI binary bundle. Publish
+identical files to PyPI using the `release.yml` trusted publisher and GitHub
+`pypi` environment. GitHub Packages has no Python registry.
+
+Run installed-wheel CI before publication; final Release publication requires
+PyPI success. Verify PyPI SHA-256 values, attestations, wheel/sdist contents,
+clean installation and matching Linux CLI behavior after publication. Future
+TypeScript SDKs follow the shared-version policy when implemented.

@@ -114,3 +114,7 @@ Phases 0–13 remain aligned through the impact/no-impact decisions above; physi
 edits to every earlier file are neither required nor evidence of behavioral changes.
 Publication and release-link verification are separate release checks; broader
 Kubernetes versions and real product interoperability remain future validation.
+
+## Phase 15 follow-up
+
+The [Python SDK impact review](phase-15-alignment.md) covers earlier contracts and distribution. Kubernetes manifests continue to use the CLI; no SDK or CRD is required. Broader released-configuration tests include bearer credentials, optional dependency failures, graph edges and agent documents.

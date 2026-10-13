@@ -21,3 +21,8 @@ venv/
 
 # Reference middleware dependencies
 node_modules/
+
+# Python SDK build products
+/sdk/python/build/
+/sdk/python/dist/
+/sdk/python/src/*.egg-info/

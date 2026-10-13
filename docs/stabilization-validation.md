@@ -46,3 +46,23 @@ The router smoke deliberately uses the lightweight liveness endpoint documented
 by [LiteLLM](https://docs.litellm.ai/docs/proxy/health), rather than a model health
 endpoint that triggers inference. Gateway/router HTTP checks still do not verify
 routing decisions or automatically discover route tables.
+
+## Phase 15 follow-up, October 13, 2026
+
+On `feat/python-sdk` based on the merged stabilization source, disposable kind
+v0.28.0 clusters passed the existing full runtime scenario suite on Kubernetes
+1.31.9 and 1.33.1 using the digest-pinned node images configured in CI. A locally
+built source image identified itself as v0.13.0. Scenarios included init
+outage/recovery, probes, sidecars, accepted/rejected Secrets, Jobs, CronJobs,
+Helm modes and readiness recovery without restarts. Kubernetes 1.31.9 also
+passed Kustomize server-side dry-run validation. Both clusters were removed.
+This establishes these local runtime results, not cloud-cluster certification.
+
+The expanded released/current/released suite passed all nine cases separately
+with v0.9.0 and checksum-verified v0.12.0: HTTP, accepted/rejected/missing bearer
+credentials, healthy/failed optional nested dependencies, healthy/failed graph
+relationships with gateway/router signals, and agent capability documents.
+Health/check codes, graph IDs, relationships and critical metadata matched across
+upgrade and rollback; latency, messages and transport-stage detail were excluded
+from comparison. Credentials were checked for disclosure. Deployment Secret
+rotation, full framework migrations and routing decisions remain future work.

@@ -66,6 +66,9 @@ jobs:
           if git cat-file -e "$source_sha:scripts/prepare_synchronized_release.py" 2>/dev/null; then
             required_checks+=(--require-kubernetes)
           fi
+          if git cat-file -e "$source_sha:sdk/python/pyproject.toml" 2>/dev/null; then
+            required_checks+=(--require-python)
+          fi
           python3 scripts/wait_for_release_ci.py "$source_sha" "${required_checks[@]}"
 
   release:
@@ -73,6 +76,7 @@ jobs:
     needs: [validate, ci-gate]
     outputs:
       synchronized: ${{ steps.layout.outputs.synchronized }}
+      python: ${{ steps.layout.outputs.python }}
     timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
@@ -98,6 +102,14 @@ jobs:
           else
             echo "synchronized=false" >> "$GITHUB_OUTPUT"
           fi
+          if [ -f sdk/python/pyproject.toml ]; then
+            echo "python=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "python=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install Python packaging dependencies
+        if: steps.layout.outputs.python == 'true'
+        run: pip install build==1.2.2.post1 twine==6.1.0
       - name: Install chart packaging dependency
         if: steps.layout.outputs.synchronized == 'true'
         run: |
@@ -367,10 +379,40 @@ jobs:
           gh attestation verify "oci://ghcr.io/theagenthealth/charts/agenthealth@${{ steps.oci.outputs.chart_digest }}" --repo "$GITHUB_REPOSITORY" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-digest "$(git rev-parse HEAD)" --deny-self-hosted-runners
           gh attestation verify "oci://ghcr.io/theagenthealth/agenthealth-binaries@${{ steps.oci.outputs.binary_digest }}" --repo "$GITHUB_REPOSITORY" --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-digest "$(git rev-parse HEAD)" --deny-self-hosted-runners
 
-  publish:
+  pypi:
     needs: [release, container, packages]
+    if: needs.release.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/project/agenthealth/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: release-assets
+          path: release-assets
+      - name: Select checksum-verified Python distributions
+        run: |
+          cd release-assets
+          sha256sum --check checksums.txt
+          mkdir ../python-dist
+          cp agenthealth-*.whl agenthealth-*.tar.gz ../python-dist/
+      - name: Publish identical release artifacts to PyPI
+        uses: pypa/gh-action-pypi-publish@106e0b0b7c337fa67ed433972f777c6357f78598 # v1.13.0
+        with:
+          packages-dir: python-dist/
+          attestations: true
+
+  publish:
+    needs: [release, container, packages, pypi]
     if: >-
       always() && needs.release.result == 'success' && needs.container.result == 'success' &&
+      (needs.pypi.result == 'success' ||
+       (needs.pypi.result == 'skipped' && needs.release.outputs.python != 'true')) &&
       (needs.packages.result == 'success' ||
        (needs.packages.result == 'skipped' && needs.release.outputs.synchronized != 'true'))
     runs-on: ubuntu-latest

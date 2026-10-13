@@ -1149,7 +1149,7 @@ see the [release verification record](../docs/releases/verification-v0.11.1-helm
 
 # Phase 15 — Python SDK / PyPI
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source; publication pending. See the [SDK guide](python-sdk.md) and [impact review](phase-15-alignment.md).
 
 Phase 13 integration requirement: binary downloads must select exact version/platform
 assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
@@ -1185,20 +1185,20 @@ print(result.status)
 
 ## Capabilities
 
-- [ ] Core health API
-- [ ] Async API
-- [ ] Typed results
-- [ ] Configuration loader
-- [ ] Adapter access
-- [ ] Dependency results
-- [ ] Typed access to agent-role, gateway/router, and communication-path evidence defined by the updated AHS/graph contracts
-- [ ] Exceptions/error model
+- [x] Core health API
+- [x] Async API
+- [x] Typed results
+- [x] Configuration loader
+- [x] Adapter access
+- [x] Dependency results
+- [x] Typed access to agent-role, gateway/router, and communication-path evidence defined by the updated AHS/graph contracts
+- [x] Exceptions/error model
 
 The Python SDK must follow the Agent Health Specification rather than defining it.
 
-- [ ] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
+- [x] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
 
-- [ ] Preserve Phase 10 node IDs and edge relationship/critical metadata in Python results. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
+- [x] Preserve Phase 10 node IDs and edge relationship/critical metadata in Python results. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
 
 ## Impact Review
 

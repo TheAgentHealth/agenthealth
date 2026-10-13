@@ -166,3 +166,6 @@ must run Helm lint/template tests and the explicit-context runtime smoke suite
 on a disposable cluster, in addition to the applicable existing checks.
 Chart publication belongs to the authorized synchronized software release;
 complete the shared-version and distribution checklist first.
+
+Phase 15 adds installed Python wheel/source-archive tests and synchronized PyPI
+publication. See the [SDK guide](docs/python-sdk.md) and [impact review](docs/phase-15-alignment.md).

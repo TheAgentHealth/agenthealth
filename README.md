@@ -46,7 +46,7 @@ helm upgrade --install agenthealth \
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-Python/PyPI and JavaScript/npm SDKs are **planned and not published**. Official
+The [Python SDK](docs/python-sdk.md) is implemented in source for v0.13.0; PyPI publication is pending. JavaScript/npm remains planned. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -140,7 +140,7 @@ rules for the destinations in your reviewed configuration.
 The agent adapter requires a specific read-only health document and an optional
 bounded safe-task handler. Start with [reference middleware](docs/reference-middleware.md)
 for Go, FastAPI, Express and LangGraph. These examples are application integration
-helpers; published Python/npm SDKs remain planned.
+helpers; the [Python SDK](docs/python-sdk.md) provides typed CLI access. JavaScript/npm remains planned.
 
 ## Specification — Protocol — Implementation
 
