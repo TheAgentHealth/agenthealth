@@ -59,3 +59,27 @@ def test_release_gate_rejects_skipped_sdk_matrix(packaging, monkeypatch):
     jobs[6]['conclusion'] = 'skipped'
     with pytest.raises(RuntimeError, match='Python SDK'):
         gate.check_ci('org/repo', 'abc', require_python=True)
+
+
+def test_rebuilt_python_archives_are_identical(packaging, tmp_path):
+    import io
+    import tarfile
+    import zipfile
+    for suffix in ('whl', 'tar.gz'):
+        normalized = []
+        for index in (0, 1):
+            path = tmp_path / f'build-{index}.{suffix}'
+            if suffix == 'whl':
+                with zipfile.ZipFile(path, 'w') as archive:
+                    entry = zipfile.ZipInfo('agenthealth/version.py', (2026, 10, 13, 12, 0, index * 2))
+                    archive.writestr(entry, b'__version__ = "0.13.0"')
+            else:
+                with tarfile.open(path, 'w:gz') as archive:
+                    entry = tarfile.TarInfo('agenthealth-0.13.0/pyproject.toml')
+                    entry.size = 4
+                    entry.mtime = index + 100
+                    entry.uid = index + 100
+                    archive.addfile(entry, io.BytesIO(b'test'))
+            packaging.normalize_distribution(path, 1700000000)
+            normalized.append(path.read_bytes())
+        assert normalized[0] == normalized[1]
