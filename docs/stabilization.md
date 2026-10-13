@@ -58,8 +58,8 @@ Record successful and unsuccessful runs; never mark interoperability complete fr
 HTTP fixtures alone.
 
 The original Kubernetes runtime gate pins 1.32.2. An additional CI matrix now
-configures 1.31.9 and 1.33.1 using digest-pinned kind v0.28.0 images. Successful
-runtime evidence is required before claiming support for those versions.
+configures 1.31.9 and 1.33.1 using digest-pinned kind v0.28.0 images. Local runtime checks for both added versions passed on October 13, 2026; see
+the validation record. Release CI must still pass for the tagged source.
 Keep current release CI job identities intact when adding a version matrix, since
 publication requires explicit successful checks for the tagged source.
 
@@ -70,8 +70,8 @@ publication requires explicit successful checks for the tagged source.
 - Broader DNS/TLS/reset/slow-body fault scenarios beyond existing timeout/redirect tests.
 - Broader graph shapes and sustained resource budgets beyond the current 100/1,000/5,000-node shared-DAG profiles.
 - Real framework/product fixtures with exact dependency versions.
-- Multiple Kubernetes versions with runtime results, rather than rendering alone.
-- Broader upgrade/rollback configurations and deployment secrets beyond the current unchanged-HTTP old/current/old binary smoke sequence.
+- Cloud-cluster/architecture coverage beyond the locally exercised Kubernetes 1.31.9, 1.32.2 and 1.33.1 scenarios.
+- Deployment Secret rotation and framework upgrade/rollback beyond the nine-case authenticated/nested/graph/agent released/current/released suite.
 - Out-of-process third-party adapters, scoped AHP authorization and external security audit.
 
 Configuration compatibility must test actual released binaries: validating an old
