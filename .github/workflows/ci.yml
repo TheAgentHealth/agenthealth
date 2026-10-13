@@ -680,7 +680,7 @@ jobs:
           python scripts/package_python.py "v$SDK_VERSION" --output python-dist
           pip install python-dist/*.whl
           go build -ldflags "-X main.version=v$SDK_VERSION" -o agenthealth-sdk.exe ./cmd/agenthealth
-          echo "AGENTHEALTH_SDK_BINARY=$PWD/agenthealth-sdk.exe" >> "$GITHUB_ENV"
+          python -c 'import os; from pathlib import Path; open(os.environ["GITHUB_ENV"], "a").write("AGENTHEALTH_SDK_BINARY=" + str(Path("agenthealth-sdk.exe").resolve()) + "\n")'
       - name: Test installed wheel against real CLI
         if: hashFiles('sdk/python/pyproject.toml') != ''
         env:
