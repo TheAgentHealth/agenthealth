@@ -1,6 +1,6 @@
 # Phase 15 coverage and alignment
 
-Python SDK source targets v0.13.1; publication remains a separate verification
+Python SDK source targets v0.13.2; publication remains a separate verification
 step. Python 3.10+ uses an explicitly installed matching CLI. No binary is
 installed or downloaded automatically.
 

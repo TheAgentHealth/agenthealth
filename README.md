@@ -46,7 +46,7 @@ helm upgrade --install agenthealth \
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-The [Python SDK](docs/python-sdk.md) is implemented in source for v0.13.1; PyPI publication is pending. JavaScript/npm remains planned. Official
+The [Python SDK](docs/python-sdk.md) is implemented in source for v0.13.2; PyPI publication is pending. JavaScript/npm remains planned. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
