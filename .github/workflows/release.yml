@@ -9,6 +9,10 @@ on:
         description: 'Existing immutable tag for infrastructure-only release recovery'
         required: true
         type: string
+      publication_only:
+        description: 'Reuse existing signed draft assets and packages; publish PyPI and finalize only'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,6 +23,7 @@ concurrency:
 
 jobs:
   validate:
+    if: ${{ !inputs.publication_only }}
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
@@ -402,19 +407,78 @@ jobs:
           mkdir ../python-dist
           cp agenthealth-*.whl agenthealth-*.tar.gz ../python-dist/
       - name: Publish identical release artifacts to PyPI
-        uses: pypa/gh-action-pypi-publish@106e0b0b7c337fa67ed433972f777c6357f78598 # v1.13.0
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          packages-dir: python-dist/
+          attestations: true
+
+  recover-assets:
+    if: github.event_name == 'workflow_dispatch' && inputs.publication_only
+    needs: ci-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      synchronized: ${{ steps.verify.outputs.synchronized }}
+      image_digest: ${{ steps.verify.outputs.image_digest }}
+      docker_digest: ${{ steps.verify.outputs.docker_digest }}
+      chart_digest: ${{ steps.verify.outputs.chart_digest }}
+      binary_digest: ${{ steps.verify.outputs.binary_digest }}
+    steps:
+      # Current recovery tooling verifies artifacts from the immutable source tag.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - run: pip install PyYAML==6.0.2
+      - name: Verify existing draft, signed assets and immutable packages
+        id: verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: python3 scripts/recover_publication.py "$RELEASE_TAG" --output recovery
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: recovered-python-dist
+          path: recovery/python/*
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: publication-recovery-verification
+          path: |
+            recovery/verified-inputs.json
+            recovery/oci-report.json
+
+  recover-pypi:
+    needs: recover-assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/project/agenthealth/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: recovered-python-dist
+          path: python-dist
+      - name: Publish original verified distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0 commit, not annotated tag object
         with:
           packages-dir: python-dist/
           attestations: true
 
   publish:
-    needs: [release, container, packages, pypi]
+    needs: [release, container, packages, pypi, recover-assets, recover-pypi]
     if: >-
-      always() && needs.release.result == 'success' && needs.container.result == 'success' &&
+      always() && ((needs.release.result == 'success' && needs.container.result == 'success' &&
       (needs.pypi.result == 'success' ||
        (needs.pypi.result == 'skipped' && needs.release.outputs.python != 'true')) &&
       (needs.packages.result == 'success' ||
-       (needs.packages.result == 'skipped' && needs.release.outputs.synchronized != 'true'))
+       (needs.packages.result == 'skipped' && needs.release.outputs.synchronized != 'true'))) ||
+      (needs.recover-assets.result == 'success' && needs.recover-pypi.result == 'success'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -422,11 +486,11 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
-      SYNCHRONIZED: ${{ needs.release.outputs.synchronized }}
-      IMAGE_DIGEST: ${{ needs.container.outputs.image_digest }}
-      DOCKER_DIGEST: ${{ needs.container.outputs.docker_digest }}
-      CHART_DIGEST: ${{ needs.packages.outputs.chart_digest }}
-      BINARY_DIGEST: ${{ needs.packages.outputs.binary_digest }}
+      SYNCHRONIZED: ${{ needs.release.outputs.synchronized || needs.recover-assets.outputs.synchronized }}
+      IMAGE_DIGEST: ${{ needs.container.outputs.image_digest || needs.recover-assets.outputs.image_digest }}
+      DOCKER_DIGEST: ${{ needs.container.outputs.docker_digest || needs.recover-assets.outputs.docker_digest }}
+      CHART_DIGEST: ${{ needs.packages.outputs.chart_digest || needs.recover-assets.outputs.chart_digest }}
+      BINARY_DIGEST: ${{ needs.packages.outputs.binary_digest || needs.recover-assets.outputs.binary_digest }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
