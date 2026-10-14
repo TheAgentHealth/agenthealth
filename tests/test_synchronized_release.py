@@ -179,7 +179,7 @@ def test_public_blob_checks_use_anonymous_credentials(tmp_path, helpers, monkeyp
 def test_public_release_waits_for_all_required_publication_jobs():
     workflow = yaml.safe_load((ROOT / '.github/workflows/release.yml').read_text())
     publish = workflow['jobs']['publish']
-    assert set(publish['needs']) == {'release', 'container', 'packages', 'pypi'}
+    assert set(publish['needs']) == {'release', 'container', 'packages', 'pypi', 'recover-assets', 'recover-pypi'}
     assert "needs.packages.result == 'success'" in publish['if']
     assert "needs.release.outputs.synchronized != 'true'" in publish['if']
     stage = next(s for s in workflow['jobs']['release']['steps'] if s.get('name') == 'Stage draft release')

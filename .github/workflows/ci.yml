@@ -90,7 +90,7 @@ jobs:
       - name: Run spec schema tests
         run: |
           test_paths=(tests/spec)
-          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py; do
+          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py tests/test_publication_recovery.py; do
             if [ -f "$path" ]; then
               test_paths+=("$path")
             fi
