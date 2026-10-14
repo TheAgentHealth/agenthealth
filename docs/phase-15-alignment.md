@@ -61,3 +61,14 @@ the sdist must install independently. Post-publication acceptance includes
 GitHub signatures/checksums, archive contents and Linux behavior, PyPI hashes,
 attestations, clean-environment installation and exact-version CLI execution.
 Do not mark publication complete until those external checks pass.
+
+## Publication infrastructure recovery
+
+The PyPA v1.13.0 annotated tag object differs from its commit SHA; Docker action
+images use the commit SHA. The workflow now pins the verified commit image.
+Publication-only recovery verifies existing draft assets, their source-bound
+signatures/checksums, OCI blobs and image identities before reusing the original
+Python files. No SDK, CLI, chart or contract changes are introduced; existing
+software tags and versioned packages remain immutable. The protected `main`
+branch is allowed by the PyPI deployment environment for explicit manual
+recovery. Future distributions should reuse these verification gates.

@@ -226,3 +226,22 @@ Run installed-wheel CI before publication; final Release publication requires
 PyPI success. Verify PyPI SHA-256 values, attestations, wheel/sdist contents,
 clean installation and matching Linux CLI behavior after publication. Future
 TypeScript SDKs follow the shared-version policy when implemented.
+
+## Publication-only recovery
+
+If signed draft assets and all versioned images/OCI packages are already staged
+and only PyPI/final publication failed, dispatch the current `release.yml` on
+`main` with `release_tag` and `publication_only: true`. This infrastructure-only
+path verifies the original tag, every existing asset's checksums/provenance,
+public OCI contents/signatures and existing image source/platform metadata.
+It reuses the original wheel/sdist, publishes them through the existing PyPI
+trusted publisher, promotes image aliases at verified existing digests, and
+publishes the existing draft. It never rebuilds or replaces versioned artifacts.
+The GitHub `pypi` environment permits version tags and protected `main` for
+manual recovery. Fresh tagged-source release CI remains required.
+
+Pin the PyPA action's commit SHA rather than its annotated tag-object SHA: its
+container image is published under the commit SHA. v1.13.0 resolves to
+`ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e`. Verify the corresponding image exists
+before changing that pin. No SDK/CLI/chart version changes are needed for this
+workflow-only repair; the source tag remains immutable.
