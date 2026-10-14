@@ -22,12 +22,27 @@ MAX_OUTPUT_BYTES = 16 * 1024 * 1024
 MAX_DIAGNOSTIC_BYTES = 64 * 1024
 
 
+async def _signal_group(process: asyncio.subprocess.Process, sig: int) -> None:
+    try:
+        os.killpg(process.pid, sig)
+    except ProcessLookupError:
+        pass
+    except PermissionError:
+        # Darwin can report EPERM for an already-exited process group. Confirm
+        # root exit before accepting it; a live permission failure remains fatal.
+        if process.returncode is None:
+            try:
+                await asyncio.wait_for(process.wait(), 1)
+            except asyncio.TimeoutError:
+                raise ExecutionError("Unable to stop AgentHealth CLI process") from None
+
+
 async def _stop(process: asyncio.subprocess.Process) -> None:
     # Kill the dedicated process group even if the root exited, so an MCP stdio
     # descendant cannot retain credentials or the temporary output descriptors.
     try:
         if os.name == "posix":
-            os.killpg(process.pid, signal.SIGTERM)
+            await _signal_group(process, signal.SIGTERM)
         elif process.returncode is None:
             process.terminate()
     except ProcessLookupError:
@@ -39,7 +54,7 @@ async def _stop(process: asyncio.subprocess.Process) -> None:
     finally:
         try:
             if os.name == "posix":
-                os.killpg(process.pid, signal.SIGKILL)
+                await _signal_group(process, signal.SIGKILL)
             elif process.returncode is None:
                 process.kill()
         except ProcessLookupError:

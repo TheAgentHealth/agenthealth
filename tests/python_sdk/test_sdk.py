@@ -238,3 +238,28 @@ def test_upgrade_suite_rejects_stderr_credential_disclosure(binary, monkeypatch)
     monkeypatch.setattr(upgrade.subprocess, 'run', disclose)
     with pytest.raises(RuntimeError, match='credential disclosure'):
         upgrade.run_suite(Path(binary), Path(binary))
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='POSIX process groups')
+def test_exited_group_permission_error_preserves_report(binary, endpoint, monkeypatch):
+    def denied(*_):
+        raise PermissionError('sensitive platform diagnostic')
+    monkeypatch.setattr(os, 'killpg', denied)
+    url, _ = endpoint
+    assert Client(binary).check(target_type='http', endpoint=url).status == HealthStatus.HEALTHY
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='POSIX process groups')
+def test_live_group_permission_error_is_sanitized(monkeypatch):
+    from agenthealth.client import _signal_group
+    class LiveProcess:
+        pid = 123
+        returncode = None
+        async def wait(self):
+            await asyncio.sleep(60)
+    def denied(*_):
+        raise PermissionError('sensitive platform diagnostic')
+    monkeypatch.setattr(os, 'killpg', denied)
+    with pytest.raises(ExecutionError, match='Unable to stop AgentHealth CLI process') as failure:
+        asyncio.run(_signal_group(LiveProcess(), 15))
+    assert 'sensitive' not in str(failure.value)
