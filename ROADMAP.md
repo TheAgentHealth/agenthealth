@@ -109,8 +109,8 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 15 — Python SDK / PyPI
 
-Implemented in source: typed sync/async CLI wrapper, configuration loading and
-shared-version Python distribution. Publication/validation status is tracked separately.
+Released in v0.13.2: typed sync/async CLI wrapper, configuration loading and
+shared-version Python distribution on PyPI and GitHub Releases. See the verification record.
 
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-15--python-sdk--pypi).
 

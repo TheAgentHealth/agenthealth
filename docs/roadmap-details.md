@@ -1149,14 +1149,14 @@ see the [release verification record](../docs/releases/verification-v0.11.1-helm
 
 # Phase 15 — Python SDK / PyPI
 
-**Status:** Implemented in source; publication pending. See the [SDK guide](python-sdk.md) and [impact review](phase-15-alignment.md).
+**Status:** Released in v0.13.2 on PyPI; wheel and source archive also published on GitHub Releases. See the [SDK guide](python-sdk.md) and [impact review](phase-15-alignment.md).
 
 Phase 13 integration requirement: binary downloads must select exact version/platform
 assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
 
-When implemented, the Python SDK adopts the shared software release version
-and coordinated source tag. Publish to a supported ecosystem registry and
-document CLI/spec compatibility; an OCI binary bundle does not implement an SDK.
+The Python SDK uses the shared software release version and coordinated source
+tag. PyPI and GitHub Releases publish identical signed wheel/source artifacts;
+the SDK requires the matching CLI and consumes AHS v1.
 
 Goal:
 
@@ -1169,8 +1169,6 @@ pip install agenthealth
 ```
 
 ## API
-
-Conceptual:
 
 ```python
 from agenthealth import check

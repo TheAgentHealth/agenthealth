@@ -1,7 +1,7 @@
 # Phase 15 coverage and alignment
 
-Python SDK source targets v0.13.2; publication remains a separate verification
-step. Python 3.10+ uses an explicitly installed matching CLI. No binary is
+Python SDK v0.13.2 is published on PyPI and GitHub Releases; see the
+[release verification record](releases/verification-v0.13.2.md). Python 3.10+ uses an explicitly installed matching CLI. No binary is
 installed or downloaded automatically.
 
 ## Coverage

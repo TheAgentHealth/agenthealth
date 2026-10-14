@@ -2,7 +2,7 @@
 
 <!-- release-version: v0.13.2 -->
 
-The commands below target v0.13.2. See [capability status](phase-status.md) for publication status; the previous v0.12.0 release has a [verification record](releases/verification-v0.12.0.md).
+The commands below install the published v0.13.2 release. See [publication verification](releases/verification-v0.13.2.md).
 
 Choose a distribution:
 
@@ -14,7 +14,7 @@ Choose a distribution:
 | Linux DEB/RPM, Homebrew/Scoop manifests | [Package channels](#package-channels-phase-13-v0110) |
 | OCI release-file bundle | [ORAS download](distribution.md#installation-examples) |
 
-The [Python SDK](python-sdk.md) is implemented for the matching software version; PyPI publication is pending. JavaScript/npm remains planned.
+The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.13.2`. JavaScript/npm remains planned.
 
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
@@ -62,7 +62,7 @@ go build -ldflags '-X main.version=v0.13.2' -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.13.2 security release rebuilds existing package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
+See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.13.2 release rebuilds existing package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
 
 Phase 10 graph fields require v0.8.0 or newer. Existing nested configurations remain valid.
 The [graph example](../examples/graph-check/README.md) requires configured services
@@ -103,7 +103,7 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured; v0.13.2 uses these references after publication:
+tags when mirror credentials are configured; v0.13.2 is available from both registries:
 
 ```bash
 # GitHub Container Registry
@@ -188,8 +188,7 @@ Phase 14 provides [manifests](../deploy/kubernetes/), the
 pins CLI v0.13.2 and publishes through the shared release workflow. The
 historical chart 0.1.0 remains available as helm-v0.1.0, pinning CLI v0.11.1.
 See [Kubernetes](kubernetes.md) and [distribution](distribution.md) for direct
-release downloads, OCI Helm install and ORAS binary retrieval. New v0.13.2
-channels become available only after publication and verification.
+release downloads, OCI Helm install and ORAS binary retrieval. The v0.13.2 channels are published and verified.
 
 ## Python SDK
 

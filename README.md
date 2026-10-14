@@ -6,31 +6,32 @@
 
 ## Start here
 
-**Latest release: [v0.12.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.12.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Latest release: [v0.13.2](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.13.2), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
-Choose how you want to run AgentHealth. Published distributions share **v0.12.0**:
+Choose how you want to run AgentHealth. Published distributions share **v0.13.2**:
 
 <!-- generated: distributions:start -->
 | Use it as | Get it here | Installation guide |
 |---|---|---|
-| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.12.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
-| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.12.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.12.0` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
-| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.12.0`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
+| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.13.2): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
+| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.13.2`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.13.2` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
+| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.13.2`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
 | Linux DEB / RPM | AMD64/ARM64 packages in release downloads | [Local package installation](docs/installation.md#package-channels-phase-13-v0110) |
 | Homebrew / Scoop | `agenthealth.rb` / `agenthealth.json` in release downloads | [Manifest usage](docs/installation.md#package-channels-phase-13-v0110); official tap/bucket hosting is planned |
-| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.12.0` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
+| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.13.2` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
+| Python SDK / PyPI | [PyPI](https://pypi.org/project/agenthealth/0.13.2/): `pip install agenthealth==0.13.2`; wheel/sdist in Release downloads | [Python SDK](docs/python-sdk.md) — requires the matching CLI |
 <!-- generated: distributions:end -->
 
 **Run immediately with Docker:**
 
 ```bash
-docker run --rm theagenthealth/agenthealth:v0.12.0 version
-docker run --rm theagenthealth/agenthealth:v0.12.0 --help
+docker run --rm theagenthealth/agenthealth:v0.13.2 version
+docker run --rm theagenthealth/agenthealth:v0.13.2 --help
 ```
 
-The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.12.0`.
+The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.13.2`.
 Use an exact version tag to pin a release; `v0` follows stable major-version-0
 releases and `latest` follows the latest stable release.
 
@@ -39,14 +40,14 @@ releases and `latest` follows the latest stable release.
 
 ```bash
 helm upgrade --install agenthealth \
-  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.12.0 \
+  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.13.2 \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-The [Python SDK](docs/python-sdk.md) is implemented in source for v0.13.2; PyPI publication is pending. JavaScript/npm remains planned. Official
+The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.13.2`; install a matching CLI separately. JavaScript/npm remains planned. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -96,7 +97,7 @@ A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `
 
 ## Project status
 
-AgentHealth is pre-1.0. Published software is v0.12.0; changes described as
+AgentHealth is pre-1.0. Published software is v0.13.2; changes described as
 implemented in source require a newer build. Planned target vocabulary is not
 an availability guarantee. [Capability status](docs/phase-status.md) is generated
 from [one machine-readable source](docs/status.json).

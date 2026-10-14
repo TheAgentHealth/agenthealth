@@ -1,12 +1,12 @@
 # Python SDK
 
-Phase 15 implements a Python 3.10+ wrapper around the Go CLI. Source targets
+Phase 15 implements a Python 3.10+ wrapper around the Go CLI. Published SDK and CLI use
 software v0.13.2; publication is recorded separately in [capability status](phase-status.md).
 The SDK consumes AHS v1 and never reimplements adapter execution or aggregation.
 
 ## Installation
 
-Once published:
+Install the published version:
 
 ```bash
 pip install agenthealth==0.13.2

@@ -1,5 +1,5 @@
 {
-  "software_version": "v0.12.0",
+  "software_version": "v0.13.2",
   "phases": [
     {
       "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
@@ -87,13 +87,13 @@
     },
     {
       "phase": "[14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration)",
-      "status": "Released in v0.12.0; historical helm-v0.1.0 retained",
-      "documentation": "Chart 0.12.0; CLI v0.12.0",
+      "status": "Released in v0.13.2; historical helm-v0.1.0 retained",
+      "documentation": "Chart 0.13.2; CLI v0.13.2",
       "validation": "[Kubernetes scenarios](../examples/kubernetes/README.md), [alignment audit](phase-14-alignment.md)"
     },
     {
       "phase": "[15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi)",
-      "status": "Implemented in source; PyPI publication pending",
+      "status": "Released in v0.13.2 on PyPI",
       "documentation": "[Python SDK](python-sdk.md), [alignment audit](phase-15-alignment.md)",
       "validation": "[Python example](../examples/python-sdk/README.md), [SDK tests](../tests/python_sdk/)"
     },
@@ -194,6 +194,11 @@
       "name": "OCI download bundle",
       "download": "`ghcr.io/theagenthealth/agenthealth-binaries:{version}`",
       "guide": "[Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files"
+    },
+    {
+      "name": "Python SDK / PyPI",
+      "download": "[PyPI](https://pypi.org/project/agenthealth/{numeric_version}/): `pip install agenthealth=={numeric_version}`; wheel/sdist in Release downloads",
+      "guide": "[Python SDK](docs/python-sdk.md) \u2014 requires the matching CLI"
     }
   ]
 }
