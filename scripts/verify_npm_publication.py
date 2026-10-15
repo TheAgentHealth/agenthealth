@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import subprocess
 import tarfile
+import time
 import urllib.error
 import urllib.request
 
@@ -22,6 +23,21 @@ def fetch(url):
     if len(data) > 32 * 1024 * 1024:
         raise ValueError('npm response exceeds limit')
     return data
+
+
+def registry_document(version, wait=False, timeout=600):
+    """Allow npm's asynchronous publication to reach the public registry."""
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            return json.loads(fetch('https://registry.npmjs.org/@theagenthealth%2fagenthealth/' + version))
+        except urllib.error.HTTPError as error:
+            if not wait or error.code not in (404, 429, 500, 502, 503, 504):
+                raise
+            if time.monotonic() >= deadline:
+                raise TimeoutError('npm registry publication did not propagate within the deadline') from error
+            print('Waiting for npm registry publication to propagate...', flush=True)
+            time.sleep(min(10, max(0, deadline - time.monotonic())))
 
 
 def verify(tag, output, registry=False):
@@ -57,7 +73,7 @@ def verify(tag, output, registry=False):
         if metadata.get('scripts', {}).get('postinstall') or metadata.get('scripts', {}).get('preinstall'):
             raise ValueError('npm package must not have installation scripts')
     try:
-        document = json.loads(fetch('https://registry.npmjs.org/@theagenthealth%2fagenthealth/' + version))
+        document = registry_document(version, wait=registry)
     except urllib.error.HTTPError as error:
         if error.code == 404 and not registry:
             return

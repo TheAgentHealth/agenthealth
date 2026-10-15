@@ -171,3 +171,38 @@ def test_pypi_recovery_reuses_only_identical_signed_distributions(monkeypatch, t
             helper.verify('v0.14.0', tmp_path)
     else:
         assert helper.verify('v0.14.0', tmp_path)
+
+
+@pytest.mark.parametrize('status', [404, 429, 503])
+def test_registry_waits_for_asynchronous_publication(monkeypatch, status):
+    import urllib.error
+    monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
+    helper = importlib.import_module('verify_npm_publication')
+    calls = []
+    def fetch(url):
+        calls.append(url)
+        if len(calls) == 1:
+            raise urllib.error.HTTPError(url, status, 'processing', {}, None)
+        return b'{"version":"0.14.0"}'
+    monkeypatch.setattr(helper, 'fetch', fetch)
+    monkeypatch.setattr(helper.time, 'sleep', lambda _: None)
+    assert helper.registry_document('0.14.0', wait=True)['version'] == '0.14.0'
+    assert len(calls) == 2
+
+
+def test_registry_wait_is_bounded_and_auth_errors_fail_immediately(monkeypatch):
+    import urllib.error
+    monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
+    helper = importlib.import_module('verify_npm_publication')
+    def unavailable(url):
+        raise urllib.error.HTTPError(url, 404, 'processing', {}, None)
+    monkeypatch.setattr(helper, 'fetch', unavailable)
+    with pytest.raises(TimeoutError, match='deadline'):
+        helper.registry_document('0.14.0', wait=True, timeout=0)
+    with pytest.raises(urllib.error.HTTPError):
+        helper.registry_document('0.14.0')
+    def forbidden(url):
+        raise urllib.error.HTTPError(url, 403, 'forbidden', {}, None)
+    monkeypatch.setattr(helper, 'fetch', forbidden)
+    with pytest.raises(urllib.error.HTTPError):
+        helper.registry_document('0.14.0', wait=True)
