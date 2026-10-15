@@ -110,3 +110,49 @@ def test_release_gate_requires_every_node_matrix_job(monkeypatch, conclusion):
     monkeypatch.setattr(gate, 'api', lambda path: {'jobs': jobs} if '/jobs?' in path else {'workflow_runs': [run]})
     with pytest.raises(RuntimeError, match='JavaScript SDK'):
         gate.check_ci('owner/repo', 'abc', require_javascript=True)
+
+
+def test_oidc_diagnostics_validate_exchange_without_printing_tokens(monkeypatch, capsys):
+    import base64
+    monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
+    helper = importlib.import_module('verify_npm_oidc')
+    claims = {'repository': 'TheAgentHealth/agenthealth', 'workflow_ref': 'TheAgentHealth/agenthealth/.github/workflows/publish.yml@refs/heads/main', 'private_claim': 'do-not-print'}
+    payload = base64.urlsafe_b64encode(json.dumps(claims).encode()).decode().rstrip('=')
+    token = 'header.' + payload + '.signature'
+    monkeypatch.setenv('ACTIONS_ID_TOKEN_REQUEST_URL', 'https://example.com/token?api-version=2')
+    monkeypatch.setenv('ACTIONS_ID_TOKEN_REQUEST_TOKEN', 'request-secret')
+    calls = []
+    def fetch(request, timeout):
+        calls.append(request)
+        if len(calls) == 1:
+            assert 'audience=npm%3Aregistry.npmjs.org' in request.full_url
+            assert request.get_header('Authorization') == 'Bearer request-secret'
+            return io.BytesIO(json.dumps({'value': token}).encode())
+        assert request.get_method() == 'POST'
+        assert request.full_url.endswith('/package/@theagenthealth%2fagenthealth')
+        assert request.get_header('Authorization') == 'Bearer ' + token
+        return io.BytesIO(b'{"token":"publishing-secret"}')
+    monkeypatch.setattr(helper.urllib.request, 'urlopen', fetch)
+    helper.verify()
+    output = capsys.readouterr().out
+    assert 'TheAgentHealth/agenthealth' in output
+    assert all(secret not in output for secret in (token, 'request-secret', 'publishing-secret', 'do-not-print'))
+
+
+def test_oidc_rejection_is_reported_without_falling_back_to_token_auth(monkeypatch):
+    import base64
+    import urllib.error
+    monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
+    helper = importlib.import_module('verify_npm_oidc')
+    token = 'header.' + base64.urlsafe_b64encode(b'{}').decode().rstrip('=') + '.signature'
+    monkeypatch.setenv('ACTIONS_ID_TOKEN_REQUEST_URL', 'https://example.com/token')
+    monkeypatch.setenv('ACTIONS_ID_TOKEN_REQUEST_TOKEN', 'request-secret')
+    def fetch(request, timeout):
+        if request.full_url.startswith('https://example.com/'):
+            return io.BytesIO(json.dumps({'value': token}).encode())
+        raise urllib.error.HTTPError(request.full_url, 404, 'Not found', {},
+                                     io.BytesIO(json.dumps({'message': 'rejected ' + token + ' request-secret'}).encode()))
+    monkeypatch.setattr(helper.urllib.request, 'urlopen', fetch)
+    with pytest.raises(RuntimeError, match='HTTP 404') as error:
+        helper.verify()
+    assert token not in str(error.value) and 'request-secret' not in str(error.value)
