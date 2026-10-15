@@ -83,5 +83,43 @@ test('real CLI handles healthy HTTP, batch, dependency and failed health', async
   assert.equal((await check({ version: 'v1', targets: [target] }, { binary })).exitCode, 0);
   const batch = await check({ version: 'v1', targets: [target, { ...target, name: 'other' }] }, { binary });
   assert.equal(batch.results.length, 2);
+  const graph = await check({ version: 'v1', targets: [
+    { ...target, id: 'root', dependencies: [{ ref: 'child', relationship: 'supporting', critical: true }] },
+    { ...target, name: 'child', id: 'child' }
+  ] }, { binary });
+  assert.equal(graph.results[0].dependencies[0].target.id, 'child');
+  assert.equal(graph.results[0].dependencies[0].relationship, 'supporting');
   const unhealthy = await check(config, { binary }); assert.equal(unhealthy.status, 'UNREACHABLE');
+});
+test('POSIX cancellation cleans descendants and private config', async t => {
+  const binary = await fixture(t, `
+const fs=require('node:fs');const cp=require('node:child_process');
+const descendant=cp.spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});
+fs.writeFileSync(process.env.MARKER,JSON.stringify({pid:descendant.pid,path:process.argv.at(-1),mode:fs.statSync(process.argv.at(-1)).mode&511}));
+setInterval(()=>{},1000);
+`);
+  if (!binary) return;
+  const marker = join(binary, '..', 'marker.json');
+  const controller = new AbortController();
+  const pending = check(config, { binary, environment: { MARKER: marker }, signal: controller.signal });
+  // Attach rejection immediately while waiting for the subprocess marker.
+  const rejection = assert.rejects(pending, CheckAbortedError);
+  let recorded;
+  for (let n=0; n<100; n++) {
+    try { recorded = JSON.parse(await readFile(marker, 'utf8')); break; } catch {}
+    await new Promise(resolve => setTimeout(resolve, 20));
+  }
+  controller.abort(); await rejection;
+  assert.ok(recorded); assert.equal(recorded.mode, 0o600);
+  await assert.rejects(readFile(recorded.path), { code: 'ENOENT' });
+  // Linux can retain a killed child briefly as a zombie until init reaps it.
+  let alive = true;
+  for (let n=0; n<100; n++) {
+    try {
+      process.kill(recorded.pid, 0);
+      if (process.platform === 'linux' && (await readFile(`/proc/${recorded.pid}/stat`, 'utf8')).split(' ')[2] === 'Z') { alive=false; break; }
+    } catch { alive=false; break; }
+    await new Promise(resolve => setTimeout(resolve, 20));
+  }
+  assert.equal(alive, false);
 });

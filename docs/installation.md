@@ -2,7 +2,8 @@
 
 <!-- release-version: v0.14.0 -->
 
-The commands below install the published v0.14.0 release. See [publication verification](releases/verification-v0.13.2.md).
+The commands below target v0.14.0, prepared for synchronized publication.
+The previous published release has a [verification record](releases/verification-v0.13.2.md).
 
 Choose a distribution:
 
@@ -14,7 +15,7 @@ Choose a distribution:
 | Linux DEB/RPM, Homebrew/Scoop manifests | [Package channels](#package-channels-phase-13-v0110) |
 | OCI release-file bundle | [ORAS download](distribution.md#installation-examples) |
 
-The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.14.0`. JavaScript/npm remains planned.
+The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.14.0`. The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16.
 
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
@@ -103,7 +104,7 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured; v0.14.0 is available from both registries:
+tags when mirror credentials are configured; v0.14.0 is prepared for both registries:
 
 ```bash
 # GitHub Container Registry
@@ -188,7 +189,7 @@ Phase 14 provides [manifests](../deploy/kubernetes/), the
 pins CLI v0.14.0 and publishes through the shared release workflow. The
 historical chart 0.1.0 remains available as helm-v0.1.0, pinning CLI v0.11.1.
 See [Kubernetes](kubernetes.md) and [distribution](distribution.md) for direct
-release downloads, OCI Helm install and ORAS binary retrieval. The v0.14.0 channels are published and verified.
+release downloads, OCI Helm install and ORAS binary retrieval. The v0.14.0 channels require post-publication verification.
 
 ## Python SDK
 

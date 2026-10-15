@@ -24,4 +24,13 @@ if (process.env.AGENTHEALTH_SDK_BINARY) {
 }
 `);
   run(process.execPath, ['smoke.mjs']);
+  await writeFile(join(directory, 'types.ts'), `
+import { check, type HealthStatus, type ConfigurationDocument } from '@theagenthealth/agenthealth';
+const config: ConfigurationDocument = {version:'v1', targets:[{name:'api', type:'http', endpoint:'http://localhost'}]};
+const report = await check(config);
+const status: HealthStatus = report.status;
+void status;
+`);
+  run(process.execPath, [resolve('sdk/javascript/node_modules/typescript/bin/tsc'),
+    '--noEmit', '--strict', '--module', 'nodenext', '--target', 'es2022', 'types.ts']);
 } finally { await rm(directory, { recursive: true, force: true }); }

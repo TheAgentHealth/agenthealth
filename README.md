@@ -6,11 +6,11 @@
 
 ## Start here
 
-**Latest release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Latest release: [v0.13.2](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.13.2), pre-1.0. Phase 16 targets v0.14.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
-Choose how you want to run AgentHealth. Published distributions share **v0.14.0**:
+Choose how you want to run AgentHealth. Published distributions share **v0.13.2**:
 
 <!-- generated: distributions:start -->
 | Use it as | Get it here | Installation guide |
@@ -47,7 +47,7 @@ helm upgrade --install agenthealth \
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.14.0`; install a matching CLI separately. JavaScript/npm remains planned. Official
+The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.14.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is implemented in source for Phase 16. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -97,7 +97,7 @@ A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `
 
 ## Project status
 
-AgentHealth is pre-1.0. Published software is v0.14.0; changes described as
+AgentHealth is pre-1.0. Published software is v0.13.2; changes described as
 implemented in source require a newer build. Planned target vocabulary is not
 an availability guarantee. [Capability status](docs/phase-status.md) is generated
 from [one machine-readable source](docs/status.json).
@@ -141,7 +141,7 @@ rules for the destinations in your reviewed configuration.
 The agent adapter requires a specific read-only health document and an optional
 bounded safe-task handler. Start with [reference middleware](docs/reference-middleware.md)
 for Go, FastAPI, Express and LangGraph. These examples are application integration
-helpers; the [Python SDK](docs/python-sdk.md) provides typed CLI access. JavaScript/npm remains planned.
+helpers; the [Python SDK](docs/python-sdk.md) provides typed CLI access. The [JavaScript SDK](docs/javascript-sdk.md) is implemented in source for Phase 16.
 
 ## Specification — Protocol — Implementation
 

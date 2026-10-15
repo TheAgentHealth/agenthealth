@@ -17,7 +17,7 @@ Both public references for the pinned CLI version are:
 - GHCR: `ghcr.io/theagenthealth/agenthealth:v0.14.0`
 - Docker Hub: `docker.io/theagenthealth/agenthealth:v0.14.0`
 
-Both synchronized v0.14.0 references passed anonymous access checks.
+Both synchronized v0.14.0 references must pass anonymous access checks before release completion.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
 reference in each AgentHealth container, including init containers. Registry

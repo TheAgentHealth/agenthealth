@@ -55,8 +55,13 @@ export async function loadConfig(path, options) {
     let bytes;
     try {
       const buffer = Buffer.alloc(MAX_CONFIG + 1);
-      const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
-      bytes = buffer.subarray(0, bytesRead);
+      let total = 0;
+      while (total < buffer.length) {
+        const { bytesRead } = await file.read(buffer, total, buffer.length - total, total);
+        if (!bytesRead) break;
+        total += bytesRead;
+      }
+      bytes = buffer.subarray(0, total);
     } finally { await file.close(); }
     if (bytes.length > MAX_CONFIG) throw new Error();
     const document = parseDocument(bytes.toString('utf8'), { uniqueKeys: true });
@@ -78,8 +83,10 @@ async function run(binary, args, { cwd, environment, deadline, signal }) {
   if (signal?.aborted) throw new CheckAbortedError('AgentHealth check aborted');
   if (performance.now() >= deadline) throw new CheckTimeoutError('AgentHealth check deadline expired');
   return new Promise((accept, reject) => {
-    const child = spawn(binary, args, { cwd, env: { ...process.env, ...environment }, shell: false,
+    let child;
+    try { child = spawn(binary, args, { cwd, env: { ...process.env, ...environment }, shell: false,
       detached: process.platform !== 'win32', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    } catch { reject(new ExecutionError('Unable to start AgentHealth CLI')); return; }
     let chunks = [], size = 0, diagnosticSize = 0, failure, timer, killTimer;
     function kill(sig) {
       try {
