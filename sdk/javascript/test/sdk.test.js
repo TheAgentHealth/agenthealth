@@ -123,3 +123,20 @@ setInterval(()=>{},1000);
   }
   assert.equal(alive, false);
 });
+test('temporary-directory failures use sanitized SDK exceptions', async t => {
+  const binary = await fixture(t, 'process.exitCode=0;'); if (!binary) return;
+  const original = process.env.TMPDIR;
+  try {
+    process.env.TMPDIR = '/nonexistent-agenthealth-sensitive-path';
+    await assert.rejects(check(config, { binary }), error => {
+      assert.ok(error instanceof ExecutionError);
+      assert.equal(error.message, 'Unable to prepare AgentHealth CLI execution');
+      assert.ok(!error.message.includes('sensitive'));
+      assert.equal(error.cause, undefined);
+      return true;
+    });
+  } finally {
+    if (original === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = original;
+  }
+});

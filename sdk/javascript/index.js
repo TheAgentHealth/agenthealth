@@ -142,14 +142,24 @@ export class Client {
       deadline: performance.now() + this.timeout, signal };
     const cli = await run(this.binary, ['version'], { ...options, deadline: Math.min(options.deadline, performance.now() + 5000) });
     if (cli.code !== 0 || cli.output.trim() !== `agenthealth v${version}`) throw new CompatibilityError('AgentHealth CLI must match the SDK software version');
-    const directory = await mkdtemp(join(tmpdir(), 'agenthealth-js-'));
+    let directory, report, failure;
     try {
+      directory = await mkdtemp(join(tmpdir(), 'agenthealth-js-'));
       const path = join(directory, 'configuration.json');
       await writeFile(path, JSON.stringify(configuration.toJSON()), { mode: 0o600, flag: 'wx' });
       const { code, output } = await run(this.binary, ['check', '--format', 'json', '--', path], options);
       if (!Number.isInteger(code) || code < 0 || code > 5) throw new ExecutionError('AgentHealth CLI execution failed');
-      return parseReport(output, code);
-    } finally { await rm(directory, { recursive: true, force: true }); }
+      report = parseReport(output, code);
+    } catch (error) {
+      failure = error instanceof AgentHealthError ? error : new ExecutionError('Unable to prepare AgentHealth CLI execution');
+    } finally {
+      if (directory) {
+        try { await rm(directory, { recursive: true, force: true }); }
+        catch { failure ??= new ExecutionError('Unable to clean up AgentHealth CLI execution'); }
+      }
+    }
+    if (failure) throw failure;
+    return report;
   }
 }
 export function check(config, options = {}) {
