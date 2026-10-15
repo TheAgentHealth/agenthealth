@@ -62,9 +62,13 @@ def test_trusted_publisher_and_final_release_gating():
     assert 'NODE_AUTH_TOKEN' not in steps and 'NPM_TOKEN' not in steps
     release = yaml.safe_load((ROOT / '.github/workflows/release.yml').read_text())
     publish = release['jobs']['publish']
-    assert publish['permissions']['actions'] == 'write'
-    names = [s.get('name', '') for s in publish['steps']]
-    assert names.index('Publish npm from the configured trusted workflow and require success') < names.index('Publish complete release')
+    npm = release['jobs']['npm']
+    assert npm['permissions']['actions'] == 'write'
+    assert set(npm['needs']) == {'release', 'container', 'packages', 'recover-assets'}
+    assert 'npm' in publish['needs']
+    assert "needs.npm.result == 'success'" in publish['if']
+    assert any('wait_for_npm_publication.py' in s.get('run', '') for s in npm['steps'])
+    assert not any('wait_for_npm_publication.py' in s.get('run', '') for s in publish['steps'])
 
 
 def test_registry_rejects_modified_tarball_before_accepting_integrity(tmp_path, monkeypatch):

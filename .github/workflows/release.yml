@@ -479,10 +479,38 @@ jobs:
           packages-dir: python-dist/
           attestations: true
 
-  publish:
-    needs: [release, container, packages, pypi, recover-assets, recover-pypi]
+  npm:
+    # Visible alongside PyPI; publish.yml supplies the configured npm OIDC identity.
+    needs: [release, container, packages, recover-assets]
     if: >-
       always() && ((needs.release.result == 'success' && needs.container.result == 'success' &&
+      (needs.packages.result == 'success' ||
+       (needs.packages.result == 'skipped' && needs.release.outputs.synchronized != 'true'))) ||
+      needs.recover-assets.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_tag || github.ref_name }}
+      - name: Publish npm from the configured trusted workflow and require success
+        env:
+          PUBLICATION_REQUEST: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          if [ -f sdk/javascript/package.json ]; then
+            python3 scripts/wait_for_npm_publication.py "$RELEASE_TAG" "$PUBLICATION_REQUEST"
+          fi
+
+  publish:
+    needs: [release, container, packages, pypi, npm, recover-assets, recover-pypi]
+    if: >-
+      always() && needs.npm.result == 'success' && ((needs.release.result == 'success' && needs.container.result == 'success' &&
       (needs.pypi.result == 'success' ||
        (needs.pypi.result == 'skipped' && needs.release.outputs.python != 'true')) &&
       (needs.packages.result == 'success' ||
@@ -492,7 +520,6 @@ jobs:
     permissions:
       contents: write
       packages: write
-      actions: write
     env:
       GH_TOKEN: ${{ github.token }}
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
@@ -535,13 +562,6 @@ jobs:
           version="${RELEASE_TAG#v}"
           major="${version%%.*}"
           docker buildx imagetools create --tag theagenthealth/agenthealth:latest --tag "theagenthealth/agenthealth:v$major" "theagenthealth/agenthealth@$DOCKER_DIGEST"
-      - name: Publish npm from the configured trusted workflow and require success
-        env:
-          PUBLICATION_REQUEST: ${{ github.run_id }}-${{ github.run_attempt }}
-        run: |
-          if [ -f sdk/javascript/package.json ]; then
-            python3 scripts/wait_for_npm_publication.py "$RELEASE_TAG" "$PUBLICATION_REQUEST"
-          fi
       - name: Publish complete release
         run: |
           flags=(--latest)
