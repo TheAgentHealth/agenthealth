@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import tempfile
 
+from package_javascript import has_javascript, asset_names as javascript_assets, build_javascript
 from package_helm import package_chart
 from package_python import has_python, asset_names as python_assets, build_python
 
@@ -21,6 +22,8 @@ def asset_names(tag):
             names.update({stem + '.deb', stem + '.rpm'})
     if has_python(tag):
         names.update(python_assets(tag))
+    if has_javascript(tag):
+        names.update(javascript_assets(tag))
     return names
 
 
@@ -28,7 +31,8 @@ def prepare(tag, output):
     expected = asset_names(tag)
     chart_name = f'agenthealth-{tag.removeprefix("v")}.tgz'
     sdk_assets = python_assets(tag) if has_python(tag) else set()
-    initial = expected - {chart_name} - sdk_assets
+    npm_assets = javascript_assets(tag) if has_javascript(tag) else set()
+    initial = expected - {chart_name} - sdk_assets - npm_assets
     if not output.is_dir() or {p.name for p in output.iterdir()} != initial:
         raise ValueError('complete CLI asset set is required; stale or missing files are not allowed')
     lines = (output / 'checksums.txt').read_text().splitlines()
@@ -47,6 +51,8 @@ def prepare(tag, output):
         shutil.copyfile(chart, output / chart.name)
     if sdk_assets:
         build_python(tag, output)
+    if npm_assets:
+        build_javascript(tag, output)
     (output / 'checksums.txt').write_text(''.join(
         f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n'
         for path in sorted(output.iterdir()) if path.name != 'checksums.txt'))
