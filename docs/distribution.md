@@ -161,7 +161,8 @@ See [release requirements](../RELEASING.md#python-distribution-phase-15).
 
 The release includes `theagenthealth-agenthealth-0.14.0.tgz` in signed assets,
 checksums and the OCI binary bundle. npm publishes the identical bytes as
-`@theagenthealth/agenthealth@0.14.0` using OIDC from `publish.yml`. The explicit `npm` job in `release.yml` waits for registry integrity, provenance
+`@theagenthealth/agenthealth@0.14.0` using OIDC directly in `release.yml` with GitHub environment `npm`. Its explicit
+`npm` job verifies registry integrity, provenance
 and `npm audit signatures`, alongside `pypi`. Final GitHub publication requires both.
 The package requires a separately verified matching CLI; installing it does not
 fetch a binary. See the [SDK guide](javascript-sdk.md).

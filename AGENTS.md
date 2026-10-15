@@ -227,7 +227,7 @@ The historical chart used `helm-v*`; v0.12.0 and later coordinate the chart
 and CLI under the shared version policy and publish the OCI packages.
 
 Phase 16 adds `sdk/javascript`, package `@theagenthealth/agenthealth`, and
-`.github/workflows/publish.yml` as the npm OIDC trusted identity. Include the npm
+`.github/workflows/release.yml` with environment `npm` as the npm OIDC trusted identity. Include the npm
 tarball in synchronized signed assets, require the six JavaScript SDK CI jobs,
 and verify public npm bytes, integrity and provenance before completing release.
 See [SDK guide](docs/javascript-sdk.md) and [alignment](docs/phase-16-alignment.md).

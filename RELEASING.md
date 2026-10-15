@@ -249,32 +249,32 @@ workflow-only repair; the source tag remains immutable.
 ## JavaScript SDK publication (Phase 16)
 
 Starting with v0.14.0, publish `@theagenthealth/agenthealth` at the shared numeric
-software version. The signed GitHub draft, checksums and OCI binary bundle include
-`theagenthealth-agenthealth-X.Y.Z.tgz`. `release.yml` exposes an explicit `npm` job alongside `pypi`. That job dispatches
-and requires `publish.yml` before the final `publish` job can make the release public. npm trusted publishing is
-configured for **publish.yml** in **TheAgentHealth/agenthealth**; no npm token or
-GitHub environment is required. Use Node 24 with npm 11.5.1+ and OIDC
-`id-token: write`. A reusable caller workflow would change the trusted identity,
-so publication uses a separate workflow dispatch on the immutable source tag.
-The workflow verifies GITHUB_REF/GITHUB_SHA against that tag so npm provenance
-identifies the same source even when main advances.
+software version. Signed GitHub assets, checksums and the OCI binary bundle
+include `theagenthealth-agenthealth-X.Y.Z.tgz`. The explicit `npm` job in
+`release.yml` publishes the exact signed tarball, alongside `pypi`. The final
+`publish` job requires both. No separate npm workflow or npm token is used.
 
-The publication workflow verifies source-tag provenance and signed checksums,
-publishes that exact tarball, compares anonymous registry bytes and SHA-512
-integrity, and runs `npm audit signatures`. Existing versions can only be reused
-if their bytes match; never overwrite an npm version. Previews use `next`.
-Publication-only recovery also requires npm verification for tags with the SDK.
+The saved npm trusted publisher must match **TheAgentHealth/agenthealth**,
+workflow **release.yml**, GitHub environment **npm**, with `npm publish` allowed.
+The job sets `environment: npm` and `id-token: write`, uses Node 24/npm 11.5.1+,
+and verifies the OIDC exchange without logging tokens. All fields are case sensitive.
 See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/).
 
-### npm infrastructure-only recovery
+Normal publication runs on the immutable source tag. The job verifies source-bound
+GitHub provenance and checksums, publishes `./npm-dist/...tgz`, compares anonymous
+registry bytes and SHA-512 integrity, and runs `npm audit signatures`. Existing npm
+versions may only be reused when their bytes match. Previews use `next`.
 
-If npm publication fails after signed assets are staged, retain the source tag,
-GitHub assets and any already published formats. Dispatch `publish.yml` on `main`
-with the original `release_tag` and `recovery: true`. This uses corrected publisher
-infrastructure to download and verify the original tag-bound signatures/checksums,
-then publishes only the identical npm tarball. It never rebuilds or replaces assets.
-Normal publication still runs on the exact tag. Recovery npm provenance identifies
-the corrected publisher commit on main; GitHub build provenance continues to bind
-the package bytes to the original immutable source tag. Once npm succeeds, rerun
-only the failed Release npm job so it verifies the existing identical publication
-and allows final GitHub publication. Do not rerun a successful PyPI publish.
+### Infrastructure-only publication recovery
+
+If publication fails after signed assets are staged, retain the source tag,
+GitHub assets and all already published formats. Dispatch **release.yml** on
+**main** with the original `release_tag` and **publication_only: true**. The
+workflow requires tagged-source CI, verifies the original signed draft and OCI
+packages, checks any existing PyPI bytes before skipping their upload, and runs
+npm directly in the configured **npm** environment. No artifact is rebuilt or
+replaced, and no published version/tag is moved.
+
+Recovery npm provenance identifies the corrected publisher commit on main;
+GitHub build provenance continues to bind the package bytes to the original
+source tag. Both registry jobs must succeed before the draft is finalized.

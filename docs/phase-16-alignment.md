@@ -21,7 +21,7 @@ historical and is not the SDK described here.
 | 15 Python | Python metadata advances to the shared version; canonical schemas and subprocess/version contracts stay aligned. |
 | 17–19 adapters | Planned adapters require Go implementation first; SDK configuration can follow canonical schema additions. |
 | 20 frameworks | Future integrations consume installed SDK, propagate AbortSignal and preserve health reports versus tool exceptions. |
-| 21 CI/CD | Six Node platform/version jobs and exact-source pre-release gate; `publish.yml` is the npm trusted OIDC identity. |
+| 21 CI/CD | Six Node platform/version jobs and exact-source pre-release gate; `release.yml` with environment `npm` is the npm trusted OIDC identity. |
 | 22 observability | Reports retain diagnostics; no exporter implemented or implied. |
 | 23 plugins | No plugin loading or new adapter registration introduced. |
 | 24 conformance | Canonical schema parity and installed-package tests added; full conformance remains planned. |
