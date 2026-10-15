@@ -17,7 +17,7 @@ HTTP fixture and deployment manifests. Install the CLI using [installation instr
 | [Shared dependency graph](graph-check/README.md) | Shared node references, separate downstream/path evidence, concurrency and independent edge policies; requires v0.8.0 or newer |
 | [Experimental AHP serving](ahp-check/README.md) | Background snapshots, public readiness/liveness, bearer-authorized evidence; requires v0.9.0 or newer |
 | [Standalone distribution](distribution/README.md) | Local archive/package preparation, verification and native smoke test; requires source tooling from v0.11.0 or newer |
-| [Kubernetes deployments](kubernetes/README.md) | Readiness/startup probes, init gates, sidecars, Jobs/CronJobs, Secrets, Helm and Kustomize; source integration pins CLI v0.11.0 |
+| [Kubernetes deployments](kubernetes/README.md) | Readiness/startup probes, init gates, sidecars, Jobs/CronJobs, Secrets, Helm and Kustomize; source integration pins CLI v0.14.0 |
 | [HTTP readiness](core-check/agenthealth.yaml) | HTTP status checks and latency thresholds |
 | [MCP discovery](mcp-check/agenthealth.yaml) | Required tool names and resource URIs, with automatic protocol selection |
 | [Modern MCP](mcp-check/modern.yaml) | Pinning stateless MCP `2026-07-28` |
@@ -151,3 +151,5 @@ Jobs/CronJobs, existing Secrets and the published Helm chart. Future releases
 follow the [synchronized distribution policy](../docs/distribution.md).
 
 [Python SDK example](python-sdk/README.md): sync/async checks using reviewed CLI configurations.
+
+- [JavaScript SDK](javascript-sdk/README.md) — Promise API with the reference CLI.

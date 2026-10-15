@@ -50,7 +50,7 @@ helm upgrade --install agenthealth \
 
 See the [installation guide](../docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](../docs/kubernetes.md) for workload modes.
-The [Python SDK](python-sdk.md) is published on PyPI as `agenthealth==0.13.2`; install a matching CLI separately. JavaScript/npm remains planned. Official
+The [Python SDK](python-sdk.md) is published on PyPI as `agenthealth==0.13.2`; install a matching CLI separately. The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -258,7 +258,7 @@ These are described in detail in [Universal CLI](#universal-cli), [Distribution]
 | CLI | `agenthealth` |
 | Config file | `agenthealth.yaml` |
 | Python SDK / PyPI | `agenthealth` |
-| npm package (planned) | `@agenthealth/sdk` |
+| npm package (Phase 16) | `@theagenthealth/agenthealth` |
 | Container image (GHCR / Docker Hub) | `ghcr.io/theagenthealth/agenthealth` / `theagenthealth/agenthealth` |
 | Helm chart | `agenthealth` |
 
@@ -1003,7 +1003,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](../docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)); see [container usage](../docs/installation.md#container-image). Python SDK examples are available; JavaScript/npm remains planned. Kubernetes source examples and chart 0.13.2 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
+Standalone binaries and source builds are available; see [installation](../docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)); see [container usage](../docs/installation.md#container-image). Python SDK examples are available; The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16. Kubernetes source examples and chart 0.13.2 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](../docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](../docs/phase-13-alignment.md).
 
@@ -1101,21 +1101,10 @@ The Python package is an SDK/distribution mechanism.
 
 # JavaScript / TypeScript / npm
 
-The JavaScript/TypeScript SDK is planned and is not published. The following
-illustrates the proposed API; use the CLI or Docker image for current integrations.
-
-Conceptual usage:
-
-```typescript
-import { check } from "@agenthealth/sdk";
-
-const result = await check({
-  type: "mcp",
-  endpoint: "http://localhost:3000"
-});
-
-console.log(result.status);
-```
+The Node.js ESM SDK is implemented in Phase 16 as
+`@theagenthealth/agenthealth`, with a Promise API, TypeScript declarations and
+canonical configuration/results. Install the matching verified CLI separately.
+See the [SDK guide](javascript-sdk.md) and [example](../examples/javascript-sdk/README.md).
 
 ---
 
@@ -1377,7 +1366,7 @@ agenthealth/
 │   ├── router/
 │   └── model/                    # planned
 │
-├── sdk/                       # Python implemented; JavaScript planned
+├── sdk/                       # Python and Node SDKs implemented
 │   ├── python/                 # published PyPI SDK
 │   └── javascript/             # planned npm SDK
 │

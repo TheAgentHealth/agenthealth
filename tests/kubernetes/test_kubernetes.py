@@ -184,3 +184,8 @@ def test_exec_readiness_has_bounded_dependencies_and_process_startup():
             assert node['budget_ms'] <= 5000
             assert node['timeout_ms'] <= 2000
     assert container['readinessProbe']['timeoutSeconds'] >= 10
+
+
+def test_derived_application_image_uses_current_cli_by_default():
+    dockerfile = (ROOT / 'examples/kubernetes/Dockerfile.exec-probe').read_text()
+    assert f'ARG AGENTHEALTH_IMAGE={DEFAULT_IMAGE}\n' in dockerfile

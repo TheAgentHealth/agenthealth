@@ -991,7 +991,7 @@ Required extension tasks:
 
 # Phase 14 — Kubernetes Integration
 
-**Status:** Released — chart 0.12.0 with CLI `v0.12.0`; the historical chart 0.1.0 remains available as `helm-v0.1.0`.
+**Status:** Released through v0.13.2; source chart 0.14.0 pins CLI `v0.14.0` for synchronized publication. The historical chart 0.1.0 remains available as `helm-v0.1.0`.
 
 The initial chart used independent versioning. v0.12.0 adopts the
 shared software version: chart `version: 0.12.0`, `appVersion: v0.12.0` and
@@ -1209,58 +1209,48 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 
 # Phase 16 — JavaScript / TypeScript SDK
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source for v0.14.0; registry availability requires verified publication.
 
-Phase 13 integration requirement: binary downloads must select exact version/platform
-assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
-
-When implemented, the JavaScript SDK adopts the shared software release version
-and coordinated source tag. Publish to a supported ecosystem registry and
-document CLI/spec compatibility; an OCI binary bundle does not implement an SDK.
-
-Goal:
-
-Provide first-class integration for the JavaScript agent ecosystem.
-
-## Distribution
+The Node.js ESM package is `@theagenthealth/agenthealth`. It wraps an explicitly
+installed, verified CLI of the exact same software version. Node 22.14+ is
+required. No browser execution, CommonJS entrypoint, binary download, or install
+script is provided. See the [SDK guide](javascript-sdk.md) and
+[phase impact review](phase-16-alignment.md).
 
 ```bash
-npm install @agenthealth/sdk
+npm install @theagenthealth/agenthealth@0.14.0
 ```
 
-## API
-
-Conceptual:
-
 ```typescript
-import { check } from "@agenthealth/sdk";
-
-const result = await check({
-  type: "mcp",
-  endpoint: "http://localhost:3000"
+import { check } from "@theagenthealth/agenthealth";
+const report = await check({
+  version: "v1",
+  targets: [{ name: "mcp", type: "mcp", endpoint: "http://localhost:3000",
+    checks: ["reachability"] }]
 });
+console.log(report.status);
 ```
 
 ## Capabilities
 
-- [ ] TypeScript types
-- [ ] Promise-based API
-- [ ] configuration support
-- [ ] normalized results
-- [ ] dependency results
-- [ ] typed access to agent-role, gateway/router, and communication-path evidence defined by the updated AHS/graph contracts
-- [ ] browser/server scope definition
-
-- [ ] Expose Phase 7 agent options, named peer/path results and stable agent diagnostic codes through typed APIs. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
-
-- [ ] Preserve Phase 10 node IDs and edge relationship/critical metadata in JavaScript/TypeScript results. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
+- [x] TypeScript declarations and Promise-based API
+- [x] Schema-validated JSON/YAML and object configurations
+- [x] Normalized root/batch reports; health exits 0–5 resolve
+- [x] Typed dependency graph IDs, relationship/critical metadata and check evidence
+- [x] Named agent/peer/path, gateway/router diagnostics preserved from the CLI
+- [x] Exact CLI version gate, bounded output, deadlines and AbortSignal cancellation
+- [x] Node/server-only scope; experimental AHP serving stays in the CLI
+- [x] Installed-tarball and real-CLI tests on Linux, macOS and Windows, Node 22/24
+- [x] Same-version signed/checksummed release tarball, npm OIDC publication and provenance
 
 ## Impact Review
 
-Earlier: wrap the core/CLI and updated AHS graph results without duplicating health semantics. Later: provide JavaScript/TypeScript APIs for runtime integrations and interoperability tests.
-
-
-Phase 11 integration requirements are recorded in the [AHP impact review](../docs/rfcs/phase-11-ahp.md#later-phases).
+Earlier phases retain AHS v1 and Go-owned health semantics. Phase 13 asset
+coordination includes the npm tarball; Phase 14 deployment and Phase 15 Python
+metadata move to the shared version. Phase 20 and Phase 25 should consume the
+installed SDK and preserve the same explicit active-check and evidence contracts.
+Full framework interoperability, browser execution and automatic binary retrieval
+remain future work. See [the audit](phase-16-alignment.md) for every phase.
 
 ---
 
@@ -1362,6 +1352,11 @@ Earlier: add vector-store adapters under the shared contracts and expose them th
 ---
 
 # Phase 20 — Agent Runtime / Framework Integrations
+
+Phase 16 integration: use the installed Node ESM SDK with a matching verified CLI;
+propagate AbortSignal, millisecond deadlines, and health reports without turning
+unhealthy results into tool exceptions. Browser execution remains out of scope.
+
 
 **Status:** Planned — not yet implemented.
 
@@ -1601,6 +1596,11 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
+
+Phase 16 integration: expand the Node 22/24 Linux/macOS/Windows installed-package
+smoke tests to real JavaScript agent frameworks and protocol products. Preserve
+named peer/path and graph evidence; SDK smoke tests alone do not establish this phase.
+
 
 Phase 14 integration requirement: Add real agent/gateway/router Kubernetes interoperability and a broader
 cluster-version matrix; Phase 14 deterministic HTTP fixtures are not product

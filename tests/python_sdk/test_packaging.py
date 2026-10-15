@@ -29,7 +29,7 @@ def test_version_mapping_and_historical_layout(packaging):
 
 def test_source_version_mismatch_fails_before_build(packaging, tmp_path):
     with pytest.raises(ValueError, match='source version'):
-        packaging.build_python('v0.14.0', tmp_path)
+        packaging.build_python('v9.99.99', tmp_path)
     assert not list(tmp_path.iterdir())
 
 

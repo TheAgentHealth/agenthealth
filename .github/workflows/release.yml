@@ -37,6 +37,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
       - name: Validate tagged source
         run: |
           test -z "$(gofmt -l core adapters examples cmd)"
@@ -74,6 +77,9 @@ jobs:
           if git cat-file -e "$source_sha:sdk/python/pyproject.toml" 2>/dev/null; then
             required_checks+=(--require-python)
           fi
+          if git cat-file -e "$source_sha:sdk/javascript/package.json" 2>/dev/null; then
+            required_checks+=(--require-javascript)
+          fi
           python3 scripts/wait_for_release_ci.py "$source_sha" "${required_checks[@]}"
 
   release:
@@ -99,6 +105,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
       - name: Identify release layout
         id: layout
         run: |
@@ -483,6 +492,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      actions: write
     env:
       GH_TOKEN: ${{ github.token }}
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
@@ -525,6 +535,13 @@ jobs:
           version="${RELEASE_TAG#v}"
           major="${version%%.*}"
           docker buildx imagetools create --tag theagenthealth/agenthealth:latest --tag "theagenthealth/agenthealth:v$major" "theagenthealth/agenthealth@$DOCKER_DIGEST"
+      - name: Publish npm from the configured trusted workflow and require success
+        env:
+          PUBLICATION_REQUEST: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          if [ -f sdk/javascript/package.json ]; then
+            python3 scripts/wait_for_npm_publication.py "$RELEASE_TAG" "$PUBLICATION_REQUEST"
+          fi
       - name: Publish complete release
         run: |
           flags=(--latest)

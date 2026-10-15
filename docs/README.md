@@ -27,3 +27,6 @@ local commands and remaining acceptance criteria.
 
 The [Python SDK](python-sdk.md) provides typed sync/async CLI access; see its
 [impact review](phase-15-alignment.md) and [example](../examples/python-sdk/README.md).
+
+- [JavaScript / TypeScript SDK](javascript-sdk.md) — Node ESM wrapper and npm distribution.
+- [Phase 16 alignment](phase-16-alignment.md) — earlier/later phase impact review.
