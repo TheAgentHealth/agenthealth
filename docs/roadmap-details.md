@@ -991,7 +991,7 @@ Required extension tasks:
 
 # Phase 14 — Kubernetes Integration
 
-**Status:** Released — chart 0.12.0 with CLI `v0.12.0`; the historical chart 0.1.0 remains available as `helm-v0.1.0`.
+**Status:** Released through v0.13.2; source chart 0.14.0 pins CLI `v0.14.0` for synchronized publication. The historical chart 0.1.0 remains available as `helm-v0.1.0`.
 
 The initial chart used independent versioning. v0.12.0 adopts the
 shared software version: chart `version: 0.12.0`, `appVersion: v0.12.0` and
