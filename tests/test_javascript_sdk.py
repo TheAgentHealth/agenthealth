@@ -54,7 +54,7 @@ def test_trusted_publisher_and_final_release_gating():
     workflow = yaml.safe_load((ROOT / '.github/workflows/publish.yml').read_text())
     job = workflow['jobs']['publish']
     assert job['permissions']['id-token'] == 'write'
-    assert job['if'] == "github.ref == 'refs/heads/main'"
+    assert job['if'] == "github.ref == format('refs/tags/{0}', inputs.release_tag)"
     assert not any('workflow_call' in str(k) for k in workflow)
     steps = '\n'.join(s.get('run', '') for s in job['steps'])
     assert '--provenance' in steps and 'npm audit signatures' in steps

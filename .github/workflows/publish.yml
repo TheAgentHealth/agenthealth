@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == format('refs/tags/{0}', inputs.release_tag)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -30,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ inputs.release_tag }}
           fetch-depth: 0
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:

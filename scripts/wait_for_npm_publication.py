@@ -15,15 +15,15 @@ def publish(tag, request_id, timeout=1200):
         raise ValueError('expected release run-attempt identity')
     repository = os.environ['GITHUB_REPOSITORY']
     path = f'repos/{repository}/actions/workflows/publish.yml'
-    payload = {'ref': 'main', 'inputs': {'release_tag': tag, 'request_id': request_id}}
+    payload = {'ref': tag, 'inputs': {'release_tag': tag, 'request_id': request_id}}
     subprocess.run(['gh', 'api', '--method', 'POST', path + '/dispatches', '--input', '-'],
                    input=json.dumps(payload), text=True, check=True)
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         response = json.loads(subprocess.check_output(
-            ['gh', 'api', path + '/runs?branch=main&event=workflow_dispatch&per_page=100'], text=True))
+            ['gh', 'api', path + '/runs?branch=' + tag + '&event=workflow_dispatch&per_page=100'], text=True))
         matches = [r for r in response['workflow_runs']
-                   if r['display_title'] == f'npm {tag} {request_id}' and r['head_branch'] == 'main'
+                   if r['display_title'] == f'npm {tag} {request_id}' and r['head_branch'] == tag
                    and r['event'] == 'workflow_dispatch']
         if matches:
             run = max(matches, key=lambda r: r['id'])

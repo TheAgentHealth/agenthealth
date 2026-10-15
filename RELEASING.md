@@ -255,7 +255,9 @@ software version. The signed GitHub draft, checksums and OCI binary bundle inclu
 configured for **publish.yml** in **TheAgentHealth/agenthealth**; no npm token or
 GitHub environment is required. Use Node 24 with npm 11.5.1+ and OIDC
 `id-token: write`. A reusable caller workflow would change the trusted identity,
-so publication uses a separate workflow dispatch.
+so publication uses a separate workflow dispatch on the immutable source tag.
+The workflow verifies GITHUB_REF/GITHUB_SHA against that tag so npm provenance
+identifies the same source even when main advances.
 
 The publication workflow verifies source-tag provenance and signed checksums,
 publishes that exact tarball, compares anonymous registry bytes and SHA-512
