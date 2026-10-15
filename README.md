@@ -87,7 +87,7 @@ A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `
 
 | Target | Available evidence | Limits |
 |---|---|---|
-| HTTP/API | Connectivity, status, headers, bearer authentication; opt-in GET body matching | HEAD remains the released passive default; explicit GET selection is now implemented in source |
+| HTTP/API | Connectivity, status, headers, bearer authentication; opt-in GET body matching | HEAD remains the passive default; explicit GET selection is supported |
 | MCP | HTTP/stdio, protocol negotiation, inventory expectations, OAuth, opt-in safe tool probes | Configured stdio commands execute trusted code; supported protocol revisions are explicit |
 | A2A | 1.0 JSON-RPC and explicit 0.3.0 compatibility, card/skill expectations, safe task probes | No generic framework integration, gRPC or streaming task execution |
 | Agent/multi-agent | Application health document and explicit safe-task contract | Application integration is required; see reference middleware |
@@ -169,11 +169,11 @@ Follow [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md) and th
 reporting as described by [SECURITY.md](SECURITY.md). New behavior must keep Go
 validation, schemas, fixtures and documented contracts aligned.
 
-## Passive GET in source builds
+## Passive GET
 
-Released HTTP/API checks use HEAD. For a read-only endpoint that returns 405 or
-501 to HEAD, the updated source accepts an explicit method. Old binaries reject
-this field; omission preserves existing behavior.
+HTTP/API checks default to HEAD. For a read-only endpoint that returns 405 or
+501 to HEAD, v0.14.0 accepts an explicit GET method. Omission preserves the
+HEAD default.
 
 <!-- spec-example: configuration -->
 ```yaml

@@ -99,7 +99,7 @@ The SDK does not sandbox programs, authorize tenants or register Python adapters
 
 ## PyPI and GitHub distribution
 
-The pending PyPI publisher must name project `agenthealth`, owner
+The configured PyPI trusted publisher names project `agenthealth`, owner
 `TheAgentHealth`, repository `agenthealth`, workflow `release.yml`, environment
 `pypi`. The GitHub environment allows `v*` tags. A dedicated publishing job in
 [the shared release workflow](../.github/workflows/release.yml) uses OIDC with
@@ -108,7 +108,7 @@ job-level `id-token: write` and PyPI attestations; API tokens are unnecessary.
 Wheel and source archive use the same software version and immutable source tag
 as CLI/Docker/Helm. They are built once, included in release checksums and GitHub
 build provenance, uploaded to the draft GitHub Release, and published unchanged
-to PyPI. The final GitHub Release waits for PyPI, Docker and OCI packages.
+to PyPI. The final GitHub Release waits for PyPI, npm, Docker and OCI packages.
 GitHub Packages has no Python/PyPI registry; Python distributions are attached
 as GitHub Release assets. The existing GHCR binary bundle also contains them,
 but requires an OCI artifact client rather than pip.
