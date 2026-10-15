@@ -133,3 +133,12 @@ the CLI into a derived image for application-container exec readiness probes.
 
 v0.12.0 retains the Go 1.27.2 rebuild that fixed GO-2026-6617 in v0.11.1.
 Both registry references use the same software release version.
+
+## GitHub deployment tracking
+
+Future successful releases record a `dockerhub` environment deployment linked to
+[Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth). The deployment
+is recorded after the complete release succeeds and only when a verified Docker
+Hub digest is present, including publication recovery. Releases that skip the
+optional mirror do not record a Docker Hub deployment. This tracking does not
+republish existing images or add external registries to GitHub Packages.

@@ -617,3 +617,24 @@ jobs:
             flags=(--prerelease --latest=false)
           fi
           gh release edit "$RELEASE_TAG" --draft=false "${flags[@]}"
+
+  dockerhub:
+    name: Record verified Docker Hub deployment
+    needs: [publish, container, recover-assets]
+    # A successful GHCR-only release must not claim a Docker Hub deployment.
+    if: >-
+      always() && needs.publish.result == 'success' &&
+      (needs.container.outputs.docker_digest != '' || needs.recover-assets.outputs.docker_digest != '')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    environment:
+      name: dockerhub
+      url: https://hub.docker.com/r/theagenthealth/agenthealth
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+      DOCKER_DIGEST: ${{ needs.container.outputs.docker_digest || needs.recover-assets.outputs.docker_digest }}
+    steps:
+      - name: Record published and verified image
+        run: |
+          printf 'Verified Docker Hub deployment: %s (%s)\n' "$RELEASE_TAG" "$DOCKER_DIGEST"
