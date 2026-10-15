@@ -52,6 +52,8 @@ jobs:
         run: |
           npm --version
           if [ ! -f npm-dist/already-published ]; then
+            python3 scripts/verify_npm_oidc.py
+            unset NODE_AUTH_TOKEN NPM_TOKEN
             if [[ "$RELEASE_TAG" == *-* ]]; then channel=next; else channel=latest; fi
             npm publish ./npm-dist/theagenthealth-agenthealth-*.tgz --access public --provenance --ignore-scripts --tag "$channel"
           fi

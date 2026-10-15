@@ -62,7 +62,8 @@ def test_trusted_publisher_and_final_release_gating():
     assert '--provenance' in steps and 'npm audit signatures' in steps
     assert 'npm publish ./npm-dist/' in steps
     assert 'npm publish npm-dist/' not in steps
-    assert 'NODE_AUTH_TOKEN' not in steps and 'NPM_TOKEN' not in steps
+    assert 'unset NODE_AUTH_TOKEN NPM_TOKEN' in steps
+    assert 'verify_npm_oidc.py' in steps
     release = yaml.safe_load((ROOT / '.github/workflows/release.yml').read_text())
     publish = release['jobs']['publish']
     npm = release['jobs']['npm']
