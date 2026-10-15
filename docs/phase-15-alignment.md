@@ -72,3 +72,8 @@ Python files. No SDK, CLI, chart or contract changes are introduced; existing
 software tags and versioned packages remain immutable. The protected `main`
 branch is allowed by the PyPI deployment environment for explicit manual
 recovery. Future distributions should reuse these verification gates.
+
+Phase 16 follow-through: the Node.js SDK now implements the shared subprocess,
+version and error contracts, with millisecond deadlines and AbortSignal. Python
+source metadata advances to v0.14.0 under the synchronized release policy.
+See [Phase 16 alignment](phase-16-alignment.md).

@@ -76,3 +76,7 @@ impact decision; Kubernetes examples validate embedded configuration against
 these schemas. A chart version remains independent of `spec_version`.
 
 The [Python SDK](../docs/python-sdk.md) consumes existing v1 configuration and result schemas; schema equality is checked in SDK tests.
+
+The [JavaScript / TypeScript SDK](../docs/javascript-sdk.md) also wraps the
+exact-version CLI and preserves the existing configuration, result and health
+exit-code contracts. Its bundled schemas are parity-tested against the specification.

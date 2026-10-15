@@ -79,3 +79,7 @@ for regression coverage and deployment validation limits.
 See the [threat model](../docs/threat-model.md) for trusted configuration, credential handling, network access, output limits and in-process adapter isolation. A shared process is not a boundary for mutually untrusted tenants.
 
 The [Python SDK](../docs/python-sdk.md) wraps CLI execution; Go remains responsible for health semantics and adapter safety.
+
+The [JavaScript / TypeScript SDK](../docs/javascript-sdk.md) also wraps the
+exact-version CLI and preserves the existing configuration, result and health
+exit-code contracts. Its bundled schemas are parity-tested against the specification.

@@ -118,3 +118,7 @@ uses its separate aggregate contract. No CLI flag, exit mapping or output format
 changes are introduced.
 
 The [Python SDK](python-sdk.md) consumes JSON check output and existing exit codes using an explicitly installed matching CLI.
+
+The [JavaScript / TypeScript SDK](javascript-sdk.md) also wraps the
+exact-version CLI and preserves the existing configuration, result and health
+exit-code contracts. Its bundled schemas are parity-tested against the specification.
