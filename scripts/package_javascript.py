@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import tarfile
 import tempfile
@@ -37,7 +38,7 @@ def build_javascript(tag, output):
     if any((output / name).exists() for name in expected):
         raise ValueError('npm distribution output already exists')
     with tempfile.TemporaryDirectory(prefix='agenthealth-npm-') as temporary:
-        subprocess.run(['npm', 'pack', '--ignore-scripts', '--pack-destination', temporary], cwd=package, check=True)
+        subprocess.run([shutil.which('npm') or 'npm', 'pack', '--ignore-scripts', '--pack-destination', temporary], cwd=package, check=True)
         archives = list(Path(temporary).iterdir())
         if {p.name for p in archives} != expected:
             raise ValueError('Unexpected npm distribution set')

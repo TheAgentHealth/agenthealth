@@ -85,12 +85,15 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
       - name: Install test dependencies
         run: pip install -r tests/requirements.txt
       - name: Run spec schema tests
         run: |
           test_paths=(tests/spec)
-          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py tests/test_publication_recovery.py; do
+          for path in tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py tests/test_publication_recovery.py tests/test_javascript_sdk.py tests/test_synchronized_release.py; do
             if [ -f "$path" ]; then
               test_paths+=("$path")
             fi

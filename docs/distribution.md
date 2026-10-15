@@ -5,7 +5,7 @@ software version and the same immutable source commit. This replaces the earlier
 independent chart/SDK version policy. CLI v0.11.1 and chart 0.1.0 remain published
 and immutable; historical release notes and verification records remain valid.
 
-v0.14.0 and all three GHCR packages are published and verified. See
+v0.14.0 and all three GHCR packages are prepared for synchronized publication. See the previous
 [publication verification](releases/verification-v0.13.2.md). The shared release
 workflow builds new assets from one source tag and coordinates all publication
 jobs; it does not rename old downloads.
@@ -16,7 +16,7 @@ Use one v0.14.0 release page containing:
 
 - Five standalone archives: Linux AMD64/ARM64, macOS AMD64/ARM64 and Windows AMD64.
 - Five matching CycloneDX SBOMs, four Linux DEB/RPM packages and Homebrew/Scoop manifests.
-- Helm chart `agenthealth-0.14.0.tgz`, Python wheel/source archive and one complete asset checksum manifest.
+- Helm chart `agenthealth-0.14.0.tgz`, Python wheel/source archive, npm tarball and one complete asset checksum manifest.
 - Package links for Docker, Helm and the binary OCI bundle, with exact published digests.
 - Both configured container registry references, installation commands, verification instructions, source links and actual validation limits.
 
@@ -30,9 +30,9 @@ is present.
 
 | Package | Target reference | User tool | Availability |
 |---|---|---|---|
-| Docker | `ghcr.io/theagenthealth/agenthealth:v0.14.0` | Docker-compatible container client | v0.14.0 public and verified |
-| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.14.0` | Helm | v0.14.0 public and verified |
-| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.14.0` | ORAS or a compatible OCI artifact client | v0.14.0 public and verified |
+| Docker | `ghcr.io/theagenthealth/agenthealth:v0.14.0` | Docker-compatible container client | v0.14.0 publication pending |
+| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.14.0` | Helm | v0.14.0 publication pending |
+| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.14.0` | ORAS or a compatible OCI artifact client | v0.14.0 publication pending |
 
 Link every package to `TheAgentHealth/agenthealth`, record source/revision/version
 metadata and verify its public visibility. Publishing to GHCR does not establish
@@ -69,7 +69,7 @@ software releases do not rename `spec_version: v1`.
 
 ## Installation examples
 
-The following commands use the published and verified v0.14.0 channels.
+The following commands target the prepared v0.14.0 channels.
 Historical v0.11.1 and chart 0.1.0 releases remain available.
 
 Direct installation from the unified Release download:
@@ -156,3 +156,12 @@ Phase 15 source adds the shared-version wheel and source archive to GitHub
 Release assets, checksums, build provenance and OCI binary bundles, with
 identical artifacts published to PyPI. GitHub Packages has no PyPI registry.
 See [release requirements](../RELEASING.md#python-distribution-phase-15).
+
+## JavaScript SDK / npm (Phase 16)
+
+The release includes `theagenthealth-agenthealth-0.14.0.tgz` in signed assets,
+checksums and the OCI binary bundle. npm publishes the identical bytes as
+`@theagenthealth/agenthealth@0.14.0` using OIDC from `publish.yml`. Final GitHub
+publication waits for registry integrity, provenance and `npm audit signatures`.
+The package requires a separately verified matching CLI; installing it does not
+fetch a binary. See the [SDK guide](javascript-sdk.md).
