@@ -51,28 +51,21 @@ def test_npm_archive_is_reproducible_and_has_only_public_source(package, tmp_pat
 
 
 def test_trusted_publisher_and_final_release_gating():
-    workflow = yaml.safe_load((ROOT / '.github/workflows/publish.yml').read_text())
-    job = workflow['jobs']['publish']
-    assert job['permissions']['id-token'] == 'write'
-    assert job['permissions']['contents'] == 'write'  # Draft asset access requires this.
-    assert "github.ref == format('refs/tags/{0}', inputs.release_tag)" in job['if']
-    assert "inputs.recovery && github.ref == 'refs/heads/main'" in job['if']
-    assert not any('workflow_call' in str(k) for k in workflow)
-    steps = '\n'.join(s.get('run', '') for s in job['steps'])
+    release = yaml.safe_load((ROOT / '.github/workflows/release.yml').read_text())
+    npm = release['jobs']['npm']
+    assert npm['permissions'] == {'contents': 'write', 'id-token': 'write'}
+    assert npm['environment']['name'] == 'npm'
+    steps = '\n'.join(s.get('run', '') for s in npm['steps'])
     assert '--provenance' in steps and 'npm audit signatures' in steps
     assert 'npm publish ./npm-dist/' in steps
     assert 'npm publish npm-dist/' not in steps
     assert 'unset NODE_AUTH_TOKEN NPM_TOKEN' in steps
     assert 'verify_npm_oidc.py' in steps
-    release = yaml.safe_load((ROOT / '.github/workflows/release.yml').read_text())
+    assert not (ROOT / '.github/workflows/publish.yml').exists()
     publish = release['jobs']['publish']
-    npm = release['jobs']['npm']
-    assert npm['permissions']['actions'] == 'write'
     assert set(npm['needs']) == {'release', 'container', 'packages', 'recover-assets'}
     assert 'npm' in publish['needs']
     assert "needs.npm.result == 'success'" in publish['if']
-    assert any('wait_for_npm_publication.py' in s.get('run', '') for s in npm['steps'])
-    assert not any('wait_for_npm_publication.py' in s.get('run', '') for s in publish['steps'])
 
 
 def test_registry_rejects_modified_tarball_before_accepting_integrity(tmp_path, monkeypatch):
@@ -116,7 +109,7 @@ def test_oidc_diagnostics_validate_exchange_without_printing_tokens(monkeypatch,
     import base64
     monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
     helper = importlib.import_module('verify_npm_oidc')
-    claims = {'repository': 'TheAgentHealth/agenthealth', 'workflow_ref': 'TheAgentHealth/agenthealth/.github/workflows/publish.yml@refs/heads/main', 'private_claim': 'do-not-print'}
+    claims = {'repository': 'TheAgentHealth/agenthealth', 'workflow_ref': 'TheAgentHealth/agenthealth/.github/workflows/release.yml@refs/heads/main', 'private_claim': 'do-not-print'}
     payload = base64.urlsafe_b64encode(json.dumps(claims).encode()).decode().rstrip('=')
     token = 'header.' + payload + '.signature'
     monkeypatch.setenv('ACTIONS_ID_TOKEN_REQUEST_URL', 'https://example.com/token?api-version=2')
@@ -156,3 +149,25 @@ def test_oidc_rejection_is_reported_without_falling_back_to_token_auth(monkeypat
     with pytest.raises(RuntimeError, match='HTTP 404') as error:
         helper.verify()
     assert token not in str(error.value) and 'request-secret' not in str(error.value)
+
+
+@pytest.mark.parametrize('tampered', [False, True])
+def test_pypi_recovery_reuses_only_identical_signed_distributions(monkeypatch, tmp_path, tampered):
+    monkeypatch.syspath_prepend(str(ROOT / 'scripts'))
+    helper = importlib.import_module('verify_pypi_publication')
+    names = {'agenthealth-0.14.0-py3-none-any.whl', 'agenthealth-0.14.0.tar.gz'}
+    for name in names:
+        (tmp_path / name).write_bytes(name.encode())
+    metadata = {'urls': [{'filename': name, 'url': 'https://files.pythonhosted.org/' + name,
+                          'digests': {'sha256': hashlib.sha256(name.encode()).hexdigest()}, 'yanked': False}
+                         for name in sorted(names)]}
+    def fetch(url, timeout):
+        if url.startswith('https://pypi.org/'):
+            return io.BytesIO(json.dumps(metadata).encode())
+        return io.BytesIO(b'tampered' if tampered else url.rsplit('/', 1)[1].encode())
+    monkeypatch.setattr(helper.urllib.request, 'urlopen', fetch)
+    if tampered:
+        with pytest.raises(ValueError, match='differs from signed'):
+            helper.verify('v0.14.0', tmp_path)
+    else:
+        assert helper.verify('v0.14.0', tmp_path)

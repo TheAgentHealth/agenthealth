@@ -25,10 +25,12 @@ def test_recovery_is_opt_in_and_skips_artifact_production():
     assert jobs['recover-assets']['needs'] == 'ci-gate'
     assert 'workflow_dispatch' in jobs['recover-assets']['if']
     assert 'inputs.publication_only' in jobs['recover-assets']['if']
-    assert jobs['recover-assets']['permissions'] == {'contents': 'read'}
+    assert jobs['recover-assets']['permissions'] == {'contents': 'write'}
     assert jobs['recover-pypi']['permissions'] == {'contents': 'read', 'id-token': 'write'}
     assert jobs['recover-pypi']['environment']['name'] == 'pypi'
     assert jobs['recover-pypi']['needs'] == 'recover-assets'
+    assert any('verify_pypi_publication.py' in s.get('run', '') for s in jobs['recover-pypi']['steps'])
+    assert next(s for s in jobs['recover-pypi']['steps'] if s.get('uses', '').startswith('pypa/'))['with']['skip-existing'] is True
     assert 'recover-pypi' in jobs['publish']['needs']
     assert "needs.recover-assets.result == 'success'" in jobs['publish']['if']
     assert "needs.recover-pypi.result == 'success'" in jobs['publish']['if']

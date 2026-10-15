@@ -21,7 +21,7 @@ def verify():
     payload = token.split('.')[1]
     claims = json.loads(base64.urlsafe_b64decode(payload + '=' * (-len(payload) % 4)))
     allowed = ('repository', 'repository_owner', 'repository_visibility', 'workflow_ref',
-               'job_workflow_ref', 'ref', 'aud', 'runner_environment')
+               'job_workflow_ref', 'ref', 'aud', 'runner_environment', 'environment')
     print('OIDC public identity: ' + json.dumps({key: claims[key] for key in allowed if key in claims}), flush=True)
     request = urllib.request.Request(
         'https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/@theagenthealth%2fagenthealth',

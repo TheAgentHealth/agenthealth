@@ -10,7 +10,7 @@ on:
         required: true
         type: string
       publication_only:
-        description: 'Reuse existing signed draft assets and packages; publish PyPI and finalize only'
+        description: 'Reuse signed assets/packages; recover npm/PyPI publication and finalize'
         type: boolean
         default: false
 
@@ -427,7 +427,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
-      contents: read
+      contents: write
     outputs:
       synchronized: ${{ steps.verify.outputs.synchronized }}
       image_digest: ${{ steps.verify.outputs.image_digest }}
@@ -468,19 +468,27 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           name: recovered-python-dist
           path: python-dist
+      - name: Verify any already-published PyPI bytes before idempotent recovery
+        run: python3 scripts/verify_pypi_publication.py "$RELEASE_TAG" --output python-dist
       - name: Publish original verified distributions to PyPI
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0 commit, not annotated tag object
         with:
           packages-dir: python-dist/
           attestations: true
+          skip-existing: true
 
   npm:
-    # Visible alongside PyPI; publish.yml supplies the configured npm OIDC identity.
     needs: [release, container, packages, recover-assets]
     if: >-
       always() && ((needs.release.result == 'success' && needs.container.result == 'success' &&
@@ -488,24 +496,64 @@ jobs:
        (needs.packages.result == 'skipped' && needs.release.outputs.synchronized != 'true'))) ||
       needs.recover-assets.result == 'success')
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/@theagenthealth/agenthealth
     permissions:
-      contents: read
-      actions: write
+      # Reading the signed staged draft requires write access.
+      contents: write
+      id-token: write
     env:
       GH_TOKEN: ${{ github.token }}
       RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+      NPM_PUBLICATION_RECOVERY: ${{ inputs.publication_only }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ inputs.release_tag || github.ref_name }}
-      - name: Publish npm from the configured trusted workflow and require success
-        env:
-          PUBLICATION_REQUEST: ${{ github.run_id }}-${{ github.run_attempt }}
+          ref: ${{ inputs.publication_only && github.sha || inputs.release_tag || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Identify whether the tagged source includes the npm SDK
+        id: layout
         run: |
-          if [ -f sdk/javascript/package.json ]; then
-            python3 scripts/wait_for_npm_publication.py "$RELEASE_TAG" "$PUBLICATION_REQUEST"
+          if git cat-file -e "$RELEASE_TAG:sdk/javascript/package.json" 2>/dev/null; then
+            echo "javascript=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "javascript=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Verify immutable tag and signed staged npm artifact
+        if: steps.layout.outputs.javascript == 'true'
+        run: python3 scripts/verify_npm_publication.py "$RELEASE_TAG" --output npm-dist
+      - name: Publish exact signed tarball through npm OIDC
+        if: steps.layout.outputs.javascript == 'true'
+        run: |
+          npm --version
+          if [ ! -f npm-dist/already-published ]; then
+            python3 scripts/verify_npm_oidc.py
+            unset NODE_AUTH_TOKEN NPM_TOKEN
+            printf 'registry=https://registry.npmjs.org/\n' > "$NPM_CONFIG_USERCONFIG"
+            if [[ "$RELEASE_TAG" == *-* ]]; then channel=next; else channel=latest; fi
+            npm publish ./npm-dist/theagenthealth-agenthealth-*.tgz --access public --provenance --ignore-scripts --tag "$channel"
+          fi
+      - name: Verify public registry bytes and signed provenance
+        if: steps.layout.outputs.javascript == 'true'
+        run: python3 scripts/verify_npm_publication.py "$RELEASE_TAG" --output npm-dist --registry
+      - name: Verify installed registry package signatures
+        if: steps.layout.outputs.javascript == 'true'
+        run: |
+          mkdir registry-check
+          cd registry-check
+          npm init -y
+          npm install --ignore-scripts --save-exact "@theagenthealth/agenthealth@${RELEASE_TAG#v}"
+          npm audit signatures
 
   publish:
     needs: [release, container, packages, pypi, npm, recover-assets, recover-pypi]
@@ -531,7 +579,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ inputs.release_tag || github.ref_name }}
+          ref: ${{ inputs.publication_only && github.sha || inputs.release_tag || github.ref_name }}
       - name: Attach package links and exact digests
         if: env.SYNCHRONIZED == 'true'
         run: |
