@@ -15,7 +15,7 @@ Choose a distribution:
 | Linux DEB/RPM, Homebrew/Scoop manifests | [Package channels](#package-channels-phase-13-v0110) |
 | OCI release-file bundle | [ORAS download](distribution.md#installation-examples) |
 
-The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.14.0`. The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16.
+The [Python SDK](python-sdk.md) is implemented for the matching software version; the prepared release uses `agenthealth==0.14.0`. The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16.
 
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 

@@ -47,7 +47,7 @@ helm upgrade --install agenthealth \
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.14.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is implemented in source for Phase 16. Official
+The [Python SDK](docs/python-sdk.md) has prepared shared-version metadata `agenthealth==0.14.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is implemented in source for Phase 16. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
