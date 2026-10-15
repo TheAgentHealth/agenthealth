@@ -704,3 +704,41 @@ jobs:
           path: |
             python-sdk.xml
             python-dist/*
+
+  javascript-sdk:
+    name: JavaScript SDK (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.2'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Validate and test JavaScript SDK with real CLI
+        if: hashFiles('sdk/javascript/package.json') != ''
+        shell: bash
+        run: |
+          npm ci --prefix sdk/javascript --ignore-scripts
+          npm audit --prefix sdk/javascript --omit=dev
+          npm run typecheck --prefix sdk/javascript
+          SDK_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('sdk/javascript/package.json')).version")
+          go build -ldflags "-X main.version=v$SDK_VERSION" -o agenthealth-js.exe ./cmd/agenthealth
+          export AGENTHEALTH_SDK_BINARY="$PWD/agenthealth-js.exe"
+          npm test --prefix sdk/javascript
+          python scripts/package_javascript.py "v$SDK_VERSION" --output npm-dist
+          python scripts/package_javascript.py "v$SDK_VERSION" --output npm-dist-repeat
+          python -c 'from pathlib import Path; assert {p.name:p.read_bytes() for p in Path("npm-dist").iterdir()} == {p.name:p.read_bytes() for p in Path("npm-dist-repeat").iterdir()}'
+          node scripts/test_javascript_package.mjs npm-dist/theagenthealth-agenthealth-$SDK_VERSION.tgz

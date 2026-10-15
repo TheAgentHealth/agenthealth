@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export const version: string;
 export type HealthStatus = 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | 'UNREACHABLE' | 'MISCONFIGURED' | 'UNKNOWN';
 export const healthStates: readonly HealthStatus[];
@@ -52,7 +51,7 @@ export interface ClientOptions {
   binary?: string;
   /** Overall subprocess budget, in milliseconds; default 30000. */
   timeout?: number;
-  environment?: NodeJS.ProcessEnv;
+  environment?: Record<string, string | undefined>;
 }
 export interface CheckOptions { signal?: AbortSignal }
 export type ConfigurationInput = Configuration | ConfigurationDocument | string;
