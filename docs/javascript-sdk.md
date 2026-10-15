@@ -1,6 +1,6 @@
 # JavaScript / TypeScript SDK
 
-Phase 16 implements `@theagenthealth/agenthealth` for Node.js **22.14+**, ESM.
+Phase 16 releases [`@theagenthealth/agenthealth`](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.14.0) for Node.js **22.14+**, ESM.
 It wraps the reference Go CLI at the exact same software version and does not
 fetch or run executables on installation/import. Browser execution is outside
 this SDK's scope. The software remains pre-1.0.

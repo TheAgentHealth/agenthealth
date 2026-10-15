@@ -1,5 +1,5 @@
 {
-  "software_version": "v0.13.2",
+  "software_version": "v0.14.0",
   "phases": [
     {
       "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
@@ -87,19 +87,19 @@
     },
     {
       "phase": "[14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration)",
-      "status": "Released in v0.13.2; historical helm-v0.1.0 retained",
-      "documentation": "Chart 0.13.2; CLI v0.13.2",
+      "status": "Released in v0.14.0; historical helm-v0.1.0 retained",
+      "documentation": "Chart 0.14.0; CLI v0.14.0",
       "validation": "[Kubernetes scenarios](../examples/kubernetes/README.md), [alignment audit](phase-14-alignment.md)"
     },
     {
       "phase": "[15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi)",
-      "status": "Released in v0.13.2 on PyPI",
+      "status": "Released in v0.14.0 on PyPI",
       "documentation": "[Python SDK](python-sdk.md), [alignment audit](phase-15-alignment.md)",
       "validation": "[Python example](../examples/python-sdk/README.md), [SDK tests](../tests/python_sdk/)"
     },
     {
       "phase": "[16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk)",
-      "status": "Implemented in source for v0.14.0; publication pending",
+      "status": "Released in v0.14.0 on npm",
       "documentation": "[JavaScript SDK](javascript-sdk.md), [alignment audit](phase-16-alignment.md)",
       "validation": "[Node example](../examples/javascript-sdk/README.md), [SDK tests](../sdk/javascript/test/)"
     },
@@ -199,6 +199,11 @@
       "name": "Python SDK / PyPI",
       "download": "[PyPI](https://pypi.org/project/agenthealth/{numeric_version}/): `pip install agenthealth=={numeric_version}`; wheel/sdist in Release downloads",
       "guide": "[Python SDK](docs/python-sdk.md) \u2014 requires the matching CLI"
+    },
+    {
+      "name": "JavaScript / TypeScript SDK / npm",
+      "download": "[npm](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/{numeric_version}): `npm install @theagenthealth/agenthealth@{numeric_version}`; signed tarball in Release downloads",
+      "guide": "[JavaScript SDK](docs/javascript-sdk.md) \u2014 Node 22.14+ ESM and matching CLI"
     }
   ]
 }

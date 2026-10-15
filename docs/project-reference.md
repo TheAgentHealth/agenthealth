@@ -12,29 +12,29 @@ source of current release status.
 
 ## Start here
 
-**Latest release: [v0.13.2](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.13.2), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Latest release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
 
 ### Install
 
-Choose how you want to run AgentHealth. Published distributions share **v0.13.2**:
+Choose how you want to run AgentHealth. Published distributions share **v0.14.0**:
 
 | Use it as | Get it here | Installation guide |
 |---|---|---|
-| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.13.2): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](../docs/installation.md) — no Go required |
-| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.13.2`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.13.2` | [Docker usage](../docs/docker.md) — Linux AMD64/ARM64 |
-| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.13.2`; chart archive also in release downloads | [Kubernetes setup and examples](../docs/kubernetes.md) |
+| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](../docs/installation.md) — no Go required |
+| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.14.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.14.0` | [Docker usage](../docs/docker.md) — Linux AMD64/ARM64 |
+| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.14.0`; chart archive also in release downloads | [Kubernetes setup and examples](../docs/kubernetes.md) |
 | Linux DEB / RPM | AMD64/ARM64 packages in release downloads | [Local package installation](../docs/installation.md#package-channels-phase-13-v0110) |
 | Homebrew / Scoop | `agenthealth.rb` / `agenthealth.json` in release downloads | [Manifest usage](../docs/installation.md#package-channels-phase-13-v0110); official tap/bucket hosting is planned |
-| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.13.2` | [Retrieve with ORAS](../docs/distribution.md#installation-examples); contains release files |
+| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.14.0` | [Retrieve with ORAS](../docs/distribution.md#installation-examples); contains release files |
 
 **Run immediately with Docker:**
 
 ```bash
-docker run --rm theagenthealth/agenthealth:v0.13.2 version
-docker run --rm theagenthealth/agenthealth:v0.13.2 --help
+docker run --rm theagenthealth/agenthealth:v0.14.0 version
+docker run --rm theagenthealth/agenthealth:v0.14.0 --help
 ```
 
-The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.13.2`.
+The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.14.0`.
 Use an exact version tag to pin a release; `v0` follows stable major-version-0
 releases and `latest` follows the latest stable release.
 
@@ -43,14 +43,14 @@ releases and `latest` follows the latest stable release.
 
 ```bash
 helm upgrade --install agenthealth \
-  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.13.2 \
+  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.14.0 \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
 
 See the [installation guide](../docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](../docs/kubernetes.md) for workload modes.
-The [Python SDK](python-sdk.md) is published on PyPI as `agenthealth==0.13.2`; install a matching CLI separately. The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16. Official
+The [Python SDK](python-sdk.md) is published on PyPI as `agenthealth==0.14.0`; install a matching CLI separately. The [JavaScript SDK](javascript-sdk.md) is published on npm for Phase 16. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -111,11 +111,11 @@ The long-term scope includes these systems; the supported adapters above describ
 - Agent routers
 - Supporting infrastructure
 
-The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](../docs/docker.md)); Kubernetes manifests and Helm chart 0.13.2 are available ([Phase 14 guide](../docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
+The project provides a common health model, a Go engine, a CLI, machine-readable health results, agent/multi-agent, HTTP/API, MCP, A2A, gateway and router adapters, and a published container image (see [Docker distribution](../docs/docker.md)); Kubernetes manifests and Helm chart 0.14.0 are available ([Phase 14 guide](../docs/kubernetes.md)); SDKs and additional adapters remain roadmap work.
 
-**Published synchronized release: [v0.13.2](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.13.2).**
-v0.13.2 coordinates Docker, Helm and standalone/package downloads under one
-version, with additional OCI chart and binary packages. All channels are published and their downloads verified. See [release notes](../docs/releases/v0.13.2.md).
+**Published synchronized release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0).**
+v0.14.0 coordinates Docker, Helm and standalone/package downloads under one
+version, with additional OCI chart and binary packages. All channels are published and their downloads verified. See [release notes](../docs/releases/v0.14.0.md).
 Phase 13 adds Homebrew/Scoop manifests, Linux DEB/RPM packages and five-platform native archive smoke checks. See [release notes](../docs/releases/v0.11.0.md).
 Phase 12 adds an [official container image](../docs/docker.md) published to GHCR with an optional Docker Hub mirror, build provenance, SBOM, and a signed attestation. See [release and migration notes](../docs/releases/v0.10.0.md).
 Phase 8 adds Agentgateway HTTP health signals and separate configured backend/path evidence.
@@ -1003,7 +1003,7 @@ interfaces and contracts established in Phases 7–10.
 
 # Distribution
 
-Standalone binaries and source builds are available; see [installation](../docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)); see [container usage](../docs/installation.md#container-image). Python SDK examples are available; The [JavaScript SDK](javascript-sdk.md) is implemented in source for Phase 16. Kubernetes source examples and chart 0.13.2 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
+Standalone binaries and source builds are available; see [installation](../docs/installation.md). The container image is published to GHCR (with an optional Docker Hub mirror) starting in v0.10.0 ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)); see [container usage](../docs/installation.md#container-image). Python SDK examples are available; the [JavaScript SDK](javascript-sdk.md) is published on npm for Phase 16. Kubernetes source examples and chart 0.14.0 are published; the first chart 0.1.0 was published separately as `helm-v0.1.0`; v0.12.0 and later follow the shared-version policy below.
 
 Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifests and Linux DEB/RPM packages. Public taps, buckets and package repositories remain deferred. See [package channels](../docs/installation.md#package-channels-phase-13-v0110) and the [alignment audit](../docs/phase-13-alignment.md).
 
@@ -1011,17 +1011,17 @@ Phase 13 package assets are included starting in v0.11.0: Homebrew/Scoop manifes
 
 Starting with **v0.12.0**, all implemented artifacts use the
 same software version and source tag: CLI archives, Linux packages,
-Homebrew/Scoop manifests, Docker image, Helm chart, Python wheel/source archive
-and an additional OCI binary bundle. Helm uses `version: 0.13.2`, `appVersion: v0.13.2` and a matching image.
+Homebrew/Scoop manifests, Docker image, Helm chart, Python wheel/source archive, JavaScript npm tarball
+and an additional OCI binary bundle. Helm uses `version: 0.14.0`, `appVersion: v0.14.0` and a matching image.
 The Python SDK uses the same version; future SDKs adopt it when implemented; AHS/AHP contract versions remain
 separate. Existing CLI v0.11.1 and chart 0.1.0 remain historical releases.
 
 | Channel | Contents | Current availability |
 |---|---|---|
-| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | v0.13.2 published and verified |
+| GitHub Releases | Complete release page with binaries/packages, SBOMs, checksums, chart package, registry links and image digests | v0.14.0 published and verified |
 | GitHub Packages: Docker | GHCR multi-platform container image | Available |
-| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | v0.13.2 available |
-| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | v0.13.2 available; ordinary downloads remain available |
+| GitHub Packages: Helm | GHCR OCI chart, installable with Helm | v0.14.0 available |
+| GitHub Packages: binaries | Additional OCI archive/package bundle, retrieved with an artifact client | v0.14.0 available; ordinary downloads remain available |
 
 This replaces independent component versioning. OCI bundles do not create
 APT/YUM repositories or Homebrew/Scoop hosting. See the
@@ -1053,14 +1053,14 @@ agenthealth --version
 
 AgentHealth can run without installing language runtimes. The image is a
 minimal, non-root distroless image for `linux/amd64` and `linux/arm64`.
-Both registry references for v0.13.2:
+Both registry references for v0.14.0:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.13.2 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.14.0 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.13.2 version
+docker run --rm theagenthealth/agenthealth:v0.14.0 version
 ```
 
 Example:
@@ -1077,7 +1077,7 @@ files, credentials, and verification.
 
 ## Python / PyPI
 
-The Python SDK is published on PyPI as `agenthealth==0.13.2`.
+The Python SDK is published on PyPI as `agenthealth==0.14.0`.
 Install a matching CLI separately. See the [SDK guide](python-sdk.md).
 
 Usage:
@@ -1101,7 +1101,7 @@ The Python package is an SDK/distribution mechanism.
 
 # JavaScript / TypeScript / npm
 
-The Node.js ESM SDK is implemented in Phase 16 as
+The Node.js ESM SDK is released in v0.14.0 as
 `@theagenthealth/agenthealth`, with a Promise API, TypeScript declarations and
 canonical configuration/results. Install the matching verified CLI separately.
 See the [SDK guide](javascript-sdk.md) and [example](../examples/javascript-sdk/README.md).
@@ -1415,7 +1415,7 @@ See [CLI usage](../docs/cli.md) for formats, safety defaults, adapter availabili
 
 Coverage for phases 0–14 is indexed in [the documentation guide](../docs/README.md).
 
-AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and Helm chart 0.13.2 are available ([guide](../docs/kubernetes.md)). The Python SDK is published on PyPI; other adapters and the JavaScript SDK remain roadmap work.
+AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway and router HTTP health adapters are implemented. A container image ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and Helm chart 0.14.0 are available ([guide](../docs/kubernetes.md)). The Python SDK is published on PyPI; The JavaScript SDK is published on npm; additional adapters remain roadmap work.
 
 Interfaces, schemas, commands, and configuration formats may change before the 1.0 release.
 

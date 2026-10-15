@@ -991,7 +991,7 @@ Required extension tasks:
 
 # Phase 14 — Kubernetes Integration
 
-**Status:** Released through v0.13.2; source chart 0.14.0 pins CLI `v0.14.0` for synchronized publication. The historical chart 0.1.0 remains available as `helm-v0.1.0`.
+**Status:** Released — chart 0.14.0 pins CLI `v0.14.0` under synchronized publication. The historical chart 0.1.0 remains available as `helm-v0.1.0`.
 
 The initial chart used independent versioning. v0.12.0 adopts the
 shared software version: chart `version: 0.12.0`, `appVersion: v0.12.0` and
@@ -1149,7 +1149,7 @@ see the [release verification record](../docs/releases/verification-v0.11.1-helm
 
 # Phase 15 — Python SDK / PyPI
 
-**Status:** Released in v0.13.2 on PyPI; wheel and source archive also published on GitHub Releases. See the [SDK guide](python-sdk.md) and [impact review](phase-15-alignment.md).
+**Status:** Released in v0.14.0 on PyPI; wheel and source archive also published on GitHub Releases. See the [SDK guide](python-sdk.md) and [impact review](phase-15-alignment.md).
 
 Phase 13 integration requirement: binary downloads must select exact version/platform
 assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
@@ -1209,7 +1209,7 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 
 # Phase 16 — JavaScript / TypeScript SDK
 
-**Status:** Implemented in source for v0.14.0; registry availability requires verified publication.
+**Status:** Released in v0.14.0 on npm. See [publication verification](releases/verification-v0.14.0.md).
 
 The Node.js ESM package is `@theagenthealth/agenthealth`. It wraps an explicitly
 installed, verified CLI of the exact same software version. Node 22.14+ is

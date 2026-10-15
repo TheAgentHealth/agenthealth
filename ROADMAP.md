@@ -116,7 +116,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 16 — JavaScript / TypeScript SDK
 
-Implemented in source for v0.14.0: typed Node.js Promise API, validated configuration,
+Released in v0.14.0: typed Node.js Promise API, validated configuration,
 CLI-owned health/graph results and synchronized npm trusted publication.
 See the [SDK guide](docs/javascript-sdk.md) and [alignment audit](docs/phase-16-alignment.md).
 

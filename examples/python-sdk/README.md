@@ -1,7 +1,7 @@
 # Python SDK example
 
 Install the SDK from source with `pip install -e sdk/python` and build a CLI
-matching the SDK's software version. Once released, install SDK/CLI v0.14.0
+matching the SDK's software version. Install SDK/CLI v0.14.0
 from their verified published artifacts. Start the services referenced by your
 reviewed configuration before running checks.
 

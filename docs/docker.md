@@ -107,7 +107,7 @@ mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
 which is only pushed to GHCR.
 
-v0.14.0 is prepared for synchronized publication in both registries:
+v0.14.0 is published and verified in both registries:
 
 ```bash
 # GitHub Container Registry
