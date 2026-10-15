@@ -151,3 +151,5 @@ Jobs/CronJobs, existing Secrets and the published Helm chart. Future releases
 follow the [synchronized distribution policy](../docs/distribution.md).
 
 [Python SDK example](python-sdk/README.md): sync/async checks using reviewed CLI configurations.
+
+- [JavaScript SDK](javascript-sdk/README.md) — Promise API with the reference CLI.

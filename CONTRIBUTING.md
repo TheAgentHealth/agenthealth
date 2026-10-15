@@ -169,3 +169,9 @@ complete the shared-version and distribution checklist first.
 
 Phase 15 adds installed Python wheel/source-archive tests and synchronized PyPI
 publication. See the [SDK guide](docs/python-sdk.md) and [impact review](docs/phase-15-alignment.md).
+
+Phase 16 adds Node 22/24 SDK tests on Linux, macOS and Windows, declaration
+checks, canonical schema parity, deterministic tarball rebuilds and installed
+package smoke tests. Run `npm ci --prefix sdk/javascript --ignore-scripts`,
+`npm test --prefix sdk/javascript` and `npm run typecheck --prefix sdk/javascript`.
+Set `AGENTHEALTH_SDK_BINARY` to a CLI compiled with the SDK version for real checks.

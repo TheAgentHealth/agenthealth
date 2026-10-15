@@ -245,3 +245,21 @@ container image is published under the commit SHA. v1.13.0 resolves to
 `ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e`. Verify the corresponding image exists
 before changing that pin. No SDK/CLI/chart version changes are needed for this
 workflow-only repair; the source tag remains immutable.
+
+## JavaScript SDK publication (Phase 16)
+
+Starting with v0.14.0, publish `@theagenthealth/agenthealth` at the shared numeric
+software version. The signed GitHub draft, checksums and OCI binary bundle include
+`theagenthealth-agenthealth-X.Y.Z.tgz`. `release.yml` dispatches and requires
+`publish.yml` before finalizing the public release. npm trusted publishing is
+configured for **publish.yml** in **TheAgentHealth/agenthealth**; no npm token or
+GitHub environment is required. Use Node 24 with npm 11.5.1+ and OIDC
+`id-token: write`. A reusable caller workflow would change the trusted identity,
+so publication uses a separate workflow dispatch.
+
+The publication workflow verifies source-tag provenance and signed checksums,
+publishes that exact tarball, compares anonymous registry bytes and SHA-512
+integrity, and runs `npm audit signatures`. Existing versions can only be reused
+if their bytes match; never overwrite an npm version. Previews use `next`.
+Publication-only recovery also requires npm verification for tags with the SDK.
+See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/).

@@ -1,0 +1,6 @@
+{
+  "name": "agenthealth-javascript-example",
+  "private": true,
+  "type": "module",
+  "dependencies": { "@theagenthealth/agenthealth": "0.14.0" }
+}

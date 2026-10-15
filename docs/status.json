@@ -99,9 +99,9 @@
     },
     {
       "phase": "[16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source for v0.14.0; publication pending",
+      "documentation": "[JavaScript SDK](javascript-sdk.md), [alignment audit](phase-16-alignment.md)",
+      "validation": "[Node example](../examples/javascript-sdk/README.md), [SDK tests](../sdk/javascript/test/)"
     },
     {
       "phase": "[17: Model / LLM Adapters](../ROADMAP.md#phase-17--model--llm-adapters)",
