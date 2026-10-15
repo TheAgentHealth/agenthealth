@@ -18,8 +18,10 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python/TypeScript SDKs, model/database/vector adapters, framework integrations,
-scoped authorization and isolated third-party adapters follow stabilization.
+Python and JavaScript/TypeScript SDKs are released and share v0.14.0.
+Future SDK improvements follow the stabilization and interoperability work above.
+Model/database/vector adapters, framework integrations, scoped authorization
+and isolated third-party adapters follow stabilization.
 No blanket release freeze is imposed: fixes may ship under existing release
 review, CI and publication policies. Do not claim a security audit, tenant
 isolation or product compatibility without corresponding evidence.
