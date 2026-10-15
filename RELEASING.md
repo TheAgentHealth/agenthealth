@@ -265,3 +265,16 @@ integrity, and runs `npm audit signatures`. Existing versions can only be reused
 if their bytes match; never overwrite an npm version. Previews use `next`.
 Publication-only recovery also requires npm verification for tags with the SDK.
 See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/).
+
+### npm infrastructure-only recovery
+
+If npm publication fails after signed assets are staged, retain the source tag,
+GitHub assets and any already published formats. Dispatch `publish.yml` on `main`
+with the original `release_tag` and `recovery: true`. This uses corrected publisher
+infrastructure to download and verify the original tag-bound signatures/checksums,
+then publishes only the identical npm tarball. It never rebuilds or replaces assets.
+Normal publication still runs on the exact tag. Recovery npm provenance identifies
+the corrected publisher commit on main; GitHub build provenance continues to bind
+the package bytes to the original immutable source tag. Once npm succeeds, rerun
+only the failed Release npm job so it verifies the existing identical publication
+and allows final GitHub publication. Do not rerun a successful PyPI publish.
