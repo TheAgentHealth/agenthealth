@@ -43,7 +43,8 @@ especially when it contains MCP stdio commands or enables active checks.
 
 The synchronized release includes a reproducible npm tarball in signed GitHub
 assets, the checksum set and the OCI binary bundle. `publish.yml` uses the
-configured npm OIDC trust; `release.yml` waits for its success. Verify downloaded
+configured npm OIDC trust; the explicit `npm` job in `release.yml` waits for
+its success, alongside the `pypi` job. The final `publish` job requires both. Verify downloaded
 bytes against signed checksums and verify installed registry provenance:
 
 ```sh

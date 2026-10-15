@@ -250,8 +250,8 @@ workflow-only repair; the source tag remains immutable.
 
 Starting with v0.14.0, publish `@theagenthealth/agenthealth` at the shared numeric
 software version. The signed GitHub draft, checksums and OCI binary bundle include
-`theagenthealth-agenthealth-X.Y.Z.tgz`. `release.yml` dispatches and requires
-`publish.yml` before finalizing the public release. npm trusted publishing is
+`theagenthealth-agenthealth-X.Y.Z.tgz`. `release.yml` exposes an explicit `npm` job alongside `pypi`. That job dispatches
+and requires `publish.yml` before the final `publish` job can make the release public. npm trusted publishing is
 configured for **publish.yml** in **TheAgentHealth/agenthealth**; no npm token or
 GitHub environment is required. Use Node 24 with npm 11.5.1+ and OIDC
 `id-token: write`. A reusable caller workflow would change the trusted identity,
