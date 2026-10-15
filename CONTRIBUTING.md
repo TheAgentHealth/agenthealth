@@ -33,7 +33,8 @@ distinguish the first agent's health, downstream agent health, communication
 paths, and supporting dependency failures. Follow the
 [target-model terminology](spec/target-model.md#direct-and-composite-agent-health).
 
-[Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is implemented as a draft adapter interface.
+[Phase 7 — Agent Health](ROADMAP.md#phase-7--agent-health) is a released baseline. Its adapter contract remains draft/pre-1.0 and may
+evolve; this describes contract stability, not unreleased implementation.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
 is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is released in v0.8.0; experimental AHP HTTP serving is implemented in Phase 11. Keep planned
@@ -73,10 +74,12 @@ safety requirements, validation, and the release runbook.
 Follow the [component version and distribution policy](RELEASING.md#component-versions-and-synchronized-distribution).
 Starting with v0.12.0, all implemented artifacts share one
 software version and source tag: CLI archives, Linux packages, channel
-manifests, Docker images, Helm chart and OCI binary bundle. Publish all required
+manifests, Docker images, Helm chart, OCI binary bundle and released SDK packages. Publish all required
 formats together, even when an individual format's files have not changed.
 Chart `version` uses the numeric software version; `appVersion` and pinned
-images identify the matching CLI. Future SDKs adopt this policy when implemented.
+images identify the matching CLI. The Python and JavaScript/TypeScript SDKs
+share v0.14.0 with the CLI and other distributions. Future SDKs adopt this
+policy when implemented.
 AHS/AHP contract versions remain separate.
 
 The GitHub Release is the complete release page. For synchronized releases,
