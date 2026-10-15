@@ -55,10 +55,13 @@ def test_trusted_publisher_and_final_release_gating():
     job = workflow['jobs']['publish']
     assert job['permissions']['id-token'] == 'write'
     assert job['permissions']['contents'] == 'write'  # Draft asset access requires this.
-    assert job['if'] == "github.ref == format('refs/tags/{0}', inputs.release_tag)"
+    assert "github.ref == format('refs/tags/{0}', inputs.release_tag)" in job['if']
+    assert "inputs.recovery && github.ref == 'refs/heads/main'" in job['if']
     assert not any('workflow_call' in str(k) for k in workflow)
     steps = '\n'.join(s.get('run', '') for s in job['steps'])
     assert '--provenance' in steps and 'npm audit signatures' in steps
+    assert 'npm publish ./npm-dist/' in steps
+    assert 'npm publish npm-dist/' not in steps
     assert 'NODE_AUTH_TOKEN' not in steps and 'NPM_TOKEN' not in steps
     release = yaml.safe_load((ROOT / '.github/workflows/release.yml').read_text())
     publish = release['jobs']['publish']

@@ -34,8 +34,11 @@ def verify(tag, output, registry=False):
         subprocess.run(['git', 'fetch', 'origin', 'refs/tags/' + tag], check=True)
         sha = subprocess.check_output(['git', 'rev-parse', 'FETCH_HEAD^{commit}'], text=True).strip()
         subprocess.run(['git', 'merge-base', '--is-ancestor', sha, 'origin/main'], check=True)
-        if os.environ.get('GITHUB_ACTIONS') == 'true' and (os.environ.get('GITHUB_REF') != 'refs/tags/' + tag or os.environ.get('GITHUB_SHA') != sha):
-            raise ValueError('npm provenance workflow must execute on the exact source tag')
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
+            tagged = os.environ.get('GITHUB_REF') == 'refs/tags/' + tag and os.environ.get('GITHUB_SHA') == sha
+            recovery = os.environ.get('NPM_PUBLICATION_RECOVERY') == 'true' and os.environ.get('GITHUB_REF') == 'refs/heads/main'
+            if not (tagged or recovery):
+                raise ValueError('npm publication requires the source tag or explicit main-only infrastructure recovery')
         subprocess.run(['gh', 'release', 'download', tag, '--repo', REPOSITORY, '--dir', str(output),
                         '--pattern', name, '--pattern', 'checksums.txt'], check=True)
         for filename in (name, 'checksums.txt'):
