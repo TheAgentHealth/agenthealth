@@ -20,7 +20,8 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 Python and JavaScript/TypeScript SDKs are released and share v0.14.0.
 Future SDK improvements follow the stabilization and interoperability work above.
-Model/database/vector adapters, framework integrations, scoped authorization
+Model/LLM OpenAI-compatible and Anthropic adapters are implemented in source for v0.15.0.
+Additional cloud model dialects, database/vector adapters, framework integrations, scoped authorization
 and isolated third-party adapters follow stabilization.
 No blanket release freeze is imposed: fixes may ship under existing release
 review, CI and publication policies. Do not claim a security audit, tenant
@@ -125,6 +126,11 @@ See the [SDK guide](docs/javascript-sdk.md) and [alignment audit](docs/phase-16-
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-16--javascript--typescript-sdk).
 
 # Phase 17 — Model / LLM Adapters
+
+Implemented in source for v0.15.0: OpenAI-compatible and Anthropic passive
+listings, required model IDs, latency/timeouts, rate-limit/provider diagnostics
+and opt-in minimal inference. Cloud signing and broader interoperability remain
+planned. See the [guide](docs/model-adapter.md) and [impact review](docs/phase-17-alignment.md).
 
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-17--model--llm-adapters).
 

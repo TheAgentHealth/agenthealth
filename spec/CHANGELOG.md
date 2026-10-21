@@ -42,3 +42,11 @@ Additive v1 graph configuration (`id`, dependency `ref`/`relationship`, `budget_
 
 Adds a separately versioned HTTP envelope schema and serving contract. Existing
 AHS v1 configuration and result documents remain compatible.
+
+## Phase 17 additive v1 extension
+
+Optional type-scoped `model` options and allowlisted `model_*` diagnostics;
+no new target types, health states, dimensions, result fields or exit codes.
+See [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14),
+[configuration](configuration.md#model-expectations-phase-17-draft) and
+[alignment](../docs/phase-17-alignment.md). Existing configurations remain valid.

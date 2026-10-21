@@ -105,9 +105,9 @@
     },
     {
       "phase": "[17: Model / LLM Adapters](../ROADMAP.md#phase-17--model--llm-adapters)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source for v0.15.0; cloud dialects planned",
+      "documentation": "[Model/LLM guide](model-adapter.md), [alignment](phase-17-alignment.md)",
+      "validation": "[Model examples](../examples/model-check/README.md), [tests](../adapters/model/)"
     },
     {
       "phase": "[18: Database Adapters](../ROADMAP.md#phase-18--database-adapters)",

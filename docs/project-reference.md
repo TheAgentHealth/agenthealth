@@ -12,7 +12,7 @@ source of current release status.
 
 ## Start here
 
-**Latest release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Latest release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM checks for OpenAI-compatible and Anthropic APIs are implemented in source for v0.15.0; database and vector-store adapters remain planned. See the [model guide](model-adapter.md).
 
 ### Install
 

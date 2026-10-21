@@ -30,3 +30,7 @@ The [Python SDK](python-sdk.md) provides typed sync/async CLI access; see its
 
 - [JavaScript / TypeScript SDK](javascript-sdk.md) — Node ESM wrapper and npm distribution.
 - [Phase 16 alignment](phase-16-alignment.md) — earlier/later phase impact review.
+
+Phase 17 implements [model/LLM health](model-adapter.md) for OpenAI-compatible and Anthropic APIs.
+Passive model listings and explicit minimal inference preserve existing health
+semantics. See the [Phase 17 alignment audit](phase-17-alignment.md) for cross-phase impacts.

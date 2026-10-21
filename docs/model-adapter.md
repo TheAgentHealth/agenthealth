@@ -67,7 +67,7 @@ Responses are classified as for listings, except that 404 yields
 `model_functional`. A 2xx response must contain a non-empty `choices` array
 (`openai`) or a `message` with `content` (`anthropic`).
 
-Each run is a billable request. Keep `max_output_tokens` small and run
+Each functional check may incur provider charges. Keep `max_output_tokens` small and run
 functional checks less often than passive ones.
 
 ### Output token bound
@@ -94,9 +94,27 @@ bound, and the check reports `DEGRADED` with code `model_token_limit`. Switch
 ## Validation
 
 Unit tests cover both dialects, every classification above, shared listings,
-no retries for inference, token parameter selection and redaction. The adapter
-was also run against Ollama 0.40 with `qwen2.5:0.5b`. That run covered passive
+no retries for inference, token parameter selection and redaction. Contributor [Sharath K](https://github.com/sharath568) reports running the adapter
+against Ollama 0.40 with `qwen2.5:0.5b`. That run covered passive
 checks, required-model detection, `model_unavailable` for an unknown model, a
 bounded inference, and `model_token_limit` detection when
 `max_completion_tokens` was ignored. It has not been run against the hosted
 OpenAI or Anthropic APIs; their request shapes follow the public API references.
+
+
+The token field is a request limit, not an independently enforced spending cap.
+A server can ignore it; detection relies on reported usage after the request.
+Missing usage does not prove that the bound was honored. No tools or streaming
+are requested. Inference success validates response structure, not answer quality.
+
+API references: [OpenAI Chat Completions](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create),
+[Anthropic models](https://platform.claude.com/docs/en/api/models/list) and
+[Anthropic messages](https://platform.claude.com/docs/en/api/messages/create).
+The OpenAI token field includes reasoning tokens where applicable.
+
+Requires a Phase 17 CLI and matching SDK (release target v0.15.0). Both SDKs
+validate the canonical model block and delegate execution to Go. AHP, Docker
+and Kubernetes use the same registry; provide referenced secrets explicitly
+and keep functional checks off high-frequency readiness probes. The
+[shared graph example](../examples/model-check/graph.yaml) keeps model evidence
+separate from direct/composite agent health and communication paths.
