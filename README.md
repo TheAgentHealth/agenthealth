@@ -226,3 +226,11 @@ agenthealth check examples/model-check/anthropic.yaml --format json
 See [model examples](examples/model-check/README.md) and the
 [alignment audit](docs/phase-17-alignment.md). Cloud signing, streaming and
 broader product interoperability remain future work.
+
+## Contributors
+
+Thanks to [Sharath K (@sharath568)](https://github.com/sharath568) for proposing
+and implementing the initial Phase 17 model/LLM adapter in
+[RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
+[PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
+commit is preserved in the integrated implementation.
