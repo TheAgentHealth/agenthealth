@@ -1,7 +1,11 @@
 # Python SDK
 
+Source release target: **v0.15.0**. The commands below require its publication;
+check the [release page](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0)
+before installing. Links to v0.14.0 verification describe that historical release.
+
 Phase 15 implements a Python 3.10+ wrapper around the Go CLI. Published SDK and CLI use
-software v0.14.0; publication is recorded separately in [capability status](phase-status.md).
+software v0.15.0; publication is recorded separately in [capability status](phase-status.md).
 The SDK consumes AHS v1 and never reimplements adapter execution or aggregation.
 
 ## Installation
@@ -9,10 +13,10 @@ The SDK consumes AHS v1 and never reimplements adapter execution or aggregation.
 Install the published version:
 
 ```bash
-pip install agenthealth==0.14.0
+pip install agenthealth==0.15.0
 ```
 
-Install the matching CLI v0.14.0 separately using the
+Install the matching CLI v0.15.0 separately using the
 [verified binary installation](installation.md#verify-provenance-and-sboms) instructions.
 Select its exact platform archive and verify both checksums and signed
 provenance before execution. The SDK never downloads binaries, changes PATH,
