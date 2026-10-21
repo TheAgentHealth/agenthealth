@@ -10,7 +10,7 @@ container-specific behavior is introduced.
 
 ## Image contents
 
-- Multi-stage build: `golang:1.27.2-bookworm` compiles a static (`CGO_ENABLED=0`)
+- Multi-stage build: `golang:1.27.3-bookworm` compiles a static (`CGO_ENABLED=0`)
   binary with the same flags as [scripts/build_release.py](../scripts/build_release.py),
   so image binaries are byte-identical to the attested release archives; the
   runtime stage is a digest-pinned `gcr.io/distroless/static-debian12:nonroot`.

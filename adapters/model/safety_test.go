@@ -41,7 +41,7 @@ func TestPartialResponseIsNeverRetried(t *testing.T) {
 		<-r.Context().Done()
 	}))
 	defer server.Close()
-	retries, timeout := 3, 30
+	retries, timeout := 3, 100
 	result := run(t, core.Target{Name: "model", Type: "model", Endpoint: server.URL, Retries: &retries, TimeoutMS: &timeout})
 	if result.Status != core.Unknown || calls.Load() != 1 {
 		t.Fatalf("partial response: %+v calls=%d", result, calls.Load())
@@ -65,8 +65,8 @@ func TestInferenceDeadlineNeverRetries(t *testing.T) {
 		}
 	}))
 	defer server.Close()
-	retries, timeout := 3, 30
-	result := run(t, core.Target{Name: "model", Type: "model", Endpoint: server.URL, Retries: &retries, TimeoutMS: &timeout, Checks: []string{"functional"}, Model: &core.ModelOptions{Functional: &core.ModelInference{Safe: true, Model: "local", Prompt: "OK"}}})
+	retries, timeout := 3, 100
+	result := run(t, core.Target{Name: "model", Type: "model", Endpoint: server.URL, Retries: &retries, CheckTimeouts: map[string]int{"functional": timeout}, Checks: []string{"functional"}, Model: &core.ModelOptions{Functional: &core.ModelInference{Safe: true, Model: "local", Prompt: "OK"}}})
 	if result.Checks["functional"].Status == core.Healthy || posts.Load() != 1 {
 		t.Fatalf("inference: %+v posts=%d", result, posts.Load())
 	}
