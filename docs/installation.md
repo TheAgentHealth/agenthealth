@@ -1,12 +1,12 @@
 # Install AgentHealth
 
-Source release target: **v0.15.0**. The commands below require its publication;
-check the [release page](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0)
-before installing. Links to v0.14.0 verification describe that historical release.
+Published software: **v0.15.0**. The commands below select its synchronized
+CLI, SDK, chart and image versions. See the
+[publication verification](releases/verification-v0.15.0.md).
 
 <!-- release-version: v0.15.0 -->
 
-The commands below target v0.15.0. See the [verification record](releases/verification-v0.14.0.md).
+The commands below target v0.15.0. See the [verification record](releases/verification-v0.15.0.md).
 
 Choose a distribution:
 
@@ -107,7 +107,7 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured; v0.15.0 is prepared for publication in both registries:
+tags when mirror credentials are configured; v0.15.0 is published and verified in both registries:
 
 ```bash
 # GitHub Container Registry
@@ -192,7 +192,7 @@ Phase 14 provides [manifests](../deploy/kubernetes/), the
 pins CLI v0.15.0 and publishes through the shared release workflow. The
 historical chart 0.1.0 remains available as helm-v0.1.0, pinning CLI v0.11.1.
 See [Kubernetes](kubernetes.md) and [distribution](distribution.md) for direct
-release downloads, OCI Helm install and ORAS binary retrieval. The v0.15.0 channels are prepared for publication.
+release downloads, OCI Helm install and ORAS binary retrieval. The v0.15.0 channels are published and verified.
 
 ## Python SDK
 

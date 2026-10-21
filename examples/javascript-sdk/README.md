@@ -14,5 +14,5 @@ Missing/mismatched CLI and invalid configuration reject rather than becoming
 health results. For source development, install a locally built npm tarball.
 See the [SDK guide](../../docs/javascript-sdk.md).
 
-Source release target: v0.15.0. Requires the matching CLI; model/LLM
+Published software: v0.15.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.

@@ -112,7 +112,7 @@ API references: [OpenAI Chat Completions](https://developers.openai.com/api/refe
 [Anthropic messages](https://platform.claude.com/docs/en/api/messages/create).
 The OpenAI token field includes reasoning tokens where applicable.
 
-Requires a Phase 17 CLI and matching SDK (release target v0.15.0). Both SDKs
+Requires a Phase 17 CLI and matching SDK (released in v0.15.0). Both SDKs
 validate the canonical model block and delegate execution to Go. AHP, Docker
 and Kubernetes use the same registry; provide referenced secrets explicitly
 and keep functional checks off high-frequency readiness probes. The

@@ -58,5 +58,5 @@ See the [SDK guide](../../docs/javascript-sdk.md),
 [example](../../examples/javascript-sdk/README.md), and
 [Phase 16 impact review](../../docs/phase-16-alignment.md).
 
-Source release target: v0.15.0. Requires the matching CLI; model/LLM
+Published software: v0.15.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.

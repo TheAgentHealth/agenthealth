@@ -49,5 +49,5 @@ Source implementation is pre-1.0; PyPI availability is recorded separately in
 the repository capability status. See the repository's Python SDK guide for
 installation, release setup, errors and examples.
 
-Source release target: v0.15.0. Requires the matching CLI; model/LLM
+Published software: v0.15.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.

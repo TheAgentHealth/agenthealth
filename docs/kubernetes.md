@@ -1,13 +1,13 @@
 # Kubernetes integration
 
-Source release target: **v0.15.0**. The commands below require its publication;
-check the [release page](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0)
-before installing. Links to v0.14.0 verification describe that historical release.
+Published software: **v0.15.0**. The commands below select its synchronized
+CLI, SDK, chart and image versions. See the
+[publication verification](releases/verification-v0.15.0.md).
 
 Phase 14's initial chart 0.1.0/CLI v0.11.1 releases remain public. The source
 chart is now **0.15.0**, with `appVersion: v0.15.0`, matching image defaults and
-coordinated OCI/chart/binary release jobs. v0.15.0 is prepared for publication.
-See the [verification record](releases/verification-v0.14.0.md).
+coordinated OCI/chart/binary release jobs. v0.15.0 is published and verified.
+See the [verification record](releases/verification-v0.15.0.md).
 See [the distribution guide](distribution.md).
 
 Start with the [runnable scenarios](../examples/kubernetes/README.md),
@@ -21,7 +21,7 @@ Both public references for the pinned CLI version are:
 - GHCR: `ghcr.io/theagenthealth/agenthealth:v0.15.0`
 - Docker Hub: `docker.io/theagenthealth/agenthealth:v0.15.0`
 
-Both synchronized v0.15.0 references require anonymous access verification after publication.
+Both synchronized v0.15.0 references passed anonymous access checks.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
 reference in each AgentHealth container, including init containers. Registry
