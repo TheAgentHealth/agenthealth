@@ -433,7 +433,7 @@ func validateTarget(t Target, path string, depth int) error {
 			return fmt.Errorf("%s: required models require capability check", path)
 		}
 		if f := o.Functional; f != nil {
-			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Model) == "" || strings.TrimSpace(f.Prompt) == "" || len(f.Prompt) > 4096 {
+			if !contains(t.Checks, "functional") || !f.Safe || strings.TrimSpace(f.Model) == "" || strings.TrimSpace(f.Prompt) == "" || !utf8.ValidString(f.Prompt) || len(f.Prompt) > 4096 {
 				return fmt.Errorf("%s: model inference requires functional opt-in, safe: true, model and prompt of at most 4 KiB", path)
 			}
 			if f.MaxOutputTokens != nil && (*f.MaxOutputTokens < 1 || *f.MaxOutputTokens > 1024) {

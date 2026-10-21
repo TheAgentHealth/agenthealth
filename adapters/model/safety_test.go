@@ -112,3 +112,20 @@ func TestSharedModelGraphNodeRunsOncePerRun(t *testing.T) {
 		}
 	}
 }
+
+func TestAuthenticationDoesNotHideProviderFailure(t *testing.T) {
+	for _, tc := range []struct {
+		status int
+		want   core.Status
+		code   string
+	}{
+		{429, core.Degraded, "model_rate_limit"}, {529, core.Degraded, "model_overloaded"}, {500, core.Unhealthy, "model_http"},
+	} {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(tc.status) }))
+		result := run(t, core.Target{Name: "model", Type: "model", Endpoint: server.URL, Checks: []string{"authentication"}})
+		server.Close()
+		if result.Status != tc.want || result.Checks["authentication"].Code != tc.code {
+			t.Fatalf("HTTP %d: %+v", tc.status, result)
+		}
+	}
+}

@@ -182,17 +182,14 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		}
 		r.RunState.Store("model-list", f)
 	}
-	switch dimension {
-	case "reachability":
-		return observed(core.Healthy, ""), nil
-	case "authentication":
-		if f.status == 401 || f.status == 403 {
-			return observed(core.Misconfigured, "model_auth"), nil
-		}
+	if dimension == "reachability" {
 		return observed(core.Healthy, ""), nil
 	}
 	if obs, failed := failure(f.status); failed {
 		return obs, nil
+	}
+	if dimension == "authentication" {
+		return observed(core.Healthy, ""), nil
 	}
 	var models listing
 	if json.Unmarshal(f.body, &models) != nil || models.Data == nil {

@@ -40,3 +40,10 @@ func TestModelConfigurationFixtures(t *testing.T) {
 		}
 	}
 }
+
+func TestModelPromptMustBeUTF8(t *testing.T) {
+	target := Target{Name: "model", Type: "model", Endpoint: "https://example.com/v1", Checks: []string{"functional"}, Model: &ModelOptions{Functional: &ModelInference{Safe: true, Model: "local", Prompt: string([]byte{0xff})}}}
+	if err := (Config{Version: "v1", Targets: []Target{target}}).Validate(); err == nil {
+		t.Fatal("accepted invalid UTF-8 prompt that JSON would silently replace")
+	}
+}
