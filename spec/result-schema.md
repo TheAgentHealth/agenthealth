@@ -221,6 +221,10 @@ JSON, YAML and terminal output preserve these distinctions. Existing result
 fields, health states, batch ordering and exit codes remain valid.
 See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
 
+## Model diagnostic codes (Phase 17)
+
+| Code | Meaning |
+|---|---|
 | `model_auth` | model API authentication rejected (401 or 403) |
 | `model_http` | model API returned an unexpected HTTP status |
 | `model_rate_limit` | model API rate limit reached (429) |

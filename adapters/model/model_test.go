@@ -146,7 +146,7 @@ func TestInferenceFailuresAreClassifiedAndNeverRetried(t *testing.T) {
 		{"rejected credential", 401, "", core.Misconfigured, "model_auth"},
 		{"no choices", 200, `{"choices":[]}`, core.Unhealthy, "model_protocol"},
 		{"embedded error", 200, `{"error":{"message":"quota"}}`, core.Unhealthy, "model_protocol"},
-		{"limit ignored", 200, `{"choices":[{"message":{}}],"usage":{"completion_tokens":415}}`, core.Degraded, "model_token_limit"},
+		{"limit ignored", 200, `{"choices":[{"message":{"role":"assistant"}}],"usage":{"completion_tokens":415}}`, core.Degraded, "model_token_limit"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var posts atomic.Int32
@@ -264,7 +264,7 @@ func TestTokenParameterSelection(t *testing.T) {
 		if body["max_completion_tokens"] != float64(defaultOutputTokens) || body["max_tokens"] != nil {
 			t.Errorf("unexpected token parameter %v", body)
 		}
-		json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{}}, "usage": map[string]any{"completion_tokens": defaultOutputTokens}})
+		json.NewEncoder(w).Encode(map[string]any{"choices": []any{map[string]any{"message": map[string]any{"role": "assistant"}}}, "usage": map[string]any{"completion_tokens": defaultOutputTokens}})
 	}))
 	defer server.Close()
 	result := run(t, core.Target{Name: "m", Type: "model", Endpoint: server.URL, Checks: []string{"functional"},

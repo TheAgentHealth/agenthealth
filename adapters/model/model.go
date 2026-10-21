@@ -258,10 +258,18 @@ func infer(ctx context.Context, r core.Request) (core.Observation, error) {
 		return obs, nil
 	}
 	var completion struct {
-		Type    string            `json:"type"`
-		Choices []json.RawMessage `json:"choices"`
-		Content []json.RawMessage `json:"content"`
-		Usage   struct {
+		Type    string `json:"type"`
+		Role    string `json:"role"`
+		Choices []struct {
+			Message *struct {
+				Role string `json:"role"`
+			} `json:"message"`
+		} `json:"choices"`
+		Content []struct {
+			Type string  `json:"type"`
+			Text *string `json:"text"`
+		} `json:"content"`
+		Usage struct {
 			CompletionTokens *int `json:"completion_tokens"`
 			OutputTokens     *int `json:"output_tokens"`
 		} `json:"usage"`
@@ -270,14 +278,22 @@ func infer(ctx context.Context, r core.Request) (core.Observation, error) {
 		return observed(core.Unhealthy, "model_protocol"), nil
 	}
 	if api(r.Target) == "anthropic" {
-		if completion.Type != "message" || completion.Content == nil {
+		if completion.Type != "message" || completion.Role != "assistant" || len(completion.Content) == 0 {
 			return observed(core.Unhealthy, "model_protocol"), nil
 		}
-	} else if len(completion.Choices) == 0 {
+		for _, block := range completion.Content {
+			if block.Type != "text" || block.Text == nil {
+				return observed(core.Unhealthy, "model_protocol"), nil
+			}
+		}
+	} else if len(completion.Choices) != 1 || completion.Choices[0].Message == nil || completion.Choices[0].Message.Role != "assistant" {
 		return observed(core.Unhealthy, "model_protocol"), nil
 	}
 	// Reported usage above the bound means the limit is not being enforced.
 	for _, used := range []*int{completion.Usage.CompletionTokens, completion.Usage.OutputTokens} {
+		if used != nil && *used < 0 {
+			return observed(core.Unhealthy, "model_protocol"), nil
+		}
 		if used != nil && *used > tokens {
 			return observed(core.Degraded, "model_token_limit"), nil
 		}

@@ -15,8 +15,8 @@ import (
 	gatewayadapter "github.com/TheAgentHealth/agenthealth/adapters/gateway"
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
-	routeradapter "github.com/TheAgentHealth/agenthealth/adapters/router"
 	modeladapter "github.com/TheAgentHealth/agenthealth/adapters/model"
+	routeradapter "github.com/TheAgentHealth/agenthealth/adapters/router"
 	"github.com/TheAgentHealth/agenthealth/core"
 )
 
@@ -221,6 +221,9 @@ func writeAdvice(w io.Writer, results []core.Result) error {
 
 func newRegistry() (*core.Registry, error) {
 	registry := core.NewRegistry()
+	if err := registry.Register(modeladapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register model adapter")
+	}
 	if err := registry.Register(routeradapter.Adapter{}); err != nil {
 		return nil, fmt.Errorf("cannot register router adapter")
 	}
