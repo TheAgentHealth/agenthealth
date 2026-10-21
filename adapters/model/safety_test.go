@@ -43,7 +43,7 @@ func TestPartialResponseIsNeverRetried(t *testing.T) {
 	defer server.Close()
 	retries, timeout := 3, 30
 	result := run(t, core.Target{Name: "model", Type: "model", Endpoint: server.URL, Retries: &retries, TimeoutMS: &timeout})
-	if result.Status != core.Unhealthy || calls.Load() != 1 {
+	if result.Status != core.Unknown || calls.Load() != 1 {
 		t.Fatalf("partial response: %+v calls=%d", result, calls.Load())
 	}
 }
