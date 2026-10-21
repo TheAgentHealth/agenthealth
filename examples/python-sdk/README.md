@@ -18,5 +18,5 @@ The example preserves CLI health exits 0–5 and returns 6 for SDK/tool failures
 It prints typed dependency relationships without treating supporting dependencies
 as composite agents. See the [SDK guide](../../docs/python-sdk.md).
 
-Source release target: v0.15.0. Requires the matching CLI; model/LLM
+Published software: v0.15.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.

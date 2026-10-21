@@ -1,6 +1,6 @@
 # Model / LLM examples
 
-Requires a Phase 17 build (release target v0.15.0), a running model API and
+Requires a Phase 17 build (released in v0.15.0), a running model API and
 credentials/model IDs appropriate to that server. These are templates, not
 claims of tested hosted-provider compatibility.
 

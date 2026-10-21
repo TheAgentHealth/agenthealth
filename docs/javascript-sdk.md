@@ -1,8 +1,8 @@
 # JavaScript / TypeScript SDK
 
-Source release target: **v0.15.0**. The commands below require its publication;
-check the [release page](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0)
-before installing. Links to v0.14.0 verification describe that historical release.
+Published software: **v0.15.0**. The commands below select its synchronized
+CLI, SDK, chart and image versions. See the
+[publication verification](releases/verification-v0.15.0.md).
 
 Phase 16 releases [`@theagenthealth/agenthealth`](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.15.0) for Node.js **22.14+**, ESM.
 It wraps the reference Go CLI at the exact same software version and does not
