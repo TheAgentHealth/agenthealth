@@ -472,7 +472,7 @@ agenthealth version
 ```
 
 Configured dependencies are evaluated automatically; no `--dependencies` flag
-is needed. The [agent adapter](../docs/agent-adapter.md) is implemented; model adapters remain planned.
+is needed. The [agent adapter](../docs/agent-adapter.md) is implemented; model/LLM adapters are implemented in Phase 17 for OpenAI-compatible and Anthropic APIs.
 
 ---
 

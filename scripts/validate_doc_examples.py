@@ -54,6 +54,8 @@ MARKER_RE = re.compile(
 )
 
 FILES_TO_CHECK = [
+    ROOT / "docs" / "model-adapter.md",
+    ROOT / "examples" / "model-check" / "README.md",
     ROOT / "README.md",
     ROOT / "ROADMAP.md",
     ROOT / "docs" / "project-reference.md",
