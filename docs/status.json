@@ -1,5 +1,5 @@
 {
-  "software_version": "v0.14.0",
+  "software_version": "v0.15.0",
   "phases": [
     {
       "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
@@ -105,7 +105,7 @@
     },
     {
       "phase": "[17: Model / LLM Adapters](../ROADMAP.md#phase-17--model--llm-adapters)",
-      "status": "Implemented in source for v0.15.0; cloud dialects planned",
+      "status": "Released in v0.15.0; cloud dialects planned",
       "documentation": "[Model/LLM guide](model-adapter.md), [alignment](phase-17-alignment.md)",
       "validation": "[Model examples](../examples/model-check/README.md), [tests](../adapters/model/)"
     },

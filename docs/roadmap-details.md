@@ -1256,7 +1256,7 @@ remain future work. See [the audit](phase-16-alignment.md) for every phase.
 
 # Phase 17 — Model / LLM Adapters
 
-**Status:** Implemented in source for v0.15.0 (OpenAI-compatible and Anthropic).
+**Status:** Released in v0.15.0 (OpenAI-compatible and Anthropic).
 Cloud signing, Azure-specific authentication and other dialects remain planned.
 See [adapter guide](model-adapter.md) and [alignment audit](phase-17-alignment.md).
 
