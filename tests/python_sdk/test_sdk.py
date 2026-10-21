@@ -121,7 +121,7 @@ def test_credentials_and_unsupported_adapter_are_health_results(binary, endpoint
                     environment={'SDK_TOKEN': ''})
     assert missing.exit_code == 4
     assert 'sdk-secret' not in json.dumps(report.to_dict())
-    assert check(target_type='model', endpoint=url, binary=binary).exit_code == 4
+    assert check(target_type='database', endpoint=url, binary=binary).exit_code == 4
 
 
 def test_loader_validation_and_go_graph_semantics(binary, tmp_path):
