@@ -1256,7 +1256,9 @@ remain future work. See [the audit](phase-16-alignment.md) for every phase.
 
 # Phase 17 — Model / LLM Adapters
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source for v0.15.0 (OpenAI-compatible and Anthropic).
+Cloud signing, Azure-specific authentication and other dialects remain planned.
+See [adapter guide](model-adapter.md) and [alignment audit](phase-17-alignment.md).
 
 Goal:
 
@@ -1264,14 +1266,14 @@ Validate the model dependencies used by agents.
 
 ## Common Checks
 
-- [ ] endpoint
-- [ ] authentication
-- [ ] model availability
-- [ ] minimal inference
-- [ ] latency
-- [ ] timeout
-- [ ] rate limiting
-- [ ] provider errors
+- [x] endpoint
+- [x] authentication
+- [x] model availability
+- [x] minimal inference
+- [x] latency
+- [x] timeout
+- [x] rate limiting
+- [x] provider errors
 
 Potential adapters:
 
@@ -1289,7 +1291,7 @@ Vendor-specific integrations should remain outside the core whenever practical.
 
 ## Impact Review
 
-Earlier: add model adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide model dependency coverage for runtime, conformance, and interoperability tests.
+Earlier: additive v1 model configuration and stable diagnostic codes; Go validation, CLI/AHP registration, both SDK schemas, distribution metadata and examples updated. No state, result shape or exit-code changes. All phases are assessed in the [alignment audit](phase-17-alignment.md). Later: database/vector adapters reuse the safety pattern; runtime, conformance and interoperability work must distinguish advertised model availability from inference and record exact provider versions.
 
 ---
 

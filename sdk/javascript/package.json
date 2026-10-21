@@ -1,6 +1,6 @@
 {
   "name": "@theagenthealth/agenthealth",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Typed Node.js SDK for the AgentHealth reference CLI",
   "license": "Apache-2.0",
   "type": "module",

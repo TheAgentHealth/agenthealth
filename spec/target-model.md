@@ -63,7 +63,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `agent` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `mcp` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `a2a` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
-| `model` / `llm` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
+| `model` / `llm` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `http` / `api` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `gateway` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `router` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |

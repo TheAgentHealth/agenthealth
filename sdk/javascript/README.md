@@ -6,10 +6,10 @@ not supported. All implemented adapters and graph configurations use the same
 AHS v1 configuration and result contracts as the CLI.
 
 ```sh
-npm install @theagenthealth/agenthealth@0.14.0
+npm install @theagenthealth/agenthealth@0.15.0
 ```
 
-Install and verify CLI **v0.14.0** separately using the
+Install and verify CLI **v0.15.0** separately using the
 [installation guide](../../docs/installation.md). The SDK never downloads or
 executes binaries at import/install time. A mismatched CLI raises
 `CompatibilityError` before running checks.
@@ -57,3 +57,6 @@ a CLI/server capability, rather than an SDK HTTP server.
 See the [SDK guide](../../docs/javascript-sdk.md),
 [example](../../examples/javascript-sdk/README.md), and
 [Phase 16 impact review](../../docs/phase-16-alignment.md).
+
+Source release target: v0.15.0. Requires the matching CLI; model/LLM
+configuration is supported through the canonical schema.

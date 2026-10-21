@@ -80,3 +80,7 @@ The [Python SDK](../docs/python-sdk.md) consumes existing v1 configuration and r
 The [JavaScript / TypeScript SDK](../docs/javascript-sdk.md) also wraps the
 exact-version CLI and preserves the existing configuration, result and health
 exit-code contracts. Its bundled schemas are parity-tested against the specification.
+
+Phase 17 implements [model/LLM health](../docs/model-adapter.md) for OpenAI-compatible and Anthropic APIs.
+Passive model listings and explicit minimal inference preserve existing health
+semantics. See the [Phase 17 alignment audit](../docs/phase-17-alignment.md) for cross-phase impacts.

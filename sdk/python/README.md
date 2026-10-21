@@ -7,7 +7,7 @@ IDs. Health failures return results; tool failures raise exceptions.
 Install the package with `pip install agenthealth` once published. Install a
 verified AgentHealth CLI of the same software version separately and put it on
 PATH, or pass its absolute path. Installation and imports never download or
-execute a binary. This first SDK targets Python 3.10+ and CLI v0.14.0.
+execute a binary. This first SDK targets Python 3.10+ and CLI v0.15.0.
 
 ```python
 from agenthealth import Client, HealthStatus
@@ -48,3 +48,6 @@ the CLI; `Configuration(data, base_dir=...)` selects a different directory.
 Source implementation is pre-1.0; PyPI availability is recorded separately in
 the repository capability status. See the repository's Python SDK guide for
 installation, release setup, errors and examples.
+
+Source release target: v0.15.0. Requires the matching CLI; model/LLM
+configuration is supported through the canonical schema.

@@ -358,3 +358,26 @@ IDs are unique across root targets and inline dependencies. Missing references, 
 ## Explicit passive HTTP method
 
 `http.method` accepts only `HEAD` or `GET`. Omission retains HEAD for `http`/`api` and GET for gateway/router HTTP signals. The configured method applies to passive checks, including latency measurement; functional body checks always use GET and retain explicit opt-in. No automatic fallback or redirect following is introduced. GET must point to a read-only endpoint; the engine cannot enforce remote handler safety. This is an additive v1 source extension, unavailable in v0.12.0. See the [impact review](../docs/rfcs/stabilization.md).
+
+
+## Model expectations (Phase 17 draft)
+
+Targets of type `model` or `llm` may include `model` options. `api` accepts
+`openai` (the empty default, for OpenAI-compatible APIs) or `anthropic`.
+`required_models` lists nonempty unique model IDs expected in the model
+listing; expectations require the capability dimension when `checks` is explicit.
+
+`model.functional` requires explicit `functional` in `checks`, `safe: true`, a
+nonblank `model`, and a nonblank `prompt` of at most 4096 UTF-8 bytes.
+`max_output_tokens` (1–1024, default 16) requests a provider-enforced output limit, and
+`token_parameter` selects `max_tokens` (default) or `max_completion_tokens` for
+the `openai` dialect; the `anthropic` dialect accepts only `max_tokens`. A
+functional check on a model target requires these inference options.
+Credentials use the existing `auth.bearer_env` reference. Unknown fields, null
+options, duplicate requirements, and options on other target types are
+rejected. No new health dimensions or result fields are introduced. See the
+[model adapter guide](../docs/model-adapter.md).
+
+The token limit is not an independent spending cap: enforcement is remote and
+reported excess usage is detected after inference. Missing usage does not prove
+the bound was honored. Error bodies and generated content are never emitted.

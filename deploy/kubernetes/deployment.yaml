@@ -23,7 +23,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: agenthealth
-        image: ghcr.io/theagenthealth/agenthealth:v0.14.0
+        image: ghcr.io/theagenthealth/agenthealth:v0.15.0
         imagePullPolicy: IfNotPresent
         args:
         - serve

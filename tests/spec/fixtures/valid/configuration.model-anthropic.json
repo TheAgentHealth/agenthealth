@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "llm",
+      "type": "llm",
+      "endpoint": "https://api.anthropic.com/v1",
+      "auth": {
+        "bearer_env": "ANTHROPIC_API_KEY"
+      },
+      "model": {
+        "api": "anthropic",
+        "required_models": [
+          "claude-test"
+        ]
+      },
+      "checks": [
+        "authentication",
+        "capability"
+      ]
+    }
+  ]
+}

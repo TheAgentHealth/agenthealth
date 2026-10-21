@@ -140,3 +140,24 @@ test('temporary-directory failures use sanitized SDK exceptions', async t => {
     else process.env.TMPDIR = original;
   }
 });
+
+test('model configuration delegates passive health to the real CLI', async t => {
+  const binary = process.env.AGENTHEALTH_SDK_BINARY;
+  if (!binary) { t.skip('Set AGENTHEALTH_SDK_BINARY to the matching compiled CLI'); return; }
+  let calls = 0;
+  const server = createServer((req, res) => {
+    assert.equal(req.method, 'GET'); assert.equal(req.url, '/v1/models'); calls++;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ data: [{ id: 'local-model' }] }));
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const target = { name: 'model', type: 'llm', endpoint: `http://127.0.0.1:${server.address().port}/v1`, model: { required_models: ['local-model'] } };
+  assert.equal((await check({ version: 'v1', targets: [target] }, { binary })).exitCode, 0);
+  assert.equal(calls, 1);
+  target.model.required_models = ['missing'];
+  const report = await check({ version: 'v1', targets: [target] }, { binary });
+  assert.equal(report.exitCode, 2);
+  assert.equal(report.results[0].checks.capability.code, 'model_required');
+  assert.throws(() => new Configuration({ version: 'v1', targets: [{ ...target, checks: ['functional'], model: {} }] }), ConfigurationError);
+});

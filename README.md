@@ -6,7 +6,7 @@
 
 ## Start here
 
-**Latest release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model, database, and vector-store adapters are planned; schema vocabulary does not imply adapter availability.
+**Latest release: [v0.14.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.14.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM checks for OpenAI-compatible and Anthropic APIs are implemented in source for v0.15.0; database and vector-store adapters remain planned. See the [model guide](docs/model-adapter.md).
 
 ### Install
 
@@ -209,3 +209,28 @@ establish every planned integration; consult its exact scope and limitations.
 
 Phase 16 adds the [JavaScript / TypeScript SDK](docs/javascript-sdk.md) in v0.14.0: `@theagenthealth/agenthealth`, Node 22.14+ ESM, with a matching
 verified CLI. See the [phase alignment audit](docs/phase-16-alignment.md).
+
+## Model / LLM health (Phase 17)
+
+The [model adapter](docs/model-adapter.md) checks an agent's supporting model
+dependencies with one bounded passive model listing. OpenAI-compatible and
+Anthropic dialects support required model IDs, rate-limit/overload diagnostics,
+latency thresholds and opt-in minimal inference. Requires a build containing
+Phase 17 (release target v0.15.0); v0.14.0 has no model adapter.
+
+```bash
+agenthealth ping llm http://localhost:11434/v1
+agenthealth check examples/model-check/anthropic.yaml --format json
+```
+
+See [model examples](examples/model-check/README.md) and the
+[alignment audit](docs/phase-17-alignment.md). Cloud signing, streaming and
+broader product interoperability remain future work.
+
+## Contributors
+
+Thanks to [Sharath K (@sharath568)](https://github.com/sharath568) for proposing
+and implementing the initial Phase 17 model/LLM adapter in
+[RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
+[PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
+commit is preserved in the integrated implementation.

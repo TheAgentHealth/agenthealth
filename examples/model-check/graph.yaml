@@ -1,0 +1,32 @@
+version: v1
+targets:
+  - id: first
+    name: direct-agent
+    type: agent
+    endpoint: http://localhost:8080/health
+    dependencies:
+      - ref: peer
+        relationship: downstream
+      - ref: communication
+        relationship: path
+      - ref: shared-model
+        relationship: supporting
+  - id: peer
+    name: composite-agent
+    type: agent
+    endpoint: http://localhost:8081/health
+    dependencies:
+      - ref: shared-model
+        relationship: supporting
+  - id: communication
+    name: direct-to-composite-path
+    type: http
+    endpoint: http://localhost:8080/peer-health
+    http:
+      method: GET
+  - id: shared-model
+    name: supporting-model
+    type: llm
+    endpoint: http://localhost:11434/v1
+    model:
+      required_models: [qwen2.5:0.5b]

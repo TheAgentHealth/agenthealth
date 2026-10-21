@@ -121,7 +121,7 @@ def test_credentials_and_unsupported_adapter_are_health_results(binary, endpoint
                     environment={'SDK_TOKEN': ''})
     assert missing.exit_code == 4
     assert 'sdk-secret' not in json.dumps(report.to_dict())
-    assert check(target_type='model', endpoint=url, binary=binary).exit_code == 4
+    assert check(target_type='database', endpoint=url, binary=binary).exit_code == 4
 
 
 def test_loader_validation_and_go_graph_semantics(binary, tmp_path):
@@ -263,3 +263,33 @@ def test_live_group_permission_error_is_sanitized(monkeypatch):
     with pytest.raises(ExecutionError, match='Unable to stop AgentHealth CLI process') as failure:
         asyncio.run(_signal_group(LiveProcess(), 15))
     assert 'sensitive' not in str(failure.value)
+
+
+def test_model_configuration_and_report(binary):
+    calls = []
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            calls.append(self.path)
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b'{"data":[{"id":"local-model"}]}')
+        def log_message(self, *_):
+            pass
+    server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    config = {'version': 'v1', 'targets': [{'name': 'model', 'type': 'llm',
+        'endpoint': f'http://127.0.0.1:{server.server_port}/v1',
+        'model': {'required_models': ['local-model']}}]}
+    try:
+        report = Client(binary).check(config)
+        assert report.status == HealthStatus.HEALTHY and report.exit_code == 0
+        assert calls == ['/v1/models']
+        config['targets'][0]['model']['required_models'] = ['missing']
+        report = Client(binary).check(config)
+        assert report.exit_code == 2
+        assert report.result.checks['capability'].code == 'model_required'
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()

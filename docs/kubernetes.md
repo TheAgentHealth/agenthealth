@@ -1,8 +1,12 @@
 # Kubernetes integration
 
+Source release target: **v0.15.0**. The commands below require its publication;
+check the [release page](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0)
+before installing. Links to v0.14.0 verification describe that historical release.
+
 Phase 14's initial chart 0.1.0/CLI v0.11.1 releases remain public. The source
-chart is now **0.14.0**, with `appVersion: v0.14.0`, matching image defaults and
-coordinated OCI/chart/binary release jobs. v0.14.0 is published and verified.
+chart is now **0.15.0**, with `appVersion: v0.15.0`, matching image defaults and
+coordinated OCI/chart/binary release jobs. v0.15.0 is prepared for publication.
 See the [verification record](releases/verification-v0.14.0.md).
 See [the distribution guide](distribution.md).
 
@@ -14,10 +18,10 @@ They consume the existing executable without changing AHS, AHP or CLI contracts.
 
 Both public references for the pinned CLI version are:
 
-- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.14.0`
-- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.14.0`
+- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.15.0`
+- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.15.0`
 
-Both synchronized v0.14.0 references passed anonymous access checks.
+Both synchronized v0.15.0 references require anonymous access verification after publication.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
 reference in each AgentHealth container, including init containers. Registry
@@ -28,7 +32,7 @@ helm lint deploy/helm/agenthealth --strict --kube-version 1.32.2
 helm template agenthealth deploy/helm/agenthealth --kube-version 1.32.2
 helm upgrade --install agenthealth deploy/helm/agenthealth \
   --set image.repository=docker.io/theagenthealth/agenthealth \
-  --set image.tag=v0.14.0 \
+  --set image.tag=v0.15.0 \
   --set-file config=examples/kubernetes/agenthealth.yaml
 ```
 
@@ -90,7 +94,7 @@ kubectl -n agenthealth-demo apply -k examples/kubernetes
 ```
 
 Edit the Kustomize `images` entry's `newName` to choose either registry listed
-above and keep `newTag: v0.14.0`. Do not combine these examples with separately
+above and keep `newTag: v0.15.0`. Do not combine these examples with separately
 installed same-name resources in the same namespace.
 
 For an application-container exec probe, the optional
@@ -104,7 +108,7 @@ docker build -f examples/kubernetes/Dockerfile.exec-probe \
 docker run --rm --entrypoint /usr/local/bin/agenthealth agenthealth-demo-exec:local version
 ```
 
-Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.14.0`
+Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.15.0`
 to use the mirror. Mount the reviewed configuration and Secret references in
 the application container; use the absolute executable path shown in the exec
 probe example. Startup should check the application's own process

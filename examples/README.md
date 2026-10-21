@@ -30,6 +30,10 @@ HTTP fixture and deployment manifests. Install the CLI using [installation instr
 | [A2A bearer credentials](a2a-check/bearer.yaml) | Passive checks using `AGENT_TOKEN` |
 | [A2A custom card](a2a-check/custom-card.yaml) | A custom card path on the target origin |
 | [A2A minimal interaction](a2a-check/functional.yaml) | One explicitly safe text interaction |
+| [OpenAI model](model-check/openai.yaml) | Model listing, bearer credentials and a required model |
+| [Anthropic model](model-check/anthropic.yaml) | `api: anthropic` listing with `x-api-key` credentials |
+| [Ollama model](model-check/ollama.yaml) | Local OpenAI-compatible server with a bounded inference |
+| [Model minimal inference](model-check/functional.yaml) | Opt-in inference using `max_completion_tokens` |
 
 ## Passive MCP checks
 

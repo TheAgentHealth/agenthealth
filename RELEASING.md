@@ -134,7 +134,7 @@ Once 1.0 ships, the project commits to:
 
 Before 1.0, no such guarantee is made; this document exists to make pre-1.0 expectations explicit rather than leaving them undocumented.
 
-Release builds use Go 1.27.2 and govulncheck v1.8.0. Each published release
+Release builds use Go 1.27.3 and govulncheck v1.8.0. Each published release
 contains five archives, five matching SBOMs and checksums. Starting in v0.11.0, Phase 13 tooling also produces four DEB/RPM packages and two channel manifests. Verify provenance and
 SBOM attestations following [installation instructions](docs/installation.md#verify-provenance-and-sboms).
 

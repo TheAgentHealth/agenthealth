@@ -1,5 +1,9 @@
 # Docker distribution
 
+Source release target: **v0.15.0**. The commands below require its publication;
+check the [release page](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0)
+before installing. Links to v0.14.0 verification describe that historical release.
+
 **Status:** Phase 12, released in v0.10.0. Images are published to GHCR (with
 an optional Docker Hub mirror); see [Published tags](#published-tags) below.
 See the [Docker Distribution roadmap](../ROADMAP.md#phase-12--docker-distribution).
@@ -10,7 +14,7 @@ container-specific behavior is introduced.
 
 ## Image contents
 
-- Multi-stage build: `golang:1.27.2-bookworm` compiles a static (`CGO_ENABLED=0`)
+- Multi-stage build: `golang:1.27.3-bookworm` compiles a static (`CGO_ENABLED=0`)
   binary with the same flags as [scripts/build_release.py](../scripts/build_release.py),
   so image binaries are byte-identical to the attested release archives; the
   runtime stage is a digest-pinned `gcr.io/distroless/static-debian12:nonroot`.
@@ -107,14 +111,14 @@ mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
 which is only pushed to GHCR.
 
-v0.14.0 is published and verified in both registries:
+v0.15.0 is prepared for publication in both registries:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.14.0 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.15.0 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.14.0 version
+docker run --rm theagenthealth/agenthealth:v0.15.0 version
 ```
 
 See [installation.md](installation.md) for standalone binary archives and

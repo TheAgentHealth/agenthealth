@@ -1,0 +1,21 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "llm",
+      "type": "model",
+      "endpoint": "https://api.example.com/v1",
+      "checks": [
+        "functional"
+      ],
+      "model": {
+        "functional": {
+          "safe": true,
+          "model": "c",
+          "prompt": "OK",
+          "token_parameter": "max_output"
+        }
+      }
+    }
+  ]
+}
