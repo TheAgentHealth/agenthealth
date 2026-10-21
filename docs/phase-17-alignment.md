@@ -1,7 +1,6 @@
 # Phase 17 alignment audit
 
-Scope: model/LLM OpenAI-compatible and Anthropic dialects, implemented in source
-for v0.15.0. Based on [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14)
+Scope: model/LLM OpenAI-compatible and Anthropic dialects, released in v0.15.0. Based on [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14)
 and [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17) by Sharath K.
 The contributor commit retains its original author; current integration and
 additional validation are separate commits. Hosted provider/product testing is
@@ -36,3 +35,6 @@ Validation: Go vet/race suite, Python/schema/example suite, SDK schema parity,
 Node tests/typecheck, markdown links and documentation example validation.
 Release publication and native multi-platform/Kubernetes checks use the existing
 synchronized release gate. See [release notes](releases/v0.15.0.md).
+
+Publication is verified across all implemented distributions; see the
+[v0.15.0 verification record](releases/verification-v0.15.0.md).
