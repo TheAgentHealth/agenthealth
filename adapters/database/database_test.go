@@ -34,7 +34,7 @@ func TestProbeCacheAndUnknownDimension(t *testing.T) {
 	if err != nil || got.Check.Status != core.Degraded {
 		t.Fatal(got, err)
 	}
-	got, err = (Adapter{}).Check(context.Background(), r, "functional")
+	got, err = (Adapter{}).Check(context.Background(), r, "invalid")
 	if err != nil || got.Check.Status != core.Misconfigured {
 		t.Fatal(got, err)
 	}
@@ -73,7 +73,7 @@ func TestRealDatabases(t *testing.T) {
 	}
 	for _, tt := range []struct{ kind, port, user, db string }{{"postgres", "15432", "health", "health"}, {"mysql", "13306", "health", "health"}, {"redis", "16379", "", "0"}, {"mongodb", "17017", "health", "admin"}} {
 		t.Run(tt.kind, func(t *testing.T) {
-			target := core.Target{Name: "db", Type: "database", Endpoint: fmt.Sprintf("%s://127.0.0.1:%s/%s", tt.kind, tt.port, tt.db), Database: &core.DatabaseOptions{Username: tt.user, PasswordEnv: "AGENTHEALTH_DB_PASSWORD", TLS: "disabled"}, Checks: []string{"reachability", "authentication", "protocol", "capability", "latency"}}
+			target := core.Target{Name: "db", Type: "database", Endpoint: fmt.Sprintf("%s://127.0.0.1:%s/%s", tt.kind, tt.port, tt.db), Database: &core.DatabaseOptions{Username: tt.user, PasswordEnv: "AGENTHEALTH_DB_PASSWORD", TLS: "disabled"}, Checks: []string{"reachability", "authentication", "protocol", "capability", "functional", "latency"}}
 			run := func(password string) core.Result {
 				t.Setenv("AGENTHEALTH_DB_PASSWORD", password)
 				reg := core.NewRegistry()

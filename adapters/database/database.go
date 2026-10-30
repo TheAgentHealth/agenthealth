@@ -25,7 +25,7 @@ import (
 type Adapter struct{}
 
 func (Adapter) Metadata() core.Metadata {
-	return core.Metadata{Name: "database", Version: "0.1.0", CompatibilityVersion: "v1", TargetTypes: []string{"database"}, Dimensions: []string{"configuration", "reachability", "authentication", "protocol", "capability"}}
+	return core.Metadata{Name: "database", Version: "0.1.0", CompatibilityVersion: "v1", TargetTypes: []string{"database"}, Dimensions: []string{"configuration", "reachability", "authentication", "protocol", "capability", "functional"}, ActiveChecks: []string{"functional"}}
 }
 
 type endpoint struct {
@@ -105,7 +105,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		}
 		return observation(core.Healthy), nil
 	}
-	if dimension != "authentication" && dimension != "protocol" && dimension != "capability" {
+	if dimension != "authentication" && dimension != "protocol" && dimension != "capability" && dimension != "functional" {
 		return observation(core.Misconfigured), nil
 	}
 	// A probe may have reached the server even if a driver hides the first byte.
@@ -113,10 +113,10 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 	if r.MarkResponse != nil {
 		r.MarkResponse()
 	}
-	if cached, ok := r.RunState.Load("database-probe"); ok {
+	if cached, ok := r.RunState.Load("database-probe"); ok && dimension != "functional" {
 		return cached.(core.Observation), nil
 	}
-	err = probe(ctx, e, r.Environment[e.options.PasswordEnv])
+	err = probe(ctx, e, r.Environment[e.options.PasswordEnv], dimension == "functional")
 	result := observation(core.Healthy)
 	if err != nil {
 		if ctx.Err() != nil {
@@ -130,13 +130,15 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 			result = observation(core.Misconfigured)
 		}
 	}
-	r.RunState.Store("database-probe", result)
+	if dimension != "functional" {
+		r.RunState.Store("database-probe", result)
+	}
 	return result, nil
 }
 
 // Each native operation owns and closes its connection. Queries are constants;
 // callers cannot provide SQL, commands, driver options or insecure TLS modes.
-func probe(ctx context.Context, e endpoint, password string) error {
+func probe(ctx context.Context, e endpoint, password string, functional bool) error {
 	switch e.kind {
 	case "postgres":
 		// Override environment-derived settings; never permit TLS fallback.
@@ -161,6 +163,9 @@ func probe(ctx context.Context, e endpoint, password string) error {
 			defer cancel()
 			_ = conn.Close(cleanup)
 		}()
+		if !functional {
+			return nil
+		}
 		var value int
 		err = conn.QueryRow(ctx, "SELECT 1").Scan(&value)
 		if err == nil && value != 1 {
@@ -185,6 +190,9 @@ func probe(ctx context.Context, e endpoint, password string) error {
 			return err
 		}
 		defer conn.Close()
+		if !functional {
+			return nil
+		}
 		rows, err := conn.(driver.QueryerContext).QueryContext(ctx, "SELECT 1", nil)
 		if err != nil {
 			return err
