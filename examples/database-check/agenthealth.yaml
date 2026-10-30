@@ -1,0 +1,31 @@
+version: v1
+concurrency: 4
+targets:
+  - name: postgres
+    type: database
+    endpoint: postgres://127.0.0.1:15432/health
+    checks: [reachability, authentication, protocol, capability, latency]
+    database:
+      username: health
+      password_env: AGENTHEALTH_DB_PASSWORD
+      tls: disabled
+  - name: mysql
+    type: database
+    endpoint: mysql://127.0.0.1:13306/health
+    database:
+      username: health
+      password_env: AGENTHEALTH_DB_PASSWORD
+      tls: disabled
+  - name: redis
+    type: database
+    endpoint: redis://127.0.0.1:16379/0
+    database:
+      password_env: AGENTHEALTH_DB_PASSWORD
+      tls: disabled
+  - name: mongodb
+    type: database
+    endpoint: mongodb://127.0.0.1:17017/admin
+    database:
+      username: health
+      password_env: AGENTHEALTH_DB_PASSWORD
+      tls: disabled
