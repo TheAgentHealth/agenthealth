@@ -69,7 +69,8 @@ attempt conservatively as response-received so engine retries cannot repeat it.
 
 Recognized server authentication denials produce `MISCONFIGURED`; other native
 protocol/query failures produce `UNHEALTHY`. TCP failures and deadline expiry use
-the shared engine classification. Raw driver errors, server messages, query
+the shared engine classification. PostgreSQL message bodies are capped at 4 MiB and Redis reply lines at 1 KiB.
+MySQL and MongoDB retain their native driver framing limits. Raw driver errors, server messages, query
 results and passwords never appear in output. A native probe's failure can affect
 multiple dimensions because those dimensions consume the same evidence.
 Connections close on success/failure/cancellation; cleanup contexts are bounded.

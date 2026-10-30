@@ -19,6 +19,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgproto3"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -144,7 +145,7 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 	switch e.kind {
 	case "postgres":
 		// Override environment-derived settings; never permit TLS fallback.
-		u := url.URL{Scheme: "postgres", Host: e.address, Path: "/" + e.database, User: url.User(e.options.Username), RawQuery: "sslmode=disable"}
+		u := url.URL{Scheme: "postgres", Host: e.address, Path: "/" + e.database, User: url.UserPassword(e.options.Username, "unused-placeholder"), RawQuery: "sslmode=disable&service="}
 		cfg, err := pgx.ParseConfig(u.String())
 		if err != nil {
 			return err
@@ -156,6 +157,12 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		cfg.Fallbacks = nil
 		cfg.RuntimeParams = map[string]string{}
 		cfg.ConnectTimeout = 0
+		cfg.ValidateConnect = nil
+		cfg.BuildFrontend = func(r io.Reader, w io.Writer) *pgproto3.Frontend {
+			f := pgproto3.NewFrontend(r, w)
+			f.SetMaxBodyLen(4 << 20)
+			return f
+		}
 		conn, err := pgx.ConnectConfig(ctx, cfg)
 		if err != nil {
 			return err
@@ -183,6 +190,7 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		cfg.DBName = e.database
 		cfg.TLS = e.tlsConfig()
 		cfg.AllowNativePasswords = true
+		cfg.Logger = discardLog{}
 		connector, err := mysql.NewConnector(cfg)
 		if err != nil {
 			return err
@@ -214,7 +222,7 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		return redisProbe(ctx, e, password)
 
 	case "mongodb":
-		opts := options.Client().SetHosts([]string{e.address}).SetDirect(true).SetTLSConfig(e.tlsConfig()).SetRetryReads(false).SetRetryWrites(false).SetMaxPoolSize(1)
+		opts := options.Client().SetLoggerOptions(options.Logger().SetSink(discardLog{})).SetHosts([]string{e.address}).SetDirect(true).SetTLSConfig(e.tlsConfig()).SetRetryReads(false).SetRetryWrites(false).SetMaxPoolSize(1)
 		if e.options.Username != "" {
 			source := e.database
 			if source == "" {
@@ -304,3 +312,11 @@ func redisProbe(ctx context.Context, e endpoint, password string) error {
 	}
 	return command("+PONG\r\n", "PING")
 }
+
+// Driver diagnostics may include server-controlled text. Preserve engine-owned
+// diagnostics even when a process environment enables native debug logging.
+type discardLog struct{}
+
+func (discardLog) Print(...any)                {}
+func (discardLog) Info(int, string, ...any)    {}
+func (discardLog) Error(error, string, ...any) {}
