@@ -183,6 +183,9 @@
             "gateway",
             "router"
           ]
+        },
+        "database": {
+          "$ref": "#/$defs/DatabaseOptions"
         }
       },
       "required": [
@@ -623,6 +626,25 @@
                   "const": "capability"
                 }
               }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "database"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "database"
+              }
+            },
+            "not": {
+              "required": [
+                "auth"
+              ]
             }
           }
         }
