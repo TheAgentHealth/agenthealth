@@ -1,0 +1,14 @@
+version: v1
+targets:
+  - name: retrieval-query
+    type: vector-store
+    endpoint: http://127.0.0.1:16333
+    checks: [configuration, reachability, authentication, protocol, capability, functional, latency]
+    auth:
+      bearer_env: VECTOR_KEY
+    vector_store:
+      provider: qdrant
+      collection: docs
+      functional:
+        safe: true
+        vector: [1, 0, 0]

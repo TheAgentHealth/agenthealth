@@ -746,6 +746,30 @@ jobs:
           python -c 'from pathlib import Path; assert {p.name:p.read_bytes() for p in Path("npm-dist").iterdir()} == {p.name:p.read_bytes() for p in Path("npm-dist-repeat").iterdir()}'
           node scripts/test_javascript_package.mjs npm-dist/theagenthealth-agenthealth-$SDK_VERSION.tgz
 
+  vector-interoperability:
+    name: Qdrant vector-store interoperability
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.3'
+      - name: Start and provision disposable Qdrant
+        run: |
+          docker compose -p agenthealth-phase19 -f examples/vector-check/compose.yaml up -d
+          curl --fail --retry 30 --retry-connrefused --retry-delay 1 -H 'api-key: phase19-local-key' http://127.0.0.1:16333/collections
+          curl --fail -X PUT -H 'api-key: phase19-local-key' -H 'Content-Type: application/json' -d '{"vectors":{"size":3,"distance":"Cosine"}}' http://127.0.0.1:16333/collections/docs
+      - name: Check real collection, query, missing collection and denied credentials
+        env:
+          AGENTHEALTH_QDRANT_ENDPOINT: http://127.0.0.1:16333
+        run: go test -race ./adapters/vectorstore -run TestRealQdrant -v
+      - name: Remove disposable Qdrant
+        if: always()
+        run: docker compose -p agenthealth-phase19 -f examples/vector-check/compose.yaml down -v
+
   database-interoperability:
     name: Native database interoperability
     runs-on: ubuntu-latest
