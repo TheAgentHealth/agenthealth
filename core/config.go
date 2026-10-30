@@ -590,8 +590,16 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || value.Value == "" || !validRelationship(value.Value) {
 				return false
 			}
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream", "api", "prompt", "token_parameter", "username", "password_env", "tls":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream", "api", "prompt", "token_parameter", "username":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
+				return false
+			}
+		case "password_env":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || !validEnvReference(value.Value) {
+				return false
+			}
+		case "tls":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || (value.Value != "required" && value.Value != "disabled") {
 				return false
 			}
 		case "method":

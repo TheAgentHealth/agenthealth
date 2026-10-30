@@ -1,0 +1,25 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "db",
+      "type": "database",
+      "endpoint": "postgres://localhost/health",
+      "database": {
+        "username": "health",
+        "password_env": "=",
+        "tls": "required"
+      },
+      "dependencies": [
+        {
+          "name": "cache",
+          "type": "database",
+          "endpoint": "redis://localhost",
+          "database": {
+            "password_env": "CACHE_PASSWORD"
+          }
+        }
+      ]
+    }
+  ]
+}
