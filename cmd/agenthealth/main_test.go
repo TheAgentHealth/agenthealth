@@ -451,3 +451,13 @@ func TestModelPingIsPassive(t *testing.T) {
 		}
 	}
 }
+
+func TestDatabaseCLIRegistrationAndConfiguration(t *testing.T) {
+	for _, endpoint := range []string{"postgres://localhost/app", "redis://user:secret@localhost"} {
+		var out, diagnostic bytes.Buffer
+		code := run(context.Background(), []string{"ping", "database", endpoint, "--format", "json"}, &out, &diagnostic)
+		if code != 4 || diagnostic.Len() != 0 || !strings.Contains(out.String(), "MISCONFIGURED") || strings.Contains(out.String(), "secret") {
+			t.Fatalf("unexpected database configuration result: %d %s %s", code, out.String(), diagnostic.String())
+		}
+	}
+}
