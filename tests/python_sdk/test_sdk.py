@@ -293,3 +293,19 @@ def test_model_configuration_and_report(binary):
         server.shutdown()
         server.server_close()
         thread.join()
+
+
+def test_database_configuration_and_report(binary, monkeypatch):
+    document = {'version': 'v1', 'targets': [{
+        'name': 'data', 'type': 'database', 'endpoint': 'redis://127.0.0.1:1',
+        'database': {'password_env': 'AGENTHEALTH_TEST_DB_MISSING'},
+        'dependencies': [{'name': 'cache', 'type': 'database',
+                          'endpoint': 'redis://127.0.0.1:1',
+                          'database': {'password_env': 'AGENTHEALTH_TEST_DB_MISSING'}}]}]}
+    monkeypatch.delenv('AGENTHEALTH_TEST_DB_MISSING', raising=False)
+    config = Configuration(document)
+    report = Client(binary).check(config)
+    assert report.status == HealthStatus.MISCONFIGURED
+    document['targets'][0]['database']['tls'] = 'skip-verify'
+    with pytest.raises(ConfigurationError):
+        Configuration(document)

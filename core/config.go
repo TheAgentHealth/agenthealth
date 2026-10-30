@@ -32,25 +32,33 @@ type AgentTask struct {
 	Downstream string `yaml:"downstream" json:"downstream,omitempty"`
 }
 
+// DatabaseOptions permits fixed read-only probes, never caller-supplied queries.
+type DatabaseOptions struct {
+	Username    string `yaml:"username"`
+	PasswordEnv string `yaml:"password_env"`
+	TLS         string `yaml:"tls"`
+}
+
 type Target struct {
-	Agent         *AgentOptions  `yaml:"agent"`
-	ID            string         `yaml:"id"`
-	BudgetMS      *int           `yaml:"budget_ms"`
-	Name          string         `yaml:"name"`
-	Type          string         `yaml:"type"`
-	Endpoint      string         `yaml:"endpoint"`
-	Checks        []string       `yaml:"checks"`
-	Thresholds    *Thresholds    `yaml:"thresholds"`
-	Dependencies  []Dependency   `yaml:"dependencies"`
-	TimeoutMS     *int           `yaml:"timeout_ms"`
-	Retries       *int           `yaml:"retries"`
-	RetryDelayMS  *int           `yaml:"retry_delay_ms"`
-	CheckTimeouts map[string]int `yaml:"check_timeouts_ms"`
-	Auth          *AuthReference `yaml:"auth"`
-	HTTP          *HTTPOptions   `yaml:"http"`
-	MCP           *MCPOptions    `yaml:"mcp"`
-	A2A           *A2AOptions    `yaml:"a2a"`
-	Model         *ModelOptions  `yaml:"model"`
+	Database      *DatabaseOptions `yaml:"database"`
+	Agent         *AgentOptions    `yaml:"agent"`
+	ID            string           `yaml:"id"`
+	BudgetMS      *int             `yaml:"budget_ms"`
+	Name          string           `yaml:"name"`
+	Type          string           `yaml:"type"`
+	Endpoint      string           `yaml:"endpoint"`
+	Checks        []string         `yaml:"checks"`
+	Thresholds    *Thresholds      `yaml:"thresholds"`
+	Dependencies  []Dependency     `yaml:"dependencies"`
+	TimeoutMS     *int             `yaml:"timeout_ms"`
+	Retries       *int             `yaml:"retries"`
+	RetryDelayMS  *int             `yaml:"retry_delay_ms"`
+	CheckTimeouts map[string]int   `yaml:"check_timeouts_ms"`
+	Auth          *AuthReference   `yaml:"auth"`
+	HTTP          *HTTPOptions     `yaml:"http"`
+	MCP           *MCPOptions      `yaml:"mcp"`
+	A2A           *A2AOptions      `yaml:"a2a"`
+	Model         *ModelOptions    `yaml:"model"`
 }
 
 // ModelOptions selects the inference API dialect, passive model expectations,
@@ -120,6 +128,9 @@ type MCPOAuth struct {
 // CredentialReferences lists only references used by this target.
 func (t Target) CredentialReferences() []string {
 	refs := []string{}
+	if t.Database != nil && t.Database.PasswordEnv != "" {
+		refs = append(refs, t.Database.PasswordEnv)
+	}
 	if t.Auth != nil {
 		refs = append(refs, t.Auth.BearerEnv)
 	}
@@ -417,6 +428,11 @@ func validateTarget(t Target, path string, depth int) error {
 			}
 		}
 	}
+	if o := t.Database; o != nil {
+		if t.Type != "database" || t.Auth != nil || (o.TLS != "" && o.TLS != "required" && o.TLS != "disabled") || (o.PasswordEnv != "" && !validEnvReference(o.PasswordEnv)) {
+			return fmt.Errorf("%s: invalid database options or credential reference", path)
+		}
+	}
 	if t.Model != nil {
 		o := t.Model
 		if (t.Type != "model" && t.Type != "llm") || !SupportedModelAPI(o.API) {
@@ -574,8 +590,16 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || value.Value == "" || !validRelationship(value.Value) {
 				return false
 			}
-		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream", "api", "prompt", "token_parameter":
+		case "version", "name", "type", "endpoint", "bearer_env", "body_contains", "protocol_version", "tool", "arguments_json", "transport", "command", "directory", "issuer", "client_id", "grant", "card_url", "text", "downstream", "api", "prompt", "token_parameter", "username":
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
+				return false
+			}
+		case "password_env":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || !validEnvReference(value.Value) {
+				return false
+			}
+		case "tls":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" || (value.Value != "required" && value.Value != "disabled") {
 				return false
 			}
 		case "method":
@@ -602,7 +626,7 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 			if !validYAMLNode(value, "auth", depth+1) {
 				return false
 			}
-		case "agent", "a2a", "mcp", "functional", "stdio", "oauth":
+		case "database", "agent", "a2a", "mcp", "functional", "stdio", "oauth":
 			if !validYAMLNode(value, key.Value, depth+1) {
 				return false
 			}

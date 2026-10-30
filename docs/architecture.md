@@ -97,3 +97,8 @@ Phase 11 adds a serial background refresh loop and immutable health snapshots.
 Public endpoints return aggregate summaries; bearer-authorized endpoints exchange
 validated recursive evidence, including Phase 10 graph identities and policies.
 See the [serving guide](ahp.md) and [alignment audit](phase-11-alignment.md).
+
+Phase 18 supports [native database dependencies](database-adapter.md). Passwords
+use environment references; SQL query execution requires functional opt-in.
+Existing health aggregation and result contracts remain unchanged. See the
+[all-phase alignment review](phase-18-alignment.md).

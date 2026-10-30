@@ -1,0 +1,18 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "db",
+      "type": "database",
+      "endpoint": "postgres://localhost/health",
+      "database": {
+        "username": "health",
+        "password_env": "DB_PASSWORD",
+        "tls": "required"
+      },
+      "auth": {
+        "bearer_env": "OTHER"
+      }
+    }
+  ]
+}

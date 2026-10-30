@@ -1,6 +1,6 @@
 # AgentHealth CLI
 
-Build with Go 1.23 or newer from the repository root:
+Build with Go 1.26 or newer from the repository root:
 
 ```bash
 go build -o agenthealth ./cmd/agenthealth
@@ -122,3 +122,11 @@ The [Python SDK](python-sdk.md) consumes JSON check output and existing exit cod
 The [JavaScript / TypeScript SDK](javascript-sdk.md) also wraps the
 exact-version CLI and preserves the existing configuration, result and health
 exit-code contracts. Its bundled schemas are parity-tested against the specification.
+
+## Database targets
+
+Phase 18 registers `database` in check, doctor, ping and serve. Use a configuration
+file for SQL username/database/password references; `ping database redis://host`
+uses verified TLS and passwordless authentication defaults. It does not accept
+database driver options on the command line. See [database configuration](database-adapter.md)
+and [examples](../examples/database-check/README.md).

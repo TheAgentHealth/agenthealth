@@ -72,3 +72,8 @@ are redacted in output. Experimental AHP serving requires bearer authorization f
 Existing explicit graphs can be mounted as reviewed configuration. Shared nodes and edge policies retain their aggregation and budgets. Optional-edge failures can yield DEGRADED, which still fails CLI exec probes; AHP readiness follows its own contract.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+Phase 18 supports [native database dependencies](database-adapter.md). Passwords
+use environment references; SQL query execution requires functional opt-in.
+Existing health aggregation and result contracts remain unchanged. See the
+[all-phase alignment review](phase-18-alignment.md).

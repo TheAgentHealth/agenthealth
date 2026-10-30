@@ -157,3 +157,7 @@ follow the [synchronized distribution policy](../docs/distribution.md).
 [Python SDK example](python-sdk/README.md): sync/async checks using reviewed CLI configurations.
 
 - [JavaScript SDK](javascript-sdk/README.md) — Promise API with the reference CLI.
+
+Phase 18 adds [native database health](../docs/database-adapter.md) for PostgreSQL, MySQL, Redis and MongoDB.
+Fixed SQL queries require explicit functional opt-in. See the
+[alignment audit](../docs/phase-18-alignment.md) and [disposable examples](../examples/database-check/README.md).

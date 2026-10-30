@@ -56,7 +56,7 @@ On macOS, use the appropriate tar archive and `shasum -a 256` to compare its has
 
 ## Build from source
 
-With Go 1.23 or newer:
+With Go 1.26 or newer:
 
 ```bash
 git clone https://github.com/TheAgentHealth/agenthealth.git

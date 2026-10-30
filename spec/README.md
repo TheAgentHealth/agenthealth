@@ -84,3 +84,7 @@ exit-code contracts. Its bundled schemas are parity-tested against the specifica
 Phase 17 implements [model/LLM health](../docs/model-adapter.md) for OpenAI-compatible and Anthropic APIs.
 Passive model listings and explicit minimal inference preserve existing health
 semantics. See the [Phase 17 alignment audit](../docs/phase-17-alignment.md) for cross-phase impacts.
+
+Phase 18 adds [native database health](../docs/database-adapter.md) for PostgreSQL, MySQL, Redis and MongoDB.
+Fixed SQL queries require explicit functional opt-in. See the
+[alignment audit](../docs/phase-18-alignment.md) and [disposable examples](../examples/database-check/README.md).

@@ -161,3 +161,16 @@ test('model configuration delegates passive health to the real CLI', async t => 
   assert.equal(report.results[0].checks.capability.code, 'model_required');
   assert.throws(() => new Configuration({ version: 'v1', targets: [{ ...target, checks: ['functional'], model: {} }] }), ConfigurationError);
 });
+
+test('database schema supports nested dependencies and rejects insecure TLS', async t => {
+  const document = { version: 'v1', targets: [{ name: 'data', type: 'database', endpoint: 'redis://127.0.0.1:1',
+    database: { password_env: 'AGENTHEALTH_TEST_DB_MISSING' }, dependencies: [{ name: 'cache', type: 'database',
+      endpoint: 'redis://127.0.0.1:1', database: { tls: 'required', password_env: 'AGENTHEALTH_TEST_DB_MISSING' } }] }] };
+  const config = new Configuration(document);
+  document.targets[0].database.tls = 'skip-verify';
+  assert.throws(() => new Configuration(document), ConfigurationError);
+  if (!process.env.AGENTHEALTH_SDK_BINARY) { t.skip('Set AGENTHEALTH_SDK_BINARY to the matching compiled CLI'); return; }
+  const report = await check(config, { binary: process.env.AGENTHEALTH_SDK_BINARY,
+    environment: { ...process.env, AGENTHEALTH_TEST_DB_MISSING: '' } });
+  assert.equal(report.status, 'MISCONFIGURED');
+});

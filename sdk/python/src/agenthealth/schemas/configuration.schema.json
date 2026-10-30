@@ -183,6 +183,9 @@
             "gateway",
             "router"
           ]
+        },
+        "database": {
+          "$ref": "#/$defs/DatabaseOptions"
         }
       },
       "required": [
@@ -625,6 +628,25 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "database"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "database"
+              }
+            },
+            "not": {
+              "required": [
+                "auth"
+              ]
+            }
+          }
         }
       ]
     },
@@ -753,6 +775,9 @@
         },
         "model": {
           "$ref": "#/$defs/ModelOptions"
+        },
+        "database": {
+          "$ref": "#/$defs/DatabaseOptions"
         }
       },
       "required": [
@@ -1331,6 +1356,25 @@
             }
           },
           "then": false
+        },
+        {
+          "if": {
+            "required": [
+              "database"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "database"
+              }
+            },
+            "not": {
+              "required": [
+                "auth"
+              ]
+            }
+          }
         }
       ]
     },
@@ -1873,6 +1917,31 @@
             "max_completion_tokens"
           ],
           "description": "OpenAI-compatible output limit field; empty selects max_tokens. The anthropic api always uses max_tokens."
+        }
+      }
+    },
+    "DatabaseOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password_env": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^=\\u0000]+$",
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "tls": {
+          "enum": [
+            "required",
+            "disabled"
+          ]
         }
       }
     }

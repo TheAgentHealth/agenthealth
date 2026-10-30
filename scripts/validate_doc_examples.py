@@ -55,6 +55,8 @@ MARKER_RE = re.compile(
 
 FILES_TO_CHECK = [
     ROOT / "docs" / "model-adapter.md",
+    ROOT / "docs" / "database-adapter.md",
+    ROOT / "examples" / "database-check" / "README.md",
     ROOT / "examples" / "model-check" / "README.md",
     ROOT / "README.md",
     ROOT / "ROADMAP.md",
@@ -117,6 +119,10 @@ def main() -> int:
     # Standalone configuration templates are also user-facing examples.
     configs = sorted((ROOT / "examples").rglob("*.yaml"))
     for path in configs:
+        # Docker Compose is infrastructure, not an AHS configuration; its actual
+        # syntax and service healthchecks are exercised by database CI.
+        if path == ROOT / "examples" / "database-check" / "compose.yaml":
+            continue
         try:
             if path.parent == ROOT / "examples" / "kubernetes" and path.name != "agenthealth.yaml":
                 # Kubernetes wrappers are not AHS configuration documents. Validate

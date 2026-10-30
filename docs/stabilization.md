@@ -19,7 +19,7 @@ and the exact limits of the evidence.
 
 ## Running validation
 
-Use a supported installed Go toolchain (1.23 or newer):
+Use a supported installed Go toolchain (1.26 or newer):
 
 ```bash
 go vet ./...

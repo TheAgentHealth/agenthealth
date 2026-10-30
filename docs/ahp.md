@@ -50,3 +50,8 @@ See the [deployment guide](kubernetes.md) for Secrets and network exposure.
 ## Trust boundary
 
 See the [threat model](threat-model.md) for trusted configuration, credential handling, network access, output limits and in-process adapter isolation. A shared process is not a boundary for mutually untrusted tenants.
+
+Phase 18 supports [native database dependencies](database-adapter.md). Passwords
+use environment references; SQL query execution requires functional opt-in.
+Existing health aggregation and result contracts remain unchanged. See the
+[all-phase alignment review](phase-18-alignment.md).
