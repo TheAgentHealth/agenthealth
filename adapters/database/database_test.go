@@ -107,7 +107,7 @@ func TestRealDatabases(t *testing.T) {
 }
 
 func TestRedisBoundedResponsesAndCancellation(t *testing.T) {
-	for _, reply := range []string{"+PONG\r\n", "+WRONG\r\n", "-NOAUTH secret-server-message\r\n", strings.Repeat("x", 2048) + "\r\n", ""} {
+	for _, reply := range []string{"+PONG\r\n", "+WRONG\r\n", "-NOAUTH secret-server-message\r\n", "-ERR invalid password\r\n", strings.Repeat("x", 2048) + "\r\n", ""} {
 		t.Run(fmt.Sprintf("response-%d", len(reply)), func(t *testing.T) {
 			listener, err := net.Listen("tcp", "127.0.0.1:0")
 			if err != nil {
@@ -150,5 +150,36 @@ func TestUntrustedTLSIsRejected(t *testing.T) {
 	defer cancel()
 	if err := redisProbe(ctx, e, ""); err == nil {
 		t.Fatal("untrusted server accepted")
+	}
+}
+
+func TestNativeConnectionFailureKeepsEngineClassification(t *testing.T) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	address := listener.Addr().String()
+	listener.Close()
+	marked := false
+	r := core.Request{Target: core.Target{Endpoint: "redis://" + address, Database: &core.DatabaseOptions{TLS: "disabled"}}, RunState: &sync.Map{}, MarkResponse: func() { marked = true }}
+	got, err := (Adapter{}).Check(context.Background(), r, "authentication")
+	if err == nil || marked || got.ResponseReceived || core.NormalizeError(err, got.ResponseReceived).Status != core.Unreachable {
+		t.Fatalf("connection error lost classification: %+v %v marked=%v", got, err, marked)
+	}
+	if _, ok := r.RunState.Load("database-probe"); ok {
+		t.Fatal("no-response failure cached")
+	}
+}
+
+func TestObservedBytesControlRetryEvidence(t *testing.T) {
+	left, right := net.Pipe()
+	defer left.Close()
+	defer right.Close()
+	marked := false
+	conn := observingConn{Conn: left, mark: func() { marked = true }}
+	go func() { _, _ = right.Write([]byte("x")) }()
+	b := make([]byte, 1)
+	if _, err := conn.Read(b); err != nil || !marked {
+		t.Fatal("first response byte not marked", err)
 	}
 }

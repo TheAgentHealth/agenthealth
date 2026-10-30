@@ -9,7 +9,7 @@ prepared for synchronized v0.16.0; publication must be verified separately.
 |---|---|
 | 0 foundation | README, documentation/example indexes and contribution guidance describe the implemented database scope. |
 | 1 specification | Additive optional `database` block, canonical/bundled schemas, valid/invalid fixtures and strict Go validation. Existing states, result shape, contract v1 and exits remain unchanged. |
-| 2 engine | Existing credential references/environment snapshot/redaction, deadlines, aggregation and pools reused. No raw driver errors escape; native probes conservatively prevent retries. |
+| 2 engine | Existing credential references/environment snapshot/redaction, deadlines, aggregation and pools reused. No raw driver errors escape; native response tracking preserves no-response retry classification. |
 | 3 CLI | Shared check/doctor/ping/serve registry registers database targets; SQL ping requires a configuration file with username/database options. |
 | 4 HTTP | No transport changes; native drivers do not use the engine HTTP client. TLS verification remains mandatory by default. |
 | 5 MCP | No protocol changes; database evidence does not establish tool availability. Existing regressions retained. |

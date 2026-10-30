@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"database/sql/driver"
 	"errors"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -64,6 +66,9 @@ func parse(t core.Target) (endpoint, error) {
 	if t.Auth != nil || (o.TLS != "" && o.TLS != "required" && o.TLS != "disabled") {
 		return endpoint{}, invalid
 	}
+	if u.Scheme == "mongodb" && o.PasswordEnv != "" && o.Username == "" {
+		return endpoint{}, invalid
+	}
 	db := strings.TrimPrefix(u.Path, "/")
 	if strings.ContainsAny(db, "/\x00") || strings.ContainsRune(o.Username, 0) {
 		return endpoint{}, invalid
@@ -111,19 +116,27 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 	if dimension != "authentication" && dimension != "protocol" && dimension != "capability" && dimension != "functional" {
 		return observation(core.Misconfigured), nil
 	}
-	// A probe may have reached the server even if a driver hides the first byte.
-	// Conservatively prevent retries once native protocol work begins.
-	if r.MarkResponse != nil {
-		r.MarkResponse()
-	}
 	if cached, ok := r.RunState.Load("database-probe"); ok && dimension != "functional" {
 		return cached.(core.Observation), nil
 	}
-	err = probe(ctx, e, r.Environment[e.options.PasswordEnv], dimension == "functional")
+	var received atomic.Bool
+	mark := func() {
+		received.Store(true)
+		if r.MarkResponse != nil {
+			r.MarkResponse()
+		}
+	}
+	err = probe(ctx, e, r.Environment[e.options.PasswordEnv], dimension == "functional", mark)
 	result := observation(core.Healthy)
 	if err != nil {
 		if ctx.Err() != nil {
-			return core.Observation{ResponseReceived: true}, ctx.Err()
+			return core.Observation{ResponseReceived: received.Load()}, ctx.Err()
+		}
+		var network net.Error
+		var cert *tls.CertificateVerificationError
+		var authority x509.UnknownAuthorityError
+		if errors.As(err, &network) || errors.As(err, &cert) || errors.As(err, &authority) || errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return core.Observation{ResponseReceived: received.Load()}, err
 		}
 		result = observation(core.Unhealthy)
 		var pg *pgconn.PgError
@@ -141,7 +154,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 
 // Each native operation owns and closes its connection. Queries are constants;
 // callers cannot provide SQL, commands, driver options or insecure TLS modes.
-func probe(ctx context.Context, e endpoint, password string, functional bool) error {
+func probe(ctx context.Context, e endpoint, password string, functional bool, mark func()) error {
 	switch e.kind {
 	case "postgres":
 		// Override environment-derived settings; never permit TLS fallback.
@@ -157,6 +170,7 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		cfg.Fallbacks = nil
 		cfg.RuntimeParams = map[string]string{}
 		cfg.ConnectTimeout = 0
+		cfg.DialFunc = (observingDialer{mark: mark}).DialContext
 		cfg.ValidateConnect = nil
 		cfg.BuildFrontend = func(r io.Reader, w io.Writer) *pgproto3.Frontend {
 			f := pgproto3.NewFrontend(r, w)
@@ -191,6 +205,7 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		cfg.TLS = e.tlsConfig()
 		cfg.AllowNativePasswords = true
 		cfg.Logger = discardLog{}
+		cfg.DialFunc = (observingDialer{mark: mark}).DialContext
 		connector, err := mysql.NewConnector(cfg)
 		if err != nil {
 			return err
@@ -219,10 +234,10 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		}
 		return nil
 	case "redis":
-		return redisProbe(ctx, e, password)
+		return redisProbe(ctx, e, password, mark)
 
 	case "mongodb":
-		opts := options.Client().SetLoggerOptions(options.Logger().SetSink(discardLog{})).SetHosts([]string{e.address}).SetDirect(true).SetTLSConfig(e.tlsConfig()).SetRetryReads(false).SetRetryWrites(false).SetMaxPoolSize(1)
+		opts := options.Client().SetDialer(observingDialer{mark: mark}).SetLoggerOptions(options.Logger().SetSink(discardLog{})).SetHosts([]string{e.address}).SetDirect(true).SetTLSConfig(e.tlsConfig()).SetRetryReads(false).SetRetryWrites(false).SetMaxPoolSize(1)
 		if e.options.Username != "" {
 			source := e.database
 			if source == "" {
@@ -252,19 +267,23 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 // background pool, retry machinery, topology discovery or driver logging.
 var errRedisAuth = errors.New("redis authentication denied")
 
-func redisProbe(ctx context.Context, e endpoint, password string) error {
-	dialer := &net.Dialer{}
-	var conn net.Conn
-	var err error
-	if cfg := e.tlsConfig(); cfg != nil {
-		conn, err = (&tls.Dialer{NetDialer: dialer, Config: cfg}).DialContext(ctx, "tcp", e.address)
-	} else {
-		conn, err = dialer.DialContext(ctx, "tcp", e.address)
+func redisProbe(ctx context.Context, e endpoint, password string, marks ...func()) error {
+	var mark func()
+	if len(marks) > 0 {
+		mark = marks[0]
 	}
+	conn, err := (observingDialer{mark: mark}).DialContext(ctx, "tcp", e.address)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
+	if cfg := e.tlsConfig(); cfg != nil {
+		encrypted := tls.Client(conn, cfg)
+		if err = encrypted.HandshakeContext(ctx); err != nil {
+			return err
+		}
+		conn = encrypted
+	}
 	stop := context.AfterFunc(ctx, func() { _ = conn.Close() })
 	defer stop()
 	if deadline, ok := ctx.Deadline(); ok {
@@ -287,7 +306,7 @@ func redisProbe(ctx context.Context, e endpoint, password string) error {
 			return err
 		}
 		text := string(reply)
-		if strings.HasPrefix(text, "-WRONGPASS ") || strings.HasPrefix(text, "-NOAUTH ") || strings.HasPrefix(text, "-NOPERM ") {
+		if strings.HasPrefix(text, "-WRONGPASS ") || strings.HasPrefix(text, "-NOAUTH ") || text == "-ERR invalid password\r\n" || strings.HasPrefix(text, "-NOPERM ") {
 			return errRedisAuth
 		}
 		if text != expected {
@@ -320,3 +339,26 @@ type discardLog struct{}
 func (discardLog) Print(...any)                {}
 func (discardLog) Info(int, string, ...any)    {}
 func (discardLog) Error(error, string, ...any) {}
+
+type observingDialer struct{ mark func() }
+
+func (d observingDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	conn, err := (&net.Dialer{}).DialContext(ctx, network, address)
+	if err != nil {
+		return nil, err
+	}
+	return &observingConn{Conn: conn, mark: d.mark}, nil
+}
+
+type observingConn struct {
+	net.Conn
+	mark func()
+}
+
+func (c *observingConn) Read(p []byte) (int, error) {
+	n, err := c.Conn.Read(p)
+	if n > 0 && c.mark != nil {
+		c.mark()
+	}
+	return n, err
+}

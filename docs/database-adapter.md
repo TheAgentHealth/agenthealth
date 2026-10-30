@@ -36,7 +36,7 @@ targets:
 `database` accepts only `username`, `password_env`, and `tls`. SQL endpoints
 require a username and a nonempty database path. Redis permits database numbers
 0–15 (default 0). MongoDB uses the path as database and authentication source,
-defaulting to `admin`. MongoDB connects to one explicit server directly;
+defaulting to `admin`. A MongoDB password reference requires a username. MongoDB connects to one explicit server directly;
 SRV discovery, replica-set discovery and sharded topologies are outside this
 initial scope. MongoDB username/password authentication uses SCRAM negotiation;
 Redis supports password and username/password ACL authentication. SQL uses the
@@ -64,8 +64,9 @@ perform that work under their check deadlines. A configuration containing only
 request native protocol/authentication evidence. Passive native evidence is shared
 within one target run; separate graph nodes and runs do not reuse it. Functional
 SQL uses a fresh connection and runs exactly one constant query. Driver-level
-operation retries are disabled; after native work begins the adapter marks the
-attempt conservatively as response-received so engine retries cannot repeat it.
+operation retries are disabled. Received native/TLS bytes mark response evidence;
+only passive no-response communication failures may use engine retries. Active
+queries and partial responses never retry.
 
 Recognized server authentication denials produce `MISCONFIGURED`; other native
 protocol/query failures produce `UNHEALTHY`. TCP failures and deadline expiry use
