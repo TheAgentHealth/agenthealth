@@ -2,10 +2,13 @@
 package database
 
 import (
+	"bufio"
 	"context"
 	"crypto/tls"
 	"database/sql/driver"
 	"errors"
+	"fmt"
+	"io"
 	"net"
 	"net/url"
 	"strconv"
@@ -16,7 +19,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -126,7 +128,7 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		var pg *pgconn.PgError
 		var my *mysql.MySQLError
 		var command mongo.CommandError
-		if (errors.As(err, &pg) && strings.HasPrefix(pg.Code, "28")) || (errors.As(err, &my) && (my.Number == 1045 || my.Number == 1698)) || (errors.As(err, &command) && (command.Code == 18 || command.Code == 13)) || strings.HasPrefix(err.Error(), "WRONGPASS ") || strings.HasPrefix(err.Error(), "NOAUTH ") {
+		if (errors.As(err, &pg) && strings.HasPrefix(pg.Code, "28")) || (errors.As(err, &my) && (my.Number == 1045 || my.Number == 1698)) || (errors.As(err, &command) && (command.Code == 18 || command.Code == 13)) || errors.Is(err, errRedisAuth) {
 			result = observation(core.Misconfigured)
 		}
 	}
@@ -209,17 +211,8 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		}
 		return nil
 	case "redis":
-		db := 0
-		if e.database != "" {
-			db, _ = strconv.Atoi(e.database)
-		}
-		client := redis.NewClient(&redis.Options{Addr: e.address, Username: e.options.Username, Password: password, DB: db, TLSConfig: e.tlsConfig(), MaxRetries: -1, ContextTimeoutEnabled: true, PoolSize: 1, Protocol: 2, DisableIdentity: true})
-		defer client.Close()
-		result, err := client.Ping(ctx).Result()
-		if err == nil && result != "PONG" {
-			return errors.New("invalid ping result")
-		}
-		return err
+		return redisProbe(ctx, e, password)
+
 	case "mongodb":
 		opts := options.Client().SetHosts([]string{e.address}).SetDirect(true).SetTLSConfig(e.tlsConfig()).SetRetryReads(false).SetRetryWrites(false).SetMaxPoolSize(1)
 		if e.options.Username != "" {
@@ -245,4 +238,69 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 		return client.Database(db).RunCommand(ctx, bson.D{{Key: "ping", Value: 1}}).Err()
 	}
 	return errors.New("unsupported database")
+}
+
+// The health-only RESP2 client sends just AUTH, SELECT and PING. It has no
+// background pool, retry machinery, topology discovery or driver logging.
+var errRedisAuth = errors.New("redis authentication denied")
+
+func redisProbe(ctx context.Context, e endpoint, password string) error {
+	dialer := &net.Dialer{}
+	var conn net.Conn
+	var err error
+	if cfg := e.tlsConfig(); cfg != nil {
+		conn, err = (&tls.Dialer{NetDialer: dialer, Config: cfg}).DialContext(ctx, "tcp", e.address)
+	} else {
+		conn, err = dialer.DialContext(ctx, "tcp", e.address)
+	}
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	stop := context.AfterFunc(ctx, func() { _ = conn.Close() })
+	defer stop()
+	if deadline, ok := ctx.Deadline(); ok {
+		if err = conn.SetDeadline(deadline); err != nil {
+			return err
+		}
+	}
+	reader := bufio.NewReaderSize(conn, 1024)
+	command := func(expected string, args ...string) error {
+		var request strings.Builder
+		fmt.Fprintf(&request, "*%d\r\n", len(args))
+		for _, arg := range args {
+			fmt.Fprintf(&request, "$%d\r\n%s\r\n", len(arg), arg)
+		}
+		if _, err := io.WriteString(conn, request.String()); err != nil {
+			return err
+		}
+		reply, err := reader.ReadSlice('\n')
+		if err != nil {
+			return err
+		}
+		text := string(reply)
+		if strings.HasPrefix(text, "-WRONGPASS ") || strings.HasPrefix(text, "-NOAUTH ") || strings.HasPrefix(text, "-NOPERM ") {
+			return errRedisAuth
+		}
+		if text != expected {
+			return errors.New("unexpected RESP reply")
+		}
+		return nil
+	}
+	if password != "" || e.options.Username != "" {
+		args := []string{"AUTH"}
+		if e.options.Username != "" {
+			args = append(args, e.options.Username)
+		}
+		args = append(args, password)
+		if err = command("+OK\r\n", args...); err != nil {
+			return err
+		}
+	}
+	if e.database != "" && e.database != "0" {
+		if err = command("+OK\r\n", "SELECT", e.database); err != nil {
+			return err
+		}
+	}
+	return command("+PONG\r\n", "PING")
 }

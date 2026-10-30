@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"sync"
@@ -102,5 +103,52 @@ func TestRealDatabases(t *testing.T) {
 				t.Fatalf("authentication failure: %+v", result)
 			}
 		})
+	}
+}
+
+func TestRedisBoundedResponsesAndCancellation(t *testing.T) {
+	for _, reply := range []string{"+PONG\r\n", "+WRONG\r\n", "-NOAUTH secret-server-message\r\n", strings.Repeat("x", 2048) + "\r\n", ""} {
+		t.Run(fmt.Sprintf("response-%d", len(reply)), func(t *testing.T) {
+			listener, err := net.Listen("tcp", "127.0.0.1:0")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer listener.Close()
+			done := make(chan struct{})
+			go func() {
+				defer close(done)
+				conn, err := listener.Accept()
+				if err != nil {
+					return
+				}
+				defer conn.Close()
+				_ = conn.SetDeadline(time.Now().Add(time.Second))
+				b := make([]byte, 64)
+				_, _ = conn.Read(b)
+				if reply != "" {
+					_, _ = conn.Write([]byte(reply))
+				} else {
+					_, _ = conn.Read(b)
+				}
+			}()
+			ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+			defer cancel()
+			err = redisProbe(ctx, endpoint{address: listener.Addr().String(), options: core.DatabaseOptions{TLS: "disabled"}}, "")
+			if (reply == "+PONG\r\n") != (err == nil) {
+				t.Fatalf("unexpected success/error: %v", err)
+			}
+			<-done
+		})
+	}
+}
+
+func TestUntrustedTLSIsRejected(t *testing.T) {
+	server := httptest.NewTLSServer(nil)
+	defer server.Close()
+	e := endpoint{kind: "redis", address: server.Listener.Addr().String(), host: "localhost"}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if err := redisProbe(ctx, e, ""); err == nil {
+		t.Fatal("untrusted server accepted")
 	}
 }
