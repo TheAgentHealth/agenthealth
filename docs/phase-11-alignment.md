@@ -58,3 +58,7 @@ Kubernetes integration is now implemented in source. Its
 [alignment audit](phase-14-alignment.md) records existing contract compatibility
 and validation. This earlier-phase baseline and historical release notes retain
 the capabilities of their own released versions.
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.

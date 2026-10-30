@@ -77,3 +77,8 @@ Phase 18 supports [native database dependencies](database-adapter.md). Passwords
 use environment references; SQL query execution requires functional opt-in.
 Existing health aggregation and result contracts remain unchanged. See the
 [all-phase alignment review](phase-18-alignment.md).
+
+Phase 19 source integration: [vector-store checks](vector-store-adapter.md)
+reuse the existing configuration, dependency and deadline contracts. Inject API
+keys through environment references; preserve independent agent/path evidence.
+Use a matching source-built CLI/SDK until the new release is verified.

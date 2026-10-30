@@ -77,3 +77,7 @@ Phase 16 follow-through: the Node.js SDK now implements the shared subprocess,
 version and error contracts, with millisecond deadlines and AbortSignal. Python
 source metadata advances to v0.14.0 under the synchronized release policy.
 See [Phase 16 alignment](phase-16-alignment.md).
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.

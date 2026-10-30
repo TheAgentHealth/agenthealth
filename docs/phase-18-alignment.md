@@ -36,3 +36,7 @@ parity/type declarations, markdown links and real database healthy/wrong-passwor
 runs. Full distribution and disposable Kubernetes runtime validation remain
 required CI/release gates. See the [database guide](database-adapter.md) for
 limitations and [release notes](releases/v0.16.0.md) for synchronized artifacts.
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.

@@ -56,3 +56,7 @@ The standalone YAML files are service configuration templates. Their schema
 validation does not start services or certify vendor deployments. Historical
 RFCs and release notes retain their original proposal/release scope; current
 behavior follows the specifications, guides and phase-status index.
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.

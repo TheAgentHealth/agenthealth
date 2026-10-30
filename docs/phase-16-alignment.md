@@ -34,3 +34,7 @@ packaging, installed-tarball smoke tests, six-job CI, shared-version metadata,
 OIDC publication using the configured workflow, registry integrity/signature
 verification, guides/examples and roadmap/status alignment. Historical release
 records are retained. Later phase design includes the Phase 20/25 integration work.
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.

@@ -38,3 +38,7 @@ synchronized release gate. See [release notes](releases/v0.15.0.md).
 
 Publication is verified across all implemented distributions; see the
 [v0.15.0 verification record](releases/verification-v0.15.0.md).
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.
