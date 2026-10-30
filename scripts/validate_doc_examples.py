@@ -123,7 +123,8 @@ def main() -> int:
     for path in configs:
         # Docker Compose is infrastructure, not an AHS configuration; its actual
         # syntax and service healthchecks are exercised by database CI.
-        if path == ROOT / "examples" / "database-check" / "compose.yaml":
+        if path in {ROOT / "examples" / "database-check" / "compose.yaml",
+                    ROOT / "examples" / "vector-check" / "compose.yaml"}:
             continue
         try:
             if path.parent == ROOT / "examples" / "kubernetes" and path.name != "agenthealth.yaml":
