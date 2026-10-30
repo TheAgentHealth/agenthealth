@@ -766,3 +766,17 @@ jobs:
       - name: Remove disposable databases
         if: always()
         run: docker compose -p agenthealth-phase18 -f examples/database-check/compose.yaml down -v
+
+  go-minimum-required-context:
+    # Retain the existing protected-branch context without changing protections.
+    # Its result strictly follows the actual Go 1.26 minimum-version test job.
+    name: Go minimum version (1.23)
+    needs: go-minimum-version
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require current minimum-version tests
+        env:
+          MINIMUM_RESULT: ${{ needs.go-minimum-version.result }}
+        run: test "$MINIMUM_RESULT" = success

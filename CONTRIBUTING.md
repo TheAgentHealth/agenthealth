@@ -183,3 +183,8 @@ Phase 18 adds native PostgreSQL/MySQL/Redis/MongoDB database checks. See the
 [database guide](docs/database-adapter.md) and [alignment review](docs/phase-18-alignment.md).
 SQL queries require functional opt-in. Run the disposable four-service matrix
 in [database examples](examples/database-check/README.md) for adapter changes.
+
+The protected branch still requires the historical `Go minimum version (1.23)`
+status identifier. A compatibility gate strictly mirrors the Go 1.26 minimum
+test job, so existing branch protections remain effective without claiming
+that the new source supports Go 1.23.
