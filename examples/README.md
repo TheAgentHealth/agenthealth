@@ -164,3 +164,6 @@ Fixed SQL queries require explicit functional opt-in. See the
 
 Phase 19 implements [Qdrant and Pinecone vector-store checks](../docs/vector-store-adapter.md)
 with explicit read-only query opt-in. See the [phase alignment audit](../docs/phase-19-alignment.md).
+
+Run the [vector-store examples](vector-check/README.md) for passive metadata
+and explicit top-1 query checks against the disposable Qdrant service.

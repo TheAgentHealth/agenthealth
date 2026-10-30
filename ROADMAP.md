@@ -18,10 +18,10 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python and JavaScript/TypeScript SDKs are released and share v0.16.0.
+Python and JavaScript/TypeScript SDKs are released and share v0.17.0.
 Future SDK improvements follow the stabilization and interoperability work above.
 Model/LLM OpenAI-compatible and Anthropic adapters are released in v0.15.0.
-Native databases are released in v0.16.0; Qdrant/Pinecone vector-store checks are implemented in source.
+Native databases are released in v0.16.0; Qdrant/Pinecone vector-store checks are released in v0.17.0.
 Additional cloud model dialects and vector providers, framework integrations, scoped authorization
 and isolated third-party adapters follow stabilization.
 No blanket release freeze is imposed: fixes may ship under existing release
@@ -145,7 +145,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 19 — Vector Store Adapters
 
-Implemented in source: Qdrant REST and Pinecone dense-vector metadata, explicit
+Released in v0.17.0: Qdrant REST and Pinecone dense-vector metadata, explicit
 read-only top-1 query and latency. Other providers remain planned. See the
 [guide](docs/vector-store-adapter.md) and [alignment audit](docs/phase-19-alignment.md).
 

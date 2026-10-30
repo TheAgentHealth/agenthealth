@@ -78,7 +78,7 @@ manifests, Docker images, Helm chart, OCI binary bundle and released SDK package
 formats together, even when an individual format's files have not changed.
 Chart `version` uses the numeric software version; `appVersion` and pinned
 images identify the matching CLI. The Python and JavaScript/TypeScript SDKs
-share v0.16.0 with the CLI and other distributions. Future SDKs adopt this
+share v0.17.0 with the CLI and other distributions. Future SDKs adopt this
 policy when implemented.
 AHS/AHP contract versions remain separate.
 

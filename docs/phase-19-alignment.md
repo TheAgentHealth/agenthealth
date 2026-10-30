@@ -3,8 +3,8 @@
 Scope: Qdrant REST and Pinecone dense-vector data-plane REST. The
 [design](rfcs/phase-19-vector-store.md) and
 [RFC #57](https://github.com/TheAgentHealth/agenthealth/issues/57) record the
-additive v1 extension authorized by the user. This records implementation
-scope; publication requires the synchronized release verification checklist.
+additive v1 extension authorized by the user. The synchronized v0.17.0 publication is verified; see the
+[verification record](releases/verification-v0.17.0.md).
 
 | Phase | Alignment and impact |
 |---|---|
