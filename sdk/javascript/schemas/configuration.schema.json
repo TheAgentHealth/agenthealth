@@ -186,6 +186,9 @@
         },
         "database": {
           "$ref": "#/$defs/DatabaseOptions"
+        },
+        "vector_store": {
+          "$ref": "#/$defs/VectorStoreOptions"
         }
       },
       "required": [
@@ -647,6 +650,99 @@
               ]
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "vector_store"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "vector-store"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "vector-store"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "vector_store"
+            ],
+            "properties": {
+              "endpoint": {
+                "type": "string",
+                "pattern": "^https?://[^/?#@]+(?:/[^?#]*)?$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "vector_store"
+            ],
+            "properties": {
+              "vector_store": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type",
+              "checks"
+            ],
+            "properties": {
+              "type": {
+                "const": "vector-store"
+              },
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "vector_store"
+            ],
+            "properties": {
+              "vector_store": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          }
         }
       ]
     },
@@ -778,6 +874,9 @@
         },
         "database": {
           "$ref": "#/$defs/DatabaseOptions"
+        },
+        "vector_store": {
+          "$ref": "#/$defs/VectorStoreOptions"
         }
       },
       "required": [
@@ -1375,6 +1474,99 @@
               ]
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "vector_store"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "vector-store"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "vector-store"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "vector_store"
+            ],
+            "properties": {
+              "endpoint": {
+                "type": "string",
+                "pattern": "^https?://[^/?#@]+(?:/[^?#]*)?$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "vector_store"
+            ],
+            "properties": {
+              "vector_store": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ],
+            "properties": {
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "type",
+              "checks"
+            ],
+            "properties": {
+              "type": {
+                "const": "vector-store"
+              },
+              "checks": {
+                "contains": {
+                  "const": "functional"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "vector_store"
+            ],
+            "properties": {
+              "vector_store": {
+                "required": [
+                  "functional"
+                ]
+              }
+            }
+          }
         }
       ]
     },
@@ -1944,6 +2136,99 @@
           ]
         }
       }
+    },
+    "VectorStoreOptions": {
+      "type": "object",
+      "required": [
+        "provider"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "enum": [
+            "qdrant",
+            "pinecone"
+          ]
+        },
+        "collection": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,254}$",
+          "maxLength": 255,
+          "not": {
+            "pattern": "[^A-Za-z0-9_-]"
+          }
+        },
+        "namespace": {
+          "type": "string",
+          "maxLength": 512,
+          "not": {
+            "pattern": "[\u0000\r\n]"
+          }
+        },
+        "functional": {
+          "type": "object",
+          "required": [
+            "safe",
+            "vector"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "safe": {
+              "const": true
+            },
+            "vector": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4096,
+              "items": {
+                "type": "number"
+              },
+              "contains": {
+                "not": {
+                  "const": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "provider": {
+                "const": "qdrant"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "collection"
+            ],
+            "not": {
+              "required": [
+                "namespace"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provider": {
+                "const": "pinecone"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "collection"
+              ]
+            }
+          }
+        }
+      ]
     }
   },
   "type": "object",
