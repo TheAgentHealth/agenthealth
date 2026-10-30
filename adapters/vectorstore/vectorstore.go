@@ -154,6 +154,15 @@ func (Adapter) Check(ctx context.Context, r core.Request, dimension string) (cor
 		return observation(core.Unhealthy, "vector_protocol"), nil
 	}
 	if dimension == "capability" {
+		if o.Provider == "pinecone" && o.Namespace != "" {
+			var m struct {
+				Namespaces map[string]json.RawMessage `json:"namespaces"`
+			}
+			_ = json.Unmarshal(f.body, &m)
+			if _, exists := m.Namespaces[o.Namespace]; !exists {
+				return observation(core.Unhealthy, "vector_missing"), nil
+			}
+		}
 		if status == "red" {
 			return observation(core.Unhealthy, "vector_collection"), nil
 		}
@@ -270,6 +279,9 @@ func queryValid(body []byte, provider string) bool {
 	}
 	for _, h := range *hits {
 		if h.Score == nil || math.IsNaN(*h.Score) || math.IsInf(*h.Score, 0) {
+			return false
+		}
+		if len(h.ID) == 0 || bytes.Equal(bytes.TrimSpace(h.ID), []byte("null")) {
 			return false
 		}
 		var id string

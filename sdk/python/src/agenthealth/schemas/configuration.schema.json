@@ -668,29 +668,6 @@
         {
           "if": {
             "required": [
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "const": "vector-store"
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "vector_store"
-            ],
-            "properties": {
-              "endpoint": {
-                "type": "string",
-                "pattern": "^https?://[^/?#@]+(?:/[^?#]*)?$"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "required": [
               "vector_store"
             ],
             "properties": {
@@ -1485,29 +1462,6 @@
             "properties": {
               "type": {
                 "const": "vector-store"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "required": [
-              "type"
-            ],
-            "properties": {
-              "type": {
-                "const": "vector-store"
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "vector_store"
-            ],
-            "properties": {
-              "endpoint": {
-                "type": "string",
-                "pattern": "^https?://[^/?#@]+(?:/[^?#]*)?$"
               }
             }
           }
