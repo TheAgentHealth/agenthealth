@@ -145,7 +145,7 @@ func probe(ctx context.Context, e endpoint, password string, functional bool) er
 	switch e.kind {
 	case "postgres":
 		// Override environment-derived settings; never permit TLS fallback.
-		u := url.URL{Scheme: "postgres", Host: e.address, Path: "/" + e.database, User: url.UserPassword(e.options.Username, "unused-placeholder"), RawQuery: "sslmode=disable&service="}
+		u := url.URL{Scheme: "postgres", Host: e.address, Path: "/" + e.database, User: url.UserPassword(e.options.Username, "unused-placeholder"), RawQuery: "sslmode=disable&target_session_attrs=any&connect_timeout=0"}
 		cfg, err := pgx.ParseConfig(u.String())
 		if err != nil {
 			return err
