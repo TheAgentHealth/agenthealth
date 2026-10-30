@@ -231,3 +231,8 @@ Phase 16 adds `sdk/javascript`, package `@theagenthealth/agenthealth`, and
 tarball in synchronized signed assets, require the six JavaScript SDK CI jobs,
 and verify public npm bytes, integrity and provenance before completing release.
 See [SDK guide](docs/javascript-sdk.md) and [alignment](docs/phase-16-alignment.md).
+
+Phase 18 adds native PostgreSQL/MySQL/Redis/MongoDB database checks. See the
+[database guide](docs/database-adapter.md) and [alignment review](docs/phase-18-alignment.md).
+SQL queries require functional opt-in. Run the disposable four-service matrix
+in [database examples](examples/database-check/README.md) for adapter changes.

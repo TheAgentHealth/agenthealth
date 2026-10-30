@@ -121,3 +121,8 @@ CI installs the built wheel on Linux, macOS and Windows with Python 3.10/3.13,
 rebuilds the wheel from the source archive, and exercises real CLI integration,
 error handling, cancellation, typed graph/path evidence and schema alignment.
 The [phase impact review](phase-15-alignment.md) records compatibility and limits.
+
+Phase 18 supports [native database dependencies](database-adapter.md). Passwords
+use environment references; SQL query execution requires functional opt-in.
+Existing health aggregation and result contracts remain unchanged. See the
+[all-phase alignment review](phase-18-alignment.md).

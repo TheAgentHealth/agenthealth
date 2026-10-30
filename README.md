@@ -6,7 +6,7 @@
 
 ## Start here
 
-**Latest release: [v0.15.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM checks for OpenAI-compatible and Anthropic APIs are released in v0.15.0; database and vector-store adapters remain planned. See the [model guide](docs/model-adapter.md).
+**Latest release: [v0.15.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM checks for OpenAI-compatible and Anthropic APIs are released in v0.15.0; database adapters are implemented in source for v0.16.0; vector-store adapters remain planned. See the [model guide](docs/model-adapter.md).
 
 ### Install
 
@@ -233,3 +233,7 @@ and implementing the initial Phase 17 model/LLM adapter in
 [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
 [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
 commit is preserved in the integrated implementation.
+
+Phase 18 adds [native database health](docs/database-adapter.md) for PostgreSQL, MySQL, Redis and MongoDB.
+Fixed SQL queries require explicit functional opt-in. See the
+[alignment audit](docs/phase-18-alignment.md) and [disposable examples](examples/database-check/README.md).

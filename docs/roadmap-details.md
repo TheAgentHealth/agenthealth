@@ -1297,28 +1297,24 @@ Earlier: additive v1 model configuration and stable diagnostic codes; Go validat
 
 # Phase 18 — Database Adapters
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source for v0.16.0.
 
-Potential targets:
+- [x] PostgreSQL and MySQL native connectivity/login
+- [x] Redis and MongoDB authenticated PING
+- [x] Explicit functional opt-in for fixed `SELECT 1`
+- [x] TCP latency and shared deadlines, no operation retries
+- [x] Verified TLS default and environment password references
+- [x] Native healthy/authentication-denial CI matrix
 
-```text
-PostgreSQL
-MySQL
-Redis
-MongoDB
-```
-
-## Common Checks
-
-- [ ] connectivity
-- [ ] authentication
-- [ ] minimal safe query
-- [ ] read readiness
-- [ ] latency
+Application read readiness, arbitrary SQL, topology discovery and cloud/IAM
+authentication remain outside this baseline. See the [guide](database-adapter.md).
 
 ## Impact Review
 
-Earlier: add database adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide database dependency coverage for runtime, conformance, and interoperability tests.
+See the [all-phase alignment audit](phase-18-alignment.md). Earlier configuration,
+SDK schemas, CLI registration, examples and deployment guidance are updated.
+Later vector/framework/conformance/interoperability work must distinguish native
+login/minimal-query evidence from application data and retrieval readiness.
 
 ---
 

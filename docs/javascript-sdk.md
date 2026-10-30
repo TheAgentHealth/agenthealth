@@ -61,3 +61,8 @@ TypeScript compilation, schema parity, bounded error/cancellation tests,
 deterministic packaging and installed-tarball import checks. This controlled
 coverage does not complete broader Phase 25 ecosystem interoperability.
 See the [impact review](phase-16-alignment.md).
+
+Phase 18 supports [native database dependencies](database-adapter.md). Passwords
+use environment references; SQL query execution requires functional opt-in.
+Existing health aggregation and result contracts remain unchanged. See the
+[all-phase alignment review](phase-18-alignment.md).

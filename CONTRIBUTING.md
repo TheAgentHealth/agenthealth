@@ -178,3 +178,8 @@ checks, canonical schema parity, deterministic tarball rebuilds and installed
 package smoke tests. Run `npm ci --prefix sdk/javascript --ignore-scripts`,
 `npm test --prefix sdk/javascript` and `npm run typecheck --prefix sdk/javascript`.
 Set `AGENTHEALTH_SDK_BINARY` to a CLI compiled with the SDK version for real checks.
+
+Phase 18 adds native PostgreSQL/MySQL/Redis/MongoDB database checks. See the
+[database guide](docs/database-adapter.md) and [alignment review](docs/phase-18-alignment.md).
+SQL queries require functional opt-in. Run the disposable four-service matrix
+in [database examples](examples/database-check/README.md) for adapter changes.

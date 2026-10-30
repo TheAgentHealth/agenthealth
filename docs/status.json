@@ -111,9 +111,9 @@
     },
     {
       "phase": "[18: Database Adapters](../ROADMAP.md#phase-18--database-adapters)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source for v0.16.0",
+      "documentation": "[Database guide](database-adapter.md)",
+      "validation": "[Native database examples](../examples/database-check/README.md)"
     },
     {
       "phase": "[19: Vector Store Adapters](../ROADMAP.md#phase-19--vector-store-adapters)",
