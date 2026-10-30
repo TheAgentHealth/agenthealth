@@ -1320,7 +1320,7 @@ login/minimal-query evidence from application data and retrieval readiness.
 
 # Phase 19 — Vector Store Adapters
 
-**Status:** Implemented in source; synchronized publication pending verification.
+**Status:** Released in v0.17.0; synchronized publication verified.
 
 Initial scope: Qdrant REST and Pinecone dense-vector data-plane REST 2025-10.
 

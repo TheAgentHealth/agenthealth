@@ -1,7 +1,7 @@
 # Vector-store health examples
 
 Phase 19 supports Qdrant REST and Pinecone dense-vector data-plane REST.
-Use a CLI built from this source until its synchronized release is verified.
+Use the verified v0.17.0 CLI and matching SDK packages.
 These services are supporting dependencies, not composite agents.
 
 ## Disposable Qdrant matrix

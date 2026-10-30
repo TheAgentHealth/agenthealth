@@ -1,7 +1,7 @@
 # Vector-store adapter
 
 Phase 19 implements Qdrant REST and Pinecone dense-vector data-plane REST in
-source. See [examples](../examples/vector-check/README.md),
+v0.17.0. See [examples](../examples/vector-check/README.md),
 [RFC #57](https://github.com/TheAgentHealth/agenthealth/issues/57) and the
 [phase alignment audit](phase-19-alignment.md).
 
@@ -110,3 +110,5 @@ and [Pinecone query](https://docs.pinecone.io/reference/api/2025-10/data-plane/q
 For Go/schema parity, empty unused provider fields are normalized as omitted:
 Qdrant may specify `namespace: ""`; Pinecone may specify `collection: ""`.
 Nonempty values in those unused fields are rejected.
+
+See the [synchronized publication verification](releases/verification-v0.17.0.md).

@@ -1,5 +1,5 @@
 {
-  "software_version": "v0.16.0",
+  "software_version": "v0.17.0",
   "phases": [
     {
       "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
@@ -87,19 +87,19 @@
     },
     {
       "phase": "[14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration)",
-      "status": "Released in v0.16.0; historical helm-v0.1.0 retained",
-      "documentation": "Chart 0.16.0; CLI v0.16.0",
+      "status": "Released in v0.17.0; historical helm-v0.1.0 retained",
+      "documentation": "Chart 0.17.0; CLI v0.17.0",
       "validation": "[Kubernetes scenarios](../examples/kubernetes/README.md), [alignment audit](phase-14-alignment.md)"
     },
     {
       "phase": "[15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi)",
-      "status": "Released in v0.16.0 on PyPI",
+      "status": "Released in v0.17.0 on PyPI",
       "documentation": "[Python SDK](python-sdk.md), [alignment audit](phase-15-alignment.md)",
       "validation": "[Python example](../examples/python-sdk/README.md), [SDK tests](../tests/python_sdk/)"
     },
     {
       "phase": "[16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk)",
-      "status": "Released in v0.16.0 on npm",
+      "status": "Released in v0.17.0 on npm",
       "documentation": "[JavaScript SDK](javascript-sdk.md), [alignment audit](phase-16-alignment.md)",
       "validation": "[Node example](../examples/javascript-sdk/README.md), [SDK tests](../sdk/javascript/test/)"
     },
@@ -117,7 +117,7 @@
     },
     {
       "phase": "[19: Vector Store Adapters](../ROADMAP.md#phase-19--vector-store-adapters)",
-      "status": "Implemented in source; publication pending",
+      "status": "Released in v0.17.0; Qdrant/Pinecone baseline",
       "documentation": "[Vector-store guide](vector-store-adapter.md), [alignment](phase-19-alignment.md)",
       "validation": "[Qdrant/Pinecone examples](../examples/vector-check/README.md), [tests](../adapters/vectorstore/)"
     },
