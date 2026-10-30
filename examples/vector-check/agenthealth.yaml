@@ -1,0 +1,12 @@
+version: v1
+targets:
+  - name: retrieval
+    type: vector-store
+    endpoint: http://127.0.0.1:16333
+    auth:
+      bearer_env: VECTOR_KEY
+    vector_store:
+      provider: qdrant
+      collection: docs
+    thresholds:
+      latency_ms: 1000

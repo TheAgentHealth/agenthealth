@@ -394,3 +394,26 @@ adapter's Configuration check. See the [database guide](../docs/database-adapter
 SQL query execution requires explicit `functional` in `checks`; the only query
 is `SELECT 1`. Passive SQL checks establish login, while Redis/MongoDB use PING.
 The additive block preserves contract v1, result shapes and exit codes.
+
+## Vector-store options (Phase 19)
+
+The optional `vector_store` block selects `provider: qdrant` with `collection`,
+or `provider: pinecone` with an optional `namespace` and an index-host endpoint.
+It is valid only on `vector-store` targets. Implemented checks require these
+options; historical placeholder targets without them remain configuration-valid
+but fail adapter Configuration. Endpoints must be HTTP(S), without userinfo,
+queries or fragments. Collection names are 1–255 ASCII letters/digits/underscore/
+hyphen, starting with a letter or digit. Namespace is at most 512 characters,
+without NUL/CR/LF.
+
+`functional` has required `safe: true` and `vector`: 1–4096 finite numeric
+components, at least one nonzero. It requires explicit `checks` containing
+`functional`, and selecting that check likewise requires the options. The
+query dimension must match metadata before transmission. `auth.bearer_env`
+provides the provider API key; no new literal credential field is added.
+See the [contract](../docs/rfcs/phase-19-vector-store.md) and
+[guide and validated examples](../docs/vector-store-adapter.md).
+
+For Go/schema parity, empty unused provider fields are normalized as omitted:
+Qdrant may specify `namespace: ""`; Pinecone may specify `collection: ""`.
+Nonempty values in those unused fields are rejected.

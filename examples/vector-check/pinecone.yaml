@@ -1,0 +1,9 @@
+version: v1
+targets:
+  - name: retrieval-index
+    type: vector-store
+    endpoint: https://YOUR_INDEX_HOST.svc.example.pinecone.io
+    auth:
+      bearer_env: PINECONE_API_KEY
+    vector_store:
+      provider: pinecone

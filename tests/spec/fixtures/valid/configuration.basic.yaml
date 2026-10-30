@@ -30,6 +30,9 @@ targets:
       - name: vector-store
         type: vector-store
         endpoint: http://vector-db:6333
+        vector_store:
+          provider: qdrant
+          collection: documents
         critical: true
 
       - name: analytics-api

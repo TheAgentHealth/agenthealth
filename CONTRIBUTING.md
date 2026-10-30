@@ -38,7 +38,7 @@ evolve; this describes contract stability, not unreleased implementation.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
 is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is released in v0.8.0; experimental AHP HTTP serving is implemented in Phase 11. Keep planned
-capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway, router, model/LLM and native database adapters;
+capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway, router, model/LLM and native database and Qdrant/Pinecone vector-store adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.
 
@@ -188,3 +188,7 @@ The protected branch still requires the historical `Go minimum version (1.23)`
 status identifier. A compatibility gate strictly mirrors the Go 1.26 minimum
 test job, so existing branch protections remain effective without claiming
 that the new source supports Go 1.23.
+
+Phase 19 adds [Qdrant/Pinecone vector-store health](docs/vector-store-adapter.md).
+See the [alignment review](docs/phase-19-alignment.md) and
+[disposable vector examples](examples/vector-check/README.md).

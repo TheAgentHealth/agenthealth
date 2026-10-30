@@ -118,3 +118,7 @@ Kubernetes versions and real product interoperability remain future validation.
 ## Phase 15 follow-up
 
 The [Python SDK impact review](phase-15-alignment.md) covers earlier contracts and distribution. Kubernetes manifests continue to use the CLI; no SDK or CRD is required. Broader released-configuration tests include bearer credentials, optional dependency failures, graph edges and agent documents.
+
+Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
+adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
+is unchanged; database login remains distinct from vector retrieval.

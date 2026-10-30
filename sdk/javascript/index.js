@@ -7,7 +7,7 @@ import { performance } from 'node:perf_hooks';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { parseDocument } from 'yaml';
 
-export const version = '0.16.0';
+export const version = '0.17.0';
 export const healthStates = Object.freeze(['HEALTHY', 'DEGRADED', 'UNHEALTHY', 'UNREACHABLE', 'MISCONFIGURED', 'UNKNOWN']);
 export class AgentHealthError extends Error {
   constructor(message) { super(message); this.name = new.target.name; }

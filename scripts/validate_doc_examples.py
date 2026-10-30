@@ -54,6 +54,8 @@ MARKER_RE = re.compile(
 )
 
 FILES_TO_CHECK = [
+    ROOT / "docs" / "vector-store-adapter.md",
+    ROOT / "examples" / "vector-check" / "README.md",
     ROOT / "docs" / "model-adapter.md",
     ROOT / "docs" / "database-adapter.md",
     ROOT / "examples" / "database-check" / "README.md",
@@ -121,7 +123,8 @@ def main() -> int:
     for path in configs:
         # Docker Compose is infrastructure, not an AHS configuration; its actual
         # syntax and service healthchecks are exercised by database CI.
-        if path == ROOT / "examples" / "database-check" / "compose.yaml":
+        if path in {ROOT / "examples" / "database-check" / "compose.yaml",
+                    ROOT / "examples" / "vector-check" / "compose.yaml"}:
             continue
         try:
             if path.parent == ROOT / "examples" / "kubernetes" and path.name != "agenthealth.yaml":

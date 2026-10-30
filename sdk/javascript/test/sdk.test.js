@@ -174,3 +174,22 @@ test('database schema supports nested dependencies and rejects insecure TLS', as
     environment: { ...process.env, AGENTHEALTH_TEST_DB_MISSING: '' } });
   assert.equal(report.status, 'MISCONFIGURED');
 });
+
+test('vector-store schema and real CLI preserve query opt-in and dependency reports', async t => {
+  const target = { name: 'retrieval', type: 'vector-store', endpoint: 'http://127.0.0.1:1',
+    auth: { bearer_env: 'AGENTHEALTH_TEST_VECTOR_MISSING' },
+    vector_store: { provider: 'qdrant', collection: 'docs' } };
+  const document = { version: 'v1', targets: [target] };
+  new Configuration(document);
+  target.checks = ['functional'];
+  assert.throws(() => new Configuration(document), ConfigurationError);
+  target.vector_store.functional = { safe: true, vector: [1, 0, 0] };
+  const config = new Configuration(document);
+  target.vector_store.functional.vector = [0, 0, 0];
+  assert.throws(() => new Configuration(document), ConfigurationError);
+  const binary = process.env.AGENTHEALTH_SDK_BINARY;
+  if (!binary) { t.skip('Set AGENTHEALTH_SDK_BINARY to the matching compiled CLI'); return; }
+  const report = await check(config, { binary, environment: { ...process.env, AGENTHEALTH_TEST_VECTOR_MISSING: '' } });
+  assert.equal(report.status, 'MISCONFIGURED');
+  assert.equal(report.results[0].target.type, 'vector-store');
+});

@@ -1,0 +1,24 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "retrieval",
+      "type": "vector-store",
+      "endpoint": "https://example.com",
+      "vector_store": {
+        "provider": "qdrant",
+        "functional": {
+          "safe": true,
+          "vector": [
+            0.1,
+            0,
+            0.3
+          ]
+        }
+      },
+      "checks": [
+        "functional"
+      ]
+    }
+  ]
+}

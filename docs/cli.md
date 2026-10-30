@@ -130,3 +130,9 @@ file for SQL username/database/password references; `ping database redis://host`
 uses verified TLS and passwordless authentication defaults. It does not accept
 database driver options on the command line. See [database configuration](database-adapter.md)
 and [examples](../examples/database-check/README.md).
+
+Phase 19 registers `vector-store` in the shared check/doctor/serve registry.
+Use a configuration file for provider, collection/index and query options;
+`ping vector-store <url>` alone reports MISCONFIGURED. See
+[vector configuration](vector-store-adapter.md) and
+[examples](../examples/vector-check/README.md).

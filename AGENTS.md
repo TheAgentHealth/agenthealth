@@ -6,7 +6,7 @@ scope and preserve unrelated work in the working tree.
 
 ## Project and sources of truth
 
-AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility, gateway, router, model/LLM and native database adapters are
+AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility, gateway, router, model/LLM and native database and Qdrant/Pinecone vector-store adapters are
 implemented; other adapters follow the capability roadmap. The software is
 pre-1.0. Do not describe planned adapters or distribution channels as available.
 
@@ -236,3 +236,7 @@ Phase 18 adds native PostgreSQL/MySQL/Redis/MongoDB database checks. See the
 [database guide](docs/database-adapter.md) and [alignment review](docs/phase-18-alignment.md).
 SQL queries require functional opt-in. Run the disposable four-service matrix
 in [database examples](examples/database-check/README.md) for adapter changes.
+
+Phase 19 adds [Qdrant/Pinecone vector-store health](docs/vector-store-adapter.md).
+See the [alignment review](docs/phase-19-alignment.md) and
+[disposable vector examples](examples/vector-check/README.md).

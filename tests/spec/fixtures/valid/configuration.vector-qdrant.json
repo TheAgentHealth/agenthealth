@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "retrieval",
+      "type": "vector-store",
+      "endpoint": "https://example.com",
+      "vector_store": {
+        "provider": "qdrant",
+        "collection": "docs"
+      }
+    }
+  ]
+}

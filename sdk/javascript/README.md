@@ -6,10 +6,10 @@ not supported. All implemented adapters and graph configurations use the same
 AHS v1 configuration and result contracts as the CLI.
 
 ```sh
-npm install @theagenthealth/agenthealth@0.16.0
+npm install @theagenthealth/agenthealth@0.17.0
 ```
 
-Install and verify CLI **v0.16.0** separately using the
+Install and verify CLI **v0.17.0** separately using the
 [installation guide](../../docs/installation.md). The SDK never downloads or
 executes binaries at import/install time. A mismatched CLI raises
 `CompatibilityError` before running checks.
@@ -58,8 +58,11 @@ See the [SDK guide](../../docs/javascript-sdk.md),
 [example](../../examples/javascript-sdk/README.md), and
 [Phase 16 impact review](../../docs/phase-16-alignment.md).
 
-Published software: v0.16.0. Requires the matching CLI; model/LLM
+This package version: v0.17.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.
 
 Native database targets use the matching CLI; fixed SQL queries require explicit
 functional opt-in. Passwords use `database.password_env` references.
+
+Qdrant/Pinecone vector-store checks are included in this version; use the
+matching v0.17.0 CLI. Other vector providers remain planned.

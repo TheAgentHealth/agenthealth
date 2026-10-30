@@ -18,6 +18,7 @@ import (
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
 	modeladapter "github.com/TheAgentHealth/agenthealth/adapters/model"
 	routeradapter "github.com/TheAgentHealth/agenthealth/adapters/router"
+	vectoradapter "github.com/TheAgentHealth/agenthealth/adapters/vectorstore"
 	"github.com/TheAgentHealth/agenthealth/core"
 )
 
@@ -33,7 +34,7 @@ const usage = `Usage:
   agenthealth serve <configuration.yaml> [--listen host:port] [--token-env NAME]
   agenthealth version
 
-Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router, model, llm, database.
+Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router, model, llm, database, vector-store.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
 Agent task/path probes require the application to implement the safe probe handler.
 Other target types require future adapters.
@@ -222,6 +223,9 @@ func writeAdvice(w io.Writer, results []core.Result) error {
 
 func newRegistry() (*core.Registry, error) {
 	registry := core.NewRegistry()
+	if err := registry.Register(vectoradapter.Adapter{}); err != nil {
+		return nil, fmt.Errorf("cannot register vector-store adapter")
+	}
 	if err := registry.Register(databaseadapter.Adapter{}); err != nil {
 		return nil, fmt.Errorf("cannot register database adapter")
 	}
