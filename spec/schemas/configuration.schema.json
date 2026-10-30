@@ -2133,12 +2133,19 @@
           ]
         },
         "collection": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,254}$",
-          "maxLength": 255,
-          "not": {
-            "pattern": "[^A-Za-z0-9_-]"
-          }
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,254}$",
+              "maxLength": 255,
+              "not": {
+                "pattern": "[^A-Za-z0-9_-]"
+              }
+            },
+            {
+              "const": ""
+            }
+          ]
         },
         "namespace": {
           "type": "string",
@@ -2189,10 +2196,18 @@
             "required": [
               "collection"
             ],
-            "not": {
-              "required": [
-                "namespace"
-              ]
+            "properties": {
+              "collection": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,254}$",
+                "maxLength": 255,
+                "not": {
+                  "pattern": "[^A-Za-z0-9_-]"
+                }
+              },
+              "namespace": {
+                "const": ""
+              }
             }
           }
         },
@@ -2205,10 +2220,10 @@
             }
           },
           "then": {
-            "not": {
-              "required": [
-                "collection"
-              ]
+            "properties": {
+              "collection": {
+                "const": ""
+              }
             }
           }
         }

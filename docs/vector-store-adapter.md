@@ -106,3 +106,7 @@ API references: [Qdrant metadata](https://api.qdrant.tech/api-reference/collecti
 [Qdrant query](https://api.qdrant.tech/api-reference/search/query-points),
 [Pinecone statistics](https://docs.pinecone.io/reference/api/2025-10/data-plane/describeindexstats)
 and [Pinecone query](https://docs.pinecone.io/reference/api/2025-10/data-plane/query).
+
+For Go/schema parity, empty unused provider fields are normalized as omitted:
+Qdrant may specify `namespace: ""`; Pinecone may specify `collection: ""`.
+Nonempty values in those unused fields are rejected.

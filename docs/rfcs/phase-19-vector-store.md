@@ -30,3 +30,7 @@ metadata is cached only inside one target node.
 The [alignment audit](../phase-19-alignment.md) covers phases 0–26. Additional
 providers and product matrices remain future work rather than inferred from
 successful HTTP mocks or PostgreSQL login.
+
+For Go/schema parity, empty unused provider fields are normalized as omitted:
+Qdrant may specify `namespace: ""`; Pinecone may specify `collection: ""`.
+Nonempty values in those unused fields are rejected.

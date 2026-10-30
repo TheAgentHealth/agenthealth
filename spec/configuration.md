@@ -413,3 +413,7 @@ query dimension must match metadata before transmission. `auth.bearer_env`
 provides the provider API key; no new literal credential field is added.
 See the [contract](../docs/rfcs/phase-19-vector-store.md) and
 [guide and validated examples](../docs/vector-store-adapter.md).
+
+For Go/schema parity, empty unused provider fields are normalized as omitted:
+Qdrant may specify `namespace: ""`; Pinecone may specify `collection: ""`.
+Nonempty values in those unused fields are rejected.
