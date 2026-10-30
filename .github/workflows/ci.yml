@@ -760,7 +760,7 @@ jobs:
       - name: Start and provision disposable Qdrant
         run: |
           docker compose -p agenthealth-phase19 -f examples/vector-check/compose.yaml up -d
-          curl --fail --retry 30 --retry-connrefused --retry-delay 1 -H 'api-key: phase19-local-key' http://127.0.0.1:16333/collections
+          curl --fail --retry 30 --retry-all-errors --retry-connrefused --retry-delay 1 -H 'api-key: phase19-local-key' http://127.0.0.1:16333/collections
           curl --fail -X PUT -H 'api-key: phase19-local-key' -H 'Content-Type: application/json' -d '{"vectors":{"size":3,"distance":"Cosine"}}' http://127.0.0.1:16333/collections/docs
       - name: Check real collection, query, missing collection and denied credentials
         env:

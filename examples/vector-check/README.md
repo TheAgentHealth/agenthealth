@@ -12,7 +12,7 @@ Provision the collection separately: the health adapter never creates data.
 ```bash
 docker compose -p agenthealth-phase19 -f examples/vector-check/compose.yaml up -d
 # Wait until this authenticated metadata request succeeds:
-curl --fail --retry 30 --retry-connrefused --retry-delay 1 \
+curl --fail --retry 30 --retry-all-errors --retry-connrefused --retry-delay 1 \
   -H 'api-key: phase19-local-key' http://127.0.0.1:16333/collections
 curl --fail -X PUT -H 'api-key: phase19-local-key' \
   -H 'Content-Type: application/json' \
