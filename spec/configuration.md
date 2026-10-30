@@ -381,3 +381,16 @@ rejected. No new health dimensions or result fields are introduced. See the
 The token limit is not an independent spending cap: enforcement is remote and
 reported excess usage is detected after inference. Missing usage does not prove
 the bound was honored. Error bodies and generated content are never emitted.
+
+## Database options (Phase 18)
+
+Targets of type `database` may include `database` with optional string `username`,
+environment reference `password_env`, and `tls` (`required` or `disabled`; default
+`required`). Other target types cannot use this block. `auth` and `database` are
+mutually exclusive. Literal passwords and arbitrary query/driver fields are rejected.
+Endpoint schemes select `postgres`, `mysql`, `redis`, or `mongodb`; SQL requires
+a username and database path. URI credentials/query options are rejected by the
+adapter's Configuration check. See the [database guide](../docs/database-adapter.md).
+SQL query execution requires explicit `functional` in `checks`; the only query
+is `SELECT 1`. Passive SQL checks establish login, while Redis/MongoDB use PING.
+The additive block preserves contract v1, result shapes and exit codes.

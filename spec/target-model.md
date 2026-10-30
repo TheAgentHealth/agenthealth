@@ -67,7 +67,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `http` / `api` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `gateway` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `router` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
-| `database` | ✓ | — | ✓ | — | ✓ | — | ✓ | ✓ |
+| `database` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 | `vector-store` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 
 This table is indicative, not exhaustive — individual adapters define exactly which dimensions they implement (see [adapter-spec.md](adapter-spec.md)).
@@ -83,3 +83,7 @@ MCP and A2A paths use their own adapters. See [Phase 8](../docs/agentgateway.md)
 ## Phase 10 dependency graph
 
 See the [explicit graph contract](../docs/rfcs/phase-10-dependency-graph.md) for shared node IDs, relationship evidence, independent edge policies, validation and bounded execution. Existing nested configurations and health semantics remain valid.
+
+Phase 18 implements native `database` targets for PostgreSQL, MySQL, Redis and
+MongoDB. Data services remain supporting dependencies, not composite agents.
+See [database evidence and limitations](../docs/database-adapter.md).
