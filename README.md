@@ -6,7 +6,7 @@
 
 ## Start here
 
-**Latest release: [v0.17.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.17.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; Qdrant/Pinecone vector-store adapters are released in v0.17.0. See the [model guide](docs/model-adapter.md) [database guide](docs/database-adapter.md), and [vector-store guide](docs/vector-store-adapter.md).
+**Latest release: [v0.17.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.17.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; Qdrant/Pinecone vector-store adapters are released in v0.17.0. See the [model guide](docs/model-adapter.md), [database guide](docs/database-adapter.md), and [vector-store guide](docs/vector-store-adapter.md).
 
 ### Install
 
