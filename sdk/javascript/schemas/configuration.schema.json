@@ -720,6 +720,20 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "vector_store"
+            ]
+          },
+          "then": {
+            "properties": {
+              "endpoint": {
+                "pattern": "^https?://[^/@?#\\s]+(?:/[^?#]*)?$"
+              }
+            }
+          }
         }
       ]
     },
@@ -1518,6 +1532,20 @@
                 "required": [
                   "functional"
                 ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "vector_store"
+            ]
+          },
+          "then": {
+            "properties": {
+              "endpoint": {
+                "pattern": "^https?://[^/@?#\\s]+(?:/[^?#]*)?$"
               }
             }
           }
