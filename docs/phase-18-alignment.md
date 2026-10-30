@@ -2,8 +2,8 @@
 
 Scope: PostgreSQL, MySQL, Redis and MongoDB native database health under the
 existing `database` target vocabulary. [RFC #54](https://github.com/TheAgentHealth/agenthealth/issues/54)
-records the authorized additive configuration and safety design. Source work is
-prepared for synchronized v0.16.0; publication must be verified separately.
+records the authorized additive configuration and safety design. The synchronized v0.16.0 publication is verified; see the
+[verification record](releases/verification-v0.16.0.md).
 
 | Phases | Impact and completed alignment |
 |---|---|

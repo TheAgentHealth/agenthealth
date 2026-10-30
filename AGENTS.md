@@ -6,7 +6,7 @@ scope and preserve unrelated work in the working tree.
 
 ## Project and sources of truth
 
-AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility, gateway, router, and model/LLM adapters are
+AgentHealth is a vendor-neutral health CLI and Go engine. Agent/multi-agent, HTTP/API, MCP, A2A 1.0 JSON-RPC with explicit 0.3.0 compatibility, gateway, router, model/LLM and native database adapters are
 implemented; other adapters follow the capability roadmap. The software is
 pre-1.0. Do not describe planned adapters or distribution channels as available.
 
@@ -131,7 +131,7 @@ channel manifests, Docker image, Helm chart and additional OCI binary bundle.
 The GitHub Release must list all downloads and package references. GHCR Packages
 must expose the Docker image, OCI chart and OCI binary bundle publicly and link
 them to this repository. Helm uses `version: X.Y.Z`, `appVersion: vX.Y.Z` and
-matching image references. Python and JavaScript/TypeScript SDKs share v0.15.0; future SDKs adopt the shared version when implemented;
+matching image references. Python and JavaScript/TypeScript SDKs share v0.16.0; future SDKs adopt the shared version when implemented;
 contract versions remain separate. Do not reuse historical CLI or chart tags.
 
 The shared workflow/helper implements coordinated source builds, signed draft

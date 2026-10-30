@@ -1,26 +1,26 @@
 # Releases, Packages and synchronized versions
 
-Published software: **v0.15.0**. The commands below select its synchronized
+Published software: **v0.16.0**. The commands below select its synchronized
 CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.15.0.md).
+[publication verification](releases/verification-v0.16.0.md).
 
-The synchronized release is **v0.15.0**. All implemented artifacts use that
+The synchronized release is **v0.16.0**. All implemented artifacts use that
 software version and the same immutable source commit. This replaces the earlier
 independent chart/SDK version policy. CLI v0.11.1 and chart 0.1.0 remain published
 and immutable; historical release notes and verification records remain valid.
 
-v0.15.0 and all three GHCR packages are published and verified. See
-[publication verification](releases/verification-v0.15.0.md). The shared release
+v0.16.0 and all three GHCR packages are published and verified. See
+[publication verification](releases/verification-v0.16.0.md). The shared release
 workflow builds new assets from one source tag and coordinates all publication
 jobs; it does not rename old downloads.
 
 ## One complete GitHub Release
 
-Use one v0.15.0 release page containing:
+Use one v0.16.0 release page containing:
 
 - Five standalone archives: Linux AMD64/ARM64, macOS AMD64/ARM64 and Windows AMD64.
 - Five matching CycloneDX SBOMs, four Linux DEB/RPM packages and Homebrew/Scoop manifests.
-- Helm chart `agenthealth-0.15.0.tgz`, Python wheel/source archive, npm tarball and one complete asset checksum manifest.
+- Helm chart `agenthealth-0.16.0.tgz`, Python wheel/source archive, npm tarball and one complete asset checksum manifest.
 - Package links for Docker, Helm and the binary OCI bundle, with exact published digests.
 - Both configured container registry references, installation commands, verification instructions, source links and actual validation limits.
 
@@ -34,9 +34,9 @@ is present.
 
 | Package | Target reference | User tool | Availability |
 |---|---|---|---|
-| Docker | `ghcr.io/theagenthealth/agenthealth:v0.15.0` | Docker-compatible container client | v0.15.0 public and verified |
-| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.15.0` | Helm | v0.15.0 public and verified |
-| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.15.0` | ORAS or a compatible OCI artifact client | v0.15.0 public and verified |
+| Docker | `ghcr.io/theagenthealth/agenthealth:v0.16.0` | Docker-compatible container client | v0.16.0 public and verified |
+| Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, version `0.16.0` | Helm | v0.16.0 public and verified |
+| Binaries | `ghcr.io/theagenthealth/agenthealth-binaries:v0.16.0` | ORAS or a compatible OCI artifact client | v0.16.0 public and verified |
 
 Link every package to `TheAgentHealth/agenthealth`, record source/revision/version
 metadata and verify its public visibility. Publishing to GHCR does not establish
@@ -57,14 +57,14 @@ bucket. Those hosting channels remain separate work.
 
 One software version does not require identical punctuation in every format:
 
-| Field | v0.15.0 value |
+| Field | v0.16.0 value |
 |---|---|
-| Git tag and GitHub Release | `v0.15.0` |
-| CLI version and container tag | `v0.15.0` |
-| Chart version and Helm OCI tag | `0.15.0` |
-| Chart appVersion and default image | `v0.15.0` |
-| DEB/RPM, Homebrew/Scoop and Python SDK version metadata | `0.15.0` |
-| OCI binary bundle tag | `v0.15.0` |
+| Git tag and GitHub Release | `v0.16.0` |
+| CLI version and container tag | `v0.16.0` |
+| Chart version and Helm OCI tag | `0.16.0` |
+| Chart appVersion and default image | `v0.16.0` |
+| DEB/RPM, Homebrew/Scoop and Python SDK version metadata | `0.16.0` |
+| OCI binary bundle tag | `v0.16.0` |
 
 Helm derives its OCI tag from chart version metadata. See the
 [Helm OCI registry guide](https://helm.sh/docs/topics/registries/).
@@ -73,14 +73,14 @@ software releases do not rename `spec_version: v1`.
 
 ## Installation examples
 
-The following commands use the published and verified v0.15.0 channels.
+The following commands use the published and verified v0.16.0 channels.
 Historical v0.11.1 and chart 0.1.0 releases remain available.
 
 Direct installation from the unified Release download:
 
 ```bash
 helm upgrade --install agenthealth \
-  https://github.com/TheAgentHealth/agenthealth/releases/download/v0.15.0/agenthealth-0.15.0.tgz \
+  https://github.com/TheAgentHealth/agenthealth/releases/download/v0.16.0/agenthealth-0.16.0.tgz \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
@@ -90,7 +90,7 @@ Installation from the OCI chart package:
 ```bash
 helm upgrade --install agenthealth \
   oci://ghcr.io/theagenthealth/charts/agenthealth \
-  --version 0.15.0 \
+  --version 0.16.0 \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
@@ -104,8 +104,8 @@ is not currently provided.
 Retrieve the additional binary OCI bundle:
 
 ```bash
-oras pull ghcr.io/theagenthealth/agenthealth-binaries:v0.15.0 \
-  --output ./agenthealth-v0.15.0
+oras pull ghcr.io/theagenthealth/agenthealth-binaries:v0.16.0 \
+  --output ./agenthealth-v0.16.0
 ```
 
 See [ORAS pull documentation](https://oras.land/docs/commands/oras_pull/).
@@ -117,14 +117,14 @@ verification remain available directly through GitHub Releases.
 ## Implementation and publication checklist
 
 - [x] Update release workflows and the Helm helper to consume the same software tag; avoid separate release creation and conflicting checksum uploads.
-- [x] Advance chart metadata and all current image/install references to 0.15.0/v0.15.0 before tagging.
+- [x] Advance chart metadata and all current image/install references to 0.16.0/v0.16.0 before tagging.
 - [x] Build all release files from the exact same tagged source; generate the final checksum manifest after all formats are packaged.
 - [x] Publish the Docker image, OCI chart and OCI binary bundle; attach all downloadable files to one GitHub Release.
 - [x] Link packages to this repository and establish public visibility; verify anonymous registry access and repository Packages discovery.
 - [x] Sign downloadable assets and OCI provenance; verify source tag/commit, digests, SBOMs, contents and byte identity across channels.
 - [x] Gate release completion on all required publication jobs, regardless of whether jobs execute in parallel.
 - [x] Download published files and verify native Linux behavior and actual chart installation; report other platforms according to evidence available.
-- [x] Preserve existing releases and explain that v0.15.0 supersedes v0.11.1/chart 0.1.0.
+- [x] Preserve existing releases and explain that v0.16.0 supersedes v0.11.1/chart 0.1.0.
 
 Skipping local test reruns at a maintainer's request does not mean that new
 workflow changes have passed old CI. Report skipped checks and respect actual
@@ -163,9 +163,9 @@ See [release requirements](../RELEASING.md#python-distribution-phase-15).
 
 ## JavaScript SDK / npm (Phase 16)
 
-The release includes `theagenthealth-agenthealth-0.15.0.tgz` in signed assets,
+The release includes `theagenthealth-agenthealth-0.16.0.tgz` in signed assets,
 checksums and the OCI binary bundle. npm publishes the identical bytes as
-`@theagenthealth/agenthealth@0.15.0` using OIDC directly in `release.yml` with GitHub environment `npm`. Its explicit
+`@theagenthealth/agenthealth@0.16.0` using OIDC directly in `release.yml` with GitHub environment `npm`. Its explicit
 `npm` job verifies registry integrity, provenance
 and `npm audit signatures`, alongside `pypi`. Final GitHub publication requires both.
 The package requires a separately verified matching CLI; installing it does not

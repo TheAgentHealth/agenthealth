@@ -6,33 +6,33 @@
 
 ## Start here
 
-**Latest release: [v0.15.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM checks for OpenAI-compatible and Anthropic APIs are released in v0.15.0; database adapters are implemented in source for v0.16.0; vector-store adapters remain planned. See the [model guide](docs/model-adapter.md).
+**Latest release: [v0.16.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.16.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; vector-store adapters remain planned. See the [model guide](docs/model-adapter.md) and [database guide](docs/database-adapter.md).
 
 ### Install
 
-Choose how you want to run AgentHealth. Published distributions share **v0.15.0**:
+Choose how you want to run AgentHealth. Published distributions share **v0.16.0**:
 
 <!-- generated: distributions:start -->
 | Use it as | Get it here | Installation guide |
 |---|---|---|
-| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
-| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.15.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.15.0` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
-| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.15.0`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
+| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.16.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
+| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.16.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.16.0` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
+| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.16.0`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
 | Linux DEB / RPM | AMD64/ARM64 packages in release downloads | [Local package installation](docs/installation.md#package-channels-phase-13-v0110) |
 | Homebrew / Scoop | `agenthealth.rb` / `agenthealth.json` in release downloads | [Manifest usage](docs/installation.md#package-channels-phase-13-v0110); official tap/bucket hosting is planned |
-| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.15.0` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
-| Python SDK / PyPI | [PyPI](https://pypi.org/project/agenthealth/0.15.0/): `pip install agenthealth==0.15.0`; wheel/sdist in Release downloads | [Python SDK](docs/python-sdk.md) — requires the matching CLI |
-| JavaScript / TypeScript SDK / npm | [npm](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.15.0): `npm install @theagenthealth/agenthealth@0.15.0`; signed tarball in Release downloads | [JavaScript SDK](docs/javascript-sdk.md) — Node 22.14+ ESM and matching CLI |
+| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.16.0` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
+| Python SDK / PyPI | [PyPI](https://pypi.org/project/agenthealth/0.16.0/): `pip install agenthealth==0.16.0`; wheel/sdist in Release downloads | [Python SDK](docs/python-sdk.md) — requires the matching CLI |
+| JavaScript / TypeScript SDK / npm | [npm](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.16.0): `npm install @theagenthealth/agenthealth@0.16.0`; signed tarball in Release downloads | [JavaScript SDK](docs/javascript-sdk.md) — Node 22.14+ ESM and matching CLI |
 <!-- generated: distributions:end -->
 
 **Run immediately with Docker:**
 
 ```bash
-docker run --rm theagenthealth/agenthealth:v0.15.0 version
-docker run --rm theagenthealth/agenthealth:v0.15.0 --help
+docker run --rm theagenthealth/agenthealth:v0.16.0 version
+docker run --rm theagenthealth/agenthealth:v0.16.0 --help
 ```
 
-The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.15.0`.
+The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.16.0`.
 Use an exact version tag to pin a release; `v0` follows stable major-version-0
 releases and `latest` follows the latest stable release.
 
@@ -41,14 +41,14 @@ releases and `latest` follows the latest stable release.
 
 ```bash
 helm upgrade --install agenthealth \
-  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.15.0 \
+  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.16.0 \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.15.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is published on npm for Phase 16. Official
+The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.16.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is published on npm for Phase 16. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -98,7 +98,7 @@ A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `
 
 ## Project status
 
-AgentHealth is pre-1.0. Published software is v0.15.0; changes described as
+AgentHealth is pre-1.0. Published software is v0.16.0; changes described as
 implemented in source require a newer build. Planned target vocabulary is not
 an availability guarantee. [Capability status](docs/phase-status.md) is generated
 from [one machine-readable source](docs/status.json).
@@ -207,7 +207,7 @@ See [stabilization](docs/stabilization.md) for fuzzing, graph profiles, real-pro
 smokes, Kubernetes versions and compatibility checks. Passing one suite does not
 establish every planned integration; consult its exact scope and limitations.
 
-Phase 16 adds the [JavaScript / TypeScript SDK](docs/javascript-sdk.md) in v0.15.0: `@theagenthealth/agenthealth`, Node 22.14+ ESM, with a matching
+Phase 16 introduced the [JavaScript / TypeScript SDK](docs/javascript-sdk.md) in v0.14.0: `@theagenthealth/agenthealth`, Node 22.14+ ESM, with a matching
 verified CLI. See the [phase alignment audit](docs/phase-16-alignment.md).
 
 ## Model / LLM health (Phase 17)
@@ -226,6 +226,17 @@ See [model examples](examples/model-check/README.md) and the
 [alignment audit](docs/phase-17-alignment.md). Cloud signing, streaming and
 broader product interoperability remain future work.
 
+## Database health (Phase 18)
+
+Released in v0.16.0: native PostgreSQL/MySQL login, Redis/MongoDB authenticated
+PING, verified TLS defaults and environment password references. Fixed SQL
+`SELECT 1` queries require explicit functional opt-in. These are supporting
+dependency checks; minimal-query success does not establish application data
+readiness. See the [guide](docs/database-adapter.md),
+[alignment audit](docs/phase-18-alignment.md),
+[disposable examples](examples/database-check/README.md) and
+[publication verification](docs/releases/verification-v0.16.0.md).
+
 ## Contributors
 
 Thanks to [Sharath K (@sharath568)](https://github.com/sharath568) for proposing
@@ -233,7 +244,3 @@ and implementing the initial Phase 17 model/LLM adapter in
 [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
 [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
 commit is preserved in the integrated implementation.
-
-Phase 18 adds [native database health](docs/database-adapter.md) for PostgreSQL, MySQL, Redis and MongoDB.
-Fixed SQL queries require explicit functional opt-in. See the
-[alignment audit](docs/phase-18-alignment.md) and [disposable examples](examples/database-check/README.md).
