@@ -165,7 +165,7 @@ test('model configuration delegates passive health to the real CLI', async t => 
 test('database schema supports nested dependencies and rejects insecure TLS', async t => {
   const document = { version: 'v1', targets: [{ name: 'data', type: 'database', endpoint: 'redis://127.0.0.1:1',
     database: { password_env: 'AGENTHEALTH_TEST_DB_MISSING' }, dependencies: [{ name: 'cache', type: 'database',
-      endpoint: 'redis://127.0.0.1:1', database: { tls: 'required' }, checks: [] }] }] };
+      endpoint: 'redis://127.0.0.1:1', database: { tls: 'required', password_env: 'AGENTHEALTH_TEST_DB_MISSING' } }] }] };
   const config = new Configuration(document);
   document.targets[0].database.tls = 'skip-verify';
   assert.throws(() => new Configuration(document), ConfigurationError);
