@@ -29,7 +29,7 @@ prepared for synchronized v0.16.0; publication must be verified separately.
 | 23 plugins | Trusted compiled drivers only, no dynamic plugin or tenant isolation claim. |
 | 24 conformance | Add schema rejection and native protocol safety regression coverage; full conformance remains planned. |
 | 25 interoperability | Controlled PostgreSQL 17.6, MySQL 8.4.6, Redis 7.4.5 and MongoDB 8.0.13 matrix; cloud products, version matrices, TLS database deployment matrices and cluster/failover compatibility remain future work. |
-| 26 hardening | Verified TLS default, no insecure fallback, fixed query constants, environment passwords, context-bound connections and no native operation retries. No security audit claim. |
+| 26 hardening | Verified TLS default, no insecure fallback, fixed query constants, environment passwords, context-bound connections and no native operation retries. Go source minimum advances to 1.26 for security-patched dependencies; minimum-version CI and build guides align. No security audit claim. |
 
 Validation includes Go vet/race, canonical fixtures and examples, SDK schema
 parity/type declarations, markdown links and real database healthy/wrong-password

@@ -3,7 +3,7 @@
 Phase 13 tooling is included starting in v0.11.0. This
 example prepares local assets; it does not publish a release or package channel.
 Run from the repository root with Go 1.26.4 or newer for nFPM (the CLI itself
-supports Go 1.23+) and Python 3. Use a fresh, empty output directory.
+supports Go 1.26+) and Python 3. Use a fresh, empty output directory.
 
 ```bash
 python3 scripts/build_release.py v0.0.0-local --output /tmp/agenthealth-local-assets

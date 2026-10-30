@@ -105,7 +105,7 @@ Every pull request runs the [CI workflow](.github/workflows/ci.yml):
 - **Markdown link check** (`scripts/check_markdown_links.py`) — verifies every relative markdown link and `#anchor` in the repository actually resolves.
 - **Doc example validation** (`scripts/validate_doc_examples.py`) — validates fenced JSON/YAML examples in README.md, ROADMAP.md, and spec/*.md that are explicitly marked `<!-- spec-example: result -->` or `<!-- spec-example: configuration -->` against the schemas, so prose examples can't silently drift from the schemas the way they did before this check existed. An example can only be exempted with `<!-- spec-example: skip reason="..." -->` — a documented, intentional reason is required.
 
-The **Go core tests** jobs check formatting, run `go vet ./...`, and run `go test -race ./...` on Linux, macOS, and Windows. **Go minimum version (1.23)** runs vet and race tests on Linux with automatic toolchain upgrades disabled. The vulnerability scan and current/legacy official SDK interoperability checks also run on pull requests.
+The **Go core tests** jobs check formatting, run `go vet ./...`, and run `go test -race ./...` on Linux, macOS, and Windows. **Go minimum version (1.26)** runs vet and race tests on Linux with automatic toolchain upgrades disabled. The vulnerability scan and current/legacy official SDK interoperability checks also run on pull requests.
 
 Normal pushes to `main` do not trigger CI. Pull requests keep the regular checks;
 the existing daily schedule and ordinary manual runs also keep those checks.

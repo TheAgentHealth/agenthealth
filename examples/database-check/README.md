@@ -1,7 +1,7 @@
 # Native database health
 
 These disposable services use PostgreSQL 17.6, MySQL 8.4.6, Redis 7.4.5 and
-MongoDB 8.0.13. Docker Compose v2 and Go 1.23+ are required. Ports bind only to
+MongoDB 8.0.13. Docker Compose v2 and Go 1.26+ are required. Ports bind only to
 loopback. Credentials below are public test values; remove volumes after use.
 
 ```bash

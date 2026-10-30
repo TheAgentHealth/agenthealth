@@ -1395,7 +1395,7 @@ This tree includes planned directories for future adapters, SDKs, and integratio
 
 Download a standalone binary from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases); see [installation instructions](../docs/installation.md). Downloaded binaries do not require Go.
 
-Build from source with Go 1.23 or newer:
+Build from source with Go 1.26 or newer:
 
 ```bash
 go build -o agenthealth ./cmd/agenthealth

@@ -193,7 +193,7 @@ HEAD as GET or follow redirects. Only configure GET against a read-only handler.
 
 ## Development validation
 
-Use Go 1.23 or newer and install the Python test requirements. CI runs race tests,
+Use Go 1.26 or newer and install the Python test requirements. CI runs race tests,
 coverage gating, schema validation, documentation checks and protocol suites.
 Reference application handlers have separate FastAPI/LangGraph and Express tests.
 

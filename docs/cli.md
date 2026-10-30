@@ -1,6 +1,6 @@
 # AgentHealth CLI
 
-Build with Go 1.23 or newer from the repository root:
+Build with Go 1.26 or newer from the repository root:
 
 ```bash
 go build -o agenthealth ./cmd/agenthealth

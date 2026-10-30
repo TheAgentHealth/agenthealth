@@ -93,7 +93,7 @@ files. The local `/agenthealth` binary and `/dist/` outputs are ignored.
 
 ## Local validation
 
-Use Go 1.23 or newer and Python with `tests/requirements.txt` installed. Check
+Use Go 1.26 or newer and Python with `tests/requirements.txt` installed. Check
 `go version` first; a toolchain under `/tmp` is temporary and must not be assumed
 to exist or documented as the normal installation path.
 
