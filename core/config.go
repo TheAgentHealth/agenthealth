@@ -7,9 +7,9 @@ import (
 	"io"
 	"math"
 	"net/http"
- "net/url"
- "regexp"
+	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -43,59 +43,77 @@ type DatabaseOptions struct {
 
 // VectorStoreOptions selects read-only metadata and an optional bounded query.
 type VectorStoreOptions struct {
- Provider string `yaml:"provider"`
- Collection string `yaml:"collection"`
- Namespace string `yaml:"namespace"`
- Functional *VectorQuery `yaml:"functional"`
+	Provider   string       `yaml:"provider"`
+	Collection string       `yaml:"collection"`
+	Namespace  string       `yaml:"namespace"`
+	Functional *VectorQuery `yaml:"functional"`
 }
 type VectorQuery struct {
- Safe bool `yaml:"safe"`
- Vector []float64 `yaml:"vector"`
+	Safe   bool      `yaml:"safe"`
+	Vector []float64 `yaml:"vector"`
 }
 
 // ValidVectorStore validates endpoint and vector options for both config and adapter callers.
 func ValidVectorStore(t Target) bool {
- o := t.VectorStore
- if t.Type != "vector-store" || o == nil { return false }
- u, err := url.Parse(t.Endpoint)
- if err != nil || u.Hostname() == "" || (u.Scheme != "http" && u.Scheme != "https") || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || u.Opaque != "" { return false }
- switch o.Provider {
- case "qdrant":
-  if !regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,254}$`).MatchString(o.Collection) || o.Namespace != "" { return false }
- case "pinecone":
-  if o.Collection != "" || len(o.Namespace)>512 || strings.ContainsAny(o.Namespace, "\x00\r\n") { return false }
- default: return false
- }
- if f := o.Functional; f != nil {
-  if !f.Safe || len(f.Vector)<1 || len(f.Vector)>4096 { return false }
-  nonzero := false
-  for _, v := range f.Vector { if math.IsNaN(v) || math.IsInf(v,0) { return false }; nonzero = nonzero || v != 0 }
-  if !nonzero { return false }
- }
- return true
+	o := t.VectorStore
+	if t.Type != "vector-store" || o == nil {
+		return false
+	}
+	u, err := url.Parse(t.Endpoint)
+	if err != nil || u.Hostname() == "" || (u.Scheme != "http" && u.Scheme != "https") || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || u.Opaque != "" {
+		return false
+	}
+	switch o.Provider {
+	case "qdrant":
+		if !regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,254}$`).MatchString(o.Collection) || o.Namespace != "" {
+			return false
+		}
+	case "pinecone":
+		if o.Collection != "" || len(o.Namespace) > 512 || strings.ContainsAny(o.Namespace, "\x00\r\n") {
+			return false
+		}
+	default:
+		return false
+	}
+	if f := o.Functional; f != nil {
+		if !f.Safe || len(f.Vector) < 1 || len(f.Vector) > 4096 {
+			return false
+		}
+		nonzero := false
+		for _, v := range f.Vector {
+			if math.IsNaN(v) || math.IsInf(v, 0) {
+				return false
+			}
+			nonzero = nonzero || v != 0
+		}
+		if !nonzero {
+			return false
+		}
+	}
+	return true
 }
 
 type Target struct {
- VectorStore *VectorStoreOptions `yaml:"vector_store"`
-	Database      *DatabaseOptions `yaml:"database"`
-	Agent         *AgentOptions    `yaml:"agent"`
-	ID            string           `yaml:"id"`
-	BudgetMS      *int             `yaml:"budget_ms"`
-	Name          string           `yaml:"name"`
-	Type          string           `yaml:"type"`
-	Endpoint      string           `yaml:"endpoint"`
-	Checks        []string         `yaml:"checks"`
-	Thresholds    *Thresholds      `yaml:"thresholds"`
-	Dependencies  []Dependency     `yaml:"dependencies"`
-	TimeoutMS     *int             `yaml:"timeout_ms"`
-	Retries       *int             `yaml:"retries"`
-	RetryDelayMS  *int             `yaml:"retry_delay_ms"`
-	CheckTimeouts map[string]int   `yaml:"check_timeouts_ms"`
-	Auth          *AuthReference   `yaml:"auth"`
-	HTTP          *HTTPOptions     `yaml:"http"`
-	MCP           *MCPOptions      `yaml:"mcp"`
-	A2A           *A2AOptions      `yaml:"a2a"`
-	Model         *ModelOptions    `yaml:"model"`
+	VectorStore   *VectorStoreOptions `yaml:"vector_store"`
+	Database      *DatabaseOptions    `yaml:"database"`
+	Agent         *AgentOptions       `yaml:"agent"`
+	ID            string              `yaml:"id"`
+	BudgetMS      *int                `yaml:"budget_ms"`
+	Name          string              `yaml:"name"`
+	Type          string              `yaml:"type"`
+	Endpoint      string              `yaml:"endpoint"`
+	Checks        []string            `yaml:"checks"`
+	Thresholds    *Thresholds         `yaml:"thresholds"`
+	Dependencies  []Dependency        `yaml:"dependencies"`
+	TimeoutMS     *int                `yaml:"timeout_ms"`
+	Retries       *int                `yaml:"retries"`
+	RetryDelayMS  *int                `yaml:"retry_delay_ms"`
+	CheckTimeouts map[string]int      `yaml:"check_timeouts_ms"`
+	Auth          *AuthReference      `yaml:"auth"`
+	HTTP          *HTTPOptions        `yaml:"http"`
+	MCP           *MCPOptions         `yaml:"mcp"`
+	A2A           *A2AOptions         `yaml:"a2a"`
+	Model         *ModelOptions       `yaml:"model"`
 }
 
 // ModelOptions selects the inference API dialect, passive model expectations,
@@ -465,11 +483,15 @@ func validateTarget(t Target, path string, depth int) error {
 			}
 		}
 	}
-	if t.VectorStore != nil || t.Type == "vector-store" {
-  if !ValidVectorStore(t) { return fmt.Errorf("%s: invalid vector-store endpoint or options", path) }
-  if (t.VectorStore.Functional != nil) != contains(t.Checks, "functional") { return fmt.Errorf("%s: vector query requires functional opt-in and safe query options", path) }
- }
- if o := t.Database; o != nil {
+	if t.VectorStore != nil || (t.Type == "vector-store" && contains(t.Checks, "functional")) {
+		if !ValidVectorStore(t) {
+			return fmt.Errorf("%s: invalid vector-store endpoint or options", path)
+		}
+		if (t.VectorStore.Functional != nil) != contains(t.Checks, "functional") {
+			return fmt.Errorf("%s: vector query requires functional opt-in and safe query options", path)
+		}
+	}
+	if o := t.Database; o != nil {
 		if t.Type != "database" || t.Auth != nil || (o.TLS != "" && o.TLS != "required" && o.TLS != "disabled") || (o.PasswordEnv != "" && !validEnvReference(o.PasswordEnv)) {
 			return fmt.Errorf("%s: invalid database options or credential reference", path)
 		}
@@ -718,9 +740,15 @@ func validYAMLNode(n *yaml.Node, kind string, depth int) bool {
 				timeoutsSeen[k.Value] = true
 			}
 		case "vector":
-   if value.Kind != yaml.SequenceNode { return false }
-   for _, child := range value.Content { if child.Kind != yaml.ScalarNode || (child.Tag != "!!int" && child.Tag != "!!float") { return false } }
-  case "latency_ms":
+			if value.Kind != yaml.SequenceNode {
+				return false
+			}
+			for _, child := range value.Content {
+				if child.Kind != yaml.ScalarNode || (child.Tag != "!!int" && child.Tag != "!!float") {
+					return false
+				}
+			}
+		case "latency_ms":
 			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
 				return false
 			}
