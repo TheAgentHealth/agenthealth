@@ -1297,7 +1297,7 @@ Earlier: additive v1 model configuration and stable diagnostic codes; Go validat
 
 # Phase 18 — Database Adapters
 
-**Status:** Implemented in source for v0.16.0.
+**Status:** Released in v0.16.0.
 
 - [x] PostgreSQL and MySQL native connectivity/login
 - [x] Redis and MongoDB authenticated PING

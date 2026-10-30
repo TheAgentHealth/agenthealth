@@ -38,7 +38,7 @@ evolve; this describes contract stability, not unreleased implementation.
 [Phase 8 — Agentgateway Integration](ROADMAP.md#phase-8--agentgateway-integration)
 is implemented in source; [Phase 9 — Agent Router Integration](ROADMAP.md#phase-9--agent-router-integration)
 is implemented in source. Phase 10 [Dependency Graph](docs/dependency-graph.md) is released in v0.8.0; experimental AHP HTTP serving is implemented in Phase 11. Keep planned
-capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway, router and model/LLM adapters;
+capabilities distinct from the implemented agent, HTTP/API, MCP, A2A, gateway, router, model/LLM and native database adapters;
 checking an A2A peer alone does not verify the first agent's communication
 path to that peer.
 
@@ -78,7 +78,7 @@ manifests, Docker images, Helm chart, OCI binary bundle and released SDK package
 formats together, even when an individual format's files have not changed.
 Chart `version` uses the numeric software version; `appVersion` and pinned
 images identify the matching CLI. The Python and JavaScript/TypeScript SDKs
-share v0.15.0 with the CLI and other distributions. Future SDKs adopt this
+share v0.16.0 with the CLI and other distributions. Future SDKs adopt this
 policy when implemented.
 AHS/AHP contract versions remain separate.
 

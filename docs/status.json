@@ -1,5 +1,5 @@
 {
-  "software_version": "v0.15.0",
+  "software_version": "v0.16.0",
   "phases": [
     {
       "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
@@ -111,7 +111,7 @@
     },
     {
       "phase": "[18: Database Adapters](../ROADMAP.md#phase-18--database-adapters)",
-      "status": "Implemented in source for v0.16.0",
+      "status": "Released in v0.16.0",
       "documentation": "[Database guide](database-adapter.md)",
       "validation": "[Native database examples](../examples/database-check/README.md)"
     },

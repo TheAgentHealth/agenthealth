@@ -18,7 +18,7 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python and JavaScript/TypeScript SDKs are released and share v0.15.0.
+Python and JavaScript/TypeScript SDKs are released and share v0.16.0.
 Future SDK improvements follow the stabilization and interoperability work above.
 Model/LLM OpenAI-compatible and Anthropic adapters are released in v0.15.0.
 Additional cloud model dialects, vector adapters, framework integrations, scoped authorization
@@ -136,7 +136,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 18 — Database Adapters
 
-Implemented in source for v0.16.0: PostgreSQL/MySQL native login, Redis/MongoDB
+Released in v0.16.0: PostgreSQL/MySQL native login, Redis/MongoDB
 PING, verified TLS defaults and opt-in fixed SQL queries. See the
 [guide](docs/database-adapter.md) and [impact review](docs/phase-18-alignment.md).
 
