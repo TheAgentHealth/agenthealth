@@ -1,12 +1,12 @@
 # Install AgentHealth
 
-Published software: **v0.15.0**. The commands below select its synchronized
+Published software: **v0.16.0**. The commands below select its synchronized
 CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.15.0.md).
+[publication verification](releases/verification-v0.16.0.md).
 
-<!-- release-version: v0.15.0 -->
+<!-- release-version: v0.16.0 -->
 
-The commands below target v0.15.0. See the [verification record](releases/verification-v0.15.0.md).
+The commands below target v0.16.0. See the [verification record](releases/verification-v0.16.0.md).
 
 Choose a distribution:
 
@@ -18,7 +18,7 @@ Choose a distribution:
 | Linux DEB/RPM, Homebrew/Scoop manifests | [Package channels](#package-channels-phase-13-v0110) |
 | OCI release-file bundle | [ORAS download](distribution.md#installation-examples) |
 
-The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.15.0`. The [JavaScript SDK](javascript-sdk.md) is published on npm for Phase 16.
+The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.16.0`. The [JavaScript SDK](javascript-sdk.md) is published on npm for Phase 16.
 
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
@@ -33,10 +33,10 @@ Download the archive for your operating system and CPU from [GitHub Releases](ht
 ## Linux x86-64 example
 
 ```bash
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.15.0/agenthealth_v0.15.0_linux_amd64.tar.gz
-curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.15.0/checksums.txt
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.16.0/agenthealth_v0.16.0_linux_amd64.tar.gz
+curl -fLO https://github.com/TheAgentHealth/agenthealth/releases/download/v0.16.0/checksums.txt
 sha256sum --check --ignore-missing checksums.txt
-tar -xzf agenthealth_v0.15.0_linux_amd64.tar.gz
+tar -xzf agenthealth_v0.16.0_linux_amd64.tar.gz
 ./agenthealth version
 ./agenthealth ping http https://example.com
 ```
@@ -61,12 +61,12 @@ With Go 1.26 or newer:
 ```bash
 git clone https://github.com/TheAgentHealth/agenthealth.git
 cd agenthealth
-git checkout v0.15.0
-go build -ldflags '-X main.version=v0.15.0' -o agenthealth ./cmd/agenthealth
+git checkout v0.16.0
+go build -ldflags '-X main.version=v0.16.0' -o agenthealth ./cmd/agenthealth
 ./agenthealth version
 ```
 
-See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.15.0 release rebuilds existing package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, model/LLM OpenAI-compatible and Anthropic APIs, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
+See [CLI usage](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/cli.md) and [HTTP configuration](https://github.com/TheAgentHealth/agenthealth/blob/main/docs/http-adapter.md). The v0.16.0 release rebuilds existing package-channel assets and includes the official container image, experimental AHP HTTP serving, shared dependency graphs, and supports PostgreSQL/MySQL/Redis/MongoDB database targets, agent/multi-agent, gateway/router HTTP signals, HTTP/API, MCP HTTP/stdio with OAuth, model/LLM OpenAI-compatible and Anthropic APIs, and A2A 1.0 JSON-RPC targets with explicit 0.3.0 compatibility. See [agent setup and runtime prerequisites](agent-adapter.md), [MCP configuration](mcp-adapter.md) and [A2A configuration](a2a-adapter.md).
 
 Phase 10 graph fields require v0.8.0 or newer. Existing nested configurations remain valid.
 The [graph example](../examples/graph-check/README.md) requires configured services
@@ -74,15 +74,15 @@ and a safe runtime handler.
 
 ## Verify provenance and SBOMs
 
-Each archive has a matching `agenthealth_v0.15.0_<os>_<arch>.cdx.json` CycloneDX
+Each archive has a matching `agenthealth_v0.16.0_<os>_<arch>.cdx.json` CycloneDX
 1.6 SBOM describing linked Go modules, the standard-library version and the
 executable SHA-256. `checksums.txt` covers both archives and SBOMs.
 
 With a current GitHub CLI supporting `gh attestation`:
 
 ```bash
-gh attestation verify agenthealth_v0.15.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
-gh attestation verify agenthealth_v0.15.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
+gh attestation verify agenthealth_v0.16.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth
+gh attestation verify agenthealth_v0.16.0_linux_amd64.tar.gz --repo TheAgentHealth/agenthealth --predicate-type https://cyclonedx.org/bom
 ```
 
 Attestations bind artifacts to this repository’s release workflow through a
@@ -107,14 +107,14 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured; v0.15.0 is published and verified in both registries:
+tags when mirror credentials are configured; v0.16.0 is published and verified in both registries:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.15.0 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.16.0 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.15.0 version
+docker run --rm theagenthealth/agenthealth:v0.16.0 version
 ```
 
 To build the image locally:
@@ -188,11 +188,11 @@ installation across distributions and public channel hosting remain follow-up wo
 
 Phase 14 provides [manifests](../deploy/kubernetes/), the
 [Helm chart](../deploy/helm/agenthealth/) and
-[runnable scenarios](../examples/kubernetes/README.md). Source chart 0.15.0
-pins CLI v0.15.0 and publishes through the shared release workflow. The
+[runnable scenarios](../examples/kubernetes/README.md). Source chart 0.16.0
+pins CLI v0.16.0 and publishes through the shared release workflow. The
 historical chart 0.1.0 remains available as helm-v0.1.0, pinning CLI v0.11.1.
 See [Kubernetes](kubernetes.md) and [distribution](distribution.md) for direct
-release downloads, OCI Helm install and ORAS binary retrieval. The v0.15.0 channels are published and verified.
+release downloads, OCI Helm install and ORAS binary retrieval. The v0.16.0 channels are published and verified.
 
 ## Python SDK
 

@@ -1,19 +1,19 @@
 # JavaScript / TypeScript SDK
 
-Published software: **v0.15.0**. The commands below select its synchronized
+Published software: **v0.16.0**. The commands below select its synchronized
 CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.15.0.md).
+[publication verification](releases/verification-v0.16.0.md).
 
-Phase 16 releases [`@theagenthealth/agenthealth`](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.15.0) for Node.js **22.14+**, ESM.
+Phase 16 releases [`@theagenthealth/agenthealth`](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.16.0) for Node.js **22.14+**, ESM.
 It wraps the reference Go CLI at the exact same software version and does not
 fetch or run executables on installation/import. Browser execution is outside
 this SDK's scope. The software remains pre-1.0.
 
 ```sh
-npm install @theagenthealth/agenthealth@0.15.0
+npm install @theagenthealth/agenthealth@0.16.0
 ```
 
-Install and verify CLI v0.15.0 separately following
+Install and verify CLI v0.16.0 separately following
 [installation](installation.md). See the [package API](../sdk/javascript/README.md)
 for configuration, cancellation, timeouts, limits and typed errors, and the
 [runnable example](../examples/javascript-sdk/README.md).
@@ -52,7 +52,7 @@ The final `publish` job requires both. Verify downloaded
 bytes against signed checksums and verify installed registry provenance:
 
 ```sh
-npm install --ignore-scripts @theagenthealth/agenthealth@0.15.0
+npm install --ignore-scripts @theagenthealth/agenthealth@0.16.0
 npm audit signatures
 ```
 

@@ -1,11 +1,11 @@
 # Python SDK
 
-Published software: **v0.15.0**. The commands below select its synchronized
+Published software: **v0.16.0**. The commands below select its synchronized
 CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.15.0.md).
+[publication verification](releases/verification-v0.16.0.md).
 
 Phase 15 implements a Python 3.10+ wrapper around the Go CLI. Published SDK and CLI use
-software v0.15.0; publication is recorded separately in [capability status](phase-status.md).
+software v0.16.0; publication is recorded separately in [capability status](phase-status.md).
 The SDK consumes AHS v1 and never reimplements adapter execution or aggregation.
 
 ## Installation
@@ -13,10 +13,10 @@ The SDK consumes AHS v1 and never reimplements adapter execution or aggregation.
 Install the published version:
 
 ```bash
-pip install agenthealth==0.15.0
+pip install agenthealth==0.16.0
 ```
 
-Install the matching CLI v0.15.0 separately using the
+Install the matching CLI v0.16.0 separately using the
 [verified binary installation](installation.md#verify-provenance-and-sboms) instructions.
 Select its exact platform archive and verify both checksums and signed
 provenance before execution. The SDK never downloads binaries, changes PATH,
