@@ -2135,7 +2135,9 @@
               "minItems": 1,
               "maxItems": 4096,
               "items": {
-                "type": "number"
+                "type": "number",
+                "minimum": -1.7976931348623157e+308,
+                "maximum": 1.7976931348623157e+308
               },
               "contains": {
                 "not": {

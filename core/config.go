@@ -69,7 +69,7 @@ func ValidVectorStore(t Target) bool {
 			return false
 		}
 	case "pinecone":
-		if o.Collection != "" || len(o.Namespace) > 512 || strings.ContainsAny(o.Namespace, "\x00\r\n") {
+		if o.Collection != "" || utf8.RuneCountInString(o.Namespace) > 512 || strings.ContainsAny(o.Namespace, "\x00\r\n") {
 			return false
 		}
 	default:
