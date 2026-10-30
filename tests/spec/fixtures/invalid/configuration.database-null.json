@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "targets": [
+    {
+      "name": "db",
+      "type": "database",
+      "endpoint": "postgres://localhost/health",
+      "database": null
+    }
+  ]
+}
