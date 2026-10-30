@@ -309,3 +309,23 @@ def test_database_configuration_and_report(binary, monkeypatch):
     document['targets'][0]['database']['tls'] = 'skip-verify'
     with pytest.raises(ConfigurationError):
         Configuration(document)
+
+
+def test_vector_configuration_and_report(binary, monkeypatch):
+    target = {'name': 'retrieval', 'type': 'vector-store', 'endpoint': 'http://127.0.0.1:1',
+              'auth': {'bearer_env': 'AGENTHEALTH_TEST_VECTOR_MISSING'},
+              'vector_store': {'provider': 'qdrant', 'collection': 'docs'}}
+    document = {'version': 'v1', 'targets': [target]}
+    Configuration(document)
+    target['checks'] = ['functional']
+    with pytest.raises(ConfigurationError):
+        Configuration(document)
+    target['vector_store']['functional'] = {'safe': True, 'vector': [1, 0, 0]}
+    config = Configuration(document)
+    target['vector_store']['functional']['vector'] = [0, 0, 0]
+    with pytest.raises(ConfigurationError):
+        Configuration(document)
+    monkeypatch.delenv('AGENTHEALTH_TEST_VECTOR_MISSING', raising=False)
+    report = Client(binary).check(config)
+    assert report.status == HealthStatus.MISCONFIGURED
+    assert report.results[0].target.type == 'vector-store'
