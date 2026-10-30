@@ -6,7 +6,7 @@
 
 ## Start here
 
-**Latest release: [v0.16.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.16.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; vector-store adapters remain planned. See the [model guide](docs/model-adapter.md) and [database guide](docs/database-adapter.md).
+**Latest release: [v0.16.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.16.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; Qdrant/Pinecone vector-store adapters are implemented in source for the next release. See the [model guide](docs/model-adapter.md) and [database guide](docs/database-adapter.md).
 
 ### Install
 
@@ -244,3 +244,6 @@ and implementing the initial Phase 17 model/LLM adapter in
 [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
 [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
 commit is preserved in the integrated implementation.
+
+Phase 19 implements [Qdrant and Pinecone vector-store checks](docs/vector-store-adapter.md)
+with explicit read-only query opt-in. See the [phase alignment audit](docs/phase-19-alignment.md).

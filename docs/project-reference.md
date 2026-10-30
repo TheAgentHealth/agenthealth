@@ -12,7 +12,7 @@ source of current release status.
 
 ## Start here
 
-**Latest release: [v0.15.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.15.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM checks for OpenAI-compatible and Anthropic APIs are released in v0.15.0; database and vector-store adapters remain planned. See the [model guide](model-adapter.md).
+**Latest release: [v0.16.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.16.0), pre-1.0.** Native database and model/LLM checks are released. Qdrant/Pinecone vector-store checks are implemented in source; see the [vector guide](vector-store-adapter.md).
 
 ### Install
 
@@ -713,7 +713,7 @@ supports configured HTTP signals and named route/backend evidence in source. A f
 
 # Model / LLM Health
 
-> Planned adapter. The released CLI does not implement this target type. Use an explicitly configured HTTP health endpoint for HTTP-level evidence today; it does not establish functional model or database readiness.
+> OpenAI-compatible and Anthropic checks are released in v0.15.0. See the [model guide](model-adapter.md).
 
 AgentHealth can validate model dependencies without being tied to one provider.
 
@@ -753,7 +753,7 @@ Latency
 
 # Vector Store Health
 
-> Planned adapter. The released CLI does not implement this target type. Use an explicitly configured HTTP health endpoint for HTTP-level evidence today; it does not establish functional model or database readiness.
+> Qdrant/Pinecone checks are implemented in source. Other providers below remain planned. See the [vector guide](vector-store-adapter.md).
 
 Adapters may provide checks for vector infrastructure.
 
@@ -785,7 +785,7 @@ Provider integrations are expected to grow through community adapters.
 
 # Database Health
 
-> Planned adapter. The released CLI does not implement this target type. Use an explicitly configured HTTP health endpoint for HTTP-level evidence today; it does not establish functional model or database readiness.
+> Native PostgreSQL/MySQL/Redis/MongoDB checks are released in v0.16.0. See the [database guide](database-adapter.md).
 
 Database checks may include:
 
@@ -875,8 +875,11 @@ targets:
         critical: true
 
       - name: vector-store-health
-        type: http
+        type: vector-store
         endpoint: http://vector-db:6333
+        vector_store:
+          provider: qdrant
+          collection: documents
         critical: true
 
       - name: analytics-api

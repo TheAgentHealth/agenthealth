@@ -68,7 +68,7 @@ Not all [health dimensions](health-model.md#health-dimensions) apply to every ta
 | `gateway` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `router` | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ |
 | `database` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
-| `vector-store` | ✓ | — | ✓ | ✓ | ✓ | — | ✓ | ✓ |
+| `vector-store` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 
 This table is indicative, not exhaustive — individual adapters define exactly which dimensions they implement (see [adapter-spec.md](adapter-spec.md)).
 
@@ -87,3 +87,6 @@ See the [explicit graph contract](../docs/rfcs/phase-10-dependency-graph.md) for
 Phase 18 implements native `database` targets for PostgreSQL, MySQL, Redis and
 MongoDB. Data services remain supporting dependencies, not composite agents.
 See [database evidence and limitations](../docs/database-adapter.md).
+
+Phase 19 implements Qdrant/Pinecone dense-vector `vector-store` targets.
+These are supporting dependencies. See [scope and limits](../docs/vector-store-adapter.md).

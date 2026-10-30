@@ -1320,36 +1320,34 @@ login/minimal-query evidence from application data and retrieval readiness.
 
 # Phase 19 — Vector Store Adapters
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source; synchronized publication pending verification.
 
-Potential targets:
+Initial scope: Qdrant REST and Pinecone dense-vector data-plane REST 2025-10.
 
-```text
-Pinecone
-Qdrant
-Weaviate
-Milvus
-pgvector
-OpenSearch
-Elasticsearch
-```
+- [x] connectivity and authentication
+- [x] collection/index metadata and availability
+- [x] explicit bounded read-only top-1 vector query
+- [x] latency, timeout, response-size and credential safety
+- [x] CLI/AHP registry, both SDK schemas, fixtures, examples and Qdrant CI matrix
 
-## Common Checks
-
-- [ ] connectivity
-- [ ] authentication
-- [ ] collection/index availability
-- [ ] metadata access
-- [ ] minimal query
-- [ ] latency
+Weaviate, Milvus, pgvector, OpenSearch, Elasticsearch, named/sparse vectors and
+broader product/version matrices remain planned extensions. PostgreSQL login
+does not establish pgvector retrieval. See the [guide](vector-store-adapter.md),
+[design](rfcs/phase-19-vector-store.md) and [alignment audit](phase-19-alignment.md).
 
 ## Impact Review
 
-Earlier: add vector-store adapters under the shared contracts and expose them through core/CLI registration; review any specification extensions. Later: provide retrieval dependency coverage for runtime, conformance, and interoperability tests.
+Earlier phases preserve existing result/exits, graph/AHP and deployment
+semantics; additive configuration and SDK schemas, registration and evidence
+are aligned. Later runtime/conformance/interoperability phases must preserve
+retrieval as independent supporting-dependency evidence and record exact
+provider versions. All phases are assessed in the alignment audit.
 
 ---
 
 # Phase 20 — Agent Runtime / Framework Integrations
+
+Phase 19 integration: preserve retrieval dependency evidence and explicit query opt-in; vector health does not establish retrieval relevance or agent communication.
 
 Phase 16 integration: use the installed Node ESM SDK with a matching verified CLI;
 propagate AbortSignal, millisecond deadlines, and health reports without turning
@@ -1594,6 +1592,8 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
+
+Phase 19 integration: preserve retrieval dependency evidence and explicit query opt-in; vector health does not establish retrieval relevance or agent communication.
 
 Phase 16 integration: expand the Node 22/24 Linux/macOS/Windows installed-package
 smoke tests to real JavaScript agent frameworks and protocol products. Preserve

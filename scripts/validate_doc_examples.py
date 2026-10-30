@@ -54,6 +54,8 @@ MARKER_RE = re.compile(
 )
 
 FILES_TO_CHECK = [
+    ROOT / "docs" / "vector-store-adapter.md",
+    ROOT / "examples" / "vector-check" / "README.md",
     ROOT / "docs" / "model-adapter.md",
     ROOT / "docs" / "database-adapter.md",
     ROOT / "examples" / "database-check" / "README.md",

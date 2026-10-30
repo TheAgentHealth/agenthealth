@@ -38,3 +38,6 @@ semantics. See the [Phase 17 alignment audit](phase-17-alignment.md) for cross-p
 Phase 18 adds [native database health](database-adapter.md) for PostgreSQL, MySQL, Redis and MongoDB.
 Fixed SQL queries require explicit functional opt-in. See the
 [alignment audit](phase-18-alignment.md) and [disposable examples](../examples/database-check/README.md).
+
+Phase 19 implements [Qdrant and Pinecone vector-store checks](vector-store-adapter.md)
+with explicit read-only query opt-in. See the [phase alignment audit](phase-19-alignment.md).
