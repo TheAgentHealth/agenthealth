@@ -1,9 +1,9 @@
 # Reference application middleware
 
 The agent adapter requires an application contract; it does not automatically
-inspect arbitrary agent frameworks. These source examples implement the existing
-[health document and safe-task contract](agent-adapter.md). They are not published
-SDKs. Integrate them with your application authentication and resource limits.
+inspect arbitrary agent frameworks. These implementations use the existing
+[health document and safe-task contract](agent-adapter.md). Go and Express remain source examples; Python/FastAPI and LangGraph use the
+optional installed SDK integration. Integrate them with your application authentication and resource limits.
 
 | Runtime | Source | Integration |
 |---|---|---|
@@ -21,8 +21,8 @@ The optional probe receives `{safe: true, text, downstream?}`. Implement only
 allowlisted health operations. Return `completed` and `success`; when a downstream
 selector is supplied, return the matching downstream only after actually
 performing the authorized peer exchange. Never echo the selector as fabricated
-proof. The LangGraph bridge rejects downstream probes until you implement that
-exchange; use a dedicated safe graph, not an unrestricted production agent.
+proof. The LangGraph bridge accepts downstream probes only through explicitly
+allowlisted async peer callbacks that perform that exchange; use a dedicated safe graph, not an unrestricted production agent.
 
 Reference POST handlers cap the JSON envelope at 512 KiB to allow escaped text,
 framing and downstream identifiers. Decoded text remains limited to 65,536 UTF-8

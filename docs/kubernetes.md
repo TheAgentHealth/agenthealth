@@ -1,13 +1,13 @@
 # Kubernetes integration
 
-Published software: **v0.17.0**. The commands below select its synchronized
+Published software: **v0.18.0**. The commands below select its synchronized
 CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.17.0.md).
+[publication verification](releases/verification-v0.18.0.md).
 
 Phase 14's initial chart 0.1.0/CLI v0.11.1 releases remain public. The source
-chart is now **0.17.0**, with `appVersion: v0.17.0`, matching image defaults and
-coordinated OCI/chart/binary release jobs. v0.17.0 is published and verified.
-See the [verification record](releases/verification-v0.17.0.md).
+chart is now **0.18.0**, with `appVersion: v0.18.0`, matching image defaults and
+coordinated OCI/chart/binary release jobs. v0.18.0 is published and verified.
+See the [verification record](releases/verification-v0.18.0.md).
 See [the distribution guide](distribution.md).
 
 Start with the [runnable scenarios](../examples/kubernetes/README.md),
@@ -18,10 +18,10 @@ They consume the existing executable without changing AHS, AHP or CLI contracts.
 
 Both public references for the pinned CLI version are:
 
-- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.17.0`
-- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.17.0`
+- GHCR: `ghcr.io/theagenthealth/agenthealth:v0.18.0`
+- Docker Hub: `docker.io/theagenthealth/agenthealth:v0.18.0`
 
-Both synchronized v0.17.0 references passed anonymous access checks.
+Both synchronized v0.18.0 references passed anonymous access checks.
 The chart defaults to GHCR. Set `image.repository` to the Docker Hub reference
 without its tag to select the mirror. For plain YAML, replace the full image
 reference in each AgentHealth container, including init containers. Registry
@@ -32,7 +32,7 @@ helm lint deploy/helm/agenthealth --strict --kube-version 1.32.2
 helm template agenthealth deploy/helm/agenthealth --kube-version 1.32.2
 helm upgrade --install agenthealth deploy/helm/agenthealth \
   --set image.repository=docker.io/theagenthealth/agenthealth \
-  --set image.tag=v0.17.0 \
+  --set image.tag=v0.18.0 \
   --set-file config=examples/kubernetes/agenthealth.yaml
 ```
 
@@ -94,7 +94,7 @@ kubectl -n agenthealth-demo apply -k examples/kubernetes
 ```
 
 Edit the Kustomize `images` entry's `newName` to choose either registry listed
-above and keep `newTag: v0.17.0`. Do not combine these examples with separately
+above and keep `newTag: v0.18.0`. Do not combine these examples with separately
 installed same-name resources in the same namespace.
 
 For an application-container exec probe, the optional
@@ -108,7 +108,7 @@ docker build -f examples/kubernetes/Dockerfile.exec-probe \
 docker run --rm --entrypoint /usr/local/bin/agenthealth agenthealth-demo-exec:local version
 ```
 
-Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.17.0`
+Supply `--build-arg AGENTHEALTH_IMAGE=docker.io/theagenthealth/agenthealth:v0.18.0`
 to use the mirror. Mount the reviewed configuration and Secret references in
 the application container; use the absolute executable path shown in the exec
 probe example. Startup should check the application's own process
@@ -197,7 +197,7 @@ Existing health aggregation and result contracts remain unchanged. See the
 Phase 19 source integration: [vector-store checks](vector-store-adapter.md)
 reuse the existing configuration, dependency and deadline contracts. Inject API
 keys through environment references; preserve independent agent/path evidence.
-Use the matching v0.17.0 CLI and SDK packages.
+Use the matching v0.18.0 CLI and SDK packages.
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.
