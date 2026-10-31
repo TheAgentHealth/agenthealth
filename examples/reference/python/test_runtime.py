@@ -67,3 +67,37 @@ def test_consumer_preserves_report_errors_and_cancellation():
         with pytest.raises(asyncio.CancelledError):
             await health_node(Cancelled(), config)({})
     asyncio.run(run())
+
+
+def test_peer_http_exchange_and_compiled_consumer():
+    import httpx
+    from langgraph.graph import StateGraph, START, END
+    from typing import TypedDict
+    peer_app = FastAPI()
+    peer_app.include_router(langgraph_router(Graph(), snapshot))
+    requests = []
+    async def exchange(text):
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=peer_app),
+                                     base_url='http://peer') as client:
+            response = await client.post('/health', json={'safe': True, 'text': text})
+            requests.append(response.status_code)
+            return response.status_code == 200 and response.json().get('success') is True
+    app = FastAPI()
+    app.include_router(langgraph_router(Graph(), snapshot, peers={'peer': exchange}))
+    with TestClient(app) as client:
+        assert client.post('/health', json={'safe': True, 'text': 'health',
+                                           'downstream': 'peer'}).json()['success'] is True
+        assert client.post('/health', json={'safe': True, 'text': 'bad',
+                                           'downstream': 'peer'}).json()['success'] is False
+    assert requests == [200, 200]
+    class State(TypedDict):
+        agenthealth: object
+    report = object()
+    class Client:
+        async def async_check(self, configuration):
+            return report
+    builder = StateGraph(State)
+    builder.add_node('health', health_node(Client(), 'operator.yaml'))
+    builder.add_edge(START, 'health')
+    builder.add_edge('health', END)
+    assert asyncio.run(builder.compile().ainvoke({}))['agenthealth'] is report
