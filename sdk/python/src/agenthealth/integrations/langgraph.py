@@ -1,5 +1,6 @@
 """LangGraph health resource and consumer node; no framework imports at SDK startup."""
 from collections.abc import Mapping
+from inspect import iscoroutinefunction
 
 
 def langgraph_router(graph, snapshot, *, peers=None):
@@ -13,7 +14,8 @@ def langgraph_router(graph, snapshot, *, peers=None):
 
     selected_peers = dict(peers or {})
     if any(not isinstance(key, str) or not key.strip() or len(key) > 1024
-           or not callable(value) for key, value in selected_peers.items()):
+           or not (iscoroutinefunction(value) or iscoroutinefunction(getattr(value, "__call__", None)))
+           for key, value in selected_peers.items()):
         raise ValueError("peers must map nonempty selectors to async callbacks")
 
     async def probe(task):

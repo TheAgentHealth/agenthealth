@@ -124,3 +124,16 @@ def test_passive_requests_never_execute_graph_or_peer():
 def test_invalid_peer_configuration(peers):
     with pytest.raises(ValueError):
         langgraph_router(Graph(), snapshot, peers=peers)
+
+
+def test_synchronous_peer_rejected_before_request_and_async_callable_supported():
+    with pytest.raises(ValueError):
+        langgraph_router(Graph(), snapshot, peers={'peer': lambda _: True})
+    class Peer:
+        async def __call__(self, text):
+            return True
+    app = FastAPI()
+    app.include_router(langgraph_router(Graph(), snapshot, peers={'peer': Peer()}))
+    with TestClient(app) as client:
+        assert client.post('/health', json={'safe': True, 'text': 'health',
+                                           'downstream': 'peer'}).json()['success'] is True
