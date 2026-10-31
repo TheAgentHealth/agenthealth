@@ -61,7 +61,8 @@ work. No framework runtime is bundled into the CLI image or Helm chart.
 
 ## Validation
 
-[Runnable example and tests](../examples/reference/python/) use FastAPI 0.143.0,
+[Runnable example](../examples/runtime-check/README.md) and
+[contract tests](../examples/reference/python/) use FastAPI 0.143.0,
 LangGraph 1.2.14 and httpx 0.28.1. CI installs the SDK before testing the compiled
 graph, safe task bounds, selected peer callback, failures and SDK consumer.
 This controlled baseline does not certify arbitrary production agents or complete

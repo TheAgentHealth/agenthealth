@@ -91,3 +91,6 @@ Fixed SQL queries require explicit functional opt-in. See the
 
 Phase 19 implements [Qdrant and Pinecone vector-store checks](../docs/vector-store-adapter.md)
 with explicit read-only query opt-in. See the [phase alignment audit](../docs/phase-19-alignment.md).
+
+[Phase 20 runtime integrations](../docs/framework-integrations.md) implement the
+existing agent resource contract; no v1 schema or exit-code migration is required.

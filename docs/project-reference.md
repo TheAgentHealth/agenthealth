@@ -1659,3 +1659,6 @@ Phase 8 Agentgateway integration is released in v0.6.0. See [the gateway guide](
 
 `agenthealth serve <configuration.yaml>` exposes snapshot health over HTTP.
 See the [AHP guide](../docs/ahp.md) for authorization, freshness and deployment.
+
+Phase 20 provides a supported [LangGraph/FastAPI SDK integration](framework-integrations.md);
+other runtime plugins remain planned. See the [phase impact review](phase-20-alignment.md).

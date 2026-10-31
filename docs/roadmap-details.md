@@ -537,7 +537,7 @@ The agent application must implement the [health resource and safe probe handler
 For first-to-downstream checks, that handler must actually contact the selected
 peer and report completion. AgentHealth implements the probe client and result
 classification; it does not install runtime handlers. Framework-specific handler
-integrations remain Phase 20 work. See the [setup example](../examples/agent-check/README.md).
+integration is available for LangGraph/FastAPI in Phase 20; other runtimes remain planned. See the [setup example](../examples/agent-check/README.md).
 
 ## Direct Agent Health
 
