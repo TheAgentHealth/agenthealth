@@ -553,6 +553,7 @@ jobs:
         if: hashFiles('examples/reference/python/requirements.txt') != ''
         run: |
           pip install -r examples/reference/python/requirements.txt
+          pip install ./sdk/python
           python -m pytest examples/reference/python -q -ra
       - name: Typecheck and test Express handler
         if: hashFiles('examples/reference/typescript/package-lock.json') != ''
