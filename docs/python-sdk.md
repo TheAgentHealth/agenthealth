@@ -131,3 +131,6 @@ Phase 19 source integration: [vector-store checks](vector-store-adapter.md)
 reuse the existing configuration, dependency and deadline contracts. Inject API
 keys through environment references; preserve independent agent/path evidence.
 Use the matching v0.17.0 CLI and SDK packages.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

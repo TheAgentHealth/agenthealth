@@ -153,6 +153,10 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 20 — Agent Runtime / Framework Integrations
 
+Implemented in source: optional LangGraph/FastAPI SDK integration, safe peer
+callbacks and typed consumer nodes. See the [guide](docs/framework-integrations.md)
+and [alignment review](docs/phase-20-alignment.md). Other frameworks remain planned.
+
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-20--agent-runtime--framework-integrations).
 
 # Phase 21 — CI/CD Integrations

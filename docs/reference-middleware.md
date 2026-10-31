@@ -42,3 +42,6 @@ run `python -m pytest examples/reference/python -q`. For Express, run
 `npm --prefix examples/reference/typescript run typecheck` and
 `npm --prefix examples/reference/typescript test`. Go contract tests run with
 `go test ./examples/reference/go`. CI runs these checks explicitly.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

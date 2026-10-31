@@ -57,3 +57,6 @@ functional opt-in. Passwords use `database.password_env` references.
 
 Qdrant/Pinecone vector-store checks are included in this version; use the
 matching v0.17.0 CLI. Other vector providers remain planned.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](../../docs/framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

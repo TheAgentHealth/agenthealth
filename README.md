@@ -256,3 +256,6 @@ and implementing the initial Phase 17 model/LLM adapter in
 [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
 [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
 commit is preserved in the integrated implementation.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](docs/framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.
