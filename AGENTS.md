@@ -240,3 +240,10 @@ in [database examples](examples/database-check/README.md) for adapter changes.
 Phase 19 adds [Qdrant/Pinecone vector-store health](docs/vector-store-adapter.md).
 See the [alignment review](docs/phase-19-alignment.md) and
 [disposable vector examples](examples/vector-check/README.md).
+
+Phase 20 ships optional Python SDK LangGraph/FastAPI runtime integration.
+See [the guide](docs/framework-integrations.md) and
+[impact review](docs/phase-20-alignment.md). Install the SDK before running
+`python -m pytest examples/reference/python -q`; requirements are pinned there.
+Only dedicated safe graphs and allowlisted real peer callbacks are supported.
+Other framework products and native JavaScript plugins remain planned.

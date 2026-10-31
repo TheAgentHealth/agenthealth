@@ -192,3 +192,8 @@ that the new source supports Go 1.23.
 Phase 19 adds [Qdrant/Pinecone vector-store health](docs/vector-store-adapter.md).
 See the [alignment review](docs/phase-19-alignment.md) and
 [disposable vector examples](examples/vector-check/README.md).
+
+Phase 20 runtime changes must run the installed-SDK framework contract tests in
+`examples/reference/python`, including compiled graphs and selected peer exchange.
+See [runtime integration](docs/framework-integrations.md) and
+[alignment](docs/phase-20-alignment.md). Keep optional dependencies out of core imports.
