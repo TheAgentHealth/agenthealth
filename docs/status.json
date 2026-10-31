@@ -1,5 +1,5 @@
 {
-  "software_version": "v0.17.0",
+  "software_version": "v0.18.0",
   "phases": [
     {
       "phase": "[0: Project Foundation](../ROADMAP.md#phase-0--project-foundation)",
@@ -87,19 +87,19 @@
     },
     {
       "phase": "[14: Kubernetes Integration](../ROADMAP.md#phase-14--kubernetes-integration)",
-      "status": "Released in v0.17.0; historical helm-v0.1.0 retained",
-      "documentation": "Chart 0.17.0; CLI v0.17.0",
+      "status": "Released in v0.18.0; historical helm-v0.1.0 retained",
+      "documentation": "Chart 0.18.0; CLI v0.18.0",
       "validation": "[Kubernetes scenarios](../examples/kubernetes/README.md), [alignment audit](phase-14-alignment.md)"
     },
     {
       "phase": "[15: Python SDK / PyPI](../ROADMAP.md#phase-15--python-sdk--pypi)",
-      "status": "Released in v0.17.0 on PyPI",
+      "status": "Released in v0.18.0 on PyPI",
       "documentation": "[Python SDK](python-sdk.md), [alignment audit](phase-15-alignment.md)",
       "validation": "[Python example](../examples/python-sdk/README.md), [SDK tests](../tests/python_sdk/)"
     },
     {
       "phase": "[16: JavaScript / TypeScript SDK](../ROADMAP.md#phase-16--javascript--typescript-sdk)",
-      "status": "Released in v0.17.0 on npm",
+      "status": "Released in v0.18.0 on npm",
       "documentation": "[JavaScript SDK](javascript-sdk.md), [alignment audit](phase-16-alignment.md)",
       "validation": "[Node example](../examples/javascript-sdk/README.md), [SDK tests](../sdk/javascript/test/)"
     },
@@ -123,7 +123,7 @@
     },
     {
       "phase": "[20: Agent Runtime / Framework Integrations](../ROADMAP.md#phase-20--agent-runtime--framework-integrations)",
-      "status": "Implemented in source; LangGraph/FastAPI baseline",
+      "status": "Released in v0.18.0; LangGraph/FastAPI baseline",
       "documentation": "[Runtime guide](framework-integrations.md), [alignment](phase-20-alignment.md)",
       "validation": "[Framework contract tests](../examples/reference/python/test_runtime.py)"
     },

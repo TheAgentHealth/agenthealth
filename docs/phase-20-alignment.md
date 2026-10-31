@@ -1,8 +1,8 @@
 # Phase 20 impact and alignment review
 
-Implemented in source: optional LangGraph/FastAPI SDK integration, allowlisted
+Released in v0.18.0: optional LangGraph/FastAPI SDK integration, allowlisted
 peer callbacks and typed health consumer nodes. Other framework products remain
-planned. Release publication is tracked separately from source completion.
+planned. See the [publication verification](releases/verification-v0.18.0.md).
 
 | Phases | Assessment and completed alignment |
 |---|---|

@@ -18,7 +18,7 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python and JavaScript/TypeScript SDKs are released and share v0.17.0.
+Python and JavaScript/TypeScript SDKs are released and share v0.18.0.
 Future SDK improvements follow the stabilization and interoperability work above.
 Model/LLM OpenAI-compatible and Anthropic adapters are released in v0.15.0.
 Native databases are released in v0.16.0; Qdrant/Pinecone vector-store checks are released in v0.17.0.
@@ -153,7 +153,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 20 — Agent Runtime / Framework Integrations
 
-Implemented in source: optional LangGraph/FastAPI SDK integration, safe peer
+Released in v0.18.0: optional LangGraph/FastAPI SDK integration, safe peer
 callbacks and typed consumer nodes. See the [guide](docs/framework-integrations.md)
 and [alignment review](docs/phase-20-alignment.md). Other frameworks remain planned.
 
