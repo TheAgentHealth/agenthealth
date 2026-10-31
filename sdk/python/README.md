@@ -7,7 +7,7 @@ IDs. Health failures return results; tool failures raise exceptions.
 Install the package with `pip install agenthealth` once published. Install a
 verified AgentHealth CLI of the same software version separately and put it on
 PATH, or pass its absolute path. Installation and imports never download or
-execute a binary. This first SDK targets Python 3.10+ and CLI v0.17.0.
+execute a binary. This first SDK targets Python 3.10+ and CLI v0.18.0.
 
 ```python
 from agenthealth import Client, HealthStatus
@@ -49,11 +49,14 @@ Source implementation is pre-1.0; PyPI availability is recorded separately in
 the repository capability status. See the repository's Python SDK guide for
 installation, release setup, errors and examples.
 
-This package version: v0.17.0. Requires the matching CLI; model/LLM
+This package version: v0.18.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.
 
 Native database targets use the matching CLI; fixed SQL queries require explicit
 functional opt-in. Passwords use `database.password_env` references.
 
 Qdrant/Pinecone vector-store checks are included in this version; use the
-matching v0.17.0 CLI. Other vector providers remain planned.
+matching v0.18.0 CLI. Other vector providers remain planned.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](../../docs/framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

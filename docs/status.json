@@ -123,9 +123,9 @@
     },
     {
       "phase": "[20: Agent Runtime / Framework Integrations](../ROADMAP.md#phase-20--agent-runtime--framework-integrations)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "[Reference middleware](reference-middleware.md); full framework integration remains planned"
+      "status": "Implemented in source; LangGraph/FastAPI baseline",
+      "documentation": "[Runtime guide](framework-integrations.md), [alignment](phase-20-alignment.md)",
+      "validation": "[Framework contract tests](../examples/reference/python/test_runtime.py)"
     },
     {
       "phase": "[21: CI/CD Integrations](../ROADMAP.md#phase-21--cicd-integrations)",

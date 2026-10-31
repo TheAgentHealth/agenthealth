@@ -1,22 +1,22 @@
 # Python SDK
 
-Published software: **v0.17.0**. The commands below select its synchronized
-CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.17.0.md).
+Release target: **v0.18.0**. The commands below select its synchronized
+CLI, SDK, chart and image versions; publication is pending. The latest verified
+release is [v0.17.0](releases/verification-v0.17.0.md).
 
-Phase 15 implements a Python 3.10+ wrapper around the Go CLI. Published SDK and CLI use
-software v0.17.0; publication is recorded separately in [capability status](phase-status.md).
+Phase 15 implements a Python 3.10+ wrapper around the Go CLI. The next SDK and CLI target
+software v0.18.0; publication is recorded separately in [capability status](phase-status.md).
 The SDK consumes AHS v1 and never reimplements adapter execution or aggregation.
 
 ## Installation
 
-Install the published version:
+After publication, install the synchronized version:
 
 ```bash
-pip install agenthealth==0.17.0
+pip install agenthealth==0.18.0
 ```
 
-Install the matching CLI v0.17.0 separately using the
+Install the matching CLI v0.18.0 separately using the
 [verified binary installation](installation.md#verify-provenance-and-sboms) instructions.
 Select its exact platform archive and verify both checksums and signed
 provenance before execution. The SDK never downloads binaries, changes PATH,
@@ -130,4 +130,7 @@ Existing health aggregation and result contracts remain unchanged. See the
 Phase 19 source integration: [vector-store checks](vector-store-adapter.md)
 reuse the existing configuration, dependency and deadline contracts. Inject API
 keys through environment references; preserve independent agent/path evidence.
-Use the matching v0.17.0 CLI and SDK packages.
+Use the matching v0.18.0 CLI and SDK packages.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

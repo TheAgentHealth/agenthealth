@@ -98,3 +98,6 @@ probe policy and validation limits. No adapter or configuration migration is req
 ## Trust boundary
 
 See the [threat model](threat-model.md) for trusted configuration, credential handling, network access, output limits and in-process adapter isolation. A shared process is not a boundary for mutually untrusted tenants.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

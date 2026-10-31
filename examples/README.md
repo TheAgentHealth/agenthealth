@@ -167,3 +167,6 @@ with explicit read-only query opt-in. See the [phase alignment audit](../docs/ph
 
 Run the [vector-store examples](vector-check/README.md) for passive metadata
 and explicit top-1 query checks against the disposable Qdrant service.
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](../docs/framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

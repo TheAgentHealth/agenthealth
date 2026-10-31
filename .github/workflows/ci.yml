@@ -553,6 +553,9 @@ jobs:
         if: hashFiles('examples/reference/python/requirements.txt') != ''
         run: |
           pip install -r examples/reference/python/requirements.txt
+          pip wheel --no-deps ./sdk/python --wheel-dir framework-dist
+          pip install "$(echo framework-dist/agenthealth-*.whl)[langgraph]"
+          pip check
           python -m pytest examples/reference/python -q -ra
       - name: Typecheck and test Express handler
         if: hashFiles('examples/reference/typescript/package-lock.json') != ''

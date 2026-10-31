@@ -537,7 +537,7 @@ The agent application must implement the [health resource and safe probe handler
 For first-to-downstream checks, that handler must actually contact the selected
 peer and report completion. AgentHealth implements the probe client and result
 classification; it does not install runtime handlers. Framework-specific handler
-integrations remain Phase 20 work. See the [setup example](../examples/agent-check/README.md).
+integration is available for LangGraph/FastAPI in Phase 20; other runtimes remain planned. See the [setup example](../examples/agent-check/README.md).
 
 ## Direct Agent Health
 
@@ -1347,51 +1347,17 @@ provider versions. All phases are assessed in the alignment audit.
 
 # Phase 20 — Agent Runtime / Framework Integrations
 
-Phase 19 integration: preserve retrieval dependency evidence and explicit query opt-in; vector health does not establish retrieval relevance or agent communication.
+**Status:** Implemented in source — LangGraph/FastAPI baseline.
 
-Phase 16 integration: use the installed Node ESM SDK with a matching verified CLI;
-propagate AbortSignal, millisecond deadlines, and health reports without turning
-unhealthy results into tool exceptions. Browser execution remains out of scope.
+- [x] Supported optional Python SDK health-resource integration for a dedicated safe compiled graph.
+- [x] Allowlisted async peer exchange hooks; unknown peers fail without dispatch.
+- [x] Typed SDK consumer node preserves health reports, errors and cancellation.
+- [x] Separate direct/composite/path and supporting dependency evidence using existing configuration.
+- [x] Tests, examples, distribution and earlier/later phase impact review.
+- [ ] Semantic Kernel, CrewAI, AutoGen and native JavaScript framework plugins.
 
-
-**Status:** Planned — not yet implemented.
-
-Goal:
-
-Allow agent frameworks to expose and consume AgentHealth.
-
-Potential integrations may include:
-
-```text
-LangGraph
-Semantic Kernel
-CrewAI
-AutoGen
-other agent runtimes
-```
-
-Possible integration patterns:
-
-```text
-framework plugin
-middleware
-health endpoint
-SDK integration
-adapter
-```
-
-- [ ] expose first-agent, downstream-agent, gateway/router, and communication-path evidence through supported framework integration patterns
-
-AgentHealth should remain framework-neutral.
-
-- [ ] Implement the Phase 7 safe health-resource handler in each supported runtime; downstream probes must actually contact the selected peer. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
-
-## Impact Review
-
-Earlier: integrate the agent roles, gateway/router paths, adapters, SDKs, and AHP where applicable; review any contract extensions. Later: supply framework scenarios for CI, observability, and interoperability.
-
-
-Phase 11 integration requirements are recorded in the [AHP impact review](../docs/rfcs/phase-11-ahp.md#later-phases).
+See the [guide](framework-integrations.md) and [impact review](phase-20-alignment.md).
+This controlled baseline does not complete Phase 25 interoperability.
 
 ---
 

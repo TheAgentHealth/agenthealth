@@ -41,3 +41,6 @@ Fixed SQL queries require explicit functional opt-in. See the
 
 Phase 19 implements [Qdrant and Pinecone vector-store checks](vector-store-adapter.md)
 with explicit read-only query opt-in. See the [phase alignment audit](phase-19-alignment.md).
+
+Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
+with safe peer hooks and an SDK consumer node. Other framework products remain planned.

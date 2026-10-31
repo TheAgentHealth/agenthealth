@@ -1,0 +1,11 @@
+version: v1
+targets:
+  - name: direct-agent
+    type: agent
+    endpoint: http://127.0.0.1:8080/health
+    checks: [reachability, protocol, capability, functional]
+    agent:
+      required_capabilities: [health]
+      functional:
+        safe: true
+        text: health
