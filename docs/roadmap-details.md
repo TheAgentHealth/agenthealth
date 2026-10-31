@@ -1347,7 +1347,7 @@ provider versions. All phases are assessed in the alignment audit.
 
 # Phase 20 — Agent Runtime / Framework Integrations
 
-**Status:** Implemented in source — LangGraph/FastAPI baseline.
+**Status:** Released in v0.18.0 — LangGraph/FastAPI baseline.
 
 - [x] Supported optional Python SDK health-resource integration for a dedicated safe compiled graph.
 - [x] Allowlisted async peer exchange hooks; unknown peers fail without dispatch.

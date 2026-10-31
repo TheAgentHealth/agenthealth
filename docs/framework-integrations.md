@@ -1,6 +1,6 @@
 # Agent runtime integrations
 
-Phase 20 provides a supported Python SDK integration for LangGraph and FastAPI.
+Released in v0.18.0, Phase 20 provides a supported Python SDK integration for LangGraph and FastAPI.
 Install `agenthealth[langgraph]` with the matching verified CLI for consumer nodes.
 The server handler does not require a CLI. Semantic Kernel, CrewAI, AutoGen and
 JavaScript framework plugins remain planned; Express and Go remain reference middleware.

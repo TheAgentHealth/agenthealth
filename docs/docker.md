@@ -1,8 +1,8 @@
 # Docker distribution
 
-Published software: **v0.17.0**. The commands below select its synchronized
+Published software: **v0.18.0**. The commands below select its synchronized
 CLI, SDK, chart and image versions. See the
-[publication verification](releases/verification-v0.17.0.md).
+[publication verification](releases/verification-v0.18.0.md).
 
 **Status:** Phase 12, released in v0.10.0. Images are published to GHCR (with
 an optional Docker Hub mirror); see [Published tags](#published-tags) below.
@@ -111,14 +111,14 @@ mirror step is skipped otherwise. Docker Hub images carry the same
 BuildKit provenance/SBOM metadata but not the GitHub-signed attestation,
 which is only pushed to GHCR.
 
-v0.17.0 is published and verified in both registries:
+v0.18.0 is published and verified in both registries:
 
 ```bash
 # GitHub Container Registry
-docker run --rm ghcr.io/theagenthealth/agenthealth:v0.17.0 version
+docker run --rm ghcr.io/theagenthealth/agenthealth:v0.18.0 version
 
 # Docker Hub
-docker run --rm theagenthealth/agenthealth:v0.17.0 version
+docker run --rm theagenthealth/agenthealth:v0.18.0 version
 ```
 
 See [installation.md](installation.md) for standalone binary archives and
