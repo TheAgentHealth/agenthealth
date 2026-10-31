@@ -101,3 +101,26 @@ def test_peer_http_exchange_and_compiled_consumer():
     builder.add_edge(START, 'health')
     builder.add_edge('health', END)
     assert asyncio.run(builder.compile().ainvoke({}))['agenthealth'] is report
+
+
+def test_passive_requests_never_execute_graph_or_peer():
+    class ForbiddenGraph:
+        async def ainvoke(self, state):
+            raise AssertionError('passive graph execution')
+    async def forbidden_peer(text):
+        raise AssertionError('passive peer execution')
+    app = FastAPI()
+    app.include_router(langgraph_router(ForbiddenGraph(), snapshot,
+                                       peers={'peer': forbidden_peer}))
+    with TestClient(app) as client:
+        assert client.head('/health').status_code == 200
+        assert client.get('/health').json()['version'] == 'v1'
+        assert client.post('/health', json={'safe': False, 'text': 'health',
+                                           'downstream': 'peer'}).status_code == 400
+
+
+@pytest.mark.parametrize('peers', [{'': lambda _: None}, {' ': lambda _: None},
+                                    {'peer': None}, {'x' * 1025: lambda _: None}])
+def test_invalid_peer_configuration(peers):
+    with pytest.raises(ValueError):
+        langgraph_router(Graph(), snapshot, peers=peers)
