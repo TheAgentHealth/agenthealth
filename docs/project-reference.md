@@ -1145,7 +1145,10 @@ Implemented Kubernetes integrations include (see the [guide](../docs/kubernetes.
 
 # CI/CD
 
-AgentHealth can act as a deployment validation gate.
+Phase 21 implements [CI/CD deployment gates](ci-cd.md) with JUnit/GitHub
+reports, a reusable Action and [provider templates](../examples/ci/README.md).
+Existing health exit codes stop promotion; tool failures remain distinct.
+Hosted-provider matrices and SARIF remain deferred.
 
 Example workflow:
 

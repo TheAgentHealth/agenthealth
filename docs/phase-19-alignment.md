@@ -41,3 +41,11 @@ native database tests and Kubernetes/Helm runtime gates. Release verification
 must record actual artifacts, provenance, checksums and anonymous package access
 before updating published-status claims. Historical release notes retain their
 original scope.
+
+## Phase 21 follow-through
+
+[CI/CD deployment gates](ci-cd.md) now consume the existing contracts with
+JUnit/GitHub projections and unchanged health/tool exit codes. The
+[current impact review](phase-21-alignment.md) records each earlier-phase
+decision, including Kubernetes completion gates and preserved SDK JSON behavior.
+Historical implementation and release evidence above retain their original scope.
