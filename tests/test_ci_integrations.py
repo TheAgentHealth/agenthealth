@@ -76,3 +76,45 @@ def test_installer_rejects_mutable_version(tmp_path):
     with pytest.raises(ValueError):
         installer.install('latest', tmp_path / 'binary')
     assert not (tmp_path / 'binary').exists()
+
+@pytest.mark.parametrize('damage', [None, 'checksum', 'provenance'])
+def test_installer_verifies_before_writing(tmp_path, monkeypatch, damage):
+    import hashlib
+    import io
+    import tarfile
+    installer = module('scripts/install_ci_binary.py')
+    monkeypatch.setattr(installer.platform, 'system', lambda: 'Linux')
+    monkeypatch.setattr(installer.platform, 'machine', lambda: 'x86_64')
+    calls = []
+
+    def run(arguments, **options):
+        calls.append(arguments)
+        if arguments[1:3] == ['release', 'download']:
+            directory = Path(arguments[-1])
+            archive = directory / 'agenthealth_v0.19.0_linux_amd64.tar.gz'
+            with tarfile.open(archive, 'w:gz') as bundle:
+                entry = tarfile.TarInfo('agenthealth')
+                entry.size = len(b'verified-cli')
+                bundle.addfile(entry, io.BytesIO(b'verified-cli'))
+            digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+            if damage == 'checksum':
+                digest = '0' * 64
+            (directory / 'checksums.txt').write_text(f'{digest}  {archive.name}\n')
+        elif damage == 'provenance':
+            raise subprocess.CalledProcessError(1, arguments)
+        return subprocess.CompletedProcess(arguments, 0)
+    monkeypatch.setattr(installer.subprocess, 'run', run)
+    output = tmp_path / 'agenthealth'
+    if damage:
+        with pytest.raises((ValueError, subprocess.CalledProcessError)):
+            installer.install('v0.19.0', output)
+        assert not output.exists()
+    else:
+        installer.install('v0.19.0', output)
+        assert output.read_bytes() == b'verified-cli'
+        assert '--source-ref' in calls[1]
+        assert 'refs/tags/v0.19.0' in calls[1]
+        assert '--signer-workflow' in calls[1]
+        assert '--deny-self-hosted-runners' in calls[1]
+        with pytest.raises(FileExistsError):
+            installer.install('v0.19.0', output)
