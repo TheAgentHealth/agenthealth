@@ -129,9 +129,9 @@
     },
     {
       "phase": "[21: CI/CD Integrations](../ROADMAP.md#phase-21--cicd-integrations)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source; v0.19.0 release pending",
+      "documentation": "[CI/CD guide](ci-cd.md), [alignment](phase-21-alignment.md)",
+      "validation": "[Provider examples](../examples/ci/README.md), [gate tests](../tests/test_ci_integrations.py)"
     },
     {
       "phase": "[22: Observability Export](../ROADMAP.md#phase-22--observability-export)",

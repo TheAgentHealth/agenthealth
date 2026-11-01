@@ -161,6 +161,11 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 21 — CI/CD Integrations
 
+Implemented in source: JUnit/GitHub reports, verified binary installation, GitHub
+Action and shell/GitLab/Jenkins/Azure templates. See the [guide](docs/ci-cd.md)
+and [cross-phase alignment](docs/phase-21-alignment.md). Hosted-provider matrices
+and SARIF remain outside this baseline.
+
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-21--cicd-integrations).
 
 # Phase 22 — Observability Export
