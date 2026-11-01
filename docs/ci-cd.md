@@ -1,6 +1,6 @@
 # CI/CD deployment validation
 
-Phase 21 adds `--format junit`, `--format github`, a reusable
+Released in v0.19.0, Phase 21 adds `--format junit`, `--format github`, a reusable
 [GitHub Action](../integrations/github-action/action.yml) and
 [provider templates](../examples/ci/README.md). Run health checks after deployment
 and allow promotion only when the health command returns 0.
@@ -45,8 +45,8 @@ must fail the pipeline; never fall back to an unverified binary.
 
 Use the [GitHub example](../examples/ci/github.yml) from this source checkout.
 Application repositories can reference
-`TheAgentHealth/agenthealth/integrations/github-action@<reviewed-full-commit-SHA>`;
-replace the placeholder with an immutable reviewed commit. The Action requires
+`TheAgentHealth/agenthealth/integrations/github-action@bd65d3a0017ef26ea625f6b0d4f331996fe680b5`;
+this pins the reviewed v0.19.0 release commit. The Action requires
 an already installed verified CLI, so installing the Action alone does not install
 the CLI. Do not reference a mutable branch for production deployment gates.
 
