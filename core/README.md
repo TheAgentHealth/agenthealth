@@ -97,3 +97,9 @@ with explicit read-only query opt-in. See the [phase alignment audit](../docs/ph
 
 [Phase 20 runtime integrations](../docs/framework-integrations.md) reuse the
 existing agent contract and SDK engine execution without new target types.
+
+## CI report consumers
+
+`WriteJUnit` and `WriteGitHub` validate existing results and emit positional
+status evidence without names, endpoints or messages. They preserve dependency
+occurrences; execution and aggregation are unchanged. See [CI/CD](../docs/ci-cd.md).

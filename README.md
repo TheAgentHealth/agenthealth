@@ -266,3 +266,10 @@ and implementing the initial Phase 17 model/LLM adapter in
 [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14) and
 [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17). His authored
 commit is preserved in the integrated implementation.
+
+## CI/CD deployment gates
+
+Use `agenthealth check deployment.yaml --format junit` to stop promotion on
+non-healthy results. Phase 21 also provides GitHub annotations, a reusable Action
+and shell/GitLab/Jenkins/Azure templates. See the [guide](docs/ci-cd.md),
+[examples](examples/ci/README.md) and [alignment review](docs/phase-21-alignment.md).

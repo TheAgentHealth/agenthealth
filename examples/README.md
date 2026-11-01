@@ -170,3 +170,9 @@ and explicit top-1 query checks against the disposable Qdrant service.
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](../docs/framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.
+
+## CI/CD deployment validation
+
+[Provider templates](ci/README.md) cover GitHub Actions, GitLab, Jenkins, Azure
+DevOps and shell with JUnit failure reports. Existing agent, gateway/router and
+graph examples supply the configuration evidence; use reviewed deployment targets.

@@ -44,3 +44,6 @@ with explicit read-only query opt-in. See the [phase alignment audit](phase-19-a
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.
+
+Phase 21: [CI/CD deployment gates](ci-cd.md), [provider examples](../examples/ci/README.md)
+and [cross-phase alignment](phase-21-alignment.md).
