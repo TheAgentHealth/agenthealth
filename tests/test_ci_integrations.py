@@ -1,9 +1,7 @@
 """Phase 21 runner boundaries, report safety and verified installation."""
 import importlib.util
-import os
 from pathlib import Path
 import subprocess
-import sys
 
 import pytest
 
