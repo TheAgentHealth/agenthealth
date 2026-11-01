@@ -26,10 +26,10 @@ import (
 var version = "dev"
 
 const usage = `Usage:
-  agenthealth ping <type> <endpoint> [--format terminal|json|yaml]
-  agenthealth check <configuration.yaml> [--format terminal|json|yaml]
-  agenthealth doctor <type> <endpoint> [--format terminal|json|yaml]
-  agenthealth doctor <configuration.yaml> [--format terminal|json|yaml]
+  agenthealth ping <type> <endpoint> [--format terminal|json|yaml|junit|github]
+  agenthealth check <configuration.yaml> [--format terminal|json|yaml|junit|github]
+  agenthealth doctor <type> <endpoint> [--format terminal|json|yaml|junit|github]
+  agenthealth doctor <configuration.yaml> [--format terminal|json|yaml|junit|github]
   agenthealth login <configuration.yaml> <target-name>
   agenthealth serve <configuration.yaml> [--listen host:port] [--token-env NAME]
   agenthealth version
@@ -77,7 +77,7 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 			if arg == "--format" {
 				i++
 				if i == len(args) {
-					return fail("--format requires terminal, json, or yaml")
+					return fail("--format requires terminal, json, yaml, junit, or github")
 				}
 				format = args[i]
 			} else {
@@ -90,8 +90,8 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		}
 		positional = append(positional, arg)
 	}
-	if format != "terminal" && format != "json" && format != "yaml" {
-		return fail("unsupported output format; use terminal, json, or yaml")
+	if format != "terminal" && format != "json" && format != "yaml" && format != "junit" && format != "github" {
+		return fail("unsupported output format; use terminal, json, yaml, junit, or github")
 	}
 	if len(positional) == 0 {
 		return fail(usage)
@@ -168,6 +168,10 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		err = core.WriteJSON(out, results)
 	case "yaml":
 		err = core.WriteYAML(out, results)
+	case "junit":
+		err = core.WriteJUnit(out, results)
+	case "github":
+		err = core.WriteGitHub(out, results)
 	default:
 		err = core.WriteHuman(out, results)
 		if err == nil && command == "doctor" {

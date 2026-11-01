@@ -278,3 +278,11 @@ replaced, and no published version/tag is moved.
 Recovery npm provenance identifies the corrected publisher commit on main;
 GitHub build provenance continues to bind the package bytes to the original
 source tag. Both registry jobs must succeed before the draft is finalized.
+
+## CI/CD integration distribution (Phase 21)
+
+The composite Action and verified installer ship as source at the shared tag;
+there is no separate marketplace publication or Action binary asset. Consumers
+pin a reviewed full source SHA and install the exact verified CLI. JUnit/GitHub
+formats ship in all CLI distributions. Preserve SDK JSON result handling and
+include all earlier distribution formats in the synchronized release.

@@ -201,3 +201,10 @@ Use the matching v0.18.0 CLI and SDK packages.
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.
+
+## CI deployment validation
+
+[Phase 21 gates](ci-cd.md#kubernetes-gates) reuse the explicit-context runtime
+suite and require completed Jobs, bounded waits and failure evidence. Job creation
+alone cannot authorize deployment promotion. Existing readiness/liveness and
+secret-reference contracts remain unchanged.

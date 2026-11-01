@@ -1363,60 +1363,39 @@ This controlled baseline does not complete Phase 25 interoperability.
 
 # Phase 21 — CI/CD Integrations
 
-Phase 14 integration requirement: Reuse `tests/kubernetes` and the explicit-context runtime scenarios in
-`scripts/test_kubernetes.py` for Kubernetes deployment gates; a created Job is
-not a successful validation result.
+**Status:** Implemented in source; synchronized v0.19.0 release pending.
 
+Make health part of deployment validation with unchanged health/exit contracts.
 
-**Status:** Planned — not yet implemented.
+- [x] GitHub composite Action: exact installed version, one check, bounded timeout,
+  preserved health/tool exit, JUnit report and safe generic annotation.
+- [x] Verified exact-version/platform binary installer (checksums and provenance).
+- [x] Generic shell, GitLab CI, Jenkins and Azure DevOps deployment templates.
+- [x] JUnit and GitHub annotation CLI formats with deterministic dependency occurrences.
+- [x] Direct/composite agent and gateway/router/path configuration guidance.
+- [x] Kubernetes gates reuse manifest tests and the explicit-context runtime suite;
+  creating a Job alone is not successful validation.
+- [ ] Hosted GitLab/Jenkins/Azure execution matrix (templates supplied).
+- [ ] SARIF deferred: health checks are not static-analysis security findings.
 
-Phase 13 integration requirement: binary downloads must select exact version/platform
-assets and verify checksums/provenance. Package manifests do not supply SDK interfaces.
-
-Publication workflows must distinguish CLI, SDK and chart release intent.
-Every CLI release publishes all implemented CLI formats, including Docker.
-
-Goal:
-
-Make agent health part of deployment validation.
-
-Potential integrations:
-
-- [ ] GitHub Actions
-- [ ] GitLab CI
-- [ ] Jenkins
-- [ ] Azure DevOps
-- [ ] generic shell integration
-
-Example:
-
-```text
-Build
-  ↓
-Test
-  ↓
-Deploy
-  ↓
-AgentHealth
-  ↓
-Promote
-```
-
-- [ ] deployment checks and failure reporting for first agents, downstream agents, and gateway/router paths
-
-Potential CI output formats:
-
-- [ ] JUnit
-- [ ] annotations
-- [ ] SARIF where appropriate
+See the [guide](ci-cd.md), [examples](../examples/ci/README.md) and
+[Phase 0–26 impact review](phase-21-alignment.md). All implemented distributions
+retain the synchronized release policy; the Action requires a verified CLI.
 
 ## Impact Review
 
-Earlier: consume CLI/SDK results and add agreed automation output formats as required. Later: supply deployment validation examples for interoperability and hardening; CI integration alone does not require new health states.
+Earlier: additive CLI/core output, no v1 schema/exit/aggregation changes. Keep
+SDK JSON contracts, active opt-in and Kubernetes readiness/Job semantics.
+Later: report redaction informs observability; hosted-provider/product coverage
+and conformance/hardening remain explicit future work.
 
 ---
 
 # Phase 22 — Observability Export
+
+Phase 21 alignment: CI projections omit identities and diagnostic text. Future
+exports must define their own topology redaction and evidence mapping; JUnit is
+not a full result interchange format.
 
 **Status:** Planned — not yet implemented.
 
@@ -1558,6 +1537,10 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
+
+Phase 21 supplies CI provider templates; add exact hosted-provider/runner versions,
+deployment fixtures and observed success/failure evidence before claiming product
+interoperability.
 
 Phase 19 integration: preserve retrieval dependency evidence and explicit query opt-in; vector health does not establish retrieval relevance or agent communication.
 

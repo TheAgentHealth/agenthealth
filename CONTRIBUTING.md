@@ -197,3 +197,8 @@ Phase 20 runtime changes must run the installed-SDK framework contract tests in
 `examples/reference/python`, including compiled graphs and selected peer exchange.
 See [runtime integration](docs/framework-integrations.md) and
 [alignment](docs/phase-20-alignment.md). Keep optional dependencies out of core imports.
+
+Phase 21 CI integrations require report/CLI tests and
+`python3 -m pytest tests/test_ci_integrations.py -q`. Preserve health codes 0–5
+and distinguish tool failure 6. See [CI/CD](docs/ci-cd.md) and
+[alignment](docs/phase-21-alignment.md).

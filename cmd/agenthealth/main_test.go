@@ -461,3 +461,29 @@ func TestDatabaseCLIRegistrationAndConfiguration(t *testing.T) {
 		}
 	}
 }
+
+func TestCIFormatsPreserveHealthAndToolFailures(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(503) }))
+	defer server.Close()
+	for _, format := range []string{"junit", "github"} {
+		var out, diagnostic bytes.Buffer
+		code := run(context.Background(), []string{"ping", "http", server.URL, "--format", format}, &out, &diagnostic)
+		if code != 2 || diagnostic.Len() != 0 {
+			t.Fatalf("%s code %d: %s", format, code, diagnostic.String())
+		}
+		if format == "junit" && !strings.Contains(out.String(), "<failure") {
+			t.Fatal(out.String())
+		}
+		if format == "github" && !strings.Contains(out.String(), "::error title=AgentHealth::") {
+			t.Fatal(out.String())
+		}
+		out.Reset()
+		diagnostic.Reset()
+		if run(context.Background(), []string{"check", "missing.yaml", "--format", format}, &out, &diagnostic) != 6 || out.Len() != 0 {
+			t.Fatal("tool failure emitted health report")
+		}
+		if run(context.Background(), []string{"ping", "http", server.URL, "--format", format}, brokenWriter{}, &diagnostic) != 6 {
+			t.Fatal("report output failure lost")
+		}
+	}
+}

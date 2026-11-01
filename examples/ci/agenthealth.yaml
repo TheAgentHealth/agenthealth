@@ -1,0 +1,7 @@
+version: v1
+targets:
+  - name: deployment-readiness
+    type: http
+    endpoint: https://example.com/health
+    budget_ms: 30000
+    checks: [reachability, protocol]

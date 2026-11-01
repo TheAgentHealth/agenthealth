@@ -1,0 +1,34 @@
+name: AgentHealth deployment gate
+description: Run one health check, preserve its exit code and write a JUnit report.
+inputs:
+  configuration:
+    description: Trusted AgentHealth YAML path
+    required: true
+  version:
+    description: Exact installed CLI version (vX.Y.Z); install and verify before this action
+    required: true
+  binary:
+    description: Path to an already verified CLI
+    default: agenthealth
+  report:
+    description: JUnit output path (relative to workspace)
+    default: agenthealth-junit.xml
+  timeout:
+    description: Whole CLI process timeout in seconds (1-3600)
+    default: '120'
+outputs:
+  exit-code:
+    description: Original health exit code, or 6 for tool failure
+    value: ${{ steps.gate.outputs.exit-code }}
+runs:
+  using: composite
+  steps:
+    - id: gate
+      shell: bash
+      env:
+        AH_CONFIGURATION: ${{ inputs.configuration }}
+        AH_VERSION: ${{ inputs.version }}
+        AH_BINARY: ${{ inputs.binary }}
+        AH_REPORT: ${{ inputs.report }}
+        AH_TIMEOUT: ${{ inputs.timeout }}
+      run: python "${{ github.action_path }}/gate.py"

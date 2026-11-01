@@ -60,3 +60,11 @@ behavior follows the specifications, guides and phase-status index.
 Current cross-phase follow-up: [Phase 19 alignment](phase-19-alignment.md)
 adds Qdrant/Pinecone retrieval dependency checks. Historical release scope above
 is unchanged; database login remains distinct from vector retrieval.
+
+## Phase 21 follow-through
+
+[CI/CD deployment gates](ci-cd.md) now consume the existing contracts with
+JUnit/GitHub projections and unchanged health/tool exit codes. The
+[current impact review](phase-21-alignment.md) records each earlier-phase
+decision, including Kubernetes completion gates and preserved SDK JSON behavior.
+Historical implementation and release evidence above retain their original scope.

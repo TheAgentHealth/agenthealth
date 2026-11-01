@@ -14,7 +14,7 @@ planned. See the [publication verification](releases/verification-v0.18.0.md).
 | 12–14 distribution/Kubernetes | Optional Python dependencies only; CLI/container and chart behavior unchanged. Passive readiness and explicit functional repetition documented. Historical chart tags retained. |
 | 15–16 SDKs | Ship integration in Python wheel/sdist; optional extras avoid framework imports for core users. Node ESM cancellation/deadline contract unchanged; native JS framework plugins deferred. |
 | 17–19 supporting adapters | Model/database/vector results remain independent dependencies; no inference, SQL or vector query is implicitly enabled. |
-| 21 CI/CD | Reuse installed-SDK framework tests; future deployment gates must preserve unhealthy reports and tool failures distinctly. |
+| 21 CI/CD | Reuse installed-SDK framework tests; deployment gates now preserve unhealthy reports and tool failures distinctly. |
 | 22 observability | Future exports must preserve direct/peer/path distinction; no raw task/error export added. |
 | 23 plugins | Trusted in-process callbacks are not sandboxed plugins or tenant isolation. |
 | 24 conformance | Contract tests establish a baseline, not certification. |
@@ -25,3 +25,11 @@ Validation: compiled graph and FastAPI contract tests, selected-peer dispatch,
 strict boolean success, sanitized errors, timeout, consumer error/cancellation
 propagation; existing full repository checks and release distribution gates.
 See the [integration guide](framework-integrations.md).
+
+## Phase 21 follow-through
+
+[CI/CD deployment gates](ci-cd.md) now consume the existing contracts with
+JUnit/GitHub projections and unchanged health/tool exit codes. The
+[current impact review](phase-21-alignment.md) records each earlier-phase
+decision, including Kubernetes completion gates and preserved SDK JSON behavior.
+Historical implementation and release evidence above retain their original scope.

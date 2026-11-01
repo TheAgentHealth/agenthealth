@@ -1,0 +1,12 @@
+# Requires a runner with an exact-version verified CLI installed.
+steps:
+  - bash: sh examples/ci/gate.sh examples/ci/agenthealth.yaml
+    displayName: Deployment health gate
+    timeoutInMinutes: 5
+  - task: PublishTestResults@2
+    condition: always()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: agenthealth-junit.xml
+      failTaskOnFailedTests: true
+      failTaskOnMissingResultsFile: true

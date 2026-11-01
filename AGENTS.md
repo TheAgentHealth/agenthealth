@@ -247,3 +247,9 @@ See [the guide](docs/framework-integrations.md) and
 `python -m pytest examples/reference/python -q`; requirements are pinned there.
 Only dedicated safe graphs and allowlisted real peer callbacks are supported.
 Other framework products and native JavaScript plugins remain planned.
+
+Phase 21 adds safe JUnit/GitHub CLI report projections and the composite Action
+in `integrations/github-action`. Never interpolate user inputs into shell code
+or publish arbitrary result messages as workflow commands. Run the
+[CI integration tests](tests/test_ci_integrations.py); see [guide](docs/ci-cd.md)
+and [alignment](docs/phase-21-alignment.md).

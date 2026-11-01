@@ -94,3 +94,6 @@ with explicit read-only query opt-in. See the [phase alignment audit](../docs/ph
 
 [Phase 20 runtime integrations](../docs/framework-integrations.md) implement the
 existing agent resource contract; no v1 schema or exit-code migration is required.
+
+[Phase 21 CI reports](../docs/ci-cd.md) project existing results into JUnit and
+GitHub annotations; they do not change v1 wire schemas or exit semantics.
