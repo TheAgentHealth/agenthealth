@@ -1,8 +1,8 @@
 # Phase 21 impact and alignment review
 
-Implemented in source: CI/CD deployment gates, JUnit/GitHub reports, verified
-binary installation and provider examples. Publication follows the synchronized
-release policy; source implementation alone does not mean v0.19.0 is available.
+Released in v0.19.0: CI/CD deployment gates, JUnit/GitHub reports, verified
+binary installation and provider examples. Synchronized publication and public installation
+checks passed; see the [verification record](releases/verification-v0.19.0.md).
 See the [guide](ci-cd.md) and [examples](../examples/ci/README.md).
 
 | Phase | Assessment and completed alignment |

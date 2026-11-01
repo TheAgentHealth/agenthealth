@@ -1363,7 +1363,7 @@ This controlled baseline does not complete Phase 25 interoperability.
 
 # Phase 21 — CI/CD Integrations
 
-**Status:** Implemented in source; synchronized v0.19.0 release pending.
+**Status:** Released in v0.19.0.
 
 Make health part of deployment validation with unchanged health/exit contracts.
 

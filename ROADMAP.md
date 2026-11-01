@@ -18,7 +18,7 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python and JavaScript/TypeScript SDKs are released and share v0.18.0.
+Python and JavaScript/TypeScript SDKs are released and share v0.19.0.
 Future SDK improvements follow the stabilization and interoperability work above.
 Model/LLM OpenAI-compatible and Anthropic adapters are released in v0.15.0.
 Native databases are released in v0.16.0; Qdrant/Pinecone vector-store checks are released in v0.17.0.
@@ -161,7 +161,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 21 — CI/CD Integrations
 
-Implemented in source: JUnit/GitHub reports, verified binary installation, GitHub
+Released in v0.19.0: JUnit/GitHub reports, verified binary installation, GitHub
 Action and shell/GitLab/Jenkins/Azure templates. See the [guide](docs/ci-cd.md)
 and [cross-phase alignment](docs/phase-21-alignment.md). Hosted-provider matrices
 and SARIF remain outside this baseline.
