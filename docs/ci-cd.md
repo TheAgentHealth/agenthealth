@@ -60,7 +60,7 @@ the CLI. Do not reference a mutable branch for production deployment gates.
 
 The `exit-code` output preserves health codes or 6 for launch, version, timeout
 and tool failures. The Action removes stale reports, rejects report paths outside
-the workspace or overlapping configuration, and does not print CLI stderr.
+the workspace, symlinked report components or overlapping configuration (including hard links), and does not print CLI stderr.
 Upload reports with `if: always()`; a failed Action must still block promotion.
 Hosted Linux, macOS and Windows runners provide Python and Bash. Self-hosted
 runners must supply both. Python kills the CLI on the process deadline; configure
@@ -83,7 +83,7 @@ Reuse [manifest/schema tests](../tests/kubernetes/) and
 
 ```bash
 python3 -m pytest tests/kubernetes -q
-python3 scripts/test_kubernetes.py --context kind-disposable-ci --image agenthealth:ci
+python3 scripts/test_kubernetes.py --context kind-disposable-ci --image agenthealth:v0.19.0-ci
 ```
 
 Provision a disposable cluster and load that exact test image first. The suite
