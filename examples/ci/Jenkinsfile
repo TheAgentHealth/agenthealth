@@ -1,0 +1,11 @@
+// Requires an exact-version verified CLI and the JUnit plugin on this agent.
+pipeline {
+  agent any
+  options { timeout(time: 5, unit: 'MINUTES') }
+  stages {
+    stage('Deployment health') {
+      steps { sh 'sh examples/ci/gate.sh examples/ci/agenthealth.yaml' }
+      post { always { junit allowEmptyResults: true, testResults: 'agenthealth-junit.xml' } }
+    }
+  }
+}
