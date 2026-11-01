@@ -116,3 +116,61 @@ def test_installer_verifies_before_writing(tmp_path, monkeypatch, damage):
         assert '--deny-self-hosted-runners' in calls[1]
         with pytest.raises(FileExistsError):
             installer.install('v0.19.0', output)
+
+@pytest.mark.parametrize('kind', ['file', 'directory', 'hardlink', 'post-run-io'])
+def test_action_protects_files_and_fails_report_io(tmp_path, monkeypatch, kind):
+    gate = module('integrations/github-action/gate.py')
+    config = tmp_path / 'configuration.yaml'
+    config.write_text('configuration preserved')
+    victim = tmp_path / 'victim'
+    victim.write_text('unrelated preserved')
+    report = tmp_path / 'report.xml'
+    if kind == 'file':
+        report.symlink_to(victim)
+    elif kind == 'directory':
+        (tmp_path / 'linked').symlink_to(tmp_path, target_is_directory=True)
+        report = tmp_path / 'linked' / 'victim'
+    elif kind == 'hardlink':
+        report.hardlink_to(config)
+    values = {'GITHUB_WORKSPACE': str(tmp_path), 'GITHUB_OUTPUT': str(tmp_path / 'outputs'),
+              'AH_REPORT': str(report), 'AH_CONFIGURATION': str(config),
+              'AH_BINARY': 'trusted', 'AH_VERSION': 'v0.19.0', 'AH_TIMEOUT': '120'}
+    for key, value in values.items():
+        monkeypatch.setenv(key, value)
+
+    def run(arguments, **options):
+        if arguments[1] == 'version':
+            return subprocess.CompletedProcess(arguments, 0, b'agenthealth v0.19.0\n')
+        options['stdout'].write(b'<testsuite/>')
+        # Simulate disappearing output after a successful process exit.
+        report.unlink()
+        return subprocess.CompletedProcess(arguments, 0)
+    monkeypatch.setattr(gate.subprocess, 'run', run)
+    assert gate.main() == 6
+    assert config.read_text() == 'configuration preserved'
+    assert victim.read_text() == 'unrelated preserved'
+    assert (tmp_path / 'outputs').read_text() == 'exit-code=6\n'
+
+
+@pytest.mark.parametrize('alias', [False, True])
+def test_shell_rejects_configuration_overlap(tmp_path, alias):
+    configuration = tmp_path / 'configuration.yaml'
+    configuration.write_text('preserve input')
+    report = configuration
+    if alias:
+        report = tmp_path / 'alias.xml'
+        report.symlink_to(configuration)
+    result = subprocess.run(['sh', str(ROOT / 'examples/ci/gate.sh'), str(configuration), str(report)],
+                            capture_output=True)
+    assert result.returncode == 6
+    assert configuration.read_text() == 'preserve input'
+
+
+def test_old_source_recovery_skips_local_action():
+    import yaml
+    workflow = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())
+    steps = workflow['jobs']['ci-deployment-gate']['steps']
+    detection = next(step for step in steps if step.get('id') == 'phase21')
+    assert 'if [ -f integrations/github-action/action.yml ]; then' in detection['run']
+    for step in steps[steps.index(detection) + 1:]:
+        assert step['if'] == "steps.phase21.outputs.present == 'true'"
