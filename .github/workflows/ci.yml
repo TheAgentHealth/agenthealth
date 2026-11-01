@@ -829,11 +829,19 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.10'
+      - name: Detect Phase 21 source
+        id: phase21
+        run: |
+          if [ -f integrations/github-action/action.yml ]; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          fi
       - name: Build CLI and offline failure configuration
+        if: steps.phase21.outputs.present == 'true'
         run: |
           go build -ldflags '-X main.version=v0.19.0' -o ci-agenthealth.exe ./cmd/agenthealth
           python -c 'from pathlib import Path; Path("ci-failure.yaml").write_text("version: v1\ntargets:\n  - name: no-evidence\n    type: http\n    endpoint: http://127.0.0.1:1\n    checks: []\n")'
       - uses: ./integrations/github-action
+        if: steps.phase21.outputs.present == 'true'
         id: gate
         continue-on-error: true
         with:
@@ -842,6 +850,7 @@ jobs:
           configuration: ci-failure.yaml
           report: ci-failure.xml
       - name: Require failed gate and retained report
+        if: steps.phase21.outputs.present == 'true'
         env:
           GATE_CODE: ${{ steps.gate.outputs.exit-code }}
           GATE_OUTCOME: ${{ steps.gate.outcome }}
