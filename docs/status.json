@@ -141,9 +141,9 @@
     },
     {
       "phase": "[23: Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source; publication pending",
+      "documentation": "[Executable adapters](plugins.md), [alignment](phase-23-alignment.md)",
+      "validation": "[Runnable fixture](../examples/plugin-check/README.md), [protocol tests](../adapters/process/process_test.go)"
     },
     {
       "phase": "[24: AgentHealth Conformance](../ROADMAP.md#phase-24--agenthealth-conformance)",

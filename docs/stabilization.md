@@ -72,7 +72,7 @@ publication requires explicit successful checks for the tagged source.
 - Real framework/product fixtures with exact dependency versions.
 - Cloud-cluster/architecture coverage beyond the locally exercised Kubernetes 1.31.9, 1.32.2 and 1.33.1 scenarios.
 - Deployment Secret rotation and framework upgrade/rollback beyond the nine-case authenticated/nested/graph/agent released/current/released suite.
-- Out-of-process third-party adapters, scoped AHP authorization and external security audit.
+- OS containment for third-party adapters, scoped AHP authorization and external security audit.
 
 Configuration compatibility must test actual released binaries: validating an old
 fixture against the current schema alone does not establish upgrade or rollback.
@@ -85,3 +85,6 @@ reference handlers, and
 configuration compatibility using released v0.9.0/v0.12.0 binaries. These focused
 checks do not establish router decision correctness, Agentgateway route decisions,
 full A2A framework interoperability or deployment-secret migration safety.
+
+Phase 23 now implements local executable lifecycle separation; see the
+[security boundary](rfcs/phase-23-adapters.md). OS containment remains planned.

@@ -1420,7 +1420,11 @@ cardinality, delivery acceptance and freshness. See the alignment review.
 
 Future adapters must normalize evidence before observability projection and prohibit arbitrary export labels or diagnostic text.
 
-**Status:** Planned — not yet implemented.
+**Status:** Implemented in source — local executable adapter baseline.
+
+See [guide](plugins.md), [v1 transport](rfcs/phase-23-adapters.md) and
+[all-phase impact review](phase-23-alignment.md). OS sandboxing, automatic
+discovery/download and certification remain outside this baseline.
 
 Goal:
 
@@ -1430,17 +1434,17 @@ Allow the community to extend AgentHealth without modifying the core.
 
 Define:
 
-- [ ] metadata
-- [ ] configuration
-- [ ] health checks
-- [ ] capabilities
-- [ ] result normalization
-- [ ] error normalization
-- [ ] security requirements
-- [ ] compatibility version
-- [ ] adapter evidence mapping for direct/composite agents, gateways, routers, and communication paths under the updated AHS
-- [ ] adapter extension examples for the direct (first) agent and composite (downstream) agents using direct communication or A2A
-- [ ] Agentgateway and Agent Router integration examples with gateway/router, backend, and communication-path evidence kept distinct
+- [x] metadata
+- [x] configuration
+- [x] health checks
+- [x] capabilities
+- [x] result normalization
+- [x] error normalization
+- [x] security requirements
+- [x] compatibility version
+- [x] adapter evidence mapping for direct/composite agents, gateways, routers, and communication paths under the updated AHS
+- [x] adapter extension examples for the direct (first) agent and composite (downstream) agents using direct communication or A2A
+- [x] Agentgateway and Agent Router integration examples with gateway/router, backend, and communication-path evidence kept distinct
 
 Potential architecture:
 
@@ -1467,6 +1471,9 @@ Earlier: formalize the existing adapter baseline, including compatibility and ev
 ---
 
 # Phase 24 — AgentHealth Conformance
+
+Add executable adapter v1 compatibility, strict stream bounds, response markers,
+active opt-in, hash verification and normalization cases from Phase 23.
 
 Add Phase 22 conformance cases for redaction, status mapping, one-hot gauges and duplicate-edge uniqueness.
 
