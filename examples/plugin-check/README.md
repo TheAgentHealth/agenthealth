@@ -3,6 +3,7 @@
 From the repository root:
 
 ```sh
+go build -o /tmp/agenthealth-host ./cmd/agenthealth
 go build -o /tmp/agenthealth-probe ./examples/plugin-check
 python3 - <<'PY'
 import hashlib, json
@@ -15,7 +16,7 @@ manifest = {'protocol': 'v1', 'command': str(binary),
                          'dimensions': ['configuration', 'reachability'], 'active_checks': []}}
 Path('/tmp/agenthealth-adapter.json').write_text(json.dumps(manifest))
 PY
-agenthealth check examples/plugin-check/agenthealth.yaml --adapter /tmp/agenthealth-adapter.json --format json
+/tmp/agenthealth-host check examples/plugin-check/agenthealth.yaml --adapter /tmp/agenthealth-adapter.json --format json
 ```
 
 The fixture returns HEALTHY for configuration and UNKNOWN for reachability:
