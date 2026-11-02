@@ -1243,16 +1243,19 @@ Active checks should be opt-in when they could create cost, side effects, or wor
 
 AgentHealth itself is not an observability platform.
 
-However, health results may eventually be exported to observability ecosystems through:
+Health results can be exported through the following implemented projections:
 
 - JSON,
-- OpenTelemetry,
-- Prometheus metrics,
-- structured logs,
-- webhooks,
+- OTLP/HTTP JSON logs,
+- Prometheus text gauges,
+- structured JSON Lines logs,
+- versioned webhook payloads,
 - CI/CD annotations.
 
-This allows existing monitoring platforms to consume AgentHealth results.
+See the [export contract and explicit delivery examples](observability.md).
+Exports minimize identities and diagnostic text while retaining topology shape
+and timing. Collector product interoperability and durable delivery remain
+unverified; there is no automatic network exporter.
 
 ---
 
@@ -1419,7 +1422,7 @@ See [CLI usage](../docs/cli.md) for formats, safety defaults, adapter availabili
 
 > **Early-stage / Pre-1.0**
 
-Coverage for phases 0–14 is indexed in [the documentation guide](../docs/README.md).
+Coverage for phases 0–22 is indexed in [the documentation guide](../docs/README.md).
 
 AgentHealth is under active design and development. The Go engine, CLI, agent/multi-agent adapter, HTTP/API adapter, MCP HTTP/stdio adapter, A2A JSON-RPC adapter, gateway/router HTTP health and model/LLM adapters are implemented in source. A container image ([Phase 12](../ROADMAP.md#phase-12--docker-distribution)) is published to GHCR with an optional Docker Hub mirror. Kubernetes manifests and Helm chart 0.19.0 are available ([guide](../docs/kubernetes.md)). The Python SDK is published on PyPI; The JavaScript SDK is published on npm; additional adapters remain roadmap work.
 
@@ -1429,8 +1432,8 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 [Phase 7 — Agent Health](../ROADMAP.md#phase-7--agent-health), covering direct and
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
-The [dependency graph](../docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is included in v0.9.0. The [official container image](../docs/docker.md) is released in v0.10.0. SDKs and observability/conformance
-follow the [roadmap](../ROADMAP.md). See the [v0.5.0 release notes](../docs/releases/v0.5.0.md).
+The [dependency graph](../docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is included in v0.9.0. The [official container image](../docs/docker.md) is released in v0.10.0. Python/JavaScript SDKs and Phase 22 observability projections are implemented;
+conformance remains planned in the [roadmap](../ROADMAP.md). See the [v0.5.0 release notes](../docs/releases/v0.5.0.md).
 
 ---
 
