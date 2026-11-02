@@ -30,7 +30,7 @@ from the target, not independent proof of correct behavior.
 | AHP topology disclosure | Detailed dependency/capability endpoints require a configured bearer token; disabled without one. Public health/readiness routes return aggregate status and observation time | Public status is still information disclosure. Restrict ingress where needed. Authorized readers receive topology and evidence; secret redaction is not topology anonymization. |
 | Bearer-token scope | Token syntax/length validation and constant-time comparison of token hashes | One AHP token grants all detailed evidence for that server. There are no per-target scopes, roles or tenant claims. Use HTTPS at a trusted proxy, restrict readers, rotate by updating the secret and restarting the process, and separate configurations with different access policies. |
 | Expensive graphs and endpoints | Run/check budgets, bounded concurrency and response bodies; AHP refreshes serially and serves snapshots without request-triggered probes | Large graphs, repeated active probes, expensive remote work and large snapshot responses can consume resources. Review graph size and refresh policy; apply CPU/memory limits and proxy request/connection limits. Cancellation cannot undo remote side effects. No built-in AHP rate limiter. |
-| Uncooperative in-process adapters | Caller deadlines, panic normalization, bounded engine/per-run slots retained until calls return | Go cannot forcibly terminate a goroutine. A stuck call can permanently retain a slot, resource or cleanup gate; enough calls can exhaust useful capacity. Only run trusted adapters in process. Third-party adapter execution needs a future out-of-process protocol and OS isolation. |
+| Uncooperative in-process adapters | Caller deadlines, panic normalization, bounded engine/per-run slots retained until calls return | Go cannot forcibly terminate a goroutine. A stuck call can permanently retain a slot, resource or cleanup gate; enough calls can exhaust useful capacity. Only run trusted adapters in process. Phase 23 supplies an explicit executable protocol with process cancellation; OS isolation remains future work. |
 | Output/redaction | Canonical diagnostics, suppression of raw errors/bodies, known-credential redaction, format validation and terminal-control filtering | Unknown secrets, encoded/transformed credentials and sensitive names may evade redaction. Custom adapters can log outside engine control. Review collected output and supply secrets to the Redactor for caller-built results. Do not treat redaction as a DLP guarantee. |
 | Kubernetes egress | Non-root/container hardening and Secret references in supplied deployments | Charts do not install a destination-specific egress policy. Apply a CNI-enforced NetworkPolicy allowing only DNS and required destinations; account for OAuth issuers and MCP dependencies. ClusterIP is not an authorization boundary. See the [example policy](../examples/kubernetes/network-policy.yaml). |
 | Multi-tenant deployment | Fixed server configuration and protected detailed routes | No mutually untrusted tenant isolation, per-tenant quotas, credential separation or per-tenant authorization. Do not accept arbitrary tenant configurations in a shared process. Use separate workload identities, processes, secrets, volumes and network policies; container separation alone does not establish a complete tenant boundary. |
@@ -59,5 +59,11 @@ product. The [stabilization plan](stabilization.md) tracks fuzzing, graph profil
 network faults, broader interoperability and upgrade/rollback evidence.
 
 Future work includes destination policy enforcement, scoped authorization,
-out-of-process adapter execution and an external security audit. Do not advertise
+OS containment for executable adapters and an external security audit. Do not advertise
 multi-tenant safety or production certification before those guarantees exist.
+
+Executable adapters use explicit trusted manifests, byte pins, an empty inherited
+environment and bounded status-only output. The target bearer credential is sent
+only to its selected adapter. Programs retain user OS permissions and network
+access; no sandbox, egress control, interpreter pinning or certification is claimed.
+See [transport trust limits](rfcs/phase-23-adapters.md).

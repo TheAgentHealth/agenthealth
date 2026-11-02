@@ -994,8 +994,8 @@ AgentHealth Core
 
 The adapter interface should allow third parties to implement checks without modifying the core engine.
 
-The planned [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem)
-includes extension examples for the first (direct) agent, downstream
+The implemented-in-source [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem)
+provides a local executable transport and extension examples for the first (direct) agent, downstream
 (composite) agents, Agentgateway, and Agent Router. Direct/composite describe
 agent roles, not separate target types or a requirement for separate adapters.
 The diagrams show intended coverage; Agent/multi-agent, HTTP/API, MCP, and A2A are the currently
@@ -1668,3 +1668,6 @@ See the [AHP guide](../docs/ahp.md) for authorization, freshness and deployment.
 
 Phase 20 provides a supported [LangGraph/FastAPI SDK integration](framework-integrations.md);
 other runtime plugins remain planned. See the [phase impact review](phase-20-alignment.md).
+
+See [executable adapter guidance](plugins.md) and the
+[all-phase alignment review](phase-23-alignment.md) for current extension support.

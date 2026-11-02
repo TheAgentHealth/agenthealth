@@ -97,3 +97,11 @@ existing agent resource contract; no v1 schema or exit-code migration is require
 
 [Phase 21 CI reports](../docs/ci-cd.md) project existing results into JUnit and
 GitHub annotations; they do not change v1 wire schemas or exit semantics.
+
+## Executable adapter ecosystem (Phase 23)
+
+Implemented in source: explicit local manifests and SHA-256-pinned executable
+adapters with bounded JSON transport, cancellation and normalized engine output.
+See the [guide](../docs/plugins.md) and [all-phase alignment](../docs/phase-23-alignment.md).
+Processes retain the invoking user’s OS permissions; no sandbox or certification
+is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.

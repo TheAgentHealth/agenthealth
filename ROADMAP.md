@@ -178,6 +178,10 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 23 — Plugin / Adapter Ecosystem
 
+Implemented in source: explicitly authorized local executable adapters, pinned
+bytes and bounded v1 JSON transport. See the [guide](docs/plugins.md) and
+[all-phase alignment](docs/phase-23-alignment.md). OS containment remains planned.
+
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-23--plugin--adapter-ecosystem).
 
 # Phase 24 — AgentHealth Conformance

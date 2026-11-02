@@ -209,3 +209,11 @@ Released in v0.20.0: `--format prometheus|logs|otlp|webhook` produces
 redacted snapshots. See the [export guide](docs/observability.md) and
 [cross-phase alignment](docs/phase-22-alignment.md). Delivery is explicit
 and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
+
+## Executable adapter ecosystem (Phase 23)
+
+Implemented in source: explicit local manifests and SHA-256-pinned executable
+adapters with bounded JSON transport, cancellation and normalized engine output.
+See the [guide](docs/plugins.md) and [all-phase alignment](docs/phase-23-alignment.md).
+Processes retain the invoking user’s OS permissions; no sandbox or certification
+is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
