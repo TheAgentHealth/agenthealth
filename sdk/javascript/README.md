@@ -8,10 +8,10 @@ AHS v1 configuration and result contracts as the CLI.
 Install the verified published release:
 
 ```sh
-npm install @theagenthealth/agenthealth@0.20.0
+npm install @theagenthealth/agenthealth@0.21.0
 ```
 
-Install and verify matching CLI **v0.20.0** separately using the
+Install and verify matching CLI **v0.21.0** separately using the
 [installation guide](../../docs/installation.md). The SDK never downloads or
 executes binaries at import/install time. A mismatched CLI raises
 `CompatibilityError` before running checks.
@@ -60,11 +60,11 @@ See the [SDK guide](../../docs/javascript-sdk.md),
 [example](../../examples/javascript-sdk/README.md), and
 [Phase 16 impact review](../../docs/phase-16-alignment.md).
 
-This package version: v0.20.0. Requires the matching CLI; model/LLM
+This package version: v0.21.0. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.
 
 Native database targets use the matching CLI; fixed SQL queries require explicit
 functional opt-in. Passwords use `database.password_env` references.
 
 Qdrant/Pinecone vector-store checks are included in this version; use the
-matching v0.20.0 CLI. Other vector providers remain planned.
+matching v0.21.0 CLI. Other vector providers remain planned.
