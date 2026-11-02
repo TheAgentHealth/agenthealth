@@ -1417,6 +1417,8 @@ cardinality, delivery acceptance and freshness. See the alignment review.
 
 # Phase 23 — Plugin / Adapter Ecosystem
 
+Future adapters must normalize evidence before observability projection and prohibit arbitrary export labels or diagnostic text.
+
 **Status:** Planned — not yet implemented.
 
 Goal:
@@ -1464,6 +1466,8 @@ Earlier: formalize the existing adapter baseline, including compatibility and ev
 ---
 
 # Phase 24 — AgentHealth Conformance
+
+Add Phase 22 conformance cases for redaction, status mapping, one-hot gauges and duplicate-edge uniqueness.
 
 **Status:** Planned — not yet implemented.
 
@@ -1516,6 +1520,8 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
+
+Exercise OTLP collectors, textfile scrapers and webhook receivers with exact versions, acceptance/failure evidence and freshness checks.
 
 Phase 21 supplies CI provider templates; add exact hosted-provider/runner versions,
 deployment fixtures and observed success/failure evidence before claiming product
@@ -1584,6 +1590,8 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 26 — Production Hardening
+
+Measure export cardinality and memory bounds; design delivery backpressure, retention and restricted telemetry access.
 
 Phase 14 integration requirement: Extend Phase 14 with chart provenance/signing, registry digest maintenance,
 topology-specific network policy and broader Kubernetes security validation.
