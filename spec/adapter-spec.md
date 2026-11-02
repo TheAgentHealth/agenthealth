@@ -33,7 +33,10 @@ An adapter translates technology-specific behavior into the common [Agent Health
 
 ## Compatibility
 
-Adapters declare a `compatibility_version` against the core engine's adapter interface so the engine can reject or warn about incompatible adapters rather than failing unpredictably. The exact versioning scheme will be finalized alongside [Phase 23 — Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem).
+Adapters declare a `compatibility_version` against the core engine's adapter interface so the engine can reject or warn about incompatible adapters rather than failing unpredictably. The compiled API compatibility version is `v1`. Phase 23 adds a separate `v1`
+[executable transport](../docs/rfcs/phase-23-adapters.md); incompatible versions
+are rejected before execution. Metadata and transport versions are separate from
+the shared software release version.
 
 ## Conformance
 
@@ -92,3 +95,10 @@ probes require explicit opt-in. See [the router contract](../docs/agent-router.m
 Explicit references to one node ID share one execution, `RunState`, credential snapshot and cleanup per run. Distinct IDs and anonymous inline entries remain isolated, even when endpoints match. The engine supplies resolved immediate dependency identities to adapters for configured name matching. Adapter methods and compatibility version remain unchanged. Per-run `concurrency` and the engine-wide 16-call bound apply to both checks and cleanup; uncooperative calls retain their slots until completion. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
 
 Cleanup hooks remain serialized across nodes, runs and engines sharing a registry. Waiting for the serialization gate honors the cleanup deadline; an uncooperative hook holds the gate and its adapter-call slots until it actually returns.
+
+## Executable transport (Phase 23)
+
+The [extension guide](../docs/plugins.md) describes explicit local registration,
+metadata, supported configuration, status-only evidence, error normalization and
+security requirements. See [alignment](../docs/phase-23-alignment.md). Executable
+code is operator trusted; process separation does not provide OS containment.
