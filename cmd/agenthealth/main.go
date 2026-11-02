@@ -108,6 +108,9 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		return fail(usage)
 	}
 	command := positional[0]
+	if len(adapterPaths) > 0 && command != "check" && command != "ping" && command != "doctor" {
+		return fail("--adapter is supported only for check, ping and doctor")
+	}
 	if command == "version" {
 		if len(positional) != 1 {
 			return fail("version takes no arguments")
