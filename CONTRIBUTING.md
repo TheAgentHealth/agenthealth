@@ -78,7 +78,7 @@ manifests, Docker images, Helm chart, OCI binary bundle and released SDK package
 formats together, even when an individual format's files have not changed.
 Chart `version` uses the numeric software version; `appVersion` and pinned
 images identify the matching CLI. The Python and JavaScript/TypeScript SDKs
-share v0.19.0 with the CLI and other distributions. Future SDKs adopt this
+share v0.20.0 with the CLI and other distributions. Future SDKs adopt this
 policy when implemented.
 AHS/AHP contract versions remain separate.
 
@@ -205,7 +205,7 @@ and distinguish tool failure 6. See [CI/CD](docs/ci-cd.md) and
 
 ## Observability export (Phase 22)
 
-Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+Released in v0.20.0: `--format prometheus|logs|otlp|webhook` produces
 redacted snapshots. See the [export guide](docs/observability.md) and
 [cross-phase alignment](docs/phase-22-alignment.md). Delivery is explicit
 and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.

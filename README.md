@@ -6,33 +6,33 @@
 
 ## Start here
 
-**Latest release: [v0.19.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.19.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; Qdrant/Pinecone vector-store adapters are released in v0.17.0. See the [model guide](docs/model-adapter.md), [database guide](docs/database-adapter.md), and [vector-store guide](docs/vector-store-adapter.md).
+**Latest release: [v0.20.0](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.20.0), pre-1.0.** Supported adapters: agent/multi-agent, HTTP/API, MCP HTTP/stdio, A2A, gateway, and router. Model/LLM OpenAI-compatible and Anthropic checks and native PostgreSQL/MySQL/Redis/MongoDB database checks are released; Qdrant/Pinecone vector-store adapters are released in v0.17.0. See the [model guide](docs/model-adapter.md), [database guide](docs/database-adapter.md), and [vector-store guide](docs/vector-store-adapter.md).
 
 ### Install
 
-Choose how you want to run AgentHealth. Published distributions share **v0.19.0**:
+Choose how you want to run AgentHealth. Published distributions share **v0.20.0**:
 
 <!-- generated: distributions:start -->
 | Use it as | Get it here | Installation guide |
 |---|---|---|
-| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.19.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
-| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.19.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.19.0` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
-| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.19.0`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
+| Standalone CLI | [Release downloads](https://github.com/TheAgentHealth/agenthealth/releases/tag/v0.20.0): Linux AMD64/ARM64, macOS Intel/Apple Silicon, Windows AMD64 | [Download, verify and extract](docs/installation.md) — no Go required |
+| Docker image | [Docker Hub](https://hub.docker.com/r/theagenthealth/agenthealth): `theagenthealth/agenthealth:v0.20.0`; GHCR: `ghcr.io/theagenthealth/agenthealth:v0.20.0` | [Docker usage](docs/docker.md) — Linux AMD64/ARM64 |
+| Kubernetes / Helm | `oci://ghcr.io/theagenthealth/charts/agenthealth`, chart version `0.20.0`; chart archive also in release downloads | [Kubernetes setup and examples](docs/kubernetes.md) |
 | Linux DEB / RPM | AMD64/ARM64 packages in release downloads | [Local package installation](docs/installation.md#package-channels-phase-13-v0110) |
 | Homebrew / Scoop | `agenthealth.rb` / `agenthealth.json` in release downloads | [Manifest usage](docs/installation.md#package-channels-phase-13-v0110); official tap/bucket hosting is planned |
-| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.19.0` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
-| Python SDK / PyPI | [PyPI](https://pypi.org/project/agenthealth/0.19.0/): `pip install agenthealth==0.19.0`; wheel/sdist in Release downloads | [Python SDK](docs/python-sdk.md) — requires the matching CLI |
-| JavaScript / TypeScript SDK / npm | [npm](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.19.0): `npm install @theagenthealth/agenthealth@0.19.0`; signed tarball in Release downloads | [JavaScript SDK](docs/javascript-sdk.md) — Node 22.14+ ESM and matching CLI |
+| OCI download bundle | `ghcr.io/theagenthealth/agenthealth-binaries:v0.20.0` | [Retrieve with ORAS](docs/distribution.md#installation-examples); contains release files |
+| Python SDK / PyPI | [PyPI](https://pypi.org/project/agenthealth/0.20.0/): `pip install agenthealth==0.20.0`; wheel/sdist in Release downloads | [Python SDK](docs/python-sdk.md) — requires the matching CLI |
+| JavaScript / TypeScript SDK / npm | [npm](https://www.npmjs.com/package/@theagenthealth/agenthealth/v/0.20.0): `npm install @theagenthealth/agenthealth@0.20.0`; signed tarball in Release downloads | [JavaScript SDK](docs/javascript-sdk.md) — Node 22.14+ ESM and matching CLI |
 <!-- generated: distributions:end -->
 
 **Run immediately with Docker:**
 
 ```bash
-docker run --rm theagenthealth/agenthealth:v0.19.0 version
-docker run --rm theagenthealth/agenthealth:v0.19.0 --help
+docker run --rm theagenthealth/agenthealth:v0.20.0 version
+docker run --rm theagenthealth/agenthealth:v0.20.0 --help
 ```
 
-The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.19.0`.
+The same commands work with `ghcr.io/theagenthealth/agenthealth:v0.20.0`.
 Use an exact version tag to pin a release; `v0` follows stable major-version-0
 releases and `latest` follows the latest stable release.
 
@@ -41,14 +41,14 @@ releases and `latest` follows the latest stable release.
 
 ```bash
 helm upgrade --install agenthealth \
-  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.19.0 \
+  oci://ghcr.io/theagenthealth/charts/agenthealth --version 0.20.0 \
   --namespace agenthealth --create-namespace \
   --set-file config=./agenthealth.yaml
 ```
 
 See the [installation guide](docs/installation.md) for checksums and signed
 provenance, and the [Kubernetes guide](docs/kubernetes.md) for workload modes.
-The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.19.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is published on npm for Phase 16. Official
+The [Python SDK](docs/python-sdk.md) is published on PyPI as `agenthealth==0.20.0`; install a matching CLI separately. The [JavaScript SDK](docs/javascript-sdk.md) is published on npm for Phase 16. Official
 APT/YUM repositories are also planned; DEB/RPM downloads are available today.
 
 ### 60-second example
@@ -98,7 +98,7 @@ A reachable endpoint returning HTTP 200 should produce `HEALTHY` and exit code `
 
 ## Project status
 
-AgentHealth is pre-1.0. Published software is v0.19.0; changes described as
+AgentHealth is pre-1.0. Published software is v0.20.0; changes described as
 implemented in source require a newer build. Planned target vocabulary is not
 an availability guarantee. [Capability status](docs/phase-status.md) is generated
 from [one machine-readable source](docs/status.json).
@@ -247,7 +247,7 @@ retrieval relevance or corpus completeness. Other vector providers remain planne
 See the [guide](docs/vector-store-adapter.md),
 [examples](examples/vector-check/README.md),
 [phase alignment audit](docs/phase-19-alignment.md) and
-[synchronized publication verification](docs/releases/verification-v0.19.0.md).
+[synchronized publication verification](docs/releases/verification-v0.20.0.md).
 
 ## Agent runtime integration (Phase 20)
 
@@ -276,7 +276,7 @@ and shell/GitLab/Jenkins/Azure templates. See the [guide](docs/ci-cd.md),
 
 ## Observability export (Phase 22)
 
-Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+Released in v0.20.0: `--format prometheus|logs|otlp|webhook` produces
 redacted snapshots. See the [export guide](docs/observability.md) and
 [cross-phase alignment](docs/phase-22-alignment.md). Delivery is explicit
 and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.

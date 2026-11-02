@@ -1394,7 +1394,7 @@ and conformance/hardening remain explicit future work.
 
 # Phase 22 — Observability Export
 
-**Status:** Implemented in source; synchronized v0.20.0 release pending.
+**Status:** Released in v0.20.0.
 
 - [x] Prometheus text gauges, structured JSON Lines logs
 - [x] OTLP/HTTP JSON logs and versioned webhook payloads

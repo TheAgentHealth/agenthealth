@@ -1,6 +1,6 @@
 # Phase 22 impact and alignment review
 
-Implemented in source; synchronized v0.20.0 publication pending. Phase 14 was
+Released in v0.20.0; see [publication verification](releases/verification-v0.20.0.md). Phase 14 was
 already released: its original chart remains historical, and current charts
 follow the shared software version policy. This review covers all phases.
 

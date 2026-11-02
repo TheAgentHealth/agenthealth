@@ -49,3 +49,9 @@ JUnit/GitHub projections and unchanged health/tool exit codes. The
 [current impact review](phase-21-alignment.md) records each earlier-phase
 decision, including Kubernetes completion gates and preserved SDK JSON behavior.
 Historical implementation and release evidence above retain their original scope.
+
+## Phase 22 synchronized release
+
+The current chart and SDKs share v0.20.0. Earlier release observations above
+remain historical. See [current all-phase alignment](phase-22-alignment.md) and
+[publication verification](releases/verification-v0.20.0.md).
