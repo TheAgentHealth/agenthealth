@@ -17,6 +17,7 @@ type ExportObservation struct {
 	Kind         string   `json:"kind"`
 	Node         string   `json:"node"`
 	Parent       string   `json:"parent,omitempty"`
+	Edge         string   `json:"edge,omitempty"`
 	Type         string   `json:"type"`
 	Status       Status   `json:"status"`
 	Dimension    string   `json:"dimension,omitempty"`
@@ -32,6 +33,7 @@ func observations(results []Result) ([]ExportObservation, error) {
 	records := []ExportObservation{}
 	ids := map[string]string{}
 	next := 0
+	edges := 0
 	var walk func(Result, string)
 	walk = func(r Result, parent string) {
 		alias, seen := ids[r.Target.ID]
@@ -46,11 +48,12 @@ func observations(results []Result) ([]ExportObservation, error) {
 			}
 		}
 		if parent != "" {
+			edges++
 			critical := true
 			if r.Critical != nil {
 				critical = *r.Critical
 			}
-			records = append(records, ExportObservation{Kind: "edge", Node: alias, Parent: parent, Type: r.Target.Type, Status: r.Status, Relationship: r.Relationship, Critical: &critical})
+			records = append(records, ExportObservation{Kind: "edge", Edge: fmt.Sprintf("edge-%d", edges), Node: alias, Parent: parent, Type: r.Target.Type, Status: r.Status, Relationship: r.Relationship, Critical: &critical})
 		}
 		if seen {
 			return
@@ -115,7 +118,7 @@ func WriteObservability(w io.Writer, results []Result, format string) error {
 	case "prometheus":
 		buffer.WriteString("# HELP agenthealth_status Health status; exactly one state is 1.\n# TYPE agenthealth_status gauge\n# HELP agenthealth_latency_seconds Observed node check latency.\n# TYPE agenthealth_latency_seconds gauge\n")
 		for _, record := range records {
-			labels := fmt.Sprintf("kind=%q,node=%q,parent=%q,type=%q,dimension=%q,relationship=%q,critical=%q", record.Kind, record.Node, record.Parent, record.Type, record.Dimension, record.Relationship, criticalLabel(record.Critical))
+			labels := fmt.Sprintf("kind=%q,node=%q,parent=%q,type=%q,dimension=%q,relationship=%q,critical=%q,edge=%q", record.Kind, record.Node, record.Parent, record.Type, record.Dimension, record.Relationship, criticalLabel(record.Critical), record.Edge)
 			for _, status := range statuses {
 				value := 0
 				if status == record.Status {
@@ -123,6 +126,8 @@ func WriteObservability(w io.Writer, results []Result, format string) error {
 				}
 				fmt.Fprintf(&buffer, "agenthealth_status{%s,status=%q} %d\n", labels, status, value)
 			}
+		}
+		for _, record := range records {
 			if record.LatencyMS != nil {
 				fmt.Fprintf(&buffer, "agenthealth_latency_seconds{node=%q,type=%q} %g\n", record.Node, record.Type, *record.LatencyMS/1000)
 			}
