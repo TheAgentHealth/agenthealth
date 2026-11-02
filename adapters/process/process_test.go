@@ -31,6 +31,8 @@ func TestWorker(t *testing.T) {
 		time.Sleep(time.Minute)
 	case "oversized":
 		os.Stdout.WriteString(strings.Repeat(" ", maxBytes) + "{\"kind\":\"result\",\"status\":\"HEALTHY\"}")
+	case "trailing":
+		os.Stdout.WriteString("{\"kind\":\"result\",\"status\":\"HEALTHY\"}" + strings.Repeat(" ", maxBytes))
 	case "extra":
 		os.Stdout.WriteString("{\"kind\":\"result\",\"status\":\"HEALTHY\",\"message\":\"secret\"}")
 	case "duplicate":
@@ -66,7 +68,7 @@ func worker(t *testing.T) Manifest {
 
 func TestProtocol(t *testing.T) {
 	m := worker(t)
-	for _, endpoint := range []string{"success", "environment", "extra", "duplicate", "oversized", "hang", "partial"} {
+	for _, endpoint := range []string{"success", "environment", "extra", "duplicate", "oversized", "trailing", "hang", "partial"} {
 		t.Run(endpoint, func(t *testing.T) {
 			t.Setenv("PHASE23_SECRET", "must-not-inherit")
 			a, err := New(m)

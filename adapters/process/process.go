@@ -155,7 +155,8 @@ func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (
 	defer func() { _ = killProcess(cmd); _ = cmd.Wait() }()
 	stop := context.AfterFunc(ctx, func() { _ = killProcess(cmd); _ = stdout.Close() })
 	defer stop()
-	d := json.NewDecoder(io.LimitReader(stdout, maxBytes+1))
+	bounded := &io.LimitedReader{R: stdout, N: maxBytes + 1}
+	d := json.NewDecoder(bounded)
 	d.DisallowUnknownFields()
 	count := 0
 	for {
@@ -182,7 +183,7 @@ func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (
 			}
 			obs.Check.Status = event.Status
 			var extra any
-			if d.Decode(&extra) != io.EOF || d.InputOffset() > maxBytes {
+			if d.Decode(&extra) != io.EOF || bounded.N == 0 || d.InputOffset() > maxBytes {
 				return core.Observation{ResponseReceived: obs.ResponseReceived}, errProtocol
 			}
 			if err := cmd.Wait(); err != nil {
