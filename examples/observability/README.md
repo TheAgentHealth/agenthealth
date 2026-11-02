@@ -10,9 +10,10 @@ agenthealth check examples/core-check/agenthealth.yaml --format webhook > snapsh
 if [ "$health_code" -gt 5 ]; then exit "$health_code"; fi
 # Set WEBHOOK_URL to an approved HTTPS receiver. curl verifies TLS, does not
 # follow redirects, makes one bounded request and does not print response bodies.
-curl --silent --show-error --fail --output /dev/null --proto '=https' \
+http_code=$(curl --silent --show-error --fail --output /dev/null --proto '=https' \
   --max-time 10 --max-redirs 0 -H 'Content-Type: application/json' \
-  --data-binary @snapshot.json "$WEBHOOK_URL" || exit 6
+  --write-out '%{http_code}' --data-binary @snapshot.json "$WEBHOOK_URL") || exit 6
+case "$http_code" in 2??) ;; *) exit 6 ;; esac
 exit "$health_code"
 ```
 
