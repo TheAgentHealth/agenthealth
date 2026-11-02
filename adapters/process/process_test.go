@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -84,6 +85,9 @@ func TestProtocol(t *testing.T) {
 			marked := false
 			obs, err := a.Check(ctx, core.Request{Target: core.Target{Endpoint: endpoint}, Credential: "explicit", MarkResponse: func() { marked = true }}, "reachability")
 			valid := endpoint == "success" || endpoint == "environment"
+			if (endpoint == "hang" || endpoint == "partial") && !errors.Is(err, context.DeadlineExceeded) {
+				t.Fatalf("lost deadline classification: %v", err)
+			}
 			if (err == nil) != valid {
 				t.Fatalf("valid=%v error=%v", valid, err)
 			}

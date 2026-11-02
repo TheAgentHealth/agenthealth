@@ -108,8 +108,12 @@ func decode(r io.Reader, value any) error {
 
 // Check launches one process per dimension; the engine owns aggregation,
 // active-check authorization, retries, timing and output diagnostics.
-func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (core.Observation, error) {
-	var obs core.Observation
+func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (obs core.Observation, err error) {
+	defer func() {
+		if ctx.Err() != nil {
+			err = ctx.Err()
+		}
+	}()
 	supported := false
 	for _, d := range a.manifest.Metadata.Dimensions {
 		if d == dimension {
