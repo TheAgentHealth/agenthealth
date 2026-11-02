@@ -139,3 +139,9 @@ Historical implementation and release evidence above retain their original scope
 The current chart and SDKs share v0.20.0. Earlier release observations above
 remain historical. See [current all-phase alignment](phase-22-alignment.md) and
 [publication verification](releases/verification-v0.20.0.md).
+
+## Phase 23 synchronized release
+
+The current chart and SDKs share v0.21.0. Earlier observations above remain
+historical. See [current all-phase alignment](phase-23-alignment.md) and
+[publication verification](releases/verification-v0.21.0.md).

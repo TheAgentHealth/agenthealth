@@ -57,7 +57,7 @@ and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
 
 ## Executable adapter ecosystem (Phase 23)
 
-Implemented in source: explicit local manifests and SHA-256-pinned executable
+Released in v0.21.0: explicit local manifests and SHA-256-pinned executable
 adapters with bounded JSON transport, cancellation and normalized engine output.
 See the [guide](plugins.md) and [all-phase alignment](phase-23-alignment.md).
 Processes retain the invoking user’s OS permissions; no sandbox or certification

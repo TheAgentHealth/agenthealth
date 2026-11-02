@@ -131,7 +131,7 @@ channel manifests, Docker image, Helm chart and additional OCI binary bundle.
 The GitHub Release must list all downloads and package references. GHCR Packages
 must expose the Docker image, OCI chart and OCI binary bundle publicly and link
 them to this repository. Helm uses `version: X.Y.Z`, `appVersion: vX.Y.Z` and
-matching image references. Python and JavaScript/TypeScript SDKs share v0.20.0; future SDKs adopt the shared version when implemented;
+matching image references. Python and JavaScript/TypeScript SDKs share v0.21.0; future SDKs adopt the shared version when implemented;
 contract versions remain separate. Do not reuse historical CLI or chart tags.
 
 The shared workflow/helper implements coordinated source builds, signed draft
@@ -263,7 +263,7 @@ and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
 
 ## Executable adapter ecosystem (Phase 23)
 
-Implemented in source: explicit local manifests and SHA-256-pinned executable
+Released in v0.21.0: explicit local manifests and SHA-256-pinned executable
 adapters with bounded JSON transport, cancellation and normalized engine output.
 See the [guide](docs/plugins.md) and [all-phase alignment](docs/phase-23-alignment.md).
 Processes retain the invoking user’s OS permissions; no sandbox or certification
