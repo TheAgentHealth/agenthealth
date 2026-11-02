@@ -116,7 +116,8 @@ func TestManifestAndPin(t *testing.T) {
 		t.Fatal("changed executable accepted")
 	}
 	for _, change := range []func(*Manifest){
-		func(m *Manifest) { m.Protocol = "v2" }, func(m *Manifest) { m.Command = "relative" }, func(m *Manifest) { m.SHA256 = "bad" }, func(m *Manifest) { m.Metadata.CompatibilityVersion = "v2" },
+		func(m *Manifest) { m.Protocol = "v2" }, func(m *Manifest) { m.Command = "relative" }, func(m *Manifest) { m.SHA256 = "bad" },
+		func(m *Manifest) { m.SHA256 = strings.Repeat("A", 64) }, func(m *Manifest) { m.Metadata.CompatibilityVersion = "v2" },
 	} {
 		candidate := a.manifest
 		change(&candidate)
@@ -137,5 +138,22 @@ func TestManifestAndPin(t *testing.T) {
 		if _, err := Load(path); err == nil {
 			t.Fatal("invalid JSON accepted")
 		}
+	}
+}
+
+func TestNoGroupSignalDuringOrAfterReaping(t *testing.T) {
+	groups, direct := 0, 0
+	control := processControl{group: func() error { groups++; return nil }, direct: func() error { direct++; return nil }}
+	if err := control.cancel(); err != nil {
+		t.Fatal(err)
+	}
+	control.beginWait()
+	for i := 0; i < 3; i++ {
+		if err := control.cancel(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if groups != 1 || direct != 3 {
+		t.Fatalf("group=%d direct=%d", groups, direct)
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -54,7 +55,7 @@ func Load(path string) (*Adapter, error) {
 // New validates metadata using the same rules as compiled adapters.
 func New(m Manifest) (*Adapter, error) {
 	hash, err := hex.DecodeString(m.SHA256)
-	if m.Protocol != "v1" || !filepath.IsAbs(m.Command) || err != nil || len(hash) != sha256.Size {
+	if m.Protocol != "v1" || !filepath.IsAbs(m.Command) || err != nil || len(hash) != sha256.Size || hex.EncodeToString(hash) != m.SHA256 {
 		return nil, errProtocol
 	}
 	m.Metadata = clone(m.Metadata)
@@ -139,7 +140,8 @@ func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (
 	}
 	cmd := exec.CommandContext(ctx, a.manifest.Command)
 	configureProcess(cmd)
-	cmd.Cancel = func() error { return killProcess(cmd) }
+	control := processControl{group: func() error { return killProcess(cmd) }, direct: func() error { return cmd.Process.Kill() }}
+	cmd.Cancel = control.cancel
 	cmd.Env = []string{}
 	cmd.Stdin = bytes.NewReader(payload)
 	cmd.Stderr = io.Discard
@@ -152,8 +154,15 @@ func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (
 		return obs, errProtocol
 	}
 	// Always terminate/reap a child on malformed or oversized output.
-	defer func() { _ = killProcess(cmd); _ = cmd.Wait() }()
-	stop := context.AfterFunc(ctx, func() { _ = killProcess(cmd); _ = stdout.Close() })
+	waited := false
+	wait := func() error { control.beginWait(); waited = true; return cmd.Wait() }
+	defer func() {
+		if !waited {
+			_ = control.cancel()
+			_ = wait()
+		}
+	}()
+	stop := context.AfterFunc(ctx, func() { _ = stdout.Close() })
 	defer stop()
 	bounded := &io.LimitedReader{R: stdout, N: maxBytes + 1}
 	d := json.NewDecoder(bounded)
@@ -186,7 +195,7 @@ func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (
 			if d.Decode(&extra) != io.EOF || bounded.N == 0 || d.InputOffset() > maxBytes {
 				return core.Observation{ResponseReceived: obs.ResponseReceived}, errProtocol
 			}
-			if err := cmd.Wait(); err != nil {
+			if err := wait(); err != nil {
 				return core.Observation{ResponseReceived: obs.ResponseReceived}, errProtocol
 			}
 			return obs, nil
@@ -198,3 +207,26 @@ func (a *Adapter) Check(ctx context.Context, r core.Request, dimension string) (
 
 // Keep the package safe for concurrent checks: Adapter has no mutable run state.
 var _ core.Adapter = (*Adapter)(nil)
+
+// Group signals are allowed only before reaping can begin. Once Wait starts,
+// os.Process.Kill uses Go's lifetime-aware process handle; a raw negative PID
+// must never be signaled after a child may have been reaped.
+type processControl struct {
+	mu            sync.Mutex
+	reaping       bool
+	group, direct func() error
+}
+
+func (p *processControl) cancel() error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.reaping {
+		return p.direct()
+	}
+	return p.group()
+}
+func (p *processControl) beginWait() {
+	p.mu.Lock()
+	p.reaping = true
+	p.mu.Unlock()
+}
