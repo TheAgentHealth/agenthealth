@@ -202,3 +202,10 @@ Phase 21 CI integrations require report/CLI tests and
 `python3 -m pytest tests/test_ci_integrations.py -q`. Preserve health codes 0–5
 and distinguish tool failure 6. See [CI/CD](docs/ci-cd.md) and
 [alignment](docs/phase-21-alignment.md).
+
+## Observability export (Phase 22)
+
+Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+redacted snapshots. See the [export guide](docs/observability.md) and
+[cross-phase alignment](docs/phase-22-alignment.md). Delivery is explicit
+and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.

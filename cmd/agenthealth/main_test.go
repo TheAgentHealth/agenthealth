@@ -465,7 +465,7 @@ func TestDatabaseCLIRegistrationAndConfiguration(t *testing.T) {
 func TestCIFormatsPreserveHealthAndToolFailures(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(503) }))
 	defer server.Close()
-	for _, format := range []string{"junit", "github"} {
+	for _, format := range []string{"junit", "github", "prometheus", "logs", "otlp", "webhook"} {
 		var out, diagnostic bytes.Buffer
 		code := run(context.Background(), []string{"ping", "http", server.URL, "--format", format}, &out, &diagnostic)
 		if code != 2 || diagnostic.Len() != 0 {

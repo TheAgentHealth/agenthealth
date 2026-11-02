@@ -135,9 +135,9 @@
     },
     {
       "phase": "[22: Observability Export](../ROADMAP.md#phase-22--observability-export)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source; v0.20.0 publication pending",
+      "documentation": "[Exports](observability.md), [alignment](phase-22-alignment.md)",
+      "validation": "[Delivery examples](../examples/observability/README.md), [tests](../core/output_observability_test.go)"
     },
     {
       "phase": "[23: Plugin / Adapter Ecosystem](../ROADMAP.md#phase-23--plugin--adapter-ecosystem)",

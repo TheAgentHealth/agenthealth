@@ -1393,50 +1393,31 @@ and conformance/hardening remain explicit future work.
 
 # Phase 22 — Observability Export
 
-Phase 21 alignment: CI projections omit identities and diagnostic text. Future
-exports must define their own topology redaction and evidence mapping; JUnit is
-not a full result interchange format.
+**Status:** Implemented in source; synchronized v0.20.0 release pending.
 
-**Status:** Planned — not yet implemented.
+- [x] Prometheus text gauges, structured JSON Lines logs
+- [x] OTLP/HTTP JSON logs and versioned webhook payloads
+- [x] Explicit external delivery examples, without automatic retries
+- [x] Shared node evidence once per ID; distinct incoming edge policies
+- [x] Snapshot-local aliases and omission of configured identities/messages
 
-Goal:
-
-Allow existing observability systems to consume AgentHealth results.
-
-Potential integrations:
-
-- [ ] OpenTelemetry
-- [ ] Prometheus
-- [ ] structured logs
-- [ ] webhooks
-
-- [ ] export distinct agent, gateway/router, path, and dependency evidence with sensitive topology redaction
-
-AgentHealth will not attempt to become a complete observability backend.
-
-Instead:
-
-```text
-AgentHealth
-    │
-    ├── OpenTelemetry
-    ├── Prometheus
-    ├── Logs
-    └── Webhooks
-```
-
-- [ ] Export shared node evidence once per ID while retaining distinct edge policies and redacting sensitive topology. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
+See [export mapping and limitations](observability.md),
+[examples](../examples/observability/README.md), and
+[all-phase impact review](phase-22-alignment.md).
+Collector product interoperability, durable delivery, gRPC and a scrape server
+remain outside this baseline. AgentHealth is not an observability backend.
 
 ## Impact Review
 
-Earlier: map approved result evidence to exports and extend output interfaces as required; no new health semantics are expected solely for export. Later: validate export compatibility and redaction during conformance and hardening.
-
-
-Phase 11 integration requirements are recorded in the [AHP impact review](../docs/rfcs/phase-11-ahp.md#later-phases).
+Earlier contracts remain unchanged; projections share validated engine evidence.
+Later conformance/interoperability/hardening must test mapping, redaction,
+cardinality, delivery acceptance and freshness. See the alignment review.
 
 ---
 
 # Phase 23 — Plugin / Adapter Ecosystem
+
+Future adapters must normalize evidence before observability projection and prohibit arbitrary export labels or diagnostic text.
 
 **Status:** Planned — not yet implemented.
 
@@ -1485,6 +1466,8 @@ Earlier: formalize the existing adapter baseline, including compatibility and ev
 ---
 
 # Phase 24 — AgentHealth Conformance
+
+Add Phase 22 conformance cases for redaction, status mapping, one-hot gauges and duplicate-edge uniqueness.
 
 **Status:** Planned — not yet implemented.
 
@@ -1537,6 +1520,8 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
+
+Exercise OTLP collectors, textfile scrapers and webhook receivers with exact versions, acceptance/failure evidence and freshness checks.
 
 Phase 21 supplies CI provider templates; add exact hosted-provider/runner versions,
 deployment fixtures and observed success/failure evidence before claiming product
@@ -1605,6 +1590,8 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 26 — Production Hardening
+
+Measure export cardinality and memory bounds; design delivery backpressure, retention and restricted telemetry access.
 
 Phase 14 integration requirement: Extend Phase 14 with chart provenance/signing, registry digest maintenance,
 topology-specific network policy and broader Kubernetes security validation.

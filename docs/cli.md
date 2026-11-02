@@ -15,7 +15,7 @@ go build -o agenthealth ./cmd/agenthealth
 
 `check <configuration.yaml>` loads strict YAML and runs the configured targets and dependencies. `doctor <type> <endpoint>` runs the same passive defaults as ping. `doctor <configuration.yaml>` performs the same checks and adds status-based troubleshooting advice to terminal output. It does not enable additional functional checks. Failed checks and dependency evidence appear in all formats. Doctor advice is general guidance rather than a claim that a particular root cause has been identified.
 
-Use `--format terminal`, `--format json`, `--format yaml`, `--format junit`, or `--format github` before or after positional arguments. Terminal is the default. JSON and YAML use identical specification fields, with a single-result document for one target or an ordered `results` batch for multiple targets. Doctor's machine output is the same health document as check. `--` ends option parsing for paths beginning with a dash.
+Use `--format terminal`, `--format json`, `--format yaml`, `--format junit`, `--format github`, `--format prometheus`, `--format logs`, `--format otlp`, or `--format webhook` before or after positional arguments. Terminal is the default. JSON and YAML use identical specification fields, with a single-result document for one target or an ordered `results` batch for multiple targets. Doctor's JSON/YAML output is the same health document as check; report and observability formats use their documented reduced projections. `--` ends option parsing for paths beginning with a dash.
 
 `version` and `--version` print the build version (`dev` by default). Release builds can set it with:
 
@@ -140,3 +140,10 @@ Use a configuration file for provider, collection/index and query options;
 [CI report formats](ci-cd.md#reports-and-exit-codes) retain health exit codes,
 omit sensitive identities/messages and keep dependency occurrences distinct.
 They are projections of the result rather than v1 JSON/YAML documents.
+
+## Observability export (Phase 22)
+
+Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+redacted snapshots. See the [export guide](../docs/observability.md) and
+[cross-phase alignment](../docs/phase-22-alignment.md). Delivery is explicit
+and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
