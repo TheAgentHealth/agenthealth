@@ -864,3 +864,24 @@ jobs:
           assert suite.attrib['failures'] == '1'
           assert suite.find('testcase/failure').attrib['message'] == 'UNKNOWN'
           PYTHON
+
+  observability-export:
+    name: Observability export contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.3'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Validate Prometheus and OTLP with independent parsers
+        run: |
+          if [ -f tests/test_observability_exports.py ]; then
+            pip install -r tests/requirements.txt
+            python -m pytest tests/test_observability_exports.py -q
+          fi
