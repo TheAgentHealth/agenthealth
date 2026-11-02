@@ -13,8 +13,12 @@ import (
 // Metadata declares compatibility, implemented dimensions, and active checks.
 // All active checks must remain non-destructive, even when opted in.
 type Metadata struct {
-	Name, Version, CompatibilityVersion   string
-	TargetTypes, Dimensions, ActiveChecks []string
+	Name                 string   `json:"name"`
+	Version              string   `json:"version"`
+	CompatibilityVersion string   `json:"compatibility_version"`
+	TargetTypes          []string `json:"target_types"`
+	Dimensions           []string `json:"dimensions"`
+	ActiveChecks         []string `json:"active_checks"`
 }
 
 // Request contains per-target state. Credentials must never be logged.
