@@ -56,3 +56,9 @@ Process termination is implemented, but filesystem/network permissions remain
 those of the invoking user. Keep binaries and manifests in trusted directories.
 Hashes pin executable bytes; they do not pin shared libraries or prevent concurrent
 replacement in a writable directory. No community certification is claimed.
+
+On Windows, Go may supply the OS-required `SystemRoot` variable; application
+environment variables remain excluded. Unix group termination is used before
+reaping starts. After stdout closes and reaping starts, cancellation uses the
+lifetime-aware direct-child handle; descendants that close inherited pipes are
+not guaranteed to be terminated. OS containment remains outside this protocol.

@@ -42,3 +42,9 @@ outside this trust boundary. No executable download, registry certification,
 filesystem isolation, egress policy or security audit is supplied. Phase 26 owns
 stronger OS containment. Phase 24 will test this contract independently; Phase 25
 will measure real community adapters separately from controlled protocol fixtures.
+
+On Windows, Go may supply the OS-required `SystemRoot` variable; application
+environment variables remain excluded. Unix group termination is used before
+reaping starts. After stdout closes and reaping starts, cancellation uses the
+lifetime-aware direct-child handle; descendants that close inherited pipes are
+not guaranteed to be terminated. OS containment remains outside this protocol.

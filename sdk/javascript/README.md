@@ -5,13 +5,14 @@ Browsers, CommonJS `require`, automatic binary downloads and install scripts are
 not supported. All implemented adapters and graph configurations use the same
 AHS v1 configuration and result contracts as the CLI.
 
+This source tree prepares v0.21.0; publication is pending.
 Install the verified published release:
 
 ```sh
-npm install @theagenthealth/agenthealth@0.21.0
+npm install @theagenthealth/agenthealth@0.20.0
 ```
 
-Install and verify matching CLI **v0.21.0** separately using the
+Install and verify matching CLI **v0.20.0** separately using the
 [installation guide](../../docs/installation.md). The SDK never downloads or
 executes binaries at import/install time. A mismatched CLI raises
 `CompatibilityError` before running checks.
@@ -68,3 +69,5 @@ functional opt-in. Passwords use `database.password_env` references.
 
 Qdrant/Pinecone vector-store checks are included in this version; use the
 matching v0.21.0 CLI. Other vector providers remain planned.
+
+Building the source SDK requires matching CLI v0.21.0.
