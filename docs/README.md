@@ -47,3 +47,10 @@ with safe peer hooks and an SDK consumer node. Other framework products remain p
 
 Phase 21: [CI/CD deployment gates](ci-cd.md), [provider examples](../examples/ci/README.md)
 and [cross-phase alignment](phase-21-alignment.md).
+
+## Observability export (Phase 22)
+
+Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+redacted snapshots. See the [export guide](../docs/observability.md) and
+[cross-phase alignment](../docs/phase-22-alignment.md). Delivery is explicit
+and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.

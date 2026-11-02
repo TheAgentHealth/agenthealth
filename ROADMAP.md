@@ -170,6 +170,10 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 22 — Observability Export
 
+Implemented in source: redacted Prometheus, JSON Lines, OTLP/HTTP JSON logs
+and webhook payloads. See the [guide](docs/observability.md) and
+[all-phase alignment](docs/phase-22-alignment.md). Collector delivery remains explicit.
+
 See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-details.md#phase-22--observability-export).
 
 # Phase 23 — Plugin / Adapter Ecosystem

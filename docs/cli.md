@@ -140,3 +140,10 @@ Use a configuration file for provider, collection/index and query options;
 [CI report formats](ci-cd.md#reports-and-exit-codes) retain health exit codes,
 omit sensitive identities/messages and keep dependency occurrences distinct.
 They are projections of the result rather than v1 JSON/YAML documents.
+
+## Observability export (Phase 22)
+
+Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+redacted snapshots. See the [export guide](../docs/observability.md) and
+[cross-phase alignment](../docs/phase-22-alignment.md). Delivery is explicit
+and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.

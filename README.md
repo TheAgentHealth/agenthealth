@@ -273,3 +273,10 @@ Released in v0.19.0. Use `agenthealth check deployment.yaml --format junit` to s
 non-healthy results. Phase 21 also provides GitHub annotations, a reusable Action
 and shell/GitLab/Jenkins/Azure templates. See the [guide](docs/ci-cd.md),
 [examples](examples/ci/README.md) and [alignment review](docs/phase-21-alignment.md).
+
+## Observability export (Phase 22)
+
+Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+redacted snapshots. See the [export guide](docs/observability.md) and
+[cross-phase alignment](docs/phase-22-alignment.md). Delivery is explicit
+and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
