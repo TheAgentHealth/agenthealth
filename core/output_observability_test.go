@@ -122,3 +122,15 @@ func TestObservabilityValidationAndFailures(t *testing.T) {
 		t.Fatal(records, err)
 	}
 }
+
+// Writers violating io.Writer's short-write contract must still fail the export.
+type exportShortWriter struct{}
+
+func (exportShortWriter) Write(p []byte) (int, error) { return len(p) - 1, nil }
+func TestObservabilityShortWrites(t *testing.T) {
+	for _, format := range []string{"prometheus", "logs", "otlp", "webhook"} {
+		if err := WriteObservability(exportShortWriter{}, []Result{ciResult(Healthy)}, format); err != io.ErrShortWrite {
+			t.Fatalf("%s: %v", format, err)
+		}
+	}
+}

@@ -136,7 +136,10 @@ func WriteObservability(w io.Writer, results []Result, format string) error {
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(buffer.Bytes())
+	written, err := w.Write(buffer.Bytes())
+	if err == nil && written != buffer.Len() {
+		return io.ErrShortWrite
+	}
 	return err
 }
 
