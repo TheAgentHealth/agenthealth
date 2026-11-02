@@ -1,5 +1,8 @@
 # Phase 18 alignment audit
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Scope: PostgreSQL, MySQL, Redis and MongoDB native database health under the
 existing `database` target vocabulary. [RFC #54](https://github.com/TheAgentHealth/agenthealth/issues/54)
 records the authorized additive configuration and safety design. The synchronized v0.16.0 publication is verified; see the

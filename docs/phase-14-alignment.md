@@ -1,5 +1,8 @@
 # Phase 14 coverage and alignment
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Kubernetes integration is included in CLI v0.11.1 source and independently
 versioned chart 0.1.0. Chart 0.1.0 consumes CLI v0.11.1. CLI v0.11.1 rebuilds all distributions with Go 1.27.2 to fix GO-2026-6617;
 chart 0.1.0 pins that patched image. Component publication remains separate.

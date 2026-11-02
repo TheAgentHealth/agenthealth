@@ -1,5 +1,8 @@
 # Phase 20 impact and alignment review
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Released in v0.18.0: optional LangGraph/FastAPI SDK integration, allowlisted
 peer callbacks and typed health consumer nodes. Other framework products remain
 planned. See the [publication verification](releases/verification-v0.18.0.md).

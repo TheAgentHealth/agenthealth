@@ -1,5 +1,8 @@
 # Phase 17 alignment audit
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Scope: model/LLM OpenAI-compatible and Anthropic dialects, released in v0.15.0. Based on [RFC #14](https://github.com/TheAgentHealth/agenthealth/issues/14)
 and [PR #17](https://github.com/TheAgentHealth/agenthealth/pull/17) by Sharath K.
 The contributor commit retains its original author; current integration and
