@@ -1,7 +1,7 @@
 # Phase 23 impact and alignment review
 
-Implemented in source for the proposed v0.21.0 synchronized release. Published
-availability remains recorded separately in [capability status](phase-status.md).
+Released in v0.21.0; see [publication verification](releases/verification-v0.21.0.md)
+and [capability status](phase-status.md).
 Phase 14 is already released; its original chart tag remains historical.
 
 | Phases | Assessment and completed alignment |

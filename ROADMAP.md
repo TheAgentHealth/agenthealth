@@ -18,7 +18,7 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python and JavaScript/TypeScript SDKs are released and share v0.20.0.
+Python and JavaScript/TypeScript SDKs are released and share v0.21.0.
 Future SDK improvements follow the stabilization and interoperability work above.
 Model/LLM OpenAI-compatible and Anthropic adapters are released in v0.15.0.
 Native databases are released in v0.16.0; Qdrant/Pinecone vector-store checks are released in v0.17.0.
@@ -178,7 +178,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 23 — Plugin / Adapter Ecosystem
 
-Implemented in source: explicitly authorized local executable adapters, pinned
+Released in v0.21.0: explicitly authorized local executable adapters, pinned
 bytes and bounded v1 JSON transport. See the [guide](docs/plugins.md) and
 [all-phase alignment](docs/phase-23-alignment.md). OS containment remains planned.
 

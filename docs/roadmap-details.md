@@ -1420,7 +1420,7 @@ cardinality, delivery acceptance and freshness. See the alignment review.
 
 Future adapters must normalize evidence before observability projection and prohibit arbitrary export labels or diagnostic text.
 
-**Status:** Implemented in source — local executable adapter baseline.
+**Status:** Released in v0.21.0 — local executable adapter baseline.
 
 See [guide](plugins.md), [v1 transport](rfcs/phase-23-adapters.md) and
 [all-phase impact review](phase-23-alignment.md). OS sandboxing, automatic
