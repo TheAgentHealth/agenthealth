@@ -4,8 +4,9 @@ Typed synchronous and asynchronous access to AgentHealth's Go CLI. This package
 preserves AHS v1 results, diagnostic codes, dependency relationships and graph
 IDs. Health failures return results; tool failures raise exceptions.
 
-This source tree prepares v0.21.0; publication is pending.
-Install the verified published package with `pip install agenthealth==0.20.0`. Install a
+This source SDK targets v0.21.0. Once the synchronized release is available,
+install it with `pip install agenthealth==0.21.0`. Until then, use the
+[published version](../../docs/phase-status.md) or build this source locally. Install a
 verified AgentHealth CLI of the same installed software version separately and put it on
 PATH, or pass its absolute path. Installation and imports never download or
 execute a binary. The SDK targets Python 3.10+ and CLI v0.21.0.
