@@ -17,6 +17,7 @@ import (
 	httpadapter "github.com/TheAgentHealth/agenthealth/adapters/http"
 	mcpadapter "github.com/TheAgentHealth/agenthealth/adapters/mcp"
 	modeladapter "github.com/TheAgentHealth/agenthealth/adapters/model"
+	processadapter "github.com/TheAgentHealth/agenthealth/adapters/process"
 	routeradapter "github.com/TheAgentHealth/agenthealth/adapters/router"
 	vectoradapter "github.com/TheAgentHealth/agenthealth/adapters/vectorstore"
 	"github.com/TheAgentHealth/agenthealth/core"
@@ -37,6 +38,7 @@ const usage = `Usage:
 Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router, model, llm, database, vector-store.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
 Agent task/path probes require the application to implement the safe probe handler.
+Use --adapter <manifest.json> to register an explicitly trusted executable for unclaimed target types.
 Other target types require future adapters.
 Checks are passive by default; functional checks require opt-in in configuration.
 `
@@ -56,6 +58,7 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		return runServe(ctx, args[1:], out, diagnostics)
 	}
 	format := "terminal"
+	var adapterPaths []string
 	var positional []string
 	options := true
 	for i := 0; i < len(args); i++ {
@@ -83,6 +86,14 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 			} else {
 				format = strings.TrimPrefix(arg, "--format=")
 			}
+			continue
+		}
+		if options && arg == "--adapter" {
+			i++
+			if i == len(args) {
+				return fail("--adapter requires a manifest path")
+			}
+			adapterPaths = append(adapterPaths, args[i])
 			continue
 		}
 		if options && strings.HasPrefix(arg, "-") {
@@ -158,6 +169,15 @@ func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	registry, registryErr := newRegistry()
 	if registryErr != nil {
 		return fail("cannot register adapters")
+	}
+	for _, path := range adapterPaths {
+		adapter, err := processadapter.Load(path)
+		if err != nil {
+			return fail("invalid executable adapter manifest")
+		}
+		if err := registry.Register(adapter); err != nil {
+			return fail("cannot register executable adapter; target types must be unclaimed")
+		}
 	}
 	results, err := core.NewEngine(registry).Run(ctx, config)
 	if err != nil {
