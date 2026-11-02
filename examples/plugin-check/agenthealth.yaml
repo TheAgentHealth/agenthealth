@@ -1,0 +1,12 @@
+version: v1
+targets:
+  - name: direct-agent-extension-fixture
+    type: custom
+    endpoint: https://direct-agent.example.invalid/health
+    checks: [configuration, reachability]
+    dependencies:
+      - target:
+          name: composite-agent-extension-fixture
+          type: custom
+          endpoint: https://composite-agent.example.invalid/health
+          checks: [configuration, reachability]
