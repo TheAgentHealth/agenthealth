@@ -39,8 +39,8 @@ status/code and shared per-target evidence; no topology or agent-role fields are
 introduced here. v0.4.0 changes the A2A default and failure exit codes as documented.
 
 Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; experimental AHP HTTP serving is implemented in source;
-full distribution, SDK/ecosystem and observability/conformance remain later
-milestones. Basic Docker/Kubernetes examples may proceed alongside agent health.
+distribution, SDKs, runtime integration, CI/CD and observability are now implemented
+in their later phases. Conformance remains planned; see the current status index.
 No additional adapter is declared implemented by this foundation milestone.
 
 ---
@@ -369,11 +369,12 @@ agenthealth version
 - [x] JSON
 - [x] YAML
 
-Potential later formats:
+Additional implemented projections:
 
-- [ ] JUnit
-- [ ] SARIF
-- [ ] Prometheus
+- [x] JUnit and GitHub annotations (Phase 21)
+- [x] Prometheus text, JSON Lines, OTLP/HTTP JSON logs and webhook payloads (Phase 22)
+
+Planned: SARIF. See the [export guide](observability.md) for projection limits.
 
 ## Exit Codes
 
@@ -1393,7 +1394,7 @@ and conformance/hardening remain explicit future work.
 
 # Phase 22 — Observability Export
 
-**Status:** Implemented in source; synchronized v0.20.0 release pending.
+**Status:** Released in v0.20.0.
 
 - [x] Prometheus text gauges, structured JSON Lines logs
 - [x] OTLP/HTTP JSON logs and versioned webhook payloads

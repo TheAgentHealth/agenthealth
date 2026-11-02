@@ -1,5 +1,8 @@
 # Phase 19 alignment audit
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Scope: Qdrant REST and Pinecone dense-vector data-plane REST. The
 [design](rfcs/phase-19-vector-store.md) and
 [RFC #57](https://github.com/TheAgentHealth/agenthealth/issues/57) record the

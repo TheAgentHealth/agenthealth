@@ -131,7 +131,7 @@ channel manifests, Docker image, Helm chart and additional OCI binary bundle.
 The GitHub Release must list all downloads and package references. GHCR Packages
 must expose the Docker image, OCI chart and OCI binary bundle publicly and link
 them to this repository. Helm uses `version: X.Y.Z`, `appVersion: vX.Y.Z` and
-matching image references. Python and JavaScript/TypeScript SDKs share v0.19.0; future SDKs adopt the shared version when implemented;
+matching image references. Python and JavaScript/TypeScript SDKs share v0.20.0; future SDKs adopt the shared version when implemented;
 contract versions remain separate. Do not reuse historical CLI or chart tags.
 
 The shared workflow/helper implements coordinated source builds, signed draft
@@ -256,7 +256,7 @@ and [alignment](docs/phase-21-alignment.md).
 
 ## Observability export (Phase 22)
 
-Implemented in source: `--format prometheus|logs|otlp|webhook` produces
+Released in v0.20.0: `--format prometheus|logs|otlp|webhook` produces
 redacted snapshots. See the [export guide](docs/observability.md) and
 [cross-phase alignment](docs/phase-22-alignment.md). Delivery is explicit
 and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.

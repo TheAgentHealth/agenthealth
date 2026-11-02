@@ -1,5 +1,8 @@
 # Phase 16 impact review and alignment
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Phase 16 implements the Node.js ESM JavaScript/TypeScript SDK, synchronized at
 v0.14.0 with CLI, Python, chart and all existing distribution formats. Publication is verified in the
 [release record](releases/verification-v0.14.0.md). The existing npm 0.0.0 placeholder remains
@@ -46,3 +49,9 @@ JUnit/GitHub projections and unchanged health/tool exit codes. The
 [current impact review](phase-21-alignment.md) records each earlier-phase
 decision, including Kubernetes completion gates and preserved SDK JSON behavior.
 Historical implementation and release evidence above retain their original scope.
+
+## Phase 22 synchronized release
+
+The current chart and SDKs share v0.20.0. Earlier release observations above
+remain historical. See [current all-phase alignment](phase-22-alignment.md) and
+[publication verification](releases/verification-v0.20.0.md).

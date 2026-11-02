@@ -1,5 +1,8 @@
 # Phase 13 coverage and earlier-phase alignment
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Phase 13 package tooling is included in v0.11.0.
 The v0.10.0 baseline retains its five archives, SBOMs and checksums; v0.11.0
 adds four Linux packages and two channel manifests. This audit covers

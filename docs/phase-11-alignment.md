@@ -1,5 +1,8 @@
 # Phase 11 coverage and earlier-phase alignment
 
+This audit preserves the scope and future-work assessment of its original phase.
+See the [Phase 22 review](phase-22-alignment.md) for current all-phase alignment.
+
 Experimental AHP HTTP v1 is included in v0.9.0. It is
 not included in v0.8.0. The
 [design and impact review](rfcs/phase-11-ahp.md) records scope and later requirements.
