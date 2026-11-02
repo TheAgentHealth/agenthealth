@@ -78,7 +78,7 @@ manifests, Docker images, Helm chart, OCI binary bundle and released SDK package
 formats together, even when an individual format's files have not changed.
 Chart `version` uses the numeric software version; `appVersion` and pinned
 images identify the matching CLI. The Python and JavaScript/TypeScript SDKs
-share v0.20.0 with the CLI and other distributions. Future SDKs adopt this
+share v0.21.0 with the CLI and other distributions. Future SDKs adopt this
 policy when implemented.
 AHS/AHP contract versions remain separate.
 
@@ -212,7 +212,7 @@ and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
 
 ## Executable adapter ecosystem (Phase 23)
 
-Implemented in source: explicit local manifests and SHA-256-pinned executable
+Released in v0.21.0: explicit local manifests and SHA-256-pinned executable
 adapters with bounded JSON transport, cancellation and normalized engine output.
 See the [guide](docs/plugins.md) and [all-phase alignment](docs/phase-23-alignment.md).
 Processes retain the invoking user’s OS permissions; no sandbox or certification

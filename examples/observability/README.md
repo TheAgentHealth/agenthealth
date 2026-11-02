@@ -1,6 +1,6 @@
 # Observability snapshots and explicit delivery
 
-Use the verified v0.20.0 CLI (Phase 22), or a matching CLI built from source. Run from the repository
+Use the verified v0.21.0 CLI (Phase 22), or a matching CLI built from source. Run from the repository
 root. Existing HTTP/graph configurations work without new configuration fields.
 
 ```bash
