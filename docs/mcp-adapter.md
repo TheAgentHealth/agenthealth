@@ -270,3 +270,8 @@ login to recreate a Windows token file made by an older release.
 HTTP MCP services retain protocol/OAuth/inventory checks. Stdio requires a derived image containing the trusted server executable. Token refresh files need private writable storage; a read-only ConfigMap or root filesystem is not token persistence.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+## Phase 24 conformance evidence
+
+Protocol-version and OAuth-redaction behavior are included in the reference catalog. This does not establish compatibility with independently maintained MCP servers.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

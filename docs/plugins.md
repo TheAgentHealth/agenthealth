@@ -62,3 +62,8 @@ environment variables remain excluded. Unix group termination is used before
 reaping starts. After stdout closes and reaping starts, cancellation uses the
 lifetime-aware direct-child handle; descendants that close inherited pipes are
 not guaranteed to be terminated. OS containment remains outside this protocol.
+
+## Phase 24 conformance evidence
+
+Manifest compatibility, hash pinning, bounded streams, response markers, cancellation and normalization are included in the reference catalog. This is not community certification or an OS sandbox.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

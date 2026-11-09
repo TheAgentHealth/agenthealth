@@ -873,7 +873,8 @@ Define:
 ## Conformance
 
 The envelope schema and fixtures validate the wire shape independently. A separate
-implementation has not yet been tested; broader conformance remains Phase 24 work.
+implementation has not yet been tested. Phase 24 now requires reference AHP
+HTTP/status/graph cases; independent implementation compatibility remains Phase 25 work.
 
 - [x] Exchange Phase 7 declared readiness and completed functional/path evidence separately; do not infer communication from endpoint health. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
 
@@ -1388,7 +1389,8 @@ retain the synchronized release policy; the Action requires a verified CLI.
 Earlier: additive CLI/core output, no v1 schema/exit/aggregation changes. Keep
 SDK JSON contracts, active opt-in and Kubernetes readiness/Job semantics.
 Later: report redaction informs observability; hosted-provider/product coverage
-and conformance/hardening remain explicit future work.
+and hardening remain explicit future work. Phase 24 now requires the safe report
+projection cases in its reference behavioral catalog.
 
 ---
 
@@ -1472,62 +1474,48 @@ Earlier: formalize the existing adapter baseline, including compatibility and ev
 
 # Phase 24 — AgentHealth Conformance
 
-Add executable adapter v1 compatibility, strict stream bounds, response markers,
-active opt-in, hash verification and normalization cases from Phase 23.
+**Status:** Implemented in source; proposed for synchronized v0.22.0.
 
-Add Phase 22 conformance cases for redaction, status mapping, one-hot gauges and duplicate-edge uniqueness.
+Goal: verify AHS evidence and reference behavior without implying certification.
+See the [guide](conformance.md), [examples](../examples/conformance/README.md),
+[proposal #71](https://github.com/TheAgentHealth/agenthealth/issues/71) and
+[all-phase impact review](phase-24-alignment.md).
 
-**Status:** Planned — not yet implemented.
+## Deliverables
 
-Goal:
+- [x] Bounded offline `agenthealth conformance test <result.json>` for v1 single/batch evidence.
+- [x] Required fields, result shape, status semantics and dependency policy validation.
+- [x] Generic diagnostics, strict duplicate-key/size/depth bounds and no execution of supplied evidence.
+- [x] Mandatory reference behavioral catalog for error behavior, safety and adapters.
+- [x] Direct/composite agent and first-runtime peer/path fixture evidence kept distinct.
+- [x] Separate gateway/router/backend/path evidence and graph shared execution, cycles, references, budgets and policies.
+- [x] AHP HTTP/status mapping, active opt-in, timeout/partial response, normalization and credential/topology redaction cases.
+- [x] Phase 22 status mapping, one-hot gauges, duplicate-edge uniqueness and redaction cases.
+- [x] Phase 23 manifest/hash, stream bounds, response markers, active controls and normalization cases.
+- [x] Runnable positive/negative fixtures, fail-closed catalog tests, CI report artifact and cross-phase documentation.
 
-Allow implementations and integrations to verify compliance with the Agent Health Specification.
+## Scope and future work
 
-Potential capabilities:
-
-```bash
-agenthealth conformance test <target>
-```
-
-## Conformance Areas
-
-- [ ] Result schema
-- [ ] Status semantics
-- [ ] Required fields
-- [ ] Error behavior
-- [ ] Dependency representation
-- [ ] Security requirements
-- [ ] Adapter behavior
-- [ ] AHS updates from Phases 7–10, including agent roles, gateway/router paths, aggregation, and compatible result representation
-- [ ] direct (first) agent health and composite (downstream) agent health with distinct evidence
-- [ ] first-to-downstream communication via direct integrations or A2A
-- [ ] Agentgateway and Agent Router health separate from backend and route/path health
-- [ ] failure propagation, safe functional opt-in, credential redaction, and topology redaction across these integrations
-
-Potential future levels:
-
-```text
-AgentHealth Core Compatible
-AgentHealth Protocol Compatible
-AgentHealth Full Compatible
-```
-
-Any certification/trademark program would require separate governance and community approval.
-
-- [ ] Verify the Phase 7 document contract, names-only discovery, safe task bounds and actual first-runtime peer communication. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
-
-- [ ] Validate Phase 10 shared execution, cycles, missing references, edge policies, independent node budgets and labeled tree projection. See the [graph contract](../docs/rfcs/phase-10-dependency-graph.md).
+The offline profile validates result evidence, not configurations, AHP envelopes,
+exports, deployed products or actual runtime safety. The behavioral profile tests
+the reference source with controlled fixtures, not arbitrary third-party engines.
+SDK/framework, native-service, packaging and deployment matrices remain separate
+checks. Core/Protocol/Full compatibility labels and any certification/trademark
+program require separate governance and are not awarded by these tools.
 
 ## Impact Review
 
-Earlier: validate the approved AHS, AHP, adapters, outputs, and integrations; feed defects back to their owning layers. Later: provide conformance checks for interoperability and production hardening.
-
-
-Phase 11 integration requirements are recorded in the [AHP impact review](../docs/rfcs/phase-11-ahp.md#later-phases).
+Earlier phases retain their contracts and own their behavioral regressions;
+the catalog makes required evidence explicit. All distributions gain the CLI
+command at the shared version. Phase 25 must combine these reports with exact
+independent product versions and observed results; Phase 26 must add remaining
+hardening. See the [phase-by-phase assessment](phase-24-alignment.md).
 
 ---
 
 # Phase 25 — Ecosystem Interoperability Testing
+
+Consume Phase 24 conformance reports alongside independently observed product/version evidence; reference conformance alone does not complete interoperability.
 
 Exercise OTLP collectors, textfile scrapers and webhook receivers with exact versions, acceptance/failure evidence and freshness checks.
 
@@ -1598,6 +1586,8 @@ Phase 11 integration requirements are recorded in the [AHP impact review](../doc
 ---
 
 # Phase 26 — Production Hardening
+
+Extend Phase 24 bounded parsing and behavioral evidence with fuzzing, external audit and operational resilience; a passing conformance report is not an audit.
 
 Measure export cardinality and memory bounds; design delivery backpressure, retention and restricted telemetry access.
 

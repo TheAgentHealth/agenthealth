@@ -14,7 +14,7 @@ def api(path):
     return json.loads(subprocess.check_output(['gh', 'api', path], text=True))
 
 
-def check_ci(repository, sha, require_kubernetes=False, request_id=None, require_python=False, require_javascript=False):
+def check_ci(repository, sha, require_kubernetes=False, request_id=None, require_python=False, require_javascript=False, require_conformance=False):
     query = '?branch=main&event=workflow_dispatch&per_page=100'
     if request_id is None:
         query += f'&head_sha={sha}'
@@ -39,6 +39,8 @@ def check_ci(repository, sha, require_kubernetes=False, request_id=None, require
             break
         page += 1
     required_jobs = [f'Binary distribution ({platform})' for platform in PLATFORMS]
+    if require_conformance:
+        required_jobs.append('Reference conformance')
     if require_kubernetes:
         required_jobs.append('Kubernetes manifests and Helm')
     if require_python:
@@ -59,10 +61,10 @@ def check_ci(repository, sha, require_kubernetes=False, request_id=None, require
     return True
 
 
-def wait_for_ci(repository, sha, timeout=4500, require_kubernetes=False, request_id=None, require_python=False, require_javascript=False):
+def wait_for_ci(repository, sha, timeout=4500, require_kubernetes=False, request_id=None, require_python=False, require_javascript=False, require_conformance=False):
     deadline = time.monotonic() + timeout
     while True:
-        if check_ci(repository, sha, require_kubernetes=require_kubernetes, request_id=request_id, require_python=require_python, require_javascript=require_javascript):
+        if check_ci(repository, sha, require_kubernetes=require_kubernetes, request_id=request_id, require_python=require_python, require_javascript=require_javascript, require_conformance=require_conformance):
             return
         if time.monotonic() >= deadline:
             raise RuntimeError(f'No completed pre-release CI for {sha} within {timeout}s')
@@ -87,9 +89,11 @@ if __name__ == '__main__':
                         help='Require successful Kubernetes runtime CI for synchronized releases')
     parser.add_argument('--require-python', action='store_true')
     parser.add_argument('--require-javascript', action='store_true')
+    parser.add_argument('--require-conformance', action='store_true')
     parser.add_argument('--dispatch', action='store_true', help='Start a fresh pre-release CI run on main')
     args = parser.parse_args()
     repository = os.environ['GITHUB_REPOSITORY']
     request_id = dispatch_ci(repository, args.sha, args.require_kubernetes) if args.dispatch else None
     wait_for_ci(repository, args.sha, require_kubernetes=args.require_kubernetes,
-                request_id=request_id, require_python=args.require_python, require_javascript=args.require_javascript)
+                request_id=request_id, require_python=args.require_python, require_javascript=args.require_javascript,
+                require_conformance=args.require_conformance)

@@ -191,3 +191,12 @@ adapters with bounded JSON transport, cancellation and normalized engine output.
 See the [guide](../docs/plugins.md) and [all-phase alignment](../docs/phase-23-alignment.md).
 Processes retain the invoking user’s OS permissions; no sandbox or certification
 is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
+
+## Conformance (Phase 24)
+
+Implemented in source: [offline result validation and reference behavioral conformance](conformance/README.md).
+`agenthealth conformance test <result.json>` validates bounded local v1 JSON evidence
+without executing checks. It returns 0 for conformant evidence and 6 otherwise;
+health command exits are unchanged. Run `python3 scripts/test_conformance.py
+--report conformance-report.json` from the source root for mandatory behavioral
+evidence. Neither profile establishes certification or product interoperability.

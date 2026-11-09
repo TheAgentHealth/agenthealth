@@ -14,11 +14,11 @@ jobs:
       - name: Install verified release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/install_ci_binary.py v0.21.0 "$RUNNER_TEMP/agenthealth"
+        run: python scripts/install_ci_binary.py v0.22.0 "$RUNNER_TEMP/agenthealth"
       - uses: ./integrations/github-action
         with:
           binary: ${{ runner.temp }}/agenthealth
-          version: v0.21.0
+          version: v0.22.0
           configuration: examples/ci/agenthealth.yaml
           report: agenthealth-junit.xml
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

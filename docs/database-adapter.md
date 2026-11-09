@@ -93,3 +93,8 @@ server versions and healthy/wrong-password expectations. This controlled native
 matrix does not establish managed-cloud, cluster, proxy or broad version support.
 See the [phase impact review](phase-18-alignment.md) and
 [configuration contract](../spec/configuration.md#database-options-phase-18).
+
+## Phase 24 conformance evidence
+
+Endpoint safety and cancellation cases are included in the reference catalog. The disposable native-service matrix remains a separate requirement.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

@@ -112,3 +112,8 @@ Qdrant may specify `namespace: ""`; Pinecone may specify `collection: ""`.
 Nonempty values in those unused fields are rejected.
 
 See the [synchronized publication verification](releases/verification-v0.17.0.md).
+
+## Phase 24 conformance evidence
+
+Metadata, bounded query and active no-retry cases are included in the reference catalog. Retrieval relevance and independent provider interoperability are not inferred.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

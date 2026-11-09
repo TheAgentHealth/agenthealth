@@ -36,6 +36,20 @@ def test_success(monkeypatch):
     assert gate.check_ci('owner/repo', 'abc')
 
 
+@pytest.mark.parametrize('conclusion', ['success', 'skipped', 'failure', None, 'missing'])
+def test_phase24_requires_conformance(monkeypatch, conclusion):
+    jobs = [dict(name=f'Binary distribution ({p})', conclusion='success') for p in gate.PLATFORMS]
+    if conclusion != 'missing':
+        jobs.append(dict(name='Reference conformance', conclusion=conclusion))
+    mock_api(monkeypatch, [run()], jobs)
+    if conclusion == 'success':
+        assert gate.check_ci('owner/repo', 'abc', require_conformance=True)
+    else:
+        with pytest.raises(RuntimeError, match='Reference conformance'):
+            gate.wait_for_ci('owner/repo', 'abc', require_conformance=True)
+    assert gate.check_ci('owner/repo', 'abc')
+
+
 @pytest.mark.parametrize('updates', [dict(head_sha='other'), dict(head_branch='feature'),
                                     dict(event='pull_request'), dict(status='in_progress')])
 def test_waits_for_exact_release_dispatch(monkeypatch, updates):

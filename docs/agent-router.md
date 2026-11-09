@@ -52,3 +52,8 @@ real product interoperability remains Phase 25 work.
 Configure named router signals, direct backends and routed endpoints separately using in-cluster addresses. The fixture scenarios do not certify a router product or establish first-agent communication.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+## Phase 24 conformance evidence
+
+Router signals, direct backends and configured path evidence are included in the reference catalog. Route decisions are not inferred from conformance.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

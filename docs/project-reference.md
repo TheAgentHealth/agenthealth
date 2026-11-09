@@ -1433,7 +1433,7 @@ Foundation stabilization is released in v0.4.0. v0.5.0 implements
 composite agents, liveness/readiness, bounded functional tasks, and separate
 agent, communication-path, and dependency evidence. Agentgateway integration is released in v0.6.0. Agent Router HTTP integration is released in v0.7.0.
 The [dependency graph](../docs/dependency-graph.md) is released in v0.8.0. Experimental AHP serving is included in v0.9.0. The [official container image](../docs/docker.md) is released in v0.10.0. Python/JavaScript SDKs and Phase 22 observability projections are implemented;
-conformance remains planned in the [roadmap](../ROADMAP.md). See the [v0.5.0 release notes](../docs/releases/v0.5.0.md).
+[Phase 24 conformance](conformance.md) is implemented in source with offline result validation and reference behavioral evidence. See the [roadmap](../ROADMAP.md) and historical [v0.5.0 release notes](../docs/releases/v0.5.0.md).
 
 ---
 
@@ -1576,17 +1576,17 @@ Listing a technology here does not imply endorsement, partnership, or current su
 
 The long-term goal is bigger than a CLI.
 
-Planned [Phase 24 — AgentHealth Conformance](../ROADMAP.md#phase-24--agenthealth-conformance)
-will validate the health of the first (direct) agent, downstream (composite)
-agents, Agentgateway, Agent Router, and their communication paths against the
-approved AHS and AHP contracts. Supporting dependency results remain distinct.
+[Phase 24 — AgentHealth Conformance](../ROADMAP.md#phase-24--agenthealth-conformance)
+validates AHS result evidence and reference behavior for direct/composite agents,
+gateway/router signals, paths and supporting dependencies. Its controlled AHP
+and adapter cases do not certify deployed products or prove snapshot truthfulness.
 
 [Phase 25 — Ecosystem Interoperability Testing](../ROADMAP.md#phase-25--ecosystem-interoperability-testing)
 will test first-to-downstream communication directly, through A2A, and through
 gateways or routers across supported stacks. Scenarios include a healthy
 downstream agent behind a failing path, a failing agent behind a healthy
-gateway/router, shared backends, and multiple routes. No conformance program
-or certification is currently available.
+gateway/router, shared backends, and multiple routes. No certification program
+or compatibility badge is currently available.
 
 AgentHealth aims to establish a common operational contract for agentic systems:
 
