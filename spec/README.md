@@ -105,3 +105,9 @@ adapters with bounded JSON transport, cancellation and normalized engine output.
 See the [guide](../docs/plugins.md) and [all-phase alignment](../docs/phase-23-alignment.md).
 Processes retain the invoking user’s OS permissions; no sandbox or certification
 is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
+
+## Conformance evidence
+
+[Phase 24](../docs/conformance.md) validates existing v1 result evidence and runs mandatory
+reference behavioral cases. It changes no AHS/AHP contracts and awards no
+certification or product compatibility status.

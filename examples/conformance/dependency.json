@@ -1,0 +1,14 @@
+{
+  "spec_version": "v1",
+  "target": {"name": "direct-agent", "type": "agent"},
+  "status": "UNHEALTHY",
+  "checks": {"reachability": {"status": "HEALTHY"}},
+  "dependencies": [{
+    "target": {"name": "composite-agent", "type": "agent"},
+    "relationship": "downstream",
+    "critical": true,
+    "status": "UNREACHABLE",
+    "checks": {"reachability": {"status": "UNREACHABLE"}},
+    "dependencies": []
+  }]
+}

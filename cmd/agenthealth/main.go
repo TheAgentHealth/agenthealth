@@ -34,6 +34,7 @@ const usage = `Usage:
   agenthealth login <configuration.yaml> <target-name>
   agenthealth serve <configuration.yaml> [--listen host:port] [--token-env NAME]
   agenthealth version
+  agenthealth conformance test <result.json>
 
 Available target types: agent, multi-agent, http, api, mcp, a2a, gateway, router, model, llm, database, vector-store.
 A2A defaults to 1.0 JSON-RPC with explicit 0.3.0 compatibility.
@@ -50,6 +51,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, out, diagnostics io.Writer) int {
+	if len(args) > 0 && args[0] == "conformance" {
+		return runConformance(args[1:], out, diagnostics)
+	}
 	fail := func(message string) int {
 		fmt.Fprintln(diagnostics, message)
 		return 6

@@ -1,0 +1,8 @@
+{
+  "spec_version": "v1",
+  "target": {"name": "direct-agent", "type": "agent"},
+  "status": "HEALTHY",
+  "latency_ms": 12,
+  "checks": {"reachability": {"status": "HEALTHY"}},
+  "dependencies": []
+}

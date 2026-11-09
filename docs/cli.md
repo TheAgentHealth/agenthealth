@@ -152,3 +152,12 @@ and external; SDK JSON, AHP, health codes and adapter checks remain unchanged.
 
 `check`, `ping` and `doctor` accept repeatable `--adapter <manifest.json>`.
 See [local executable adapters](plugins.md) for compatibility and trust limits.
+
+## Conformance (Phase 24)
+
+Implemented in source: [offline result validation and reference behavioral conformance](conformance.md).
+`agenthealth conformance test <result.json>` validates bounded local v1 JSON evidence
+without executing checks. It returns 0 for conformant evidence and 6 otherwise;
+health command exits are unchanged. Run `python3 scripts/test_conformance.py
+--report conformance-report.json` from the source root for mandatory behavioral
+evidence. Neither profile establishes certification or product interoperability.

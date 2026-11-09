@@ -2,8 +2,8 @@ apiVersion: v2
 name: agenthealth
 description: Passive AgentHealth checks and experimental AHP serving
 type: application
-version: 0.21.0
-appVersion: "v0.21.0"
+version: 0.22.0
+appVersion: "v0.22.0"
 kubeVersion: ">=1.29.0-0"
 annotations:
   org.opencontainers.image.source: https://github.com/TheAgentHealth/agenthealth

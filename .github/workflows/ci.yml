@@ -93,7 +93,7 @@ jobs:
       - name: Run spec schema tests
         run: |
           test_paths=(tests/spec)
-          for path in tests/test_ci_integrations.py tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py tests/test_publication_recovery.py tests/test_javascript_sdk.py tests/test_synchronized_release.py; do
+          for path in tests/test_conformance.py tests/test_ci_integrations.py tests/test_release_archives.py tests/test_package_release.py tests/test_release_smoke.py tests/test_release_recovery.py tests/test_release_ci.py tests/test_kubernetes_ci.py tests/test_container_image.py tests/test_stabilization_tools.py tests/test_publication_recovery.py tests/test_javascript_sdk.py tests/test_synchronized_release.py; do
             if [ -f "$path" ]; then
               test_paths+=("$path")
             fi
@@ -169,7 +169,15 @@ jobs:
           go-version: "1.27.3"
           cache: true
       - name: Check formatting
-        run: test -z "$(gofmt -l core adapters examples cmd)"
+        run: |
+          gofmt -d core adapters examples cmd > formatting.patch
+          test ! -s formatting.patch
+      - name: Collect formatting diagnostics
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: formatting-${{ matrix.os }}
+          path: formatting.patch
       - name: Vet core
         run: go vet ./...
       - name: Test core with race detector
@@ -885,3 +893,31 @@ jobs:
             pip install -r tests/requirements.txt
             python -m pytest tests/test_observability_exports.py -q
           fi
+
+  conformance:
+    name: Reference conformance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.3'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Require behavioral conformance evidence
+        run: |
+          if [ -f scripts/test_conformance.py ]; then
+            python3 scripts/test_conformance.py --report conformance-report.json
+          else
+            echo 'Historical source predates Phase 24'
+          fi
+      - name: Collect conformance report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: reference-conformance
+          path: conformance-report.json

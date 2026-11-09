@@ -147,9 +147,9 @@
     },
     {
       "phase": "[24: AgentHealth Conformance](../ROADMAP.md#phase-24--agenthealth-conformance)",
-      "status": "Planned",
-      "documentation": "Roadmap design only",
-      "validation": "No implementation examples yet"
+      "status": "Implemented in source; publication pending",
+      "documentation": "[Conformance](conformance.md), [alignment](phase-24-alignment.md)",
+      "validation": "[Offline examples](../examples/conformance/README.md), [behavioral suite](../scripts/test_conformance.py)"
     },
     {
       "phase": "[25: Ecosystem Interoperability Testing](../ROADMAP.md#phase-25--ecosystem-interoperability-testing)",
