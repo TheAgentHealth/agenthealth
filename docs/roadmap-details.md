@@ -873,7 +873,8 @@ Define:
 ## Conformance
 
 The envelope schema and fixtures validate the wire shape independently. A separate
-implementation has not yet been tested; broader conformance remains Phase 24 work.
+implementation has not yet been tested. Phase 24 now requires reference AHP
+HTTP/status/graph cases; independent implementation compatibility remains Phase 25 work.
 
 - [x] Exchange Phase 7 declared readiness and completed functional/path evidence separately; do not infer communication from endpoint health. See the [Phase 7 proposal](../docs/rfcs/phase-7-agent-health.md).
 
@@ -1388,7 +1389,8 @@ retain the synchronized release policy; the Action requires a verified CLI.
 Earlier: additive CLI/core output, no v1 schema/exit/aggregation changes. Keep
 SDK JSON contracts, active opt-in and Kubernetes readiness/Job semantics.
 Later: report redaction informs observability; hosted-provider/product coverage
-and conformance/hardening remain explicit future work.
+and hardening remain explicit future work. Phase 24 now requires the safe report
+projection cases in its reference behavioral catalog.
 
 ---
 

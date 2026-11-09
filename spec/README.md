@@ -48,7 +48,7 @@ Specification documents use a `spec_version` field (e.g. `v1`) independent of th
 
 ## Proposing changes
 
-Specification changes are more sensitive than implementation changes because downstream adapters, SDKs, and (eventually) AHP conformance tests depend on them. See [GOVERNANCE.md](../GOVERNANCE.md) for the RFC-style process used for spec changes, and [CONTRIBUTING.md](../CONTRIBUTING.md) for the general contribution workflow.
+Specification changes are more sensitive than implementation changes because downstream adapters, SDKs, and reference AHP conformance tests depend on them. See [GOVERNANCE.md](../GOVERNANCE.md) for the RFC-style process used for spec changes, and [CONTRIBUTING.md](../CONTRIBUTING.md) for the general contribution workflow.
 
 Phase 8 Agentgateway integration is implemented in source. See [the gateway guide](../docs/agentgateway.md). Gateway checks use explicitly configured read-only HTTP signals and separate backend/path dependencies.
 
