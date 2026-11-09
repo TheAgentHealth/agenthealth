@@ -67,3 +67,8 @@ Collector ingestion and hosted-provider compatibility require separate measured
 interoperability evidence. This baseline has no scrape server, remote-write,
 gRPC exporter, durable queue, authentication manager, automatic delivery or retry.
 AHP endpoints, health schemas and Kubernetes probes are unchanged.
+
+## Phase 24 conformance evidence
+
+Redaction, status mapping, one-hot gauges and duplicate-edge uniqueness are included in the reference catalog. The offline command does not accept exports or establish collector delivery.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

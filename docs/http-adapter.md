@@ -57,3 +57,8 @@ TLS certificate and hostname verification remain mandatory. Redirects are never 
 Passive HTTP checks retain their configured method/status/header behavior inside Kubernetes. Use in-cluster service addresses and explicit deadlines that fit the workload budget; body matching still requires functional opt-in.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+## Phase 24 conformance evidence
+
+Readiness, explicit body checks and credential-control behavior are included in the reference catalog. Offline result validation does not contact the HTTP service.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

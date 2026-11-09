@@ -105,3 +105,8 @@ this adapter checks operational compatibility, not agent identity certification.
 Use in-cluster peer endpoints with the same protocol selection, discovery and bearer references. Passive peer health does not establish first-agent communication; do not repeat task interactions in routine probes without explicit authorization.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+## Phase 24 conformance evidence
+
+Current and explicit legacy protocol behavior and safe interaction cases are included in the reference catalog. Endpoint evidence remains distinct from first-agent communication.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

@@ -208,3 +208,8 @@ with safe peer hooks and an SDK consumer node. Other framework products remain p
 suite and require completed Jobs, bounded waits and failure evidence. Job creation
 alone cannot authorize deployment promotion. Existing readiness/liveness and
 secret-reference contracts remain unchanged.
+
+## Phase 24 conformance evidence
+
+Conformance ships in the CLI without changing probe behavior, RBAC or chart permissions. Deployment and version-matrix tests remain separate required gates.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

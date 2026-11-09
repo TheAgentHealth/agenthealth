@@ -68,3 +68,8 @@ graph, safe task bounds, selected peer callback, failures and SDK consumer.
 This controlled baseline does not certify arbitrary production agents or complete
 Phase 25. See [alignment](phase-20-alignment.md) and the upstream
 [LangGraph graph API](https://reference.langchain.com/python/langgraph/graph).
+
+## Phase 24 conformance evidence
+
+Installed-SDK and controlled runtime integration tests remain separate CI evidence. The reference Go catalog does not certify frameworks or arbitrary agent applications.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

@@ -55,3 +55,8 @@ and independent failure evidence.
 Configure gateway readiness, direct backends and each routed endpoint separately using in-cluster addresses. The fixture scenarios exercise the HTTP contract, not a real Agentgateway deployment or first-agent communication.
 See [Phase 14 deployment guidance](kubernetes.md) for ConfigMaps, Secrets,
 probe policy and validation limits. No adapter or configuration migration is required.
+
+## Phase 24 conformance evidence
+
+Configured gateway signals and backend evidence are included in the reference catalog. Product interoperability still requires exact deployed versions and observations.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

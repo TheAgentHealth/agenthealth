@@ -71,3 +71,8 @@ Phase 19 source integration: [vector-store checks](vector-store-adapter.md)
 reuse the existing configuration, dependency and deadline contracts. Inject API
 keys through environment references; preserve independent agent/path evidence.
 Use the matching v0.21.0 CLI and SDK packages.
+
+## Phase 24 conformance evidence
+
+Existing wrapper APIs and result handling are unchanged; no typed conformance API is added. The six SDK CI jobs remain separate from the reference Go catalog.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

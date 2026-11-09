@@ -102,3 +102,8 @@ and isolated runners. Never expose deployment secrets to untrusted fork changes
 or execute their configuration using `pull_request_target`. Keep credentials in
 CI secret stores and environment references, not parameters, endpoints or reports.
 See the [threat model](threat-model.md) and [alignment review](phase-21-alignment.md).
+
+## Phase 24 conformance evidence
+
+The conformance command uses 0 for passing evidence and 6 for invalid evidence or tool failure. Existing health exits and JUnit/GitHub projections are unchanged.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

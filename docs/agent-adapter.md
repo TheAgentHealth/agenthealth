@@ -101,3 +101,8 @@ See the [threat model](threat-model.md) for trusted configuration, credential ha
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.
+
+## Phase 24 conformance evidence
+
+Controlled direct/composite agent, task and first-runtime peer callback cases are included in the reference catalog. A static result cannot prove that communication actually occurred.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

@@ -134,3 +134,8 @@ Use the matching v0.21.0 CLI and SDK packages.
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.
+
+## Phase 24 conformance evidence
+
+Existing wrapper APIs and result handling are unchanged; no typed conformance API is added. Installed-package tests remain separate from the reference Go catalog.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

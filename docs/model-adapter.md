@@ -118,3 +118,8 @@ and Kubernetes use the same registry; provide referenced secrets explicitly
 and keep functional checks off high-frequency readiness probes. The
 [shared graph example](../examples/model-check/graph.yaml) keeps model evidence
 separate from direct/composite agent health and communication paths.
+
+## Phase 24 conformance evidence
+
+Transport safety and active no-retry cases are included in the reference catalog. Model quality and provider interoperability are not inferred.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).

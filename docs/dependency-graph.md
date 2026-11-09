@@ -82,3 +82,8 @@ Phase 19 source integration: [vector-store checks](vector-store-adapter.md)
 reuse the existing configuration, dependency and deadline contracts. Inject API
 keys through environment references; preserve independent agent/path evidence.
 Use a matching source-built CLI/SDK until the new release is verified.
+
+## Phase 24 conformance evidence
+
+The result profile checks edge policy and status aggregation. The reference catalog separately checks cycles, shared execution, independent budgets and redaction.
+See the [conformance guide](conformance.md) and [cross-phase review](phase-24-alignment.md).
