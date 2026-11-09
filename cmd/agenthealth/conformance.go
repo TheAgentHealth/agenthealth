@@ -14,13 +14,19 @@ func runConformance(args []string, out, diagnostics io.Writer) int {
 		fmt.Fprintln(diagnostics, "usage: agenthealth conformance test <result.json>")
 		return 6
 	}
+	// Reject devices and pipes before opening, since opening a pipe may block.
+	info, err := os.Stat(args[1])
+	if err != nil || !info.Mode().IsRegular() {
+		fmt.Fprintln(diagnostics, "conformance evidence must be a regular file")
+		return 6
+	}
 	file, err := os.Open(args[1])
 	if err != nil {
 		fmt.Fprintln(diagnostics, "cannot open conformance evidence")
 		return 6
 	}
 	defer file.Close()
-	info, err := file.Stat()
+	info, err = file.Stat()
 	if err != nil || !info.Mode().IsRegular() {
 		fmt.Fprintln(diagnostics, "conformance evidence must be a regular file")
 		return 6

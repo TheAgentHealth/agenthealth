@@ -81,3 +81,21 @@ func TestConformanceReadFailure(t *testing.T) {
 		t.Fatal("reader error not sanitized")
 	}
 }
+
+func FuzzConformance(f *testing.F) {
+	f.Add(validConformance)
+	f.Add(`{"spec_version":"v1","results":[]}`)
+	f.Add(`{"status":"HEALTHY","status":"UNKNOWN"}`)
+	f.Fuzz(func(t *testing.T, data string) {
+		if len(data) > 65536 {
+			t.Skip()
+		}
+		report, err := TestConformance(strings.NewReader(data))
+		if err != nil {
+			t.Fatal("unexpected in-memory read failure")
+		}
+		if report.Passed && (report.Results < 1 || report.Code != "conformant") {
+			t.Fatal("inconsistent conformance report")
+		}
+	})
+}

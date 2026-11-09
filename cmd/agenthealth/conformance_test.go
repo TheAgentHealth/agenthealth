@@ -38,4 +38,8 @@ func TestConformanceCLI(t *testing.T) {
 			t.Fatal("path leaked")
 		}
 	}
+	var diagnostics bytes.Buffer
+	if runConformance([]string{"test", path}, brokenWriter{}, &diagnostics) != 6 {
+		t.Fatal("output failure did not fail the command")
+	}
 }

@@ -1,5 +1,9 @@
 # Release Process & Versioning
 
+Phase 24 source additionally requires the **Reference conformance** job to pass
+for the exact tagged commit. Missing or skipped evidence blocks publication;
+historical source tags predating the conformance runner keep their existing gates.
+
 See [AGENTS.md](AGENTS.md#prepare-and-publish-a-release) for the agent release
 runbook, including preflight checks and verification of published downloads.
 

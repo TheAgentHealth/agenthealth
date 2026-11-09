@@ -27,7 +27,7 @@ must be verified before describing that version as available. Proposal:
 | 18 database | Endpoint/cancellation cases required; real service matrix remains separate from reference conformance. No adapter changes. |
 | 19 vector store | Metadata/query and no-retry cases required; relevance and provider interoperability remain distinct. No adapter changes. |
 | 20 frameworks | Existing installed-SDK/runtime CI stays authoritative; no new framework hooks or framework compatibility claim. |
-| 21 CI/CD | Mandatory conformance job and report artifact; no new workflow-command text. Existing health projections and exits remain unchanged. |
+| 21 CI/CD | Mandatory conformance job and report artifact; source-aware release gate rejects missing/skipped conformance evidence. Existing health projections and exits remain unchanged. |
 | 22 observability | Redaction, one-hot/status and duplicate-edge tests required. Snapshot validator does not accept export payloads or prove collector delivery. |
 | 23 ecosystem | Manifest/pin/stream/response-marker/cancellation cases required; no sandbox, community compatibility badge or certification implied. |
 | 24 conformance | Offline positive/negative fixtures, semantic validation, mandatory reference catalog, CLI tests and documentation implemented. |
@@ -41,7 +41,7 @@ The suite and CLI profile have separate explicit report identities and do not
 award the roadmap's potential compatibility levels; any trademark or
 certification program still requires separate governance.
 
-Validation: Go conformance/parser/CLI regressions, existing behavioral catalog,
+Validation: Go conformance/parser/CLI regressions and parser fuzz smoke, existing behavioral catalog,
 schema/example checks, catalog fail-closed tests, documentation checks and the
 normal full CI/release gates. Local Windows Application Control blocked Go
 formatting/vet execution; CI must supply those results rather than treating them

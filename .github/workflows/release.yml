@@ -80,6 +80,9 @@ jobs:
           if git cat-file -e "$source_sha:sdk/javascript/package.json" 2>/dev/null; then
             required_checks+=(--require-javascript)
           fi
+          if git cat-file -e "$source_sha:scripts/test_conformance.py" 2>/dev/null; then
+            required_checks+=(--require-conformance)
+          fi
           python3 scripts/wait_for_release_ci.py "$source_sha" "${required_checks[@]}"
 
   release:
