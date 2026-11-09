@@ -24,7 +24,7 @@ must be verified before describing that version as available. Proposal:
 | 15 Python SDK | Existing result contract and wrapper unchanged; no new typed conformance API. Version advances with release. |
 | 16 JavaScript SDK | Same result contract and exact CLI-version policy; no new typed conformance API. Six SDK jobs and registry verification remain required. |
 | 17 model | Transport/no-retry cases required; provider availability and inference quality not implied. |
-| 18 database | Endpoint/cancellation cases required; real service matrix remains separate from reference conformance. No adapter changes. |
+| 18 database | Endpoint/cancellation cases required; real service matrix remains separate from reference conformance. CI found GO-2026-6865 in the existing MongoDB compression dependency; update to v1.20.2 and require native database CI. Adapter logic is unchanged. |
 | 19 vector store | Metadata/query and no-retry cases required; relevance and provider interoperability remain distinct. No adapter changes. |
 | 20 frameworks | Existing installed-SDK/runtime CI stays authoritative; no new framework hooks or framework compatibility claim. |
 | 21 CI/CD | Mandatory conformance job and report artifact; source-aware release gate rejects missing/skipped conformance evidence. Existing health projections and exits remain unchanged. |

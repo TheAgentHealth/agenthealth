@@ -42,4 +42,7 @@ func TestConformanceCLI(t *testing.T) {
 	if runConformance([]string{"test", path}, brokenWriter{}, &diagnostics) != 6 {
 		t.Fatal("output failure did not fail the command")
 	}
+	if diagnostics.String() != "cannot write conformance report\n" {
+		t.Fatal("output failure was not diagnosed")
+	}
 }
