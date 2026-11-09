@@ -91,20 +91,44 @@ func conformanceResult(data []byte, depth int) (Result, bool) {
 	if value, ok := fields["relationship"]; ok { var relationship string; if json.Unmarshal(value, &relationship) != nil || relationship == "" { return result, false } }
 	var target map[string]json.RawMessage
 	if json.Unmarshal(fields["target"], &target) != nil { return result, false }
+	if json.Unmarshal(target["name"], &result.Target.Name) != nil || json.Unmarshal(target["type"], &result.Target.Type) != nil { return result, false }
 	if value, ok := target["id"]; ok { var id string; if json.Unmarshal(value, &id) != nil || !graphID(id) { return result, false } }
+	// Decode only exact wire keys: encoding/json otherwise treats differently
+	// cased extension keys as aliases and could overwrite validated evidence.
+	decode := func(values map[string]json.RawMessage, key string, destination any) bool {
+		value, ok := values[key]
+		return !ok || json.Unmarshal(value, destination) == nil
+	}
+	if !decode(target, "id", &result.Target.ID) ||
+		!decode(fields, "status", &result.Status) ||
+		!decode(fields, "critical", &result.Critical) ||
+		!decode(fields, "relationship", &result.Relationship) ||
+		!decode(fields, "latency_ms", &result.LatencyMS) { return result, false }
 	var checks map[string]map[string]json.RawMessage
 	if json.Unmarshal(fields["checks"], &checks) != nil { return result, false }
-	for _, check := range checks {
+	result.Checks = make(map[string]CheckResult, len(checks))
+	for dimension, check := range checks {
 		if check == nil { return result, false }
 		for _, key := range []string{"message", "code", "steps"} {
 			if value, ok := check[key]; ok && bytes.Equal(bytes.TrimSpace(value), []byte("null")) { return result, false }
 		}
 		if value, ok := check["code"]; ok { var code string; if json.Unmarshal(value, &code) != nil || !diagnosticCodePattern.MatchString(code) { return result, false } }
+		var entry CheckResult
+		if json.Unmarshal(check["status"], &entry.Status) != nil ||
+			!decode(check, "message", &entry.Message) ||
+			!decode(check, "code", &entry.Code) ||
+			!decode(check, "steps", &entry.Steps) { return result, false }
+		result.Checks[dimension] = entry
 	}
-	if json.Unmarshal(data, &result) != nil || ValidateResult(result) != nil { return result, false }
 	var children []json.RawMessage
 	if json.Unmarshal(fields["dependencies"], &children) != nil { return result, false }
-	for _, child := range children { if _, ok := conformanceResult(child, depth+1); !ok { return result, false } }
+	result.Dependencies = make([]Result, 0, len(children))
+	for _, child := range children {
+		parsed, ok := conformanceResult(child, depth+1)
+		if !ok { return result, false }
+		result.Dependencies = append(result.Dependencies, parsed)
+	}
+	if ValidateResult(result) != nil { return result, false }
 	return result, true
 }
 

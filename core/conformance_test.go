@@ -11,6 +11,10 @@ const validConformance = `{"spec_version":"v1","target":{"name":"sample","type":
 func TestConformanceDocuments(t *testing.T) {
 	for _, tc := range []struct { name, input string; passed bool }{
 		{"valid", validConformance, true},
+		{"case_target", strings.Replace(validConformance, `"name"`, `"Name"`, 1), false},
+		{"case_check", strings.Replace(validConformance, `"reachability":{"status"`, `"reachability":{"Status"`, 1), false},
+		{"case_extension", strings.Replace(validConformance, `"spec_version"`, `"Status":"UNKNOWN","spec_version"`, 1), true},
+		{"invalid_utf8", strings.Replace(validConformance, "sample", string([]byte{0xff}), 1), false},
 		{"extension", strings.Replace(validConformance, `"spec_version"`, `"extension":{"x":1},"spec_version"`, 1), true},
 		{"missing", strings.Replace(validConformance, `"dependencies":[]`, `"other":[]`, 1), false},
 		{"null_checks", strings.Replace(validConformance, `{"reachability":{"status":"HEALTHY"}}`, `null`, 1), false},
