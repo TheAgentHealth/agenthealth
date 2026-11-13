@@ -166,7 +166,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: "1.27.3"
+          go-version: "1.27.4"
           cache: true
       - name: Check formatting
         run: |
@@ -225,7 +225,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Scan reachable vulnerabilities
         run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
 
@@ -259,7 +259,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -325,7 +325,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: "1.27.3"
+          go-version: "1.27.4"
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -371,7 +371,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -431,7 +431,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Fuzz parser boundaries
         if: hashFiles('core/fuzz_test.go') != ''
         run: |
@@ -460,7 +460,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Measure graph allocation and memory
         if: hashFiles('core/benchmark_test.go') != ''
         run: |
@@ -499,7 +499,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -586,7 +586,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -618,7 +618,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Run released/current/released sequence
         if: hashFiles('scripts/test_config_upgrade.py') != ''
         run: |
@@ -638,7 +638,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Test product readiness endpoint
         if: hashFiles('scripts/test_agentgateway.py') != ''
         run: |
@@ -658,7 +658,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -684,7 +684,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: ${{ matrix.python }}
@@ -740,7 +740,7 @@ jobs:
           node-version: ${{ matrix.node }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -770,7 +770,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Start and provision disposable Qdrant
         run: |
           docker compose -p agenthealth-phase19 -f examples/vector-check/compose.yaml up -d
@@ -794,7 +794,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - name: Start versioned disposable databases
         run: docker compose -p agenthealth-phase18 -f examples/database-check/compose.yaml up -d --wait --wait-timeout 240
       - name: Check healthy probes and rejected credentials
@@ -836,7 +836,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.10'
@@ -886,7 +886,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
@@ -907,7 +907,7 @@ jobs:
           ref: ${{ inputs.release_sha || github.sha }}
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          go-version: '1.27.3'
+          go-version: '1.27.4'
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'

@@ -131,7 +131,7 @@ channel manifests, Docker image, Helm chart and additional OCI binary bundle.
 The GitHub Release must list all downloads and package references. GHCR Packages
 must expose the Docker image, OCI chart and OCI binary bundle publicly and link
 them to this repository. Helm uses `version: X.Y.Z`, `appVersion: vX.Y.Z` and
-matching image references. Python and JavaScript/TypeScript SDKs share v0.21.0; future SDKs adopt the shared version when implemented;
+matching image references. Python and JavaScript/TypeScript SDKs share v0.22.0; future SDKs adopt the shared version when implemented;
 contract versions remain separate. Do not reuse historical CLI or chart tags.
 
 The shared workflow/helper implements coordinated source builds, signed draft
@@ -271,7 +271,7 @@ is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
 
 ## Conformance (Phase 24)
 
-Implemented in source: [offline result validation and reference behavioral conformance](docs/conformance.md).
+Released in v0.22.0: [offline result validation and reference behavioral conformance](docs/conformance.md).
 `agenthealth conformance test <result.json>` validates bounded local v1 JSON evidence
 without executing checks. It returns 0 for conformant evidence and 6 otherwise;
 health command exits are unchanged. Run `python3 scripts/test_conformance.py

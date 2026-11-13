@@ -4,12 +4,12 @@ Typed synchronous and asynchronous access to AgentHealth's Go CLI. This package
 preserves AHS v1 results, diagnostic codes, dependency relationships and graph
 IDs. Health failures return results; tool failures raise exceptions.
 
-This source SDK targets v0.21.0. Once the synchronized release is available,
-install it with `pip install agenthealth==0.21.0`. Until then, use the
-[published version](../../docs/phase-status.md) or build this source locally. Install a
+This SDK targets v0.22.1. Install with
+`pip install agenthealth==0.22.1`. See the
+[release notes](../../docs/releases/v0.22.1.md). Install a
 verified AgentHealth CLI of the same installed software version separately and put it on
 PATH, or pass its absolute path. Installation and imports never download or
-execute a binary. The SDK targets Python 3.10+ and CLI v0.21.0.
+execute a binary. The SDK targets Python 3.10+ and CLI v0.22.1.
 
 ```python
 from agenthealth import Client, HealthStatus
@@ -51,14 +51,14 @@ Source implementation is pre-1.0; PyPI availability is recorded separately in
 the repository capability status. See the repository's Python SDK guide for
 installation, release setup, errors and examples.
 
-This package version: v0.21.0. Requires the matching CLI; model/LLM
+This package version: v0.22.1. Requires the matching CLI; model/LLM
 configuration is supported through the canonical schema.
 
 Native database targets use the matching CLI; fixed SQL queries require explicit
 functional opt-in. Passwords use `database.password_env` references.
 
 Qdrant/Pinecone vector-store checks are included in this version; use the
-matching v0.21.0 CLI. Other vector providers remain planned.
+matching v0.22.1 CLI. Other vector providers remain planned.
 
 Phase 20 supplies the supported [LangGraph/FastAPI runtime integration](../../docs/framework-integrations.md)
 with safe peer hooks and an SDK consumer node. Other framework products remain planned.

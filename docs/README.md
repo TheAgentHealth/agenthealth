@@ -65,6 +65,10 @@ is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
 
 ## Conformance evidence
 
-[Phase 24](conformance.md) validates existing v1 result evidence and runs mandatory
+Released in v0.22.0, [Phase 24](conformance.md) validates existing v1 result evidence and runs mandatory
 reference behavioral cases. It changes no AHS/AHP contracts and awards no
 certification or product compatibility status.
+
+Current [v0.22.0 release notes](releases/v0.22.0.md) and
+[publication verification](releases/verification-v0.22.0.md) record distribution
+availability, tested behavior and verification limits.

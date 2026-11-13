@@ -186,7 +186,7 @@ See the [status index](docs/phase-status.md) and [phase design](docs/roadmap-det
 
 # Phase 24 — AgentHealth Conformance
 
-Implemented in source: bounded offline AHS result validation and a mandatory
+Released in v0.22.0: bounded offline AHS result validation and a mandatory
 reference behavioral catalog. See the [guide](docs/conformance.md),
 [examples](examples/conformance/README.md), and [all-phase review](docs/phase-24-alignment.md).
 Certification and independent product compatibility remain outside this baseline.

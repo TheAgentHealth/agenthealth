@@ -40,7 +40,7 @@ introduced here. v0.4.0 changes the A2A default and failure exit codes as docume
 
 Phase 7 is now implemented in source after this milestone. Phase 8 gateway integration is implemented in source; router integration and dependency graph execution are implemented in source; experimental AHP HTTP serving is implemented in source;
 distribution, SDKs, runtime integration, CI/CD and observability are now implemented
-in their later phases. Conformance remains planned; see the current status index.
+in their later phases. Conformance is released in v0.22.0; see the current status index.
 No additional adapter is declared implemented by this foundation milestone.
 
 ---
@@ -1474,7 +1474,7 @@ Earlier: formalize the existing adapter baseline, including compatibility and ev
 
 # Phase 24 — AgentHealth Conformance
 
-**Status:** Implemented in source; proposed for synchronized v0.22.0.
+**Status:** Released in synchronized v0.22.0; see the [publication verification](releases/verification-v0.22.0.md).
 
 Goal: verify AHS evidence and reference behavior without implying certification.
 See the [guide](conformance.md), [examples](../examples/conformance/README.md),

@@ -1,6 +1,6 @@
 # AgentHealth conformance
 
-Phase 24 provides offline AHS v1 result validation and a reference behavioral
+Released in v0.22.0, Phase 24 provides offline AHS v1 result validation and a reference behavioral
 suite. These are two distinct forms of evidence. Neither awards certification,
 a compatibility badge, a security audit, or independently measured product
 interoperability. See the [all-phase impact review](phase-24-alignment.md).
