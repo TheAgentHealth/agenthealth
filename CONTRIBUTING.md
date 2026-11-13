@@ -78,7 +78,7 @@ manifests, Docker images, Helm chart, OCI binary bundle and released SDK package
 formats together, even when an individual format's files have not changed.
 Chart `version` uses the numeric software version; `appVersion` and pinned
 images identify the matching CLI. The Python and JavaScript/TypeScript SDKs
-share v0.21.0 with the CLI and other distributions. Future SDKs adopt this
+share v0.22.0 with the CLI and other distributions. Future SDKs adopt this
 policy when implemented.
 AHS/AHP contract versions remain separate.
 
@@ -220,7 +220,7 @@ is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
 
 ## Conformance (Phase 24)
 
-Implemented in source: [offline result validation and reference behavioral conformance](docs/conformance.md).
+Released in v0.22.0: [offline result validation and reference behavioral conformance](docs/conformance.md).
 `agenthealth conformance test <result.json>` validates bounded local v1 JSON evidence
 without executing checks. It returns 0 for conformant evidence and 6 otherwise;
 health command exits are unchanged. Run `python3 scripts/test_conformance.py

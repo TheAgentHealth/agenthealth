@@ -1,7 +1,8 @@
 # Phase 24 impact and alignment review
 
-Implemented in source for the proposed synchronized v0.22.0 release. Publication
-must be verified before describing that version as available. Proposal:
+Released in synchronized v0.22.0 on November 9, 2026. See the
+[publication verification](releases/verification-v0.22.0.md) for checked artifacts
+and remaining verification limits. Proposal:
 [issue #71](https://github.com/TheAgentHealth/agenthealth/issues/71).
 
 | Phase | Assessment and alignment |
@@ -44,5 +45,5 @@ certification program still requires separate governance.
 Validation: Go conformance/parser/CLI regressions and parser fuzz smoke, existing behavioral catalog,
 schema/example checks, catalog fail-closed tests, documentation checks and the
 normal full CI/release gates. Local Windows Application Control blocked Go
-formatting/vet execution; CI must supply those results rather than treating them
-as locally passed. Publication verification is a separate release step.
+formatting/vet execution during implementation. The exact-source pre-release CI
+and Release workflow subsequently passed; see the publication verification above.

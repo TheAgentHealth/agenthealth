@@ -194,7 +194,7 @@ is implied. Built-in adapters and AHS/AHP v1 contracts remain compatible.
 
 ## Conformance (Phase 24)
 
-Implemented in source: [offline result validation and reference behavioral conformance](conformance/README.md).
+Released in v0.22.0: [offline result validation and reference behavioral conformance](conformance/README.md).
 `agenthealth conformance test <result.json>` validates bounded local v1 JSON evidence
 without executing checks. It returns 0 for conformant evidence and 6 otherwise;
 health command exits are unchanged. Run `python3 scripts/test_conformance.py

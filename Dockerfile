@@ -10,7 +10,7 @@
 #   docker build --build-arg VERSION=v0.4.0 -t agenthealth .
 #   docker run --rm agenthealth ping http https://example.com
 
-ARG GO_IMAGE=golang:1.27.3-bookworm@sha256:5c3e9b43cfd3bb95c7937462e29d87ada57b481a96fa23ad0eb61778d7a00110
+ARG GO_IMAGE=golang:1.27.4-bookworm@sha256:4fa7c968ba93f1635670522dbb01a2c78150443e1385746924566079f36570ea
 ARG RUNTIME_IMAGE=gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab
 
 FROM --platform=$BUILDPLATFORM ${GO_IMAGE} AS build
