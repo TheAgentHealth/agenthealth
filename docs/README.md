@@ -69,6 +69,6 @@ Released in v0.22.0, [Phase 24](conformance.md) validates existing v1 result evi
 reference behavioral cases. It changes no AHS/AHP contracts and awards no
 certification or product compatibility status.
 
-Current [v0.22.0 release notes](releases/v0.22.0.md) and
-[publication verification](releases/verification-v0.22.0.md) record distribution
+Current [v0.22.1 release notes](releases/v0.22.1.md) and
+[publication verification](releases/verification-v0.22.1.md) record distribution
 availability, tested behavior and verification limits.

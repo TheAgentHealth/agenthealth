@@ -1,14 +1,12 @@
 # Install AgentHealth
 
-Published software: **v0.22.0**. Source release preparation targets v0.22.1;
-the commands below require that version to be published first. See the
-[publication verification](releases/verification-v0.22.0.md).
+Published software: **v0.22.1**. The commands below select its synchronized
+CLI, SDK, chart and image versions. See the
+[publication verification](releases/verification-v0.22.1.md).
 
 <!-- release-version: v0.22.1 -->
 
-The source and archive commands below target v0.22.1; publication is pending.
-See the [v0.22.1 release notes](releases/v0.22.1.md). The published v0.22.0
-verification record remains available above.
+The commands below target v0.22.1. See the [verification record](releases/verification-v0.22.1.md).
 
 Choose a distribution:
 
@@ -20,7 +18,7 @@ Choose a distribution:
 | Linux DEB/RPM, Homebrew/Scoop manifests | [Package channels](#package-channels-phase-13-v0110) |
 | OCI release-file bundle | [ORAS download](distribution.md#installation-examples) |
 
-The [Python SDK](python-sdk.md) is implemented for the matching software version; after publication install `agenthealth==0.22.1` from PyPI. The [JavaScript SDK](javascript-sdk.md) is published on npm for Phase 16.
+The [Python SDK](python-sdk.md) is implemented for the matching software version; it is published on PyPI as `agenthealth==0.22.1`. The [JavaScript SDK](javascript-sdk.md) is published on npm for Phase 16.
 
 Download the archive for your operating system and CPU from [GitHub Releases](https://github.com/TheAgentHealth/agenthealth/releases). Go is not required for downloaded binaries.
 
@@ -109,7 +107,7 @@ multi-platform image (`linux/amd64`, `linux/arm64`) to
 `ghcr.io/theagenthealth/agenthealth`, tagged `vX.Y.Z` with floating `vX` and
 `latest` for plain version tags; suffixed pre-release tags publish only their
 exact `vX.Y.Z-suffix`. Docker Hub at `theagenthealth/agenthealth` uses the same
-tags when mirror credentials are configured. After v0.22.1 publication, use:
+tags when mirror credentials are configured. v0.22.1 is published in both registries:
 
 ```bash
 # GitHub Container Registry

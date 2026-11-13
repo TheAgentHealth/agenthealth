@@ -73,3 +73,6 @@ do not replace v0.22.0 or move its tag.
 Phase 24 provides bounded offline result validation and reference behavioral
 evidence. Certification, independent product interoperability and remaining
 Phase 26 hardening are outside that baseline.
+
+Remediation follow-up: [v0.22.1](verification-v0.22.1.md) ships the Go 1.27.4
+build and corrected SDK descriptions; the v0.22.0 artifacts above remain unchanged.
