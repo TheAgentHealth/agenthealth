@@ -103,6 +103,25 @@ implemented in source require a newer build. Planned target vocabulary is not
 an availability guarantee. [Capability status](docs/phase-status.md) is generated
 from [one machine-readable source](docs/status.json).
 
+## Roadmap priorities
+
+Over the next 6–12 months, planned work focuses on:
+
+- **Stabilization:** security boundaries, accurate documentation, test coverage,
+  sustained fuzzing, cancellation behavior and resource profiles.
+- **Interoperability:** broader independently maintained MCP/A2A servers and
+  frameworks, plus gateway/router products, with exact versions and test scope.
+- **Deployment reliability:** expand the existing Kubernetes matrix and verify
+  released-configuration upgrade, rollback and deployment-secret rotation.
+- **Community and governance:** use external feedback to refine the specification
+  and adapter contracts, document the maintainer process, and improve contributor
+  onboarding through pilot deployments and scoped starter issues.
+
+Follow-on proposals include health change detection, dependency failure impact
+analysis and explicitly authorized workflow canaries. These remain exploratory.
+See the [roadmap milestones](ROADMAP.md#priorities-for-the-next-612-months) for
+planning windows, deliverables and completion evidence.
+
 ## Run the CLI
 
 `ping` checks one endpoint, `check` executes configuration, and `doctor` shows
