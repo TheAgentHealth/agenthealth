@@ -3,8 +3,8 @@
 ## Current: stabilization and security
 
 Before expanding adapters and SDKs, reconcile current security boundaries,
-make passive HTTP method selection explicit, reduce documentation drift, and
-build repeatable coverage, fuzzing and graph profiling evidence. See the
+keep passive HTTP method selection explicit, reduce documentation drift, and
+expand repeatable coverage, fuzzing and graph profiling evidence. See the
 [stabilization plan](docs/stabilization.md), [threat model](docs/threat-model.md)
 and [impact review](docs/rfcs/stabilization.md).
 
@@ -18,7 +18,7 @@ SDK checks are useful evidence, but do not complete Phase 25.
 
 ## Later: capability expansion and production hardening
 
-Python and JavaScript/TypeScript SDKs are released and share v0.21.0.
+Python and JavaScript/TypeScript SDKs are released and share v0.22.1.
 Future SDK improvements follow the stabilization and interoperability work above.
 Model/LLM OpenAI-compatible and Anthropic adapters are released in v0.15.0.
 Native databases are released in v0.16.0; Qdrant/Pinecone vector-store checks are released in v0.17.0.
@@ -27,6 +27,46 @@ and isolated third-party adapters follow stabilization.
 No blanket release freeze is imposed: fixes may ship under existing release
 review, CI and publication policies. Do not claim a security audit, tenant
 isolation or product compatibility without corresponding evidence.
+
+## Priorities for the next 6–12 months
+
+These are planning targets from November 2026, reviewed as evidence and contributor
+capacity change. They extend existing work; they are not release commitments or
+claims that the remaining validation has passed.
+
+| Target window | Priority | Deliverables and completion evidence |
+|---|---|---|
+| Months 1–3 | Stabilization and security | Maintain the threat model and accurate security boundaries; reconcile documentation with released behavior; sustain the coverage gate; retain fuzz regression cases; publish cancellation, goroutine-leak and graph resource-profile results with limitations. |
+| Months 2–6 | Ecosystem interoperability | Expand independently maintained MCP/A2A server and framework coverage beyond controlled SDK tests. Publish a reproducible matrix with exact versions, configurations, expected failures, observed results and unsupported cases. |
+| Months 4–9 | Deployment reliability | Expand gateway/router product scenarios and the existing Kubernetes version matrix. Record released-binary configuration upgrade/rollback and deployment-secret rotation results, including failure recovery. |
+| Months 1–12 | Specification and open governance | Seek external reviews of the specification and adapter contracts; record feedback and decisions in public RFCs; propose a documented maintainer nomination, decision-making and dispute-resolution process through the existing governance review process. |
+| Months 6–12 | Adoption and contributor growth | Invite external pilot users; publish permissioned deployment examples and case studies; improve contribution guides and scoped starter issues; record participation, reported friction and resulting fixes. |
+
+Existing focused product smokes, Kubernetes version tests and released-binary
+compatibility scenarios are the starting evidence. Expand their scope and publish
+remaining gaps; see [stabilization](docs/stabilization.md). Completion requires
+reviewable results linked to the tested source or release, not just a passing
+fixture or a new roadmap entry.
+
+## Follow-on capability exploration
+
+After stabilization and broader interoperability, evaluate these additions against
+external user feedback:
+
+- **Health change detection:** compare saved results to identify newly failing
+  dependencies, missing capabilities and latency regressions.
+- **Failure impact analysis:** use dependency graphs to identify affected direct
+  and composite agents and likely shared causes, preserving uncertainty and
+  separate agent, communication-path and supporting-dependency evidence.
+- **Agent workflow canaries:** explicitly authorized, bounded synthetic workflows
+  that test an agent's communication paths and supporting dependencies together.
+
+These are proposals without assigned phase numbers or delivery dates. They need
+public design review and acceptance criteria before implementation. Keep probes
+non-destructive and active checks explicit; retain historical evidence in external
+systems rather than adding a monitoring database to the core. Additional provider,
+framework, fleet and policy work remains in the existing
+[detailed designs](docs/roadmap-details.md#post-10-exploration).
 
 ## Phase Impact Review
 

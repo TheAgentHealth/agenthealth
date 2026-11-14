@@ -1564,6 +1564,17 @@ agents directly, through A2A, and through Agentgateway or an Agent Router.
 Include healthy backends behind a failing path, failing backends behind a
 healthy gateway/router, shared backends, and multiple configured routes.
 
+## Near-term validation deliverables
+
+Expand the focused smoke coverage recorded in [stabilization](stabilization.md)
+into a published compatibility matrix. Each entry must identify the tested source
+or release, independent product and exact version, configuration, reproduction
+steps, expected healthy/failure behavior, actual results and known limitations.
+Include gateway/router paths, a broader Kubernetes matrix, and actual
+released-binary configuration upgrade and rollback scenarios. Coordinate deployment
+Secret rotation and recovery evidence with Phase 26. These extend existing tests;
+controlled SDK servers and HTTP fixtures alone do not complete this phase.
+
 ## Integration Scenarios
 
 - [ ] direct (first) agent checks with and without composite (downstream) agents
@@ -1625,6 +1636,34 @@ Earlier: audit and fix supported contracts, implementations, distribution, and i
 
 
 Phase 11 integration requirements are recorded in the [AHP impact review](../docs/rfcs/phase-11-ahp.md#later-phases).
+
+---
+
+# Milestone planning impact review
+
+The [6–12 month priorities](../ROADMAP.md#priorities-for-the-next-612-months)
+sequence existing work and add reviewable evidence and community deliverables.
+
+Earlier phases: stabilization covers the engine, adapters, graph, SDKs, serving,
+exports, distributions and conformance. Phases 25–26 must extend their product,
+failure, resource and upgrade validation and feed defects back to those layers.
+The roadmap itself changes no contracts, schemas, CLI behavior, package versions
+or distribution contents; existing configurations and examples remain valid.
+
+Required extensions: Phase 25 records the reproducible product matrix described
+above. Phase 26 expands sustained fuzzing and regression corpus retention,
+cancellation/leak accounting, resource profiles, deployment-secret rotation and
+upgrade/rollback recovery evidence. Documentation must distinguish existing
+coverage from remaining work. Contributor guides, pilot feedback and a maintainer
+process proposal need public review; this plan does not itself change governance.
+
+Later work: 1.0 still depends on the existing stability and security criteria.
+Health change detection, failure impact analysis and workflow canaries remain
+exploratory, without committed phases. Before implementation, assess result
+comparison compatibility, graph uncertainty, probe authorization and budgets,
+SDK/CLI projections, schemas, examples, distribution and validation. Any contract
+changes require the existing RFC process. Revisit this review as scope changes
+and link actual evidence before declaring milestones complete.
 
 ---
 
