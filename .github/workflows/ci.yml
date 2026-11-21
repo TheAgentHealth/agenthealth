@@ -596,9 +596,10 @@ jobs:
           AGENTHEALTH_REAL_MCP: '1'
           AGENTHEALTH_BINARY: /tmp/agenthealth-interop
           AGENTHEALTH_FILESYSTEM_SERVER: /tmp/real-mcp/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js
+          AGENTHEALTH_PLAYWRIGHT_SERVER: /tmp/real-mcp/node_modules/@playwright/mcp/cli.js
         run: |
           pip install -r tests/requirements.txt
-          npm install --prefix /tmp/real-mcp @modelcontextprotocol/server-filesystem@2026.8.31
+          npm install --prefix /tmp/real-mcp @modelcontextprotocol/server-filesystem@2026.8.31 @playwright/mcp@0.0.86
           go build -o /tmp/agenthealth-interop ./cmd/agenthealth
           python -m pytest tests/interop/test_real_mcp.py -q -ra --junitxml=pytest.xml
       - name: Collect product test report
