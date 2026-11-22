@@ -577,7 +577,7 @@ jobs:
           npm --prefix examples/reference/typescript test
 
   real-mcp:
-    name: Real MCP filesystem server
+    name: Real MCP servers
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -590,7 +590,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Test passive inventory against a maintained server
+      - name: Test passive inventories against maintained servers
         if: hashFiles('tests/interop/test_real_mcp.py') != ''
         env:
           AGENTHEALTH_REAL_MCP: '1'
