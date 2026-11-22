@@ -79,7 +79,8 @@ fixture against the current schema alone does not establish upgrade or rollback.
 
 ## Product smoke coverage added in source
 
-Dedicated CI now exercises the maintained MCP filesystem server at 2026.8.31,
+Dedicated CI now exercises the maintained MCP filesystem server at 2026.8.31
+and Playwright MCP 0.0.86 through passive protocol and tool inventory checks,
 Agentgateway v1.6.0 readiness, LiteLLM 1.104.2 process liveness, compiled LangGraph
 reference handlers, and
 configuration compatibility using released v0.9.0/v0.12.0 binaries. These focused

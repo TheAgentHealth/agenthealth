@@ -577,7 +577,7 @@ jobs:
           npm --prefix examples/reference/typescript test
 
   real-mcp:
-    name: Real MCP filesystem server
+    name: Real MCP servers
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -590,15 +590,16 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Test passive inventory against a maintained server
+      - name: Test passive inventories against maintained servers
         if: hashFiles('tests/interop/test_real_mcp.py') != ''
         env:
           AGENTHEALTH_REAL_MCP: '1'
           AGENTHEALTH_BINARY: /tmp/agenthealth-interop
           AGENTHEALTH_FILESYSTEM_SERVER: /tmp/real-mcp/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js
+          AGENTHEALTH_PLAYWRIGHT_SERVER: /tmp/real-mcp/node_modules/@playwright/mcp/cli.js
         run: |
           pip install -r tests/requirements.txt
-          npm install --prefix /tmp/real-mcp @modelcontextprotocol/server-filesystem@2026.8.31
+          npm install --prefix /tmp/real-mcp @modelcontextprotocol/server-filesystem@2026.8.31 @playwright/mcp@0.0.86
           go build -o /tmp/agenthealth-interop ./cmd/agenthealth
           python -m pytest tests/interop/test_real_mcp.py -q -ra --junitxml=pytest.xml
       - name: Collect product test report

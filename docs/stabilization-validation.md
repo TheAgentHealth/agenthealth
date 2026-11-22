@@ -66,3 +66,14 @@ Health/check codes, graph IDs, relationships and critical metadata matched acros
 upgrade and rollback; latency, messages and transport-stage detail were excluded
 from comparison. Credentials were checked for disclosure. Deployment Secret
 rotation, full framework migrations and routing decisions remain future work.
+
+## Real MCP interop follow-up, November 21, 2026
+
+On `test/playwright-mcp-interop`, a local install of `@playwright/mcp@0.0.86`
+and the filesystem server at 2026.8.31 passed both passive stdio interop tests
+(2 passed). Playwright negotiated MCP `2025-11-25` and listed `browser_navigate`
+and `browser_snapshot`. The four CI workflow structure test files passed
+(81 passed). Go vet and race tests passed. The full Python repository suite
+reported 324 passed and 20 skipped, and both documentation validators passed.
+The smoke used protocol and capability checks only and never called a browser
+tool. This local run did not cover CI, browser operation or external endpoints.
